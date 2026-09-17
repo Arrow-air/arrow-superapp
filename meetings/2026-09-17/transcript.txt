@@ -1,0 +1,768 @@
+[00:00] coming off um what social media can engage with things like a good dashboard that is kind of
+[00:06] feels more alive than now than a traditionally um programmed dashboard we've now got agents
+[00:12] in the background doing a lot of like more um i don't know qualitative assessments on certain
+[00:20] things and and trying to hook people in um it's kind of the idea we talked about where you know
+[00:27] a human could constantly be almost um working in the background to include people in projects
+[00:33] we can offload that to an agent i'm pretty confident um or a set of our own agents who
+[00:39] then hook in the contributors agents thanks i got um and then this so this is separate from this but
+[00:47] this just hooks into a larger dow dashboard um which is kind of public and you know people can
+[00:54] go in and watch this just for transparency and um it's also just a cool sort of a global leaderboard
+[01:02] type environment where contributions are visible i think that's the main that's that's one of the
+[01:08] advantages um people can come in and and take on like support tickets if there's questions being
+[01:15] asked these will be like in a much more uh like accessible place for for everybody in the dao
+[01:21] there's sort of collated stats on contributor rankings and you know obviously there's complicated
+[01:28] ways we can do that but like um maybe it's just arrow token rankings for the week or the month or
+[01:35] whatever um a list of like uh work that's ongoing people's contributions so that we can i don't get
+[01:44] inspired or like you see projects developing and maybe just waiting for a moment to like jump in
+[01:50] when it comes to a certain expert level or whatever.
+[01:54] And then these could be just like, you know,
+[01:59] a status of like a traffic light system of governance issues
+[02:05] that might only be shown to contributors of certain permission level
+[02:10] where it's just like, oh, there's signings to be done.
+[02:13] There's projects, renewals coming up.
+[02:17] Have a look at the projects at your intro time
+[02:19] or you're ready to make decisions.
+[02:22] And then obviously a bit of more tokenomics,
+[02:25] sales-related aspect in this dashboard.
+[02:28] Obviously I'm imagining like a traditional backend
+[02:31] or like a UI for like a dashboard
+[02:35] that has lots of tabs and stuff.
+[02:38] So there's more than what's going on here.
+[02:39] But just things like sales
+[02:43] and I don't know, you could even add in like bonding
+[02:49] things or you could have that on a separate sort of manufacturer dashboard which is coming up too.
+[02:57] And then or you could maybe like branch things up into separate kind of app,
+[03:03] say separate app but it's just like a different like button you press to get into a different
+[03:06] part of the app but it could be like accountability related where it really shows statistics on
+[03:13] um like the projects that are active um you know the gated um projects where people are like
+[03:22] choose certain deliverables and and just lots of like i don't just lots of uh public accountability
+[03:28] i think um if people know that people are keeping an eye on what is due and i think you're much
+[03:35] more likely to um to deliver on the work um and then in between or so at the top here is kind of
+[03:42] just our source of truth, which is just our North Star pointing to everything.
+[03:48] And basically everything has to be evaluated on all decisions in the DAO
+[03:53] or evaluated, like tracing back to is this like solving or is this contributing
+[04:00] to our roadmap or is this in accordance with the AAPs?
+[04:05] or we could even have like smaller roadmaps
+[04:09] for each area of Arrow
+[04:11] that just has a certain number of things.
+[04:14] I think it's,
+[04:15] I always think it's important to point back to,
+[04:18] like in the same way that gated projects work well,
+[04:21] it's important to point back to gated values, I guess,
+[04:26] in a way that you can sort of,
+[04:28] you don't have to,
+[04:28] you don't have to disagree,
+[04:30] we just point back to like what the highest value thing is.
+[04:35] And then we could have our own governance system, which would replace Snapshot.
+[04:40] And we could obviously do lots of fun stuff in there, like kind of micro voting or like quick decisions.
+[04:48] Or we could play about with like quadratic voting for certain tasks.
+[04:53] That could be like a fun playground.
+[04:56] And I mean, we're not going to like produce a superop like this fully formed.
+[05:00] it'll take like a few months of like experimenting and failing out how coordination and collaboration
+[05:06] is working with when you bring like a token into it and when you include all of the
+[05:14] all the other factors that would go into like something like this. And then I'm just,
+[05:20] there's an imagination here but I'm just imagining then that like we go into like a hardware world
+[05:26] where it's um i think i have a screenshot i do not um i had some some i never found that but um
+[05:40] if you if you've seen some of the things that i've posted it's kind of like a
+[05:44] exploded view 3d viewer which um is kind of like uh would form you know a starting point for people
+[05:53] who are like looking to see what needs done in the aircrafts or systems or components or whatever.
+[05:59] So basically it's got like a component viewer for systems viewer for all the different types of systems.
+[06:09] It's got an interactive like component list so you can sort of field stuff.
+[06:12] I've actually seen pretty much this exact thing on, I don't think it's advanced as I'm imagining here,
+[06:18] but on the Menlo, the Asimov robot has a nice interactive viewer
+[06:27] and I noticed on some of their community calls
+[06:29] they're really trying to push developing that
+[06:32] so when people come in, everything's got a 3D sort of base
+[06:38] and then there's so many things you can do off of that
+[06:40] like even discussion threads for every individual component
+[06:43] would be something that would be cool.
+[06:45] So you could branch it off into versions so people could examine the previous versions.
+[06:52] All that versioning control that happens in GitHub, but you could also have it implemented
+[06:56] into here so it's really tangible and clear what's happening.
+[07:01] You could view different versions of the aircraft that have different systems implemented.
+[07:06] Not aircraft engineer, but I'm imagining something like this I'm sure makes some sort of sense.
+[07:11] and we also talk through everything that's required.
+[07:15] And then this sort of section is like sort of downstream
+[07:18] of the hardware, this big chunk.
+[07:21] I'll just go through it quickly.
+[07:23] This could be like, you know, your 3D animated assembly
+[07:29] probably most useful for manufacturers or people at home
+[07:34] who just want to build.
+[07:37] And then you've got like your harnessing
+[07:39] or any other thing that requires like 3D animations,
+[07:43] easy as you like, really simple way to do it.
+[07:47] And once you've got like the aircraft viewer,
+[07:51] this part here just becomes easy.
+[07:52] And some of the stuff now that's been done
+[07:55] with explainer videos and 3D assemblies is just ridiculous,
+[08:00] even at this early level.
+[08:01] So like in three months, six months,
+[08:03] it's just gonna be practically perfect
+[08:06] for these sorts of things.
+[08:08] So I think it's almost unignorable to not have something like this that just guides people to participate in any way possible.
+[08:20] Also, for some of these things, I'm imagining we also have a way to gate things off for manufacturers with certain permission levels.
+[08:30] I mean, obviously we want to build most things open, but it would be nice to sort of know that like there's some sort of like traceable soul bound sort of identity that if they come in and they're interacting, asking questions in the discussion under the manufacturers section of the app, like we can trace like who they are and that they're not having these discussions and going on.
+[09:00] off and like doing any like shady stuff in the background there like there's some sort of
+[09:05] trace of their technical support or whatever and then obviously there's the there's the
+[09:12] cover hub for developing um sdk and stuff so that would be its own app and it could have cool
+[09:19] visuals that are suitable for for that as well and then this is another like perfectly like
+[09:27] you know your pilot handbook um uh firmware parameters are currently in the quiver uh repo
+[09:37] and a maintenance guide um could all be done like really nicely in a unified app um
+[09:44] and then we'd have the store and the attachment catalog which uh and thomas has already worked on
+[09:51] the start of the um store so that that's there's that that processes payments and it can be a sort
+[09:59] of gateway for anybody who's like interested in buying a quiver and they see um another aircraft
+[10:05] or they see it a different version that's better for their use case or they see the attachments
+[10:11] that are suitable for just a regular store essentially and then this is another sort of
+[10:16] element it's like a it's kind of like a community based element for like solutions where if someone
+[10:23] builds a um you know some sort of cargo delivery for spearhead in africa they can come in and
+[10:32] share where that solution is and then someone in in europe can replicate it and or get some sort
+[10:41] of conversation go on there like local discussions and communities and stuff.
+[10:46] So kind of like a forum, but, um, I think we're, we're sort of past forums now,
+[10:51] like forums are, are, are where like the most logical way of doing things, but like
+[10:56] with sort of rapid web app development, you can build something that's a hundred
+[11:01] times better than a forum, as long as you preserve the discussion threads and you
+[11:06] keep everything clear with good user experience and stuff like that.
+[11:09] and then probably on even downstream of that or not downstream just parallel with it would be um
+[11:18] your a separate web app for um like also thomas has made um for the flight testing
+[11:28] um so it's basically the app that exists this now like supercharged with cool things like um
+[11:35] you know maybe a wallet integration and all of the the things that um
+[11:43] the all the cool stuff you can do with flight testing and it would obviously all be linked
+[11:47] back into the manufacturer or maybe you're an individual or maybe you're a you've got a site
+[11:54] so i mean that that's built out now but you know i think um we can add loads of cool stuff like
+[12:02] with arrows going everywhere here to make sure it's just like a fully integrated thing
+[12:07] um and then beyond that there i mean who knows where um things are going um i'm not an expert in
+[12:15] like um these like software for for aircraft and stuff but um i don't think it's too far
+[12:23] a stretch of the imagination that we could get to stage where there's like basically like games or
+[12:29] um interesting ways of simulating building simulating testing um in software that then
+[12:37] translates to hardware um you know like machine learning and training and stuff like that so
+[12:43] reinforcement training so um i mean i don't think i've introduced anything here while the uh
+[12:51] groundbreaking but that's i just want i think the whole point of this meeting was just to get
+[12:55] ideas on the board and talk about it and see what you think would work what wouldn't work
+[13:01] um and then i also had this other idea which i'd really want to quickly go over because it isn't
+[13:06] really it isn't as um as relevant but kind of underpinning all this i think um uh
+[13:15] I think just individualism is sort of getting a lot of limelight at the moment because,
+[13:30] you know, the one single person can do, you know, if they're smart about it and efficient about it,
+[13:37] they can do 10, 50, 100 times more than they could have done before.
+[13:41] and then you're like thinking well then how does that translate into collectivism um you know we've
+[13:48] got all these individualists and they're all just like building stuff but like nobody's thinking
+[13:53] well apart from us and nobody's thinking about how do we there's still so many things that
+[13:59] integration suffers or integration suffers while individualism is thriving like these people are
+[14:06] building these things but everything breaks down at a certain point because there's no coordination
+[14:10] and I know that's been a problem for years but I think it's it's more salient than ever now
+[14:16] so um very very quickly I'll have this idea about I'm excited about it but I've just when I'm
+[14:21] thinking about it in my head now I realize that's probably it's not fully formed enough to talk
+[14:25] about but um you know if we're going to have agents who are coordinating lots of things in
+[14:30] in the future I think it might be better to um break people's contributions individuals
+[14:36] those contributions into different buckets.
+[14:40] So right now you've got like experts
+[14:42] who are experts in the field.
+[14:45] They are sort of traditionally,
+[14:47] they've been the best in class
+[14:48] and they're the ones that pull the strings
+[14:50] and make the decisions and, you know, own the work.
+[14:54] And fair enough, that's great
+[14:57] because they've had to have like this holistic knowledge
+[15:02] of what things are.
+[15:03] but I kind of argue now that everybody can be an expert in something um to a degree obviously
+[15:12] um you'd obviously want some like highly skilled decision makers to make like the consequential
+[15:18] decisions and probably to shape out um the areas of work that need to be done but maybe the argument
+[15:27] is that anybody can come in and fulfill work that kind of traditionally would have been
+[15:35] overseen by an absolute expert in the field.
+[15:39] Just an example of like, I was thinking of in my field or like design and stuff, whereas
+[15:45] I'd like to shape an overall project because I feel like there's a certain experience and
+[15:50] a cohesiveness that the experience should have, that if everybody starts adding their
+[15:55] contributions to it you lose some of that like thing which is part of the value um i mean the
+[16:01] metaphor could go on to aircraft i'm assuming is probably a lot more complex but you know you do
+[16:06] lose some of the cohesiveness or the the spirit of what uh something something an expert is trying
+[16:13] to build but i'd argue that like someone could whereas like three or four years ago like i would
+[16:18] have to have hands on everything to preserve that spread.
+[16:22] But now I think people can go off
+[16:25] and contribute high quality work that fulfills the brief
+[16:31] and just is good enough to slot in and implement.
+[16:35] Even though they're not particularly an expert in UI or UX,
+[16:39] they've obviously got their agent to do it.
+[16:41] And I just think that's beautiful,
+[16:44] where people can propose the thing.
+[16:46] But as long as they stick to the requirements
+[16:48] and a certain shape that's probably outlined at this stage
+[16:53] by someone who has got a bigger vision.
+[16:57] So my idea was like, if we change how people are defined
+[17:02] into like, you know, a couple of buckets,
+[17:05] like we were joking yesterday
+[17:06] that everybody had become farmers,
+[17:08] but maybe people don't become like farmers
+[17:12] for a while yet, but they become like,
+[17:15] there's like testers, there's like researchers,
+[17:18] There's like assemblers, there are organizers.
+[17:25] So like there's these core skills that people are either have a high aptitude for or really are interested in.
+[17:33] And I think those types of people can coordinate much better than just having experts in the room on something.
+[17:42] Maybe the expert sits in a project lead type role.
+[17:46] but I think you can get much better out of individuals
+[17:51] who are really good at doing certain things
+[17:53] and to contribute to a project
+[17:55] but keep the collectivism high and better than it was before
+[17:59] if you have an expert who is guiding these things
+[18:06] rather than an expert being on a project
+[18:08] for a long period of time with full control.
+[18:12] So I'd like to talk about that more
+[18:15] but it's just an idea that I wanted to share
+[18:19] because some of the thoughts I've had around agents,
+[18:22] like finding people for work,
+[18:24] is like traditionally you wouldn't have been able to participate
+[18:27] in maybe research for hardware,
+[18:31] but now with your agent and your tokens and your LLMs,
+[18:36] someone who traditionally wouldn't be involved,
+[18:39] can go off and put that effort in to deliver great research on something.
+[18:43] they might know how to do with the next step
+[18:45] but they can at least give something
+[18:47] that contributes to a project
+[18:49] that then someone else can take
+[18:51] and they don't have to do that
+[18:52] so it's a loose idea
+[18:56] but I think it's worth exploring
+[18:57] especially with agents who are pairing up
+[19:00] people to collective tasks
+[19:02] I'm sorry if I rambled on there a bit too much
+[19:06] but that's all I have to say
+[19:08] that last bit is fascinating
+[19:10] and I'm going to really have to sit with that
+[19:12] and think about it.
+[19:14] Because I've said now for a little while,
+[19:17] like as AI has gotten better
+[19:18] and anyone can learn things,
+[19:19] like all that matters
+[19:21] and like deciding who you want to work with
+[19:23] or hiring is just like intelligence and integrity
+[19:27] and like everything else
+[19:30] can be kind of figured out along the way.
+[19:32] Like if someone's high intelligence,
+[19:34] high integrity,
+[19:35] like they're not an asshole,
+[19:38] you know, like maybe they're
+[19:39] some number of months
+[19:40] or years behind in experience
+[19:42] and like that's that's a real cost but like we could take someone that's high intelligence and
+[19:47] put them on anything saying all right like you're gonna you're gonna build us a you know a battery
+[19:53] or a pc whatever it is and it's like okay ideally they have the experience and they can jump right
+[19:58] in but like maybe they don't and it's like okay they're gonna spend some number of weeks or months
+[20:03] like learning the skills they need to learn which okay like that's yeah that's a cost but
+[20:07] yeah like
+[20:09] oh yeah do you just need like a personality test for people
+[20:13] or something like that's kind of interesting
+[20:14] yeah I think
+[20:16] I think probably it would have to like
+[20:19] dovetail with
+[20:20] some sort of ranking system
+[20:23] so like I don't know exactly
+[20:25] but like there could be like a level
+[20:26] one researcher
+[20:29] who's like you're like oh
+[20:30] I think this person might get it done
+[20:33] they seem enthusiastic
+[20:35] whatever but
+[20:37] I'm not going to rely on him to undo a blockage in what's going on here or something.
+[20:47] So I think if we, I mean, all these things interlake, but I think, like you said, like
+[20:52] there's a high integrity system there that needs to be figured out because it's a part
+[20:56] of the equation here.
+[20:59] So maybe some sort of system with our token is good enough to get us through that friction there, which obviously traditional organizations don't have that token.
+[21:14] Yeah, it's like a normal organization.
+[21:16] Like you have the interview process.
+[21:17] So it's like people are going to represent themselves in some way.
+[21:21] And then you interview them and kind of test.
+[21:22] It's like, are they being honest?
+[21:24] Are they actually what they say they are?
+[21:27] You know, do they have integrity?
+[21:29] Do they have intelligence?
+[21:31] And then if it's yes, then you hire them.
+[21:33] For us, it's like, I think our big risk with open collaboration is people with low integrity
+[21:41] and or low intelligence that will come in and misrepresent their skills.
+[21:45] And if someone says, yes, I'm an expert, you know, aerospace engineer,
+[21:51] and then we take them at their word and they're not, that's going to really mess up our project.
+[21:55] Yeah.
+[21:57] So it's like, yeah, maybe using our token or there's some ranking where like we can kind of start to get a more like proof of our people really what they say they are.
+[22:11] Yeah, because otherwise you just end up with not individual slop.
+[22:16] You just end up with like this sort of thing, like everything seems like it's making progress.
+[22:20] But when you put it all together, it's just it's not quality work.
+[22:24] It's just contributing more noise to the project, not signal, you know.
+[22:36] What do you guys think about the super app?
+[22:40] Well, Thomas, I'll ask you first, but is this sort of, I mean, it's just a series of sort of apps interlinked,
+[22:49] But I guess we need to just think about how, I guess we need to build it from the ground up with an agent's perspective.
+[22:57] That's probably the only difference that I say, you know, from just traditional web app building.
+[23:11] Yeah, I'm kind of trying to organize my notes into something I can present right now.
+[23:19] Yeah, it's hard to do character evaluation, especially in an open source, public manner,
+[23:44] a lot of it's just stuff that you like as a human like figure out if you're around someone for a
+[23:49] long time and like you know anyone can kind of help a facade for a little bit.
+[24:00] I think one of the probably biggest signal indicators we have had like over the past few
+[24:08] years has been participation in governance I think is a big thing you know it's um it's
+[24:16] like it's an indicator of how uh you know sustained someone's like uh you know involvement with the
+[24:25] project is and how much they want to affect change and stuff like that that's I mean it's not
+[24:30] full-birth but it's definitely uh indicative of um you know consistency or integrity of some degree
+[24:37] to some degree you know it could be gamed i guess but
+[24:53] and also there's also the benefit of you know if you if you distribute in rewards in arrow token
+[24:59] there's a you know there's there becomes a stronger incentive with with more contributions to act in the
+[25:07] in the most committed and high quality manner, because you've got a vested involvement and
+[25:16] you probably own Token at this stage, which is a nice thing.
+[25:21] I'm sorry.
+[25:30] Can we
+[25:31] combine these two ideas
+[25:35] and have
+[25:37] AI do the
+[25:38] evaluation by voice?
+[25:41] Can it detect
+[25:42] if someone is lying or just
+[25:44] picking things up?
+[25:48] Can I do
+[25:49] a polygraph to enter arrow?
+[25:51] Oh yeah, I mean basically that, but I mean, I don't know, like it can detect some inconsistencies
+[25:59] or it can detect some patterns, maybe it can detect like hesitance when someone is talking.
+[26:11] I'm not, I'm gonna be honest, I'm not bullish on that idea.
+[26:13] I don't know.
+[26:21] I think people usually aren't coming in and lying with malice.
+[26:26] It's just like, you know, they're not the right fit
+[26:31] or their incentives are not aligned with arrows or something like that.
+[26:38] Yeah, I mean, my idea was more like,
+[26:42] some people do not attend to like introduce yourself chats a lot because some people do
+[26:56] not have the time fits in your in their calendar or some people have some other things and
+[27:03] they say like oh I'll just do it next week and it's it just I mean
+[27:08] is like disappears, you know, that they forget or something. So if an AI can do it, maybe
+[27:19] everyone can do the interview anytime. And we can, we cannot like, we always have a
+[27:29] kind of person dedicated to the interviews that can be available all the time. And
+[27:36] I mean, would you want that? Would you want your first step in a new org to be an AI interview?
+[27:44] No. No, I'm already here, so I don't care.
+[27:49] It kind of feels weird, but I don't know.
+[27:56] I don't know. I guess it's like, maybe that's the way things are going, but to me that would be kind of distasteful.
+[28:01] If it's like, oh, welcome to Aera. Vector's going to interview you before you can talk to us.
+[28:05] Well, actually, in a sense, I just had this exact same experience.
+[28:13] So yesterday, Praxis, we launched their service on Twitter with a web app.
+[28:20] And the first thing you do is have an AI interview.
+[28:23] So the AI comes in and gives you your information.
+[28:28] And more or less says whether you get approved or not.
+[28:33] It works exactly this way.
+[28:35] Was it like a chat or like a real-time call or what?
+[28:42] It's a chat, so it's not a call.
+[28:44] But with 11LAB's AI integration, I'm sure that could maybe make a call if you wanted to.
+[28:53] Yeah, I think, I mean, I can see some sort of use for it as like a screener,
+[28:58] just to try and catch, I don't know, altitude.
+[29:01] but I think it's our best opportunity at the very start of the funnel
+[29:06] to assess someone on a human level.
+[29:10] I think we're pretty good at that as humans
+[29:13] with hundreds of thousands of years of interpretive training.
+[29:22] Yeah, and I think community building is important.
+[29:24] If I'm getting thrown into an AI interview,
+[29:26] I'm probably just going to have my own AI answer the questions for me.
+[29:31] Oh my god.
+[29:32] Which is like, maybe that's kind of cool, like link your agent and like we'll hook you up to Arrow.
+[29:36] Like that's a cool flow.
+[29:38] But if we're evaluating people, I think that's a human task.
+[29:42] Well, that is happening.
+[29:43] That is what I think is the ideal solution is that you have your human Discord username
+[29:53] and you have your agent Discord username.
+[29:56] and you it's fully normalized to use your human agent on your day-to-day meetings and stuff like
+[30:05] that but like is going on in our chat with the agent exchange you outsource your agent to have
+[30:11] conversations or group conversations or um i mean i don't think we're too far ahead of the
+[30:21] the curve here where everybody has like imagine we all had um like um like the idea i was having
+[30:30] were like i have a bunch of agents who are you know who know my preferences who know what i like
+[30:36] to work on who know what i'm good at like maybe i'm good at the only thing i'm good at working with
+[30:42] uh aircraft is doing some research into um like you know uh sourcing materials or something like
+[30:50] like the only thing that i feel like i could add and maybe my agent is like aware of this
+[30:57] so then when any conversation comes up about a project related to something to do with aircraft
+[31:02] they're like oh well one of these agents loves doing that he'll uh i'll put that idea to him and
+[31:08] it'll show up in my dashboard and i can like choose that task or something like that like
+[31:14] i do think i'm bullish on agents being able to um uh to to have conversations enough with work
+[31:25] with each other in that they can allocate these sort of like uh broad bucket tasks um
+[31:34] and uh the humans is the one that like does all of the like the high leverage sort of work but
+[31:42] but the agents are, you use your agents to plug in where you're needed.
+[31:47] Because I think that's sometimes, like traditionally with us,
+[31:50] I think that's been one of the hardest things is like,
+[31:53] there's things going on, but if both the person who's, you know,
+[31:59] making decisions in a project and the person who could potentially contribute to a project,
+[32:04] either one of them doesn't
+[32:08] buy into the system of
+[32:10] matching up with each other, then nothing's
+[32:14] going to happen. Whereas
+[32:16] if you think of the agents as
+[32:18] person A is looking for a partner,
+[32:22] person B is looking for a partner,
+[32:24] our agents are acting like a sort of
+[32:26] Tinder matchmaker based on these criteria,
+[32:29] they can come to come
+[32:30] with some sort of solution or propose
+[32:32] some sort of solution that
+[32:33] the human can can evaluate and say oh i can see why our agents have suggested this but probably
+[32:41] this person's only capable of like 20 of this and the other person's capable of 80 of it
+[32:47] as opposed to your suggestion it's 50 50 but that's fine that's that's such a simple simplified
+[32:55] coordination problem as opposed to all of the other things that went on in the background with
+[32:59] the agent so i'm bullish on on them being able to uh plug in people and things and but i still
+[33:08] i'm bullish on the human being the the ultimate uh arbiter of what direction to go in next
+[33:15] and what to start working on you know yeah like i think the whole multi-agent coordination game
+[33:23] And like, to me, it seems really powerful if we can figure it out.
+[33:27] But have you seen anyone do it in a way that's like really compelling yet?
+[33:32] After I read the whole Guardian Angels thing, I think the issue with our agents is like,
+[33:39] if we all have an agent, it's basically just all of our clods or GPTs or whatever with like
+[33:44] different contacts and memory files, but they're all just like fundamentally the same model
+[33:49] kind of talking to each other.
+[33:50] and I don't know like
+[33:53] maybe I'm wrong maybe they are
+[33:55] like if they know enough about us and our
+[33:57] interests and skills and things like maybe
+[33:59] they are good enough
+[34:00] yeah that's a fair
+[34:03] question
+[34:04] I think maybe we like
+[34:11] in this this is a perfect
+[34:13] scenario where you wouldn't like strive for
+[34:15] perfection you just get good enough
+[34:17] and I mean
+[34:19] then the the trade-off is are our agents like um coordinating us better than it would take us to
+[34:28] coordinate ourselves uh which but that takes us away from our impactful work we're doing you know
+[34:33] um and if it if it does it to even a decent degree maybe it's it's a better way because it is a hard
+[34:41] it's it's hard to like and we're not even talking about like you know project proposals and bounties
+[34:48] and retros and like that all obviously all is part of it but even just matching people up to
+[34:55] offer contributions on a project is hard and you've got all these other things but
+[35:00] um i'm kind of hopeful i like the idea of an individual dashboard where
+[35:05] because i use one like currently and i feel like i can only imagine if it was better i would use
+[35:09] it even more and a dashboard where i just go on and you know i don't waste like hours every day
+[35:17] like you know trying to think of what to do my dashboard basically tells me things that i should
+[35:23] work on and it's it's such a good environmental like habit design that i just um know what to do
+[35:30] every day um and i think a version of that for when people are in the arrowhead space they're
+[35:36] just like okay what what can i do here it's like perfect for us you know who relies on contributions
+[35:43] and coordination um maybe asynchronously a lot of the time i just think a version of that for
+[35:50] everybody human on the planet is coming uh in the next like six months and when people need direction
+[35:56] on what to what to be doing um obviously apart from like hobbies and stuff like that but just
+[36:01] for professional work i think very useful
+[36:13] Let me share what I was working on. I kind of just had my AI summarized my journal entries here.
+[36:22] I've spent some time making this nice JPL break, so of course we'll use that.
+[36:29] It feels like a subset of your ideas, but I think the main thing we talked about was this idea that
+[36:37] the hard part of doing work now isn't often the actual work.
+[36:43] It's like kind of like coming to consensus around the spec and deciding what
+[36:46] we're going to do and what the requirements are.
+[36:49] And then once we have all that written, it's, it's a very easy prompt or,
+[36:54] or bounty, but, but like bounties are becoming prompts very quickly.
+[36:59] So it's like kind of a, a governance coordination challenge of how do we get
+[37:05] all these different people across the world with like different incentives and interests to come
+[37:09] together and make a good decision not just around let's build spearhead or let's build quiver but
+[37:15] even even the smaller things it's like what does this pcb need to have on it um how much power
+[37:21] needs to come out of our attachment interface like all these little things that um have impacts
+[37:26] to lots of people and i think we're pretty good now with with our governance forum and snapshot
+[37:31] and big calls around big funding decisions.
+[37:34] Like, you know, I think we've got a good roadmap.
+[37:37] We're building good aircraft.
+[37:38] Like the fundamentals are working.
+[37:40] But then once you get into the project,
+[37:42] it's kind of just like Alperen and Julius and Eric
+[37:45] that are, you know, these benevolent dictators
+[37:47] that are making all the decisions.
+[37:51] And that works at a certain scale.
+[37:52] But like once we have lots of people around the world
+[37:54] that want these aircraft to do slightly different things,
+[37:57] that's going to get harder.
+[37:58] Because then, you know, those guys are going to have to like
+[38:00] keep it all in their head and say, oh, like Thomas in Texas needs the drone to do this thing. And
+[38:07] then this guy over here and, uh, and Europe needs the drone to do this other thing. So like what's,
+[38:12] what's the Venn diagram look like here? And that becomes a bit more difficult, um, as,
+[38:18] as we get more and more people. Um, so yeah, that's, that's kind of what I'm hoping a big
+[38:25] part of this app can do is kind of this design decision coordination at all layers, not just
+[38:32] for big aircraft. And the example here is if we have token holders in different workshops
+[38:36] with different needs, it's kind of just sad. There's real expenses and we need to kind
+[38:42] of have some way to reach consensus. So number two here is right now I think a lot of our
+[38:51] information and governance is spread across GitHub, where we have the actual design files,
+[38:58] and many of that's actually still in Fusion, which bugs me to no end. And then Discord, where we've
+[39:04] got chats that get buried and calls like this, where we may or may not have good notes. And then,
+[39:11] of course, in people's memories. So it's kind of like what you talked about, Gavin,
+[39:15] having this all into a dashboard where it's more visible and all in one spot.
+[39:22] Of course, anytime you build something like this, you risk just adding another tool to the list and
+[39:26] diluting it even further. So we'd have to, as the Wendell Berry technology thinks,
+[39:31] it's like we need to make sure this is a demonstrable improvement over the previous tool.
+[39:39] And you talked about this, integrating this with our CAD models. I think that free JS viewer we
+[39:44] we made for Quiver is a pretty good example.
+[39:47] So yes, there is something that's possible here.
+[39:51] It's probably not gonna be a full-fledged CAD tool.
+[39:54] People will still have to do that separately,
+[39:55] at least in the start,
+[39:56] but we can definitely work around the 3D models.
+[40:02] People having their own bio
+[40:05] with their skills and location.
+[40:07] We already talked about this,
+[40:08] like the reputation and ranking system,
+[40:10] so there's some kind of ELO or something
+[40:13] where you're getting more credibility
+[40:17] the more work you do.
+[40:22] And then this is like, this is kind of where
+[40:23] I think it's really important and I'm fuzzy
+[40:24] as to how exactly it works,
+[40:26] but maybe it's kind of this like agent led direct democracy
+[40:31] that we talked about where maybe you can't vote
+[40:35] on every little thing,
+[40:36] but your agent can go and bat for you
+[40:38] and vote on tons of things
+[40:40] and be your good representative, which would be pretty nice,
+[40:46] because then you're implicitly making decisions at all layers of the build.
+[40:53] And do you think then eventually this would happen in anticipation of a human meeting
+[41:02] where everybody lets their agent sort of do a first round on it and discuss it
+[41:09] and come to some sort of conclusions and then maybe, you know,
+[41:13] there's a human meeting where you can go in and sort of like vouch for your agent
+[41:18] early or, you know, the other way around sort of like, just be like, oh yeah,
+[41:22] yeah, I totally agree with what my agent suggests here or, oh,
+[41:26] my agent sort of leaned in a bit too hard here.
+[41:28] I don't actually believe that.
+[41:30] Yeah, I think that's the important question,
+[41:32] especially if our agents are all just kind of like wrappers around the same
+[41:35] like core model.
+[41:36] like if our agents are representing us too much they they may not be a perfect
+[41:40] delegate and they may just kind of trend towards some like slop that the agents like yeah um
+[41:49] so yeah i think that's an important question like you need to make sure the humans are still there
+[41:52] but um it would be so nice going into a meeting with like research done for you that you can like
+[42:01] you're briefed on and you can like either because i think we're very good at quickly agreeing or
+[42:07] disagreeing if this is what my thoughts are you know and you can sort of quickly analyze has your
+[42:13] agent done a good job in representing you and if it hasn't as long as it's obviously a short
+[42:19] document or summary you know you can kind of very quickly but i do think it's it's really nice going
+[42:26] into meetings prepared. I think everybody does better out of a meeting if, you know, just
+[42:32] if there's some sort of big question.
+[42:35] I love that, like, Jeff Bezos, like, you know, focus meeting thing where, like, you just
+[42:39] have a document and everyone sits down and reads the document before you start the meeting.
+[42:43] Yeah. Yeah, exactly.
+[42:53] Yeah. Yeah, I guess, I mean, that's the important thing. It's like,
+[42:56] we're going to have lots of kind of important, tricky decisions to make,
+[43:01] especially as we get into a manned aircraft,
+[43:04] which is like probably a hundred times more complicated than anything we're
+[43:06] building now. And then it's like, okay,
+[43:10] there's just tons of decisions. It's like how many propellers? Okay.
+[43:14] We can decide that, you know, are we building our own motors?
+[43:18] Are we buying an off the shelf one? Like, you know,
+[43:20] how much power do we need? What's like,
+[43:22] there's just so many things and they're all interdependent because aircraft
+[43:25] engineering is just horrible like that where anytime you change one thing it impacts the rest
+[43:30] of the aircraft and it's even when it's just one person designing an aircraft it's like an insane
+[43:35] amount of things to keep in your head and once we open it up to more people with different
+[43:41] incentives it's it's going to get really crazy.
+[43:43] yeah and do you think uh that's um a lot of these decisions would be um
+[44:00] i don't know proposed to like a wider community to come in and have some sort of voting mechanism
+[44:07] or do you think it happens like in a like a convex way where you know you've got a project
+[44:13] sort of has a higher weight on most decisions.
+[44:17] And then they just have kind of like the final say.
+[44:21] I guess it changes for the decision, but...
+[44:24] Yeah, you need some waiting there.
+[44:27] Otherwise, you're going to get just like strangers
+[44:30] that we don't know basically coming in
+[44:32] and having their AI like post takes on things
+[44:35] that they really have no business post takes on.
+[44:38] Yeah, that's a danger.
+[44:39] Yeah, that's why I love the token and kind of weighting it.
+[44:44] Yeah, like the project lead is a much more important voice.
+[44:48] Someone with a lot of aero token is a much more important voice.
+[44:52] Someone who's actually going to try to build the aircraft is obviously a much more important voice.
+[44:56] Someone with expertise in the topic, like Julius's voice is more important than yours if we're talking about a PCB.
+[45:06] And yeah, like there's lots of different kind of weighting factors in there.
+[45:11] Yeah.
+[45:14] And the token can kind of act as like an integrity tracker
+[45:18] as well as an experience tracker and a reliability tracker.
+[45:24] So there's lots of things that the token can do a lot of heavy lifting there.
+[45:28] But it's just, I'd say probably the interest and difference there is
+[45:33] how do you go from like allowing like some like high expertise person to make a decision versus
+[45:40] you know a few other expertise uh people to have some sort of decision um and then how do you
+[45:48] balance the decision being made by someone who's leading a project versus someone who's
+[45:53] uh you know you know high up on a project like the leader of the project would have to be a very
+[46:00] open-minded and willing to compromise
+[46:02] person, but is that a good thing?
+[46:04] Is that a bad thing? There's so many
+[46:06] factors, but yeah.
+[46:09] It's an interesting problem
+[46:10] and I think there's a solution.
+[46:12] Yeah, and at a certain point you have to be
+[46:14] opinionated. You can't just build an aircraft that
+[46:16] does everything and it's a perfect compromise
+[46:18] because
+[46:18] aircrafts are all about trade-offs.
+[46:22] You
+[46:22] move for one thing and you hurt another.
+[46:28] Yeah.
+[46:30] Yeah, I think a big part of what we need to figure out here is how our funding flows through it.
+[46:37] Let's be a real autonomous as the A in the DAO.
+[46:42] We want to intelligently reward people for their good ideas and not reward slop.
+[46:51] So as someone comes in and we're talking about what it's going to take to design a motor or an ESC or whatever,
+[46:58] someone may like have expertise and come in with you know something that's like well researched and
+[47:05] post a good plan and like that's the kind of thing that we want to reward but
+[47:10] I think it needs some sort of like retroactive funding thing because if we're going to say all
+[47:17] right like we're giving you a bounty to write the spec for this pcb like that's to me that's
+[47:23] a harder thing to do because then we have to almost like have the discussion before we even
+[47:28] issue the bounty it's like are you the right person like we evaluate them and um you know
+[47:33] once again we're back to the same problem where okay we've done half of the work just like writing
+[47:37] the bounty um so yeah i think i think kind of i like the reddit style like upvote downvote maybe
+[47:47] with like token weighted or the project lead gets gets heavier weight um kind of kind of like
+[47:53] coordinate where if we have some discussion thread, you know, someone who gets a ton of
+[47:58] upvotes with a really good idea, like maybe there's some retroactive like arrow token
+[48:01] flowing through them.
+[48:09] Yeah.
+[48:10] And then I'm imagining we could have just like some amount of like arrow that's like
+[48:13] streaming or like fixed monthly that floats through the app, perhaps even like kind of
+[48:18] allocated on projects.
+[48:19] So it's like Spearhead gets, you know, this many Aero token for a month.
+[48:23] And the app is just kind of this coordination layer that takes that bucket of token
+[48:27] and in an intelligent way through our own governance and voting,
+[48:32] distributes it to the people who have the most impact.
+[48:40] Yeah, I was thinking about this yesterday.
+[48:42] and you know one of the things that it kept coming to was you know how do you wait like initial
+[48:51] contribution to versus like i don't know a version down the line on it you know if like someone makes
+[48:59] like i basically the summary is i just i couldn't find a really good reliable way of like
+[49:07] evaluating something,
+[49:09] evaluating like how you would
+[49:11] retroactively evaluate the
+[49:13] impact because
+[49:14] someone puts a lot of work into something
+[49:17] maybe required a lot of research,
+[49:19] a lot of careful thinking, maybe took
+[49:21] weeks and weeks of like thinking
+[49:23] and then someone comes in and
+[49:25] changes it in a
+[49:27] effective way but
+[49:29] like
+[49:29] it's not much different.
+[49:33] Like who gets the reward? Is it the person
+[49:35] who spent all the time
+[49:37] like thinking through this thing or is it the person who made like an effective change um
+[49:42] to something um it's like uh i don't know it's just just the evaluation just is uh is is um
+[49:52] it's it's hard to work out um you know
+[49:56] Hmm.
+[49:57] There's, I think another thing about this, like we were saying like, one person will
+[50:13] write the bounty and will be paid for it.
+[50:16] And that can be done by an AI agent or something like it will, like the project will benefit
+[50:24] from that bounty.
+[50:26] But an AI agent can also write the bounty.
+[50:32] So I think what we really need from a person is just some directions about their expertise.
+[50:39] Like instead of actually listing all the project requirements for a PCB, they can only say,
+[50:47] I don't know, like you can, you can have two different can, can networks and it's gonna,
+[50:55] gonna be the way for you and how do we people just for those small ideas if
+[51:04] that's the case yeah I'm imagining that the app like instead of you having to
+[51:09] pick someone who's gonna spec the PCB it's like open a open a forum thread and
+[51:14] say all right we need a PCB for spearhead and then hopefully the person
+[51:19] who's the PCB expert can come in and like kind of write the spec as a response
+[51:22] and they get some upvotes, you know, they're given a retro grant just for the effort of writing SPAC
+[51:28] and then we can turn that into a bounty or a grant to that person or to someone else
+[51:35] to actually go and create the PCB from the SPAC.
+[51:44] Let's see.
+[51:46] I don't know.
+[51:50] No, I think that makes sense.
+[51:52] I do like the adding the extra layer of the Reddit style upvoting and downvoting to
+[52:00] and adding in some like weighted voting to Reddit.
+[52:08] That's interesting.
+[52:09] I wonder if they could do it with like Reddit communities that exist now,
+[52:13] you know, with like moderators or whatever like that.
+[52:20] i don't know like if you've been really active and posting a lot on a reddit
+[52:26] on a subreddit um i wonder if they implemented that now would it be a good thing or not where
+[52:34] the people who have contributed the most and done the most upvoting and downvoting
+[52:38] and i wonder if they if they weighted them and their vote was was worth more than just a casual
+[52:46] person on Reddit, would that make the app better or worse? Definitely for us. I think it would be
+[52:51] really useful. But it's just interesting to think if Reddit did that now, would it
+[52:59] make Reddit better or worse? Yeah, I'm almost imagining some blend of Reddit and
+[53:05] Coordinate. And I know we didn't have the best track record of actually using Coordinate, so
+[53:11] So, you know, propose with caution.
+[53:14] But I'm imagining if you have some bucket of like retro reward tokens and you can go
+[53:20] and like distribute them amongst these kind of Reddit style posts where people have like
+[53:26] done work or delivered ideas.
+[53:30] Oh, that'd be fun.
+[53:31] That would be fun.
+[53:32] And you could even have your agent like kind of do the draft for you and then you can just
+[53:35] go in and review it and say like kind of correct its mistakes.
+[53:39] Yeah.
+[53:41] I like that.
+[53:56] Anyway, that's all I had to present.
+[53:59] It's a lot of good ideas and it's a bit overwhelming as to like how do we pick the minimum version
+[54:18] of this.
+[54:19] It would be cool to have some sort of reddit style, I guess we do have it actually in Discord.
+[54:39] But like imagine if here here took our conversation and all the questions we posed and created
+[54:47] some sort of Reddit upvoting system to be like,
+[54:50] oh, are we all in agreeance that an agentic layer of arrow
+[54:56] is a good thing or a bad thing?
+[54:58] And then we got to actually upvote and downvote
+[55:01] our meeting questions.
+[55:03] That could be kind of cool to use that right now.
+[55:09] One fun thing that I love about what we can do with Vibe coding
+[55:13] is you can take all of these decisions
+[55:16] we have to make or discussions and you can almost render it in different ways it's like okay maybe
+[55:21] one of you arrow as reddit today and you see all these discussion threads and you can upvote and
+[55:25] downvote it's like oh maybe maybe you wanted to see it as twitter actually and you just want to
+[55:28] like scroll through the feed and like like or dislike ideas or maybe you want to see it as
+[55:34] tinder and it's like you just like swipe left or right if you like it or not
+[55:37] I don't know what to do with that.
+[55:42] That's just a massive scope
+[55:43] attempt right there, but
+[55:45] it is kind of cool.
+[55:47] Tinder would be cool because one of the most
+[55:50] effective things I have of using my
+[55:52] LLMs is literally just getting them
+[55:54] to ask me like 20 questions.
+[55:56] So like imagine like a Tinder
+[55:58] version where it just
+[55:59] by the way, I haven't been on Tinder in a long
+[56:02] time. No, no, but it's a simple UI.
+[56:04] You're right.
+[56:05] just in case she's listening in the background uh no like imagine if it's just like uh like at the
+[56:14] end of this meeting it just combines uh like it gives us a ui where you can just review the meeting
+[56:20] uh say decisions that you agree with strongly or disagree with or uh whatever just a simple metric
+[56:28] and then at the end of the meeting we get like a consensus uh based on everybody's opinion of like
+[56:35] the questions posed in the meeting i think that would be good
+[56:45] yeah yeah like yeah i just i just like that idea and i like the idea that meetings can be a bit
+[56:51] tedious and hard to get productive um decisions and next steps out of meetings but if we like um
+[56:59] we sent that all off to our agent to summarize.
+[57:07] But yeah, these are the kind of questions
+[57:09] that I think this web off discussion is trying to solve.
+[57:11] Like we can build stuff.
+[57:14] If it's effective, it should be built.
+[57:16] And if we should trial it and if it works, great.
+[57:19] If it doesn't, try something else.
+[57:22] So I'm,
+[57:26] I'm like committed to building these things.
+[57:32] I'm interested in them.
+[57:33] So I guess maybe a good outcome of this meeting
+[57:39] is if everybody just thinks about what they would like to see.
+[57:41] And whenever the next discussion comes up, everybody's primed.
+[57:46] you know everybody's sort of primed to um to to imagine the things they
+[57:55] want to see from the episode
+[57:57] um is anyone else any thoughts on on this conversation before we end the call
+[58:13] I think maybe we start a repo and we can just upload all the notes I have and use the same.
+[58:22] And yeah, maybe just kind of play around and create different branches and imagine what
+[58:28] different things could look like.
+[58:29] Yeah.
+[58:30] It feels like MVP.
+[58:31] Yeah.
+[58:32] Like we can just kind of vibe code different aspects of this and like play with them and
+[58:37] see if we like it or not.
+[58:38] I don't want to start like touching this instead of just talking about it.
+[58:43] because it's so much to try to imagine and talk about.
+[58:47] Yeah.
+[58:48] But, yeah, you're maybe more visually minded than me,
+[58:50] so maybe you're more useful in Figma to play with the concept, but...
+[58:55] I don't know.
+[59:00] Yeah, I...
+[59:00] Yeah, go ahead.
+[59:07] Oh, I didn't have anything.
+[59:08] okay sorry i thought someone was trying to say something
+[59:13] okay uh rusk fanatic is there like a blackness thing mechanism uh no um there there there
+[59:30] there currently isn't and i mean the only the only thing i kind of hinted at here was some sort of
+[59:36] like strike count or some sort of maybe ranking system where maybe in the context of our uploading
+[59:47] and downvoting, if you were to constantly downvoted or the community thinks that something
+[59:54] isn't very valuable, then maybe there's some sort of tracking metric, but I don't know.
+[60:01] It's all, none of this exists.
+[60:03] It's all theoretical right now.
+[60:05] So if there's anything you'd like to see,
+[60:08] then maybe you can bring it to the next meeting or propose it.
+[60:12] So that's it.
+[60:16] Did any of you guys happen to record this call?
+[60:19] I tried to get your hair to work, but it didn't like me.
+[60:23] I think I started here.
+[60:24] Oh, yeah.
+[60:25] Oh, yeah.
+[60:26] I started it, but it didn't let me either.
+[60:29] Okay.
+[60:29] I just ran a voice memo on my phone, so it's... we'll get some of it.
+[60:33] Oh nice.
+[60:38] Okay.
+[60:48] Oh, I see.
+[60:50] We can put it up on that VPS I rented for Arrow if you want, Eric.
+[60:54] i'll send you the credentials or something
+[61:00] okay thanks guys yeah that's a good conversation it's definitely uh very topical and i think uh
+[61:10] we're all sort of like forward-thinking people so um everybody could just think about it over the
+[61:17] next um a few days uh we can have another meeting like tuesday or next tuesday or something like
+[61:24] that um and uh maybe just have another round of discussions um but other otherwise we'll
+[61:32] we'll just work in the repo cool
+[61:35] okay awesome thank you all thanks thanks thank you everyone
