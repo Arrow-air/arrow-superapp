@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
+import DiscussDrawer from './components/DiscussDrawer.vue';
+import DiscussPin from './components/DiscussPin.vue';
 import { act, backend, isDemo, refresh, state } from './data/store';
 
 onMounted(refresh);
@@ -52,7 +54,10 @@ async function resetDemo() {
     <span>
       <strong>Demo.</strong> Fictional people, illustrative numbers. Your changes stay in this browser.
     </span>
-    <button class="link-btn" @click="resetDemo">Reset demo data</button>
+    <span class="row" style="gap: 14px; flex-wrap: nowrap">
+      <DiscussPin anchor="general" label="Feedback" />
+      <button class="link-btn" @click="resetDemo">Reset demo data</button>
+    </span>
   </div>
 
   <div v-if="state.error" class="error-banner" role="alert">
@@ -64,6 +69,8 @@ async function resetDemo() {
     <RouterView v-if="state.ready" />
     <p v-else class="muted">Loading…</p>
   </main>
+
+  <DiscussDrawer />
 
   <footer class="foot">
     An Arrow superapp experiment. Source and the thinking behind it:

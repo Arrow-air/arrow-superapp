@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
+import DiscussPin from '../components/DiscussPin.vue';
 import type { NeedBundle } from '../data/backend';
 import { backend, memberById, projectById, state } from '../data/store';
 import { analyzeNeed } from '../lib/analyze';
@@ -69,7 +70,7 @@ const weightTable = computed(() =>
 </script>
 
 <template>
-  <h1>Experiment readout</h1>
+  <h1>Experiment readout <DiscussPin anchor="readout" class="pin-inline" /></h1>
   <p class="muted" style="max-width: 760px">
     This prototype exists to answer three questions with evidence instead of opinion. The numbers below update as people use it.
     With the demo data they only show that the instrument works.

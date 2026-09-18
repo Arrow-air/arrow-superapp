@@ -1,12 +1,17 @@
 <script setup lang="ts">
+import type { AnchorKey } from '../discuss/anchors';
 import type { WeightBreakdown } from '../lib/types';
+import DiscussPin from './DiscussPin.vue';
 
-defineProps<{ breakdown: WeightBreakdown; title?: string }>();
+defineProps<{ breakdown: WeightBreakdown; title?: string; pin?: AnchorKey }>();
 </script>
 
 <template>
   <div class="weight-box">
-    <div class="label">{{ title ?? 'Your vote weight on this need' }}</div>
+    <div class="spread" style="align-items: center; flex-wrap: nowrap">
+      <div class="label">{{ title ?? 'Your vote weight on this need' }}</div>
+      <DiscussPin v-if="pin" :anchor="pin" compact />
+    </div>
     <div class="row" style="margin-top: 6px; align-items: baseline">
       <span class="weight-total">{{ breakdown.total }}</span>
       <span class="muted small">votes</span>

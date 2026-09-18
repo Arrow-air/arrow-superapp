@@ -30,6 +30,16 @@ See `ideas/spec-thread-to-bounty.md`, `ideas/weighted-voting.md`, and `ideas/dec
 
 The **Readout** page counts what matters: how often weighting changed the winner, how often leads overrode the weighted result and why, and how many people took part.
 
+## Discussing the prototype, inside the prototype
+
+Key features carry a dashed **Discuss** pin: the weight formula, the token curve, the role multiplier, builder intent, the crowd-versus-weighted comparison, the lead override, the bounty, and the readout. A pin opens a side drawer with a thread about that exact feature, seeded with the question it raises.
+
+The threads are ordinary [GitHub Discussions](https://github.com/Arrow-air/arrow-superapp/discussions) in this repo, rendered in place by [giscus](https://giscus.app). Sign in with GitHub to reply. Pins and their discussion numbers live in `src/discuss/anchors.ts`.
+
+**One-time setup:** an org admin installs the giscus GitHub app on `Arrow-air/arrow-superapp` at https://github.com/apps/giscus. Until then each pin shows the question and links straight to its discussion on GitHub, so nothing is a dead end.
+
+This is also a small proof of a bigger point, `ideas/discussion-at-the-work.md`: the conversation is stored in one place and rendered next to the thing it is about. The same thread could be rendered beside a part in the CAD viewer.
+
 ## Run it
 
 ```bash
@@ -47,7 +57,7 @@ npm test          # 35 unit tests: weighting, tallies, promotion rules, formatti
 npm run typecheck
 npm run build
 
-# browser walkthrough, 58 checks incl. mobile layout, uses your installed Chrome
+# browser walkthrough, 66 checks incl. mobile layout and discussion pins, uses your installed Chrome
 npm run preview -- --port 4179   # terminal 1
 npm run e2e                      # terminal 2
 ```

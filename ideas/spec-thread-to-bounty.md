@@ -16,5 +16,8 @@ Thread type = need. Replies = candidate specs. Weighted votes plus lead sign-off
 ## Risks and tensions
 Spec quality still needs a competent judge. Small expert hints must be rewardable too, not just full specs.
 
+
+Finding from prototype 1 (2026-09-18): as built, the thread is a destination you travel to, away from the CAD or the board. See `discussion-at-the-work.md`.
+
 ## Open questions
 Q1, Q6, Q7

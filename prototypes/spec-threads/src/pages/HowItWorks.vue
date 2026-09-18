@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import DiscussPin from '../components/DiscussPin.vue';
 import WeightBox from '../components/WeightBox.vue';
 import { state } from '../data/store';
 import { tokens as fmtTokens } from '../lib/format';
@@ -62,7 +63,7 @@ const calc = computed(() => {
           <label class="row" style="cursor: pointer"><input v-model="calcBuilder" type="checkbox" /> Declared intent to build or operate it</label>
         </div>
         <div class="stack">
-          <WeightBox :breakdown="calc" title="This person's vote counts" />
+          <WeightBox :breakdown="calc" title="This person's vote counts" pin="formula" />
           <table class="data">
             <thead><tr><th class="num">$ARROW held</th><th class="num">Token term</th></tr></thead>
             <tbody>
@@ -71,7 +72,7 @@ const calc = computed(() => {
               </tr>
             </tbody>
           </table>
-          <div class="hint">A thousand times the tokens buys about ten times the term, then it caps. That curve is the whole argument about whales.</div>
+          <div class="hint"><DiscussPin anchor="token-curve" class="pin-right" />A thousand times the tokens buys about ten times the term, then it caps. That curve is the whole argument about whales.</div>
         </div>
       </div>
     </section>
@@ -84,9 +85,9 @@ const calc = computed(() => {
           <td><b>tokens</b></td><td>Skin in the game</td>
           <td>Logarithmic in $ARROW held, and capped. A holder with 100 times the tokens gets about 3 times the term, not 100 times. Whales count for more, never for everything.</td>
         </tr>
-        <tr><td><b>expertise</b></td><td>Knowing the subject</td><td>Flat bonus if any of your expertise tags matches any tag on the need. One match or five, same bonus.</td></tr>
-        <tr><td><b>builder</b></td><td>Living with the result</td><td>Flat bonus if you publicly declare you intend to build or operate the thing. Per need.</td></tr>
-        <tr><td><b>role</b></td><td>Accountability</td><td>A multiplier: project lead, core contributor, or member. Set per project, so a Quiver lead is an ordinary member on Spearhead.</td></tr>
+        <tr><td><b>expertise</b></td><td>Knowing the subject</td><td><DiscussPin anchor="expertise" class="pin-right" />Flat bonus if any of your expertise tags matches any tag on the need. One match or five, same bonus.</td></tr>
+        <tr><td><b>builder</b></td><td>Living with the result</td><td><DiscussPin anchor="builder-intent" class="pin-right" />Flat bonus if you publicly declare you intend to build or operate the thing. Per need.</td></tr>
+        <tr><td><b>role</b></td><td>Accountability</td><td><DiscussPin anchor="role-multiplier" class="pin-right" />A multiplier: project lead, core contributor, or member. Set per project, so a Quiver lead is an ordinary member on Spearhead.</td></tr>
       </tbody>
     </table>
 
@@ -119,7 +120,7 @@ const calc = computed(() => {
     </section>
 
     <section>
-      <h2>The lead keeps the final say</h2>
+      <h2>The lead keeps the final say <DiscussPin anchor="lead-override" class="pin-inline" /></h2>
       <p>
         Aircraft are trade-offs and someone has to be opinionated. Only the project lead can promote a spec to a bounty, and the lead
         may promote any spec. If it is not the top weighted spec, the lead has to write down why, and that reasoning is published on the bounty.

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, reactive, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
+import DiscussPin from '../components/DiscussPin.vue';
 import Markdown from '../components/Markdown.vue';
 import PickComparison, { type Pick } from '../components/PickComparison.vue';
 import VoteBar, { type VoterSlice } from '../components/VoteBar.vue';
@@ -221,9 +222,12 @@ const issueUrl = computed(() => {
   </div>
 
   <div v-else>
-    <p class="small"><RouterLink to="/">← All needs</RouterLink></p>
+    <div class="spread" style="align-items: center">
+      <p class="small" style="margin: 0"><RouterLink to="/">← All needs</RouterLink></p>
+      <DiscussPin anchor="where-discussion-lives" label="Should this live next to the CAD?" />
+    </div>
 
-    <div class="row" style="margin-bottom: 8px">
+    <div class="row" style="margin: 10px 0 8px">
       <span class="chip chip-project">{{ project?.name }}</span>
       <span class="chip" :class="isOpen ? 'chip-open' : 'chip-bounty'">{{ isOpen ? 'open' : 'promoted to bounty' }}</span>
       <span v-for="t in bundle.need.tags" :key="t" class="chip">{{ t }}</span>
@@ -248,7 +252,7 @@ const issueUrl = computed(() => {
         <div v-if="bundle.need.promotion" class="card stack">
           <div class="spread">
             <div>
-              <div class="label">Promoted to bounty</div>
+              <div class="label">Promoted to bounty <DiscussPin anchor="bounty" class="pin-inline" /></div>
               <div style="margin-top: 4px">
                 by @{{ memberById.get(bundle.need.promotion.byMemberId)?.handle }} · weighted rank
                 <b>{{ bundle.need.promotion.weightedRankAtPromotion }}</b> · raw rank
@@ -330,6 +334,7 @@ const issueUrl = computed(() => {
                 <!-- Promote panel -->
                 <div v-if="promoting?.id === spec.id" class="card card-subtle stack" style="margin-top: 12px">
                   <div>
+                    <DiscussPin anchor="lead-override" class="pin-right" />
                     <strong>Promote this spec to a bounty?</strong>
                     <div class="small muted">This closes the thread to new specs and votes.</div>
                   </div>
@@ -383,12 +388,13 @@ const issueUrl = computed(() => {
       <!-- Sidebar -->
       <aside class="side stack">
         <template v-if="state.me && myWeight">
-          <WeightBox :breakdown="myWeight" />
+          <WeightBox :breakdown="myWeight" pin="formula" />
           <div class="card">
             <label class="row" style="cursor: pointer; align-items: flex-start; flex-wrap: nowrap">
               <input type="checkbox" :checked="iAmBuilder" :disabled="!isOpen" style="margin-top: 4px" @change="toggleBuilder" />
               <span>
                 <strong>I intend to build or operate this</strong>
+                <DiscussPin anchor="builder-intent" class="pin-inline" compact />
                 <span class="hint" style="display: block">
                   Adds {{ project?.weights.builderBonus }} to your weight on this need. It is public, so people can hold you to it.
                 </span>
@@ -407,7 +413,10 @@ const issueUrl = computed(() => {
         </div>
 
         <div v-if="stakeholders.length" class="card">
-          <div class="label">Who counts for how much here</div>
+          <div class="spread" style="align-items: center; flex-wrap: nowrap">
+            <div class="label">Who counts for how much here</div>
+            <DiscussPin anchor="role-multiplier" compact />
+          </div>
           <ul class="stake-list">
             <li v-for="x in stakeholders" :key="x.id" :class="{ 'stake-me': x.id === state.me?.id }">
               <span class="stake-name">@{{ x.handle }}<span v-if="x.id === state.me?.id" class="muted"> (you)</span></span>

@@ -18,3 +18,4 @@ Numbered so ideas and notes can point at them. Add, don't renumber. Mark answere
 | Q12 | Which pieces do we build and which do we wire together from existing tools? | Thomas journal 9/12 | |
 | Q13 | What is the minimum version to build first? | Thomas, 2026-09-17 | ~54:00 |
 | Q14 | Should we replace Snapshot with our own governance system, or layer on top of it? | Gavin, 2026-09-17 | ~04:35 |
+| Q15 | Should decision threads live in a separate app, or attach to the work itself (CAD part, PCB region, code line) and render wherever that work is shown? What is a stable anchor for each kind of artifact? | Thomas, 2026-09-18 (reviewing prototype 1) | `ideas/discussion-at-the-work.md` |

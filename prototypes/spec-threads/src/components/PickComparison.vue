@@ -2,6 +2,7 @@
 // The experiment's headline for one thread: who wins under one person one vote,
 // who wins under weighting, side by side. Replaces a banner that only said "they disagree".
 import { signed } from '../lib/format';
+import DiscussPin from './DiscussPin.vue';
 
 export interface Pick {
   specId: string;
@@ -17,6 +18,7 @@ defineEmits<{ jump: [specId: string] }>();
 <template>
   <div class="picks" :class="disagree ? 'picks-disagree' : 'picks-agree'">
     <div class="picks-head">
+      <DiscussPin anchor="crowd-vs-weighted" class="pin-right" />
       <strong>{{ disagree ? 'The crowd and the weighting disagree' : 'The crowd and the weighting agree' }}</strong>
       <span v-if="disagree" class="small muted"> This is the case the experiment is about.</span>
     </div>

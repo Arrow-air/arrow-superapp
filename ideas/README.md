@@ -22,3 +22,4 @@ One file per idea, using the template in the root README. Status is the first li
 | `meeting-consensus-ui.md` | seed | Gavin, Thomas |
 | `personal-dashboard.md` | seed | Gavin |
 | `community-solutions.md` | seed | Gavin |
+| `discussion-at-the-work.md` | exploring | Thomas |

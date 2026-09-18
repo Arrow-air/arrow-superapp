@@ -81,7 +81,10 @@ const rows = computed(() =>
         Switch back to Lena. Pick the top spec and it just goes. Pick another and you have to publish why.
       </li>
     </ol>
-    <div class="small muted">Then look at <RouterLink to="/readout">Readout</RouterLink> to see what the experiment measures.</div>
+    <div class="small muted">
+      Then look at <RouterLink to="/readout">Readout</RouterLink> to see what the experiment measures.
+      See a <b>Discuss</b> pin? Click it to argue about that exact feature. Replies are GitHub Discussions, shown right here.
+    </div>
   </section>
 
   <div class="row" style="margin: 18px 0 10px">
