@@ -1,5 +1,7 @@
 # Prototype 1: spec threads → bounty
 
+**Live demo: https://specs.arrowair.com** (demo mode: data stays in your own browser, nothing is shared between visitors)
+
 **The question this tests:** if Arrow decides medium-sized design questions in a weighted public thread, with the project lead keeping the final say, do we get better specs than one lead deciding alone? And does weighting change anything compared with one person one vote?
 
 See `ideas/spec-thread-to-bounty.md`, `ideas/weighted-voting.md`, and `ideas/decision-ladder.md` for where this came from.
@@ -65,6 +67,10 @@ npm run e2e                      # terminal 2
 | `e2e/walkthrough.cjs` | Browser walkthrough |
 
 Stack matches `Arrow-air/flight-tracking`: Vue 3, Vite, TypeScript, Supabase, and the same design tokens.
+
+## Hosting
+
+Deployed on Arrow's Openship as project `spec-threads`, root directory `prototypes/spec-threads`, same setup as flight-tracking. Auto-deploy is on: every push to `main` of this repo rebuilds it, including notes-only pushes, which takes under a minute.
 
 ## Status, honestly
 
