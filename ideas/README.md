@@ -6,11 +6,11 @@ One file per idea, using the template in the root README. Status is the first li
 |---|---|---|
 | `decision-ladder.md` | exploring | Thomas |
 | `single-view-of-arrow.md` | exploring | Thomas, Gavin |
-| `weighted-voting.md` | exploring | Thomas, Gavin |
+| `weighted-voting.md` | prototyping | Thomas, Gavin |
 | `agent-delegates.md` | exploring | Thomas, Gavin |
 | `retro-rewards-reddit-coordinape.md` | exploring | Thomas |
 | `streaming-project-budgets.md` | seed | Thomas |
-| `spec-thread-to-bounty.md` | exploring | Thomas |
+| `spec-thread-to-bounty.md` | prototyping | Thomas |
 | `profiles-and-reputation.md` | exploring | Thomas, Gavin |
 | `contributor-buckets.md` | seed | Gavin |
 | `cad-anchored-discussion.md` | seed | Thomas, Gavin |

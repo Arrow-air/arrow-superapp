@@ -1,5 +1,5 @@
 # Spec thread to bounty
-Status: exploring
+Status: prototyping
 Raised by: Thomas, 2026-09-17 call (~51:00)
 
 ## The idea
@@ -10,6 +10,8 @@ Pre-assigned spec bounties mean doing half the work just to write and assign the
 
 ## How it might work
 Thread type = need. Replies = candidate specs. Weighted votes plus lead sign-off promote a spec to a bounty. Another participant: agents can write the bounty text; humans supply expert direction ('use two CAN buses').
+
+**Prototype:** `prototypes/spec-threads/`. Full flow from need to bounty markdown, with the lead override rationale.
 
 ## Risks and tensions
 Spec quality still needs a competent judge. Small expert hints must be rewardable too, not just full specs.
