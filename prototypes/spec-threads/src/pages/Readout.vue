@@ -98,7 +98,19 @@ const weightTable = computed(() =>
 
     <section>
       <h2>Per need</h2>
-      <div class="table-scroll">
+      <div class="need-cards">
+        <RouterLink v-for="r in rows" :key="r.bundle.need.id" :to="{ name: 'need', params: { id: r.bundle.need.id } }" class="card need-card">
+          <div class="row" style="gap: 6px">
+            <span class="chip chip-project">{{ r.project.name }}</span>
+            <span v-if="r.bundle.specs.length >= 2 && r.a.participants && r.a.weightingChangedWinner" class="chip chip-warn">weighting changed the winner</span>
+            <span v-if="r.a.leadFollowedWeighted === false" class="chip chip-warn">lead overrode</span>
+            <span v-else-if="r.a.leadFollowedWeighted" class="chip chip-open">lead followed weighted</span>
+          </div>
+          <div style="font-weight: 600; margin: 6px 0 4px; color: var(--docs-text)">{{ r.bundle.need.title }}</div>
+          <div class="small muted">{{ r.bundle.specs.length }} specs · {{ r.a.participants }} voters · raw top {{ r.rawTop }} · weighted top {{ r.weightedTop }}</div>
+        </RouterLink>
+      </div>
+      <div class="table-scroll need-table">
         <table class="data">
           <thead>
             <tr>

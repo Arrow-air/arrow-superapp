@@ -1,5 +1,25 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue';
+import WeightBox from '../components/WeightBox.vue';
 import { state } from '../data/store';
+import { tokens as fmtTokens } from '../lib/format';
+import type { Member, Need, Role } from '../lib/types';
+import { DEFAULT_WEIGHTS, tokenTerm, voteWeight } from '../lib/weights';
+
+// Try-it calculator. Same voteWeight() the threads use, so what you see here is what you get there.
+const calcProject = ref('');
+const calcTokens = ref(10_000);
+const calcRole = ref<Role>('member');
+const calcExpert = ref(false);
+const calcBuilder = ref(false);
+const cfg = computed(() => state.projects.find((p) => p.id === calcProject.value)?.weights ?? state.projects[0]?.weights ?? DEFAULT_WEIGHTS);
+const presets = [0, 1_000, 10_000, 100_000, 1_000_000];
+
+const calc = computed(() => {
+  const need = { id: '', projectId: '', title: '', body: '', tags: ['subject'], authorId: '', status: 'open', createdAt: '' } as Need;
+  const member = { id: 'x', handle: 'x', displayName: 'x', tokenBalance: Number(calcTokens.value) || 0, expertise: calcExpert.value ? ['subject'] : [] } as Member;
+  return voteWeight({ member, need, role: calcRole.value, isBuilder: calcBuilder.value, cfg: cfg.value });
+});
 </script>
 
 <template>
@@ -16,6 +36,45 @@ import { state } from '../data/store';
         weight = (base + tokens + expertise + builder) × role
       </div>
     </div>
+
+    <section class="calc">
+      <h2 style="margin-top: 0">Try it</h2>
+      <div class="calc-grid">
+        <div class="stack">
+          <label class="field-row">
+            <span class="label">$ARROW held</span>
+            <input v-model.number="calcTokens" type="number" min="0" step="1000" />
+            <div class="row" style="gap: 6px; margin-top: 6px">
+              <button v-for="n in presets" :key="n" type="button" class="chip chip-btn" :class="{ 'chip-on': calcTokens === n }" @click="calcTokens = n">
+                {{ n >= 1_000_000 ? '1M' : n >= 1000 ? n / 1000 + 'k' : n }}
+              </button>
+            </div>
+          </label>
+          <label class="field-row">
+            <span class="label">Role on this project</span>
+            <select v-model="calcRole" class="field">
+              <option value="member">member</option>
+              <option value="core">core contributor</option>
+              <option value="lead">project lead</option>
+            </select>
+          </label>
+          <label class="row" style="cursor: pointer"><input v-model="calcExpert" type="checkbox" /> Expertise matches the need's subject</label>
+          <label class="row" style="cursor: pointer"><input v-model="calcBuilder" type="checkbox" /> Declared intent to build or operate it</label>
+        </div>
+        <div class="stack">
+          <WeightBox :breakdown="calc" title="This person's vote counts" />
+          <table class="data">
+            <thead><tr><th class="num">$ARROW held</th><th class="num">Token term</th></tr></thead>
+            <tbody>
+              <tr v-for="n in presets" :key="n" :class="{ 'row-on': calcTokens === n }">
+                <td class="num">{{ fmtTokens(n) }}</td><td class="num">{{ tokenTerm(n, cfg) }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="hint">A thousand times the tokens buys about ten times the term, then it caps. That curve is the whole argument about whales.</div>
+        </div>
+      </div>
+    </section>
 
     <table class="data">
       <thead><tr><th>Term</th><th>What it rewards</th><th>How it is computed</th></tr></thead>

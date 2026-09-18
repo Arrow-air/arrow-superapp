@@ -27,12 +27,18 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   await page.waitForSelector('.need-item');
   check('needs list shows 2 seeded needs', (await page.locator('.need-item').count()) === 2);
   check('list flags the disagreement', await page.locator('.need-item .chip-warn').first().isVisible());
+  check('first visit shows the guide', await page.locator('.guide').isVisible());
   await page.screenshot({ path: require('node:path').join(SHOTS, 'spec-threads-1-needs.png') });
 
   // 2. Thread: weighted ordering and divergence banner
   await page.click('text=Attachment interface');
   await page.waitForSelector('.spec');
-  check('divergence banner shown', await page.locator('.signal-diverge').first().isVisible());
+  check('pick comparison shows disagreement', await page.locator('.picks-disagree').isVisible());
+  const picks = await page.locator('.pick-title').allInnerTexts();
+  check('both picks named side by side', picks[0] === 'Go big: one high-power rail' && picks[1].startsWith('Two tiers'), picks.join(' | '));
+  await page.locator('.pick-link').first().click();
+  await page.waitForSelector('.spec.is-flash');
+  check('clicking a pick jumps to and highlights that spec', (await page.locator('.spec.is-flash .spec-meta strong').innerText()) === '@sam-member');
   const firstAuthor = await page.locator('.spec').first().locator('.spec-meta strong').innerText();
   check('top spec by weighted score is the expert\'s', firstAuthor === '@jun-pcb', firstAuthor);
   const w0 = await page.locator('.spec').first().locator('.score-weighted').innerText();
@@ -43,14 +49,26 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   await page.screenshot({ path: require('node:path').join(SHOTS, 'spec-threads-2-thread-lead.png'), fullPage: true });
 
   // 3. Who voted
-  await page.locator('.spec').first().locator('text=who voted').click();
+  check('vote bar has one block per voter', (await page.locator('.spec').first().locator('.votebar .seg').count()) === 3);
+  const bar = await page.locator('.spec').first().locator('.votebar').getAttribute('aria-label');
+  check('vote bar is described for screen readers', /For: 12\.61 from/.test(bar), bar);
+  await page.locator('.spec').first().locator('.rank-line .link-btn').click();
   check('voter chips list weights', (await page.locator('.spec').first().locator('.voter').count()) === 3);
+  check('your own vote is marked in the bar', (await page.locator('.spec').first().locator('.seg-me').count()) === 1);
 
   // 4. Switch persona to newcomer: weight 1, no promote button
   await page.selectOption('.persona select', 'm-ade');
   await page.waitForFunction(() => document.querySelector('.weight-total')?.textContent === '1');
   check('newcomer weight is 1', true);
   check('non-lead sees no promote button', (await page.locator('text=Promote to bounty').count()) === 0);
+  const hint = await page.locator('.spec').first().locator('button[aria-label=Upvote]').getAttribute('title');
+  check('vote button says what your vote counts', hint === 'Upvote · your vote counts 1', hint);
+  // hover bug: an active vote button must keep its white arrow on hover
+  const mine = page.locator('.spec', { hasText: 'Go big' }).locator('button[aria-label=Upvote]');
+  await mine.hover();
+  const arrow = await mine.evaluate((el) => getComputedStyle(el).color);
+  check('active vote keeps white arrow on hover', arrow === 'rgb(255, 255, 255)', arrow);
+  await page.mouse.move(0, 0);
 
   // 5. Newcomer declares builder intent -> weight 2
   await page.locator('aside input[type=checkbox]').check();
@@ -70,6 +88,13 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   await page.fill('textarea', '### Sneaky\n\n<img src=x onerror="window.__xss=1"> <script>window.__xss=1</script> **bold**');
   await page.click('text=Post spec');
   await page.waitForFunction(() => document.querySelectorAll('.spec').length === 4);
+  // An earlier highlight may still be fading, so wait for the highlight on the new spec specifically.
+  const fresh = page.locator('.spec.is-flash', { hasText: 'Sneaky' });
+  await fresh.waitFor();
+  check('posting a spec takes you to it', await fresh.isVisible());
+  const inView = await fresh.evaluate((el) => { const r = el.getBoundingClientRect(); return r.top >= 0 && r.top < window.innerHeight; });
+  check('and scrolls it into view', inView);
+  check('an unvoted spec shows no rank noise', (await fresh.locator('.rank-line').innerText()).trim() === 'No votes yet');
   await page.waitForTimeout(300);
   check('markdown is sanitized (no script ran)', (await page.evaluate(() => window.__xss)) === undefined);
   check('no onerror attribute survives', (await page.locator('.md img[onerror]').count()) === 0);
@@ -86,9 +111,13 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   const maxSpec = page.locator('.spec', { hasText: 'Go big' });
   await maxSpec.locator('text=Promote to bounty').click();
   check('override asks for a rationale', await maxSpec.locator('text=Why this one?').isVisible());
-  await maxSpec.locator('button', { hasText: /^Promote$/ }).click();
-  check('blocked without rationale', await maxSpec.locator('.signal-diverge').isVisible());
+  const go = maxSpec.locator('button', { hasText: /^Promote$/ });
+  check('promote disabled until rationale is long enough', await go.isDisabled());
+  await maxSpec.locator('textarea').fill('too short');
+  check('live counter shows progress', (await maxSpec.locator('[aria-live]').innerText()).trim() === '9 / 20');
+  check('still disabled at 9 characters', await go.isDisabled());
   await maxSpec.locator('textarea').fill('We expect heavy spray rigs to dominate orders next year, so headroom matters more than weight.');
+  check('enabled once rationale is long enough', await go.isEnabled());
   await maxSpec.locator('button', { hasText: /^Promote$/ }).click();
   await page.waitForSelector('.bounty-md');
   check('promotion recorded, bounty generated', (await page.locator('.bounty-md').innerText()).includes('# Bounty: Attachment interface'));
@@ -150,6 +179,45 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   check('no horizontal overflow at 390px', overflow <= 1, 'overflow px: ' + overflow);
   await page.screenshot({ path: require('node:path').join(SHOTS, 'spec-threads-6-mobile.png'), fullPage: true });
+
+  check('mobile: your weight stays in view while voting', false === await page.locator('.mobile-weight').isVisible()); // signed out here
+  await page.selectOption('.persona select', 'm-jun');
+  await page.waitForSelector('.mobile-weight', { state: 'visible' });
+  check('mobile: sticky weight bar shows for a signed-in voter', (await page.locator('.mobile-weight b').innerText()) === '4.28');
+  const barBox = await page.locator('.mobile-weight').boundingBox();
+  check('mobile: weight bar is pinned to the bottom', Math.abs(barBox.y + barBox.height - 844) <= 1, JSON.stringify(barBox));
+  await page.click('nav >> text=Readout');
+  await page.waitForSelector('.need-card');
+  check('mobile: readout uses cards, not a clipped table', (await page.locator('.need-card').first().isVisible()) && !(await page.locator('.need-table').isVisible()));
+  check('mobile: no horizontal overflow on readout', (await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) <= 1);
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.click('nav >> text=How weighting works');
+  await page.waitForSelector('.calc');
+  await page.click('.calc .chip-btn:has-text("10k")');
+  check('calculator: member with 10k tokens', (await page.locator('.calc .weight-total').innerText()) === '2.04');
+  await page.selectOption('.calc select', 'lead');
+  await page.locator('.calc input[type=checkbox]').nth(0).check();
+  await page.locator('.calc input[type=checkbox]').nth(1).check();
+  check('calculator: lead + expert + builder', (await page.locator('.calc .weight-total').innerText()) === '8.08');
+
+  await page.click('nav >> text=Needs');
+  await page.click('text=Attachment interface');
+  await page.waitForSelector('.stake-list li');
+  const top = await page.locator('.stake-list li').first().innerText();
+  check('thread sidebar ranks who counts most here', top.includes('@lena-lead') && top.includes('5.22'), top.replace(/\s+/g, ' '));
+  check('you are marked in that list', (await page.locator('.stake-me').innerText()).includes('(you)'));
+
+  // guide dismissal persists, and reset brings it back
+  await page.click('nav >> text=Needs');
+  await page.click('.guide >> text=Hide this');
+  await page.reload();
+  await page.waitForSelector('.need-item');
+  check('dismissed guide stays dismissed', (await page.locator('.guide').count()) === 0);
+  page.once('dialog', (d) => d.accept());
+  await page.click('text=Reset demo data');
+  await page.waitForSelector('.guide');
+  check('reset brings the guide back', true);
 
   check('no console or page errors', errors.length === 0, errors.slice(0, 3).join(' || '));
   console.log(out.join('\n'));

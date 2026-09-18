@@ -12,6 +12,7 @@ async function switchPersona(e: Event) {
 
 async function resetDemo() {
   if (!confirm('Discard everything you changed in this browser and restore the seeded threads?')) return;
+  try { localStorage.removeItem('arrow-spec-threads-guide-dismissed'); } catch { /* ignore */ }
   await act(() => backend.reset!());
 }
 </script>
@@ -42,15 +43,14 @@ async function resetDemo() {
           <button v-if="!state.me" class="btn btn-on-dark" @click="act(() => backend.signIn())">Sign in with GitHub</button>
           <button v-else class="btn btn-on-dark" @click="act(() => backend.signOut())">Sign out</button>
         </template>
-        <RouterLink v-if="state.me" to="/profile" class="me">@{{ state.me.handle }}</RouterLink>
+        <RouterLink v-if="state.me" to="/profile" class="me" title="Edit this profile">@{{ state.me.handle }}</RouterLink>
       </div>
     </div>
   </header>
 
   <div v-if="isDemo" class="demo-strip">
     <span>
-      <strong>Demo mode.</strong> People, balances, and engineering numbers are illustrative. Changes stay in this browser.
-      Switch persona above to vote as the lead, the expert, or the crowd.
+      <strong>Demo.</strong> Fictional people, illustrative numbers. Your changes stay in this browser.
     </span>
     <button class="link-btn" @click="resetDemo">Reset demo data</button>
   </div>

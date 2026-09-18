@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, nextTick, reactive, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
 import Markdown from '../components/Markdown.vue';
+import PickComparison, { type Pick } from '../components/PickComparison.vue';
+import VoteBar, { type VoterSlice } from '../components/VoteBar.vue';
 import WeightBox from '../components/WeightBox.vue';
 import type { NeedBundle } from '../data/backend';
 import { act, backend, memberById, projectById, state } from '../data/store';
 import { analyzeNeed, roleOf } from '../lib/analyze';
-import { signed, timeAgo } from '../lib/format';
+import { signed, specTitle, timeAgo } from '../lib/format';
 import { MIN_RATIONALE_LENGTH, PromotionError, canPromote, needsRationale, promote } from '../lib/promotion';
 import type { Spec } from '../lib/types';
 
@@ -21,6 +23,7 @@ const promoting = ref<Spec | null>(null);
 const rationale = ref('');
 const promoteError = ref('');
 const copied = ref(false);
+const flashSpec = ref('');
 
 watch(
   [() => props.id, () => state.version],
@@ -67,15 +70,62 @@ const rankedSpecs = computed(() => {
 const myVote = (specId: string) =>
   bundle.value?.votes.find((v) => v.specId === specId && v.memberId === state.me?.id)?.value ?? 0;
 
-const votersOf = (specId: string) =>
+const votersOf = (specId: string): VoterSlice[] =>
   (bundle.value?.votes ?? [])
     .filter((v) => v.specId === specId)
-    .map((v) => ({
-      handle: memberById.value.get(v.memberId)?.handle ?? 'unknown',
-      value: v.value,
-      weight: analysis.value?.weights.get(v.memberId)?.total ?? 1,
-    }))
+    .map((v) => {
+      const w = analysis.value?.weights.get(v.memberId);
+      return {
+        handle: memberById.value.get(v.memberId)?.handle ?? 'unknown',
+        value: v.value,
+        weight: w?.total ?? 1,
+        role: w?.role ?? 'member',
+        isMe: v.memberId === state.me?.id,
+      };
+    })
     .sort((a, b) => b.weight - a.weight);
+
+// One shared scale for every vote bar in the thread, so bars compare by eye.
+const barScaleUp = computed(() => Math.max(0, ...(analysis.value?.tallies ?? []).map((t) => t.weightedUp)));
+const barScaleDown = computed(() => Math.max(0, ...(analysis.value?.tallies ?? []).map((t) => t.weightedDown)));
+
+const picksBy = (rank: 'rawRank' | 'weightedRank', score: 'rawScore' | 'weightedScore'): Pick[] =>
+  rankedSpecs.value
+    .filter(({ tally }) => tally[rank] === 1 && tally.voters > 0)
+    .map(({ spec, tally }) => ({
+      specId: spec.id,
+      title: specTitle(spec.body),
+      author: memberById.value.get(spec.authorId)?.handle ?? 'unknown',
+      score: tally[score],
+    }));
+const rawPicks = computed(() => picksBy('rawRank', 'rawScore'));
+const weightedPicks = computed(() => picksBy('weightedRank', 'weightedScore'));
+
+// Everyone with a stake in this thread (voted, declared, wrote a spec) plus you, by weight.
+const stakeholders = computed(() => {
+  if (!bundle.value || !analysis.value) return [];
+  const ids = new Set<string>([
+    ...bundle.value.votes.map((v) => v.memberId),
+    ...bundle.value.intents.map((i) => i.memberId),
+    ...bundle.value.specs.map((sp) => sp.authorId),
+  ]);
+  if (state.me) ids.add(state.me.id);
+  return [...ids]
+    .map((id) => ({ id, handle: memberById.value.get(id)?.handle ?? 'unknown', w: analysis.value!.weights.get(id) }))
+    .filter((x) => x.w)
+    .sort((a, b) => b.w!.total - a.w!.total);
+});
+const maxStake = computed(() => Math.max(1, ...stakeholders.value.map((x) => x.w!.total)));
+
+async function jumpTo(specId: string) {
+  await nextTick();
+  const el = document.getElementById(`spec-${specId}`);
+  if (!el) return;
+  const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+  flashSpec.value = specId;
+  setTimeout(() => flashSpec.value === specId && (flashSpec.value = ''), 1600);
+}
 
 const commentsOf = (specId: string) => (bundle.value?.comments ?? []).filter((c) => c.specId === specId);
 
@@ -85,7 +135,14 @@ function vote(specId: string, value: 1 | -1) {
 }
 
 async function submitSpec() {
-  if (await act(() => backend.createSpec({ needId: props.id, body: newSpec.value }))) newSpec.value = '';
+  let createdId = '';
+  const ok = await act(async () => {
+    createdId = (await backend.createSpec({ needId: props.id, body: newSpec.value })).id;
+  });
+  if (!ok) return;
+  newSpec.value = '';
+  // A new spec has no votes, so it sorts to the bottom. Take the author to it.
+  setTimeout(() => jumpTo(createdId), 60);
 }
 
 async function submitComment(specId: string) {
@@ -107,6 +164,10 @@ function startPromote(spec: Spec) {
 const promotingNeedsRationale = computed(() =>
   promoting.value && analysis.value ? needsRationale(promoting.value.id, analysis.value.tallies) : false,
 );
+const rationaleLength = computed(() => rationale.value.trim().length);
+const canConfirmPromote = computed(() => !promotingNeedsRationale.value || rationaleLength.value >= MIN_RATIONALE_LENGTH);
+const voteHint = (dir: 'Upvote' | 'Downvote') =>
+  !state.me ? 'Sign in to vote' : !isOpen.value ? 'Voting is closed' : `${dir} · your vote counts ${myWeight.value?.total ?? 1}`;
 
 async function confirmPromote() {
   if (!promoting.value || !bundle.value || !analysis.value || !state.me) return;
@@ -176,16 +237,12 @@ const issueUrl = computed(() => {
       <div class="stack">
         <div class="card card-subtle"><Markdown :source="bundle.need.body" /></div>
 
-        <!-- The experiment's headline signal for this thread -->
-        <div v-if="bundle.specs.length >= 2 && analysis.participants > 0">
-          <div v-if="analysis.weightingChangedWinner" class="signal signal-diverge">
-            <strong>The crowd and the weighting disagree.</strong>
-            One person one vote puts a different spec on top than the weighted tally does. Open “who voted” on each spec to see why.
-          </div>
-          <div v-else class="signal signal-agree">
-            <strong>The crowd and the weighting agree</strong> on the top spec.
-          </div>
-        </div>
+        <!-- The experiment's headline for this thread: the two winners, side by side -->
+        <PickComparison
+          v-if="bundle.specs.length >= 2 && analysis.participants > 0 && rawPicks.length && weightedPicks.length"
+          :raw-picks="rawPicks" :weighted-picks="weightedPicks" :disagree="analysis.weightingChangedWinner"
+          @jump="jumpTo"
+        />
 
         <!-- Promotion result -->
         <div v-if="bundle.need.promotion" class="card stack">
@@ -213,25 +270,26 @@ const issueUrl = computed(() => {
         <h2 style="margin-bottom: 0">{{ bundle.specs.length }} {{ bundle.specs.length === 1 ? 'spec' : 'specs' }}</h2>
         <p v-if="bundle.specs.length === 0" class="muted">No specs yet. Be the first to reply.</p>
 
-        <div>
+        <TransitionGroup name="rank" tag="div" class="spec-list">
           <article
             v-for="{ spec, tally } in rankedSpecs"
+            :id="`spec-${spec.id}`"
             :key="spec.id"
             class="spec"
-            :class="{ 'is-promoted': bundle.need.promotion?.specId === spec.id }"
+            :class="{ 'is-promoted': bundle.need.promotion?.specId === spec.id, 'is-flash': flashSpec === spec.id }"
           >
             <div class="spec-votes">
               <button
                 class="vote" :class="{ 'on-up': myVote(spec.id) === 1 }"
                 :disabled="!state.me || !isOpen" :aria-pressed="myVote(spec.id) === 1"
-                aria-label="Upvote" title="Upvote" @click="vote(spec.id, 1)"
+                aria-label="Upvote" :title="voteHint('Upvote')" @click="vote(spec.id, 1)"
               >▲</button>
               <div class="score-weighted" title="Weighted score">{{ signed(tally.weightedScore) }}</div>
               <div class="score-raw" title="Raw score: one person, one vote">raw {{ signed(tally.rawScore) }}</div>
               <button
                 class="vote" :class="{ 'on-down': myVote(spec.id) === -1 }"
                 :disabled="!state.me || !isOpen" :aria-pressed="myVote(spec.id) === -1"
-                aria-label="Downvote" title="Downvote" @click="vote(spec.id, -1)"
+                aria-label="Downvote" :title="voteHint('Downvote')" @click="vote(spec.id, -1)"
               >▼</button>
             </div>
 
@@ -250,21 +308,22 @@ const issueUrl = computed(() => {
 
               <div class="spec-foot">
                 <div class="spread" style="align-items: center">
-                  <div class="rank-line">
-                    weighted rank <b>{{ tally.weightedRank }}</b> · raw rank <b>{{ tally.rawRank }}</b> ·
-                    {{ tally.voters }} {{ tally.voters === 1 ? 'voter' : 'voters' }}
-                    <template v-if="tally.voters">
-                      · <button class="link-btn" @click="showVoters[spec.id] = !showVoters[spec.id]">
-                        {{ showVoters[spec.id] ? 'hide' : 'who voted' }}
+                  <div v-if="tally.voters" class="rank-block">
+                    <VoteBar :voters="votersOf(spec.id)" :scale-up="barScaleUp" :scale-down="barScaleDown" />
+                    <div class="rank-line">
+                      weighted rank <b>{{ tally.weightedRank }}</b> · raw rank <b>{{ tally.rawRank }}</b> ·
+                      <button class="link-btn" :aria-expanded="!!showVoters[spec.id]" @click="showVoters[spec.id] = !showVoters[spec.id]">
+                        {{ tally.voters }} {{ tally.voters === 1 ? 'voter' : 'voters' }} {{ showVoters[spec.id] ? '▴' : '▾' }}
                       </button>
-                    </template>
+                    </div>
                   </div>
+                  <div v-else class="rank-line">No votes yet</div>
                   <button v-if="iAmLead && isOpen" class="btn btn-ghost" @click="startPromote(spec)">Promote to bounty</button>
                 </div>
 
                 <div v-if="showVoters[spec.id]" class="voters">
                   <span v-for="v in votersOf(spec.id)" :key="v.handle" class="voter" :class="v.value === 1 ? 'up' : 'down'">
-                    {{ v.value === 1 ? '▲' : '▼' }} @{{ v.handle }} × {{ v.weight }}
+                    {{ v.value === 1 ? '▲' : '▼' }} @{{ v.handle }} <span class="voter-role">{{ v.role }}</span> {{ v.weight }}
                   </span>
                 </div>
 
@@ -277,13 +336,17 @@ const issueUrl = computed(() => {
                   <label v-if="promotingNeedsRationale" class="field-row">
                     <span class="label">This is not the top weighted spec. Why this one?</span>
                     <textarea v-model="rationale" style="min-height: 80px; font-family: inherit" />
-                    <div class="hint">
-                      At least {{ MIN_RATIONALE_LENGTH }} characters. Shown publicly on the bounty. You keep the final say; the community gets the reasoning.
+                    <div class="hint spread" style="flex-wrap: nowrap">
+                      <span>Shown publicly on the bounty. You keep the final say; the community gets the reasoning.</span>
+                      <span class="mono" :style="{ color: canConfirmPromote ? 'var(--status-success-text)' : undefined }" aria-live="polite">
+                        {{ rationaleLength }} / {{ MIN_RATIONALE_LENGTH }}
+                      </span>
                     </div>
                   </label>
+                  <div v-else class="small" style="color: var(--status-success-text)">This is the top weighted spec. No rationale needed.</div>
                   <div v-if="promoteError" class="signal signal-diverge">{{ promoteError }}</div>
                   <div class="row">
-                    <button class="btn" @click="confirmPromote">Promote</button>
+                    <button class="btn" :disabled="!canConfirmPromote" @click="confirmPromote">Promote</button>
                     <button class="btn btn-ghost" @click="promoting = null">Cancel</button>
                   </div>
                 </div>
@@ -301,7 +364,7 @@ const issueUrl = computed(() => {
               </div>
             </div>
           </article>
-        </div>
+        </TransitionGroup>
 
         <!-- Reply -->
         <div v-if="isOpen" class="card stack">
@@ -343,14 +406,33 @@ const issueUrl = computed(() => {
           <div v-else class="muted small" style="margin-top: 4px">Nobody yet.</div>
         </div>
 
+        <div v-if="stakeholders.length" class="card">
+          <div class="label">Who counts for how much here</div>
+          <ul class="stake-list">
+            <li v-for="x in stakeholders" :key="x.id" :class="{ 'stake-me': x.id === state.me?.id }">
+              <span class="stake-name">@{{ x.handle }}<span v-if="x.id === state.me?.id" class="muted"> (you)</span></span>
+              <span class="stake-bar"><span :style="{ width: (x.w!.total / maxStake) * 100 + '%' }" /></span>
+              <span class="stake-num mono" :title="`(${x.w!.base} base + ${x.w!.token} tokens + ${x.w!.expertise} expertise + ${x.w!.builder} builder) × ${x.w!.roleMultiplier} ${x.w!.role}`">{{ x.w!.total }}</span>
+            </li>
+          </ul>
+          <div class="hint">Everyone who voted, wrote a spec, or declared intent. Hover a number for its breakdown.</div>
+        </div>
+
         <div class="card small">
           <div class="label">Reading the scores</div>
           <p style="margin: 6px 0 0">
             The big number is the <strong>weighted</strong> score. The small one is <strong>raw</strong>: one person, one vote.
-            Specs sort by weighted score. <RouterLink to="/how">How weighting works</RouterLink>
+            Specs sort by weighted score. Each bar shows who is behind it: one block per voter, sized by their weight, for on the right and against on the left.
+            <RouterLink to="/how">How weighting works</RouterLink>
           </p>
         </div>
       </aside>
+    </div>
+
+    <!-- On narrow screens the sidebar drops below the thread, so keep your weight in view while voting. -->
+    <div v-if="state.me && myWeight && isOpen" class="mobile-weight">
+      <span>Your vote counts <b class="mono">{{ myWeight.total }}</b></span>
+      <span class="muted">{{ myWeight.role }}<template v-if="iAmBuilder"> · builder</template><template v-if="myWeight.matchedTags.length"> · expert</template></span>
     </div>
   </div>
 </template>

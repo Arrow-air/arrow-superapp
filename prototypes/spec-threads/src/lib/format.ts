@@ -17,3 +17,15 @@ export const tokens = (n: number) => n.toLocaleString('en-US');
 export function parseTags(input: string): string[] {
   return [...new Set(input.split(',').map((t) => t.trim().toLowerCase()).filter(Boolean))];
 }
+
+/** A short human title for a spec: its first markdown heading, else its first line. */
+export function specTitle(body: string, max = 70): string {
+  const lines = (body ?? '').split('\n').map((l) => l.trim()).filter(Boolean);
+  const heading = lines.find((l) => /^#{1,6}\s+\S/.test(l));
+  const raw = (heading ?? lines.find((l) => !/^#{1,6}\s*$/.test(l)) ?? '')
+    .replace(/^#{1,6}(\s+|$)/, '')
+    .replace(/^[-*>]\s+/, '')
+    .replace(/[*_`]/g, '')
+    .trim();
+  return raw.length > max ? raw.slice(0, max - 1).trimEnd() + '…' : raw || 'Untitled spec';
+}

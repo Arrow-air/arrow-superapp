@@ -2,13 +2,25 @@
 import { computed, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
 import type { NeedBundle } from '../data/backend';
-import { backend, memberById, projectById, state } from '../data/store';
+import { backend, isDemo, memberById, projectById, state } from '../data/store';
 import { analyzeNeed } from '../lib/analyze';
 import { timeAgo } from '../lib/format';
 
 const bundles = ref<NeedBundle[]>([]);
 const loading = ref(true);
 const filter = ref('');
+
+// First-visit guide. Demo only. Remembered per browser; "Reset demo data" brings it back.
+const GUIDE_KEY = 'arrow-spec-threads-guide-dismissed';
+const readDismissed = () => {
+  try { return localStorage.getItem(GUIDE_KEY) === '1'; } catch { return false; }
+};
+const guideOpen = ref(isDemo && !readDismissed());
+watch(() => state.version, () => { if (isDemo && !readDismissed()) guideOpen.value = true; });
+function dismissGuide() {
+  guideOpen.value = false;
+  try { localStorage.setItem(GUIDE_KEY, '1'); } catch { /* private mode: fine, it just shows again */ }
+}
 
 watch(
   () => state.version,
@@ -48,6 +60,29 @@ const rows = computed(() =>
     </div>
     <RouterLink v-if="state.me" to="/needs/new" class="btn">Post a need</RouterLink>
   </div>
+
+  <section v-if="guideOpen" class="guide" aria-label="How to try this demo">
+    <div class="spread" style="align-items: center">
+      <strong>Three minutes to see the idea</strong>
+      <button class="link-btn small" @click="dismissGuide">Hide this</button>
+    </div>
+    <ol class="guide-steps">
+      <li>
+        <b>Open the power-budget thread.</b>
+        The crowd likes one spec. The expert, the builder, and the lead like another. See both picks side by side.
+        <RouterLink :to="{ name: 'need', params: { id: 'n-power' } }">Open it →</RouterLink>
+      </li>
+      <li>
+        <b>Become someone else and vote.</b>
+        Use <em>Acting as</em> in the top bar. A newcomer's vote counts 1. The lead's counts over 5. Watch the specs re-rank.
+      </li>
+      <li>
+        <b>Be the lead and promote a spec.</b>
+        Switch back to Lena. Pick the top spec and it just goes. Pick another and you have to publish why.
+      </li>
+    </ol>
+    <div class="small muted">Then look at <RouterLink to="/readout">Readout</RouterLink> to see what the experiment measures.</div>
+  </section>
 
   <div class="row" style="margin: 18px 0 10px">
     <span class="label">Project</span>

@@ -24,7 +24,7 @@ See `ideas/spec-thread-to-bounty.md`, `ideas/weighted-voting.md`, and `ideas/dec
    | builder | living with the result | flat bonus if you publicly declare you will build or operate it |
    | role | accountability | multiplier for lead / core / member, set **per project** |
 
-4. Every spec shows its **weighted** score and its **raw** one-person-one-vote score side by side. When the two disagree about the winner, the thread says so.
+4. Every spec shows its **weighted** score and its **raw** one-person-one-vote score side by side, plus a bar with one block per voter sized by their weight, so you can see who is behind a score. When the two tallies disagree about the winner, the thread puts both picks side by side at the top. A sidebar lists who counts for how much on that need.
 5. The **project lead promotes** one spec to a bounty. The lead can pick any spec. If it is not the weighted top, the lead must write down why, and that rationale is published on the bounty.
 6. Promotion closes the thread and generates bounty markdown, with a one-click link to open it as an issue in `Arrow-air/grant-and-bounties`.
 
@@ -43,11 +43,11 @@ It starts in **demo mode**: no server, no accounts. Data lives in your browser a
 Everything in the seed is illustrative. The people are made up and the engineering numbers are placeholders, not Quiver specifications.
 
 ```bash
-npm test          # 28 unit tests: weighting, tallies, promotion rules, demo backend flow
+npm test          # 35 unit tests: weighting, tallies, promotion rules, formatting, demo backend flow
 npm run typecheck
 npm run build
 
-# browser walkthrough, 33 checks, uses your installed Chrome
+# browser walkthrough, 58 checks incl. mobile layout, uses your installed Chrome
 npm run preview -- --port 4179   # terminal 1
 npm run e2e                      # terminal 2
 ```
