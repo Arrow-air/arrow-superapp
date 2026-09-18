@@ -4,7 +4,7 @@ Throwaway builds. One folder per experiment. Each folder's README states the que
 
 | Prototype | Question it tests | Status |
 |---|---|---|
-| [`spec-threads/`](spec-threads/) · [live](https://specs.arrowair.com) | Do weighted public spec threads, with the lead keeping the final say, beat one lead deciding alone? Does weighting change outcomes vs. one person one vote? | Demo mode works and is tested. Supabase backend written, not yet run. Needs a real decision to run on. |
+| [`spec-threads/`](spec-threads/) · [live](https://specs.arrowair.com) | Do weighted public spec threads, with the lead keeping the final say, beat one lead deciding alone? Does weighting change outcomes vs. one person one vote? | Demo mode works and is tested. Supabase backend written, not yet run. Needs a real decision to run on. Next: [`ROADMAP.md`](spec-threads/ROADMAP.md), building it into a full conversation tool. |
 
 ## Candidates not yet built
 
