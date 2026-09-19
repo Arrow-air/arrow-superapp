@@ -1,0 +1,3986 @@
+{
+ "generatedAt": "2026-09-19T04:42:37.962Z",
+ "sources": {
+  "repo": "https://github.com/Arrow-air/project-quiver",
+  "bomConfig": "Dev-Kit",
+  "bomDate": "2026-06-12",
+  "bomTitle": "Quiver Dev-Kit Bill of Materials"
+ },
+ "bom": [
+  {
+   "category": "1000",
+   "name": "Airframe Structure",
+   "items": [
+    {
+     "id": "1111",
+     "name": "Upper Plate",
+     "qty": 1,
+     "sourcing": "laser-cut",
+     "material": "Aluminum",
+     "spec": "1 mm sheet",
+     "unitCostUsd": 26,
+     "designRef": "src/quiver/airframe_structure/plates/steps/1111_upper_plate.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "RapidDirect",
+       "partNumber": null,
+       "url": "https://www.rapiddirect.com/",
+       "note": "reference service; any shop meeting the spec is acceptable"
+      }
+     ]
+    },
+    {
+     "id": "1112",
+     "name": "Middle Plate",
+     "qty": 1,
+     "sourcing": "laser-cut",
+     "material": "Aluminum",
+     "spec": "1 mm sheet",
+     "unitCostUsd": 26,
+     "designRef": "src/quiver/airframe_structure/plates/steps/1112_middle_plate.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "RapidDirect",
+       "partNumber": null,
+       "url": "https://www.rapiddirect.com/",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "1113",
+     "name": "Lower Plate",
+     "qty": 1,
+     "sourcing": "laser-cut",
+     "material": "Aluminum",
+     "spec": "1 mm sheet",
+     "unitCostUsd": 47,
+     "designRef": "src/quiver/airframe_structure/plates/steps/1113_lower_plate.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "RapidDirect",
+       "partNumber": null,
+       "url": "https://www.rapiddirect.com/",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "1211",
+     "name": "Cockpit Support Beam, CW Long",
+     "qty": 1,
+     "sourcing": "laser-cut",
+     "material": "Aluminum",
+     "spec": "40x40x2 mm box section",
+     "unitCostUsd": 43,
+     "designRef": "src/quiver/airframe_structure/beams/steps/1211_cw_long.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "RapidDirect",
+       "partNumber": null,
+       "url": "https://www.rapiddirect.com/",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "1212",
+     "name": "Cockpit Support Beam, CCW Back",
+     "qty": 2,
+     "sourcing": "laser-cut",
+     "material": "Aluminum",
+     "spec": "40x40x2 mm box section",
+     "unitCostUsd": 27,
+     "designRef": "src/quiver/airframe_structure/beams/steps/1212_ccw_back.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "RapidDirect",
+       "partNumber": null,
+       "url": "https://www.rapiddirect.com/",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "1221",
+     "name": "Battery Wall",
+     "qty": 2,
+     "sourcing": "laser-cut",
+     "material": "Aluminum",
+     "spec": null,
+     "unitCostUsd": 49,
+     "designRef": "src/quiver/airframe_structure/beams/steps/1221_battery_wall.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "RapidDirect",
+       "partNumber": null,
+       "url": "https://www.rapiddirect.com/",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "1310",
+     "name": "Landing Gear Vertical Tube",
+     "qty": 4,
+     "sourcing": "cut-to-length",
+     "material": "Carbon fiber 3K",
+     "spec": "30x28 mm tube; see landing_gear assembly for cut length",
+     "unitCostUsd": 45,
+     "designRef": "src/quiver/airframe_structure/landing_gear/assembly.py",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "RJXHobby",
+       "partNumber": null,
+       "url": "https://www.rjxhobby.com/carbon-fiber/carbon-fiber-tube/rjx-1pcs-colored-3k-carbon-fiber-tube-1000mm-od-21-30mm",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "1320",
+     "name": "Landing Gear Horizontal Tube",
+     "qty": 2,
+     "sourcing": "cut-to-length",
+     "material": "Carbon fiber 3K",
+     "spec": "30x28 mm tube; see landing_gear assembly for cut length",
+     "unitCostUsd": 45,
+     "designRef": "src/quiver/airframe_structure/landing_gear/assembly.py",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "RJXHobby",
+       "partNumber": null,
+       "url": "https://www.rjxhobby.com/carbon-fiber/carbon-fiber-tube/rjx-1pcs-colored-3k-carbon-fiber-tube-1000mm-od-21-30mm",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "1330",
+     "name": "Landing Gear Main Adapter",
+     "qty": 4,
+     "sourcing": "cots",
+     "material": null,
+     "spec": "30 mm tube quick-release tilt seat",
+     "unitCostUsd": 30,
+     "designRef": "src/quiver/airframe_structure/landing_gear/steps/vendor/1330_main_adapter.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "RJXHobby",
+       "partNumber": null,
+       "url": "https://www.rjxhobby.com/rjx-1pcs-20mm-quick-release-tripod-aluminum-tilt-fixed-seat-landing-gear-connector-1",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "1340",
+     "name": "Landing Gear Tube Joint",
+     "qty": 4,
+     "sourcing": "cots",
+     "material": null,
+     "spec": "30 mm",
+     "unitCostUsd": 13.99,
+     "designRef": "src/quiver/airframe_structure/landing_gear/steps/1340_tube_joint.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "INNLOI",
+       "partNumber": null,
+       "url": "https://www.innloi.com/productinfo/448455.html",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "1350",
+     "name": "Landing Gear Foam Wrap",
+     "qty": 4,
+     "sourcing": "cots",
+     "material": "EPP foam",
+     "spec": null,
+     "unitCostUsd": 14,
+     "designRef": "src/quiver/airframe_structure/landing_gear/assembly.py",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Amazon",
+       "partNumber": null,
+       "url": "https://a.co/d/ggzWXc4",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "1411",
+     "name": "Foldable Motor Arm Connector",
+     "qty": 4,
+     "sourcing": "cots",
+     "material": null,
+     "spec": "30 mm tube option",
+     "unitCostUsd": 25,
+     "designRef": "src/quiver/airframe_structure/motor_arm/steps/vendor/1411_arm_connector.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Alibaba",
+       "partNumber": null,
+       "url": "https://www.alibaba.com/product-detail/30-40mm-Folding-arm-tube-Drone_1600762096177.html",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "1412",
+     "name": "Motor Arm Tube",
+     "qty": 4,
+     "sourcing": "cut-to-length",
+     "material": "Carbon fiber 3K",
+     "spec": "30x28 mm tube, cut to 360 mm",
+     "unitCostUsd": 45,
+     "designRef": "src/quiver/airframe_structure/motor_arm/assembly.py",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "RJXHobby",
+       "partNumber": null,
+       "url": "https://www.rjxhobby.com/carbon-fiber/carbon-fiber-tube/rjx-1pcs-colored-3k-carbon-fiber-tube-1000mm-od-21-30mm",
+       "note": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "category": "2000",
+   "name": "Supporting Structure",
+   "items": [
+    {
+     "id": "2111",
+     "name": "Attachment Interface Spacer, Left/Right",
+     "qty": 2,
+     "sourcing": "3d-print",
+     "material": "PETG-CF",
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "src/quiver/supporting_structure/attachment_interface/steps/2111_attach_spacer.step",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "2112",
+     "name": "Quick-Release Interface Plate",
+     "qty": 3,
+     "sourcing": "cots",
+     "material": "Aluminum",
+     "spec": null,
+     "unitCostUsd": 34,
+     "designRef": "src/quiver/supporting_structure/attachment_interface/steps/2112_attach_plate.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Alibaba",
+       "partNumber": null,
+       "url": "https://www.alibaba.com/product-detail/Quick-Release-Clip-Plate-Clamp-Quick_1600982145247.html",
+       "note": "order the variant without the PCB board"
+      }
+     ]
+    },
+    {
+     "id": "2131",
+     "name": "Attachment Interface Spacer, Bottom",
+     "qty": 1,
+     "sourcing": "3d-print",
+     "material": "PETG-CF",
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "src/quiver/supporting_structure/attachment_interface/steps/2131_attach_spacer_bottom.step",
+     "notes": "Has a wiring notch the left/right spacer does not.",
+     "suppliers": []
+    },
+    {
+     "id": "2211",
+     "name": "Battery Slider",
+     "qty": 2,
+     "sourcing": "3d-print",
+     "material": "PETG-CF",
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "src/quiver/supporting_structure/battery_slider/steps/2211_battery_slider.step",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "2311",
+     "name": "Main PCB Mount",
+     "qty": 1,
+     "sourcing": "3d-print",
+     "material": "PETG-CF",
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "src/quiver/supporting_structure/equipment_mount/steps/2311_main_pcb_mount.step",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "2312",
+     "name": "BC PCB Mount",
+     "qty": 1,
+     "sourcing": "3d-print",
+     "material": "PETG-CF",
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "src/quiver/supporting_structure/equipment_mount/steps/2312_bc_pcb_mount.step",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "2313",
+     "name": "BC PCB Cover",
+     "qty": 1,
+     "sourcing": "3d-print",
+     "material": "PETG-CF",
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "src/quiver/supporting_structure/equipment_mount/steps/2313_bc_pcb_cover.step",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "2321",
+     "name": "Altitude Sensor Mount",
+     "qty": 1,
+     "sourcing": "3d-print",
+     "material": "PETG-CF",
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "src/quiver/supporting_structure/equipment_mount/steps/2321_altitude_sensor_mount.step",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "2331",
+     "name": "GNSS Mount Base",
+     "qty": 1,
+     "sourcing": "3d-print",
+     "material": "PETG-CF",
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "src/quiver/supporting_structure/equipment_mount/steps/2331_gnss_mount_base.step",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "2332",
+     "name": "GNSS Mount Clamp",
+     "qty": 1,
+     "sourcing": "3d-print",
+     "material": "PETG-CF",
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "src/quiver/supporting_structure/equipment_mount/steps/2332_gnss_mount_clamp.step",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "2341",
+     "name": "PPP Adapter and Beacon Mount",
+     "qty": 1,
+     "sourcing": "3d-print",
+     "material": "PETG-CF",
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "src/quiver/supporting_structure/equipment_mount/steps/2341_ppp_beacon_mount.step",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "2411",
+     "name": "Main Enclosure",
+     "qty": 1,
+     "sourcing": "3d-print",
+     "material": "PETG-CF",
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "src/quiver/supporting_structure/cockpit_enclosure/steps/2411_main_enclosure.step",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "2412",
+     "name": "Enclosure Top Cap",
+     "qty": 1,
+     "sourcing": "3d-print",
+     "material": "PETG-CF",
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "src/quiver/supporting_structure/cockpit_enclosure/steps/2412_enclosure_top_cap.step",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "2420",
+     "name": "Enclosure Hinge",
+     "qty": 2,
+     "sourcing": "cots",
+     "material": "Zinc die-cast",
+     "spec": null,
+     "unitCostUsd": 10,
+     "designRef": "src/quiver/supporting_structure/cockpit_enclosure/steps/2420_hinge.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "JW Winco",
+       "partNumber": "GN 237-ZD-30-30-A-SW",
+       "url": "https://www.jwwinco.com/en-us/products/3.3-Hinging-latching-locking-of-doors-and-covers/Hinges/GN-237-Zinc-Die-Cast-or-Aluminum-Hinges-Countersunk-Thru-Holes-or-Threaded-Stud-Type",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "2430",
+     "name": "Enclosure Latch",
+     "qty": 2,
+     "sourcing": "cots",
+     "material": "Steel",
+     "spec": null,
+     "unitCostUsd": 10.42,
+     "designRef": "src/quiver/supporting_structure/cockpit_enclosure/steps/2430_latch.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "McMaster-Carr",
+       "partNumber": "6082A11",
+       "url": "https://www.mcmaster.com/6082A11/",
+       "note": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "category": "3000",
+   "name": "Equipment",
+   "items": [
+    {
+     "id": "3111",
+     "name": "Motor + ESC, Hobbywing XRotor X6 Plus",
+     "qty": 4,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 120,
+     "designRef": "src/quiver/equipment/propulsion/steps/vendor/3111_motor.step",
+     "notes": "Propellers are ordered separately (3112/3122).",
+     "suppliers": [
+      {
+       "name": "Hobbywing",
+       "partNumber": "XRotor X6 Plus G2",
+       "url": "https://www.hobbywing.com/en/products/x6-plus-g2",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3112",
+     "name": "Propeller, Hobbywing MFP 24x8.0, CW",
+     "qty": 2,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 20,
+     "designRef": "src/quiver/equipment/propulsion/steps/vendor/3112_propeller.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Hobbywing",
+       "partNumber": "MFP 24x8.0 CW",
+       "url": "https://www.hobbywing.com/en/products/mfp-24x80",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3122",
+     "name": "Propeller, Hobbywing MFP 24x8.0, CCW",
+     "qty": 2,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 20,
+     "designRef": "src/quiver/equipment/propulsion/steps/vendor/3122_propeller.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Hobbywing",
+       "partNumber": "MFP 24x8.0 CCW",
+       "url": "https://www.hobbywing.com/en/products/mfp-24x80",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3201",
+     "name": "PPP Adapter, CubePilot CubeNode ETH",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 121.98,
+     "designRef": "src/quiver/equipment/peripheral/steps/vendor/3201_ppp_adapter.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "IR-LOCK (CubePilot)",
+       "partNumber": null,
+       "url": "https://irlock.com/products/cube-node-eth?variant=42727353122867",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3202",
+     "name": "Remote ID Module, DroneBeacon db201",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 54,
+     "designRef": "src/quiver/equipment/peripheral/steps/vendor/3202_drone_beacon.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "DroneScout (DroneBeacon)",
+       "partNumber": "db201",
+       "url": "https://dronescout.co/product/dronebeacon-mavlink-db201-transponder/",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3210",
+     "name": "Obstacle Avoidance LiDAR, RPLidar S2L",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 380,
+     "designRef": "src/quiver/equipment/peripheral/steps/vendor/3210_oa_lidar.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "DFRobot",
+       "partNumber": null,
+       "url": "https://www.dfrobot.com/product-2617.html",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3220",
+     "name": "Radar Altimeter, Nanoradar NRA15",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 240,
+     "designRef": "src/quiver/equipment/peripheral/steps/vendor/3220_radar_altimeter.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Nanoradar",
+       "partNumber": "NRA15",
+       "url": "https://www.nanoradar.com/Products_1/4.html",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3230",
+     "name": "Telemetry Antenna, Front",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "src/quiver/equipment/peripheral/steps/vendor/3230_front_telemetry.step",
+     "notes": "Supplied with the SIYI HM30 Standard Combo (3280).",
+     "suppliers": []
+    },
+    {
+     "id": "3240",
+     "name": "Telemetry Antenna, Rear",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "src/quiver/equipment/peripheral/steps/vendor/3240_rear_telemetry.step",
+     "notes": "Supplied with the SIYI HM30 Standard Combo (3280).",
+     "suppliers": []
+    },
+    {
+     "id": "3250",
+     "name": "GNSS Module, Primary",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 288,
+     "designRef": "src/quiver/equipment/peripheral/steps/vendor/3250_gnss_wren_mini.step",
+     "notes": "Either listed module is acceptable. The CAD model still shows the retired Wren Mini; update the STEP on the next CAD export.",
+     "suppliers": [
+      {
+       "name": "IR-LOCK (CubePilot)",
+       "partNumber": "Here4",
+       "url": "https://irlock.com/products/here4-multiband-rtk-gnss",
+       "note": null
+      },
+      {
+       "name": "Holybro",
+       "partNumber": "H-RTK F9P (DroneCAN)",
+       "url": "https://holybro.com/",
+       "note": "equally acceptable alternative to the Here4"
+      }
+     ]
+    },
+    {
+     "id": "3251",
+     "name": "GNSS Module, Backup, Mateksys M9N-G4-3100",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 125,
+     "designRef": null,
+     "notes": "DroneCAN. Not in the CAD model.",
+     "suppliers": [
+      {
+       "name": "Mateksys",
+       "partNumber": "M9N-G4-3100",
+       "url": "https://www.mateksys.com/?portfolio=m9n-g4-3100",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3260",
+     "name": "Power Switch, E-Switch PVHC4F23SS344",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 16,
+     "designRef": "src/quiver/equipment/peripheral/steps/vendor/3260_power_switch.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Digi-Key",
+       "partNumber": "PVHC4F23SS344",
+       "url": "https://www.digikey.com/en/products/detail/e-switch/PVHC4F23SS344/24614861",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3270",
+     "name": "Gimbal Camera, SIYI A8 mini",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 251.63,
+     "designRef": "src/quiver/equipment/peripheral/steps/vendor/3270_camera.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "SIYI",
+       "partNumber": null,
+       "url": "https://shop.siyi.biz/products/siyi-a8-mini-gimbal-camera",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3280",
+     "name": "Telemetry / FPV System, SIYI HM30",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 282.04,
+     "designRef": "src/quiver/equipment/peripheral/steps/vendor/3280_telemetry.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "SIYI",
+       "partNumber": "HM30 Standard Combo",
+       "url": "https://shop.siyi.biz/products/siyi-hm30-digital-image-transmission?VariantsId=10748",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3290",
+     "name": "Obstacle Avoidance Radar, Nanoradar MR82",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 285,
+     "designRef": "src/quiver/equipment/peripheral/steps/vendor/3290_oa_radar.step",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Nanoradar",
+       "partNumber": "MR82",
+       "url": "https://www.nanoradar.com/Products_1/7.html",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3310",
+     "name": "Main PCB, assembled",
+     "qty": 1,
+     "sourcing": "pcb-assembly",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 400,
+     "designRef": "src/pcb/main_pcb/",
+     "notes": "Order via JLCPCB or similar using the KiCad production files; see the Main PCB Assembly Guide.",
+     "suppliers": []
+    },
+    {
+     "id": "3312",
+     "name": "Companion Computer, Raspberry Pi 5",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": "8 GB RAM",
+     "unitCostUsd": 200,
+     "designRef": null,
+     "notes": "Mounts on the Main PCB; not a separate CAD part.",
+     "suppliers": [
+      {
+       "name": "Raspberry Pi",
+       "partNumber": null,
+       "url": "https://www.raspberrypi.com/products/raspberry-pi-5/",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3313",
+     "name": "Ethernet Switch, BotBlox GigaBlox Nano",
+     "qty": 2,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 95.67,
+     "designRef": null,
+     "notes": "Mounts on the Main PCB; not a separate CAD part.",
+     "suppliers": [
+      {
+       "name": "BotBlox",
+       "partNumber": null,
+       "url": "https://botblox.io/products/micro-gigabit-ethernet-switch",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3320",
+     "name": "Battery Connector PCB, assembled",
+     "qty": 1,
+     "sourcing": "pcb-assembly",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 83,
+     "designRef": "src/pcb/battery_pcb/",
+     "notes": "Order via JLCPCB or similar using the KiCad production files; see the BC PCB Assembly Guide.",
+     "suppliers": []
+    },
+    {
+     "id": "3324",
+     "name": "BC PCB Heatsink, 5 mm",
+     "qty": 1,
+     "sourcing": "laser-cut",
+     "material": "Aluminum",
+     "spec": "5 mm plate, 116 x 16 mm; the 5 mm variant supersedes the earlier 4 mm one",
+     "unitCostUsd": 16,
+     "designRef": "src/manufacturing/3324_bc_pcb_heatsink.step",
+     "notes": "Thermally couples the BC PCB to the chassis; install with thermal paste (CONS-007). Not in the CAD assembly model.",
+     "suppliers": [
+      {
+       "name": "RapidDirect",
+       "partNumber": null,
+       "url": "https://www.rapiddirect.com/",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3330",
+     "name": "Flight Controller PCB, assembled",
+     "qty": 1,
+     "sourcing": "pcb-assembly",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 25,
+     "designRef": "src/pcb/fc_pcb/",
+     "notes": "Adapter board; stacks on the Main PCB. Not a separate CAD part.",
+     "suppliers": []
+    },
+    {
+     "id": "3331",
+     "name": "Attachment Interface PCB, assembled",
+     "qty": 3,
+     "sourcing": "pcb-assembly",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 10,
+     "designRef": "src/pcb/attach_pcb/",
+     "notes": "One per attachment interface (right, left, bottom).",
+     "suppliers": []
+    },
+    {
+     "id": "3332",
+     "name": "Flight Controller, Holybro Pix32 v6",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 296,
+     "designRef": null,
+     "notes": "Mounts on the FC PCB; not a separate CAD part.",
+     "suppliers": [
+      {
+       "name": "Holybro",
+       "partNumber": null,
+       "url": "https://holybro.com/products/pix32-v6?variant=43020083527869",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3410",
+     "name": "Battery, Tattu 4.0 14S 30000 mAh",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 735,
+     "designRef": "src/quiver/equipment/battery/steps/vendor/3410_battery.step",
+     "notes": "Smart battery with CAN telemetry.",
+     "suppliers": [
+      {
+       "name": "Tattu",
+       "partNumber": "Tattu 4.0 14S 30000 mAh",
+       "url": null,
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "3501",
+     "name": "Remote Control Transmitter",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 150,
+     "designRef": null,
+     "notes": "Builder's choice — any transmitter compatible with the chosen receiver and ELRS/EdgeTX-class link works. The team flies a RadioMaster Boxer.",
+     "suppliers": [
+      {
+       "name": "RadioMaster",
+       "partNumber": "Boxer",
+       "url": "https://www.radiomasterrc.com/products/boxer-radio-controller-m2",
+       "note": "reference example; no model is formally specified"
+      }
+     ]
+    },
+    {
+     "id": "3510",
+     "name": "Transport Case, Nanuk 976",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 600,
+     "designRef": null,
+     "notes": "Foam cut profiles for the case insert are in task-grant-bounty/Dev-Kit/data/ (Foam_1.dxf, Foam_2.dxf).",
+     "suppliers": [
+      {
+       "name": "Nanuk",
+       "partNumber": "976",
+       "url": "https://nanuk.com/products/nanuk-976",
+       "note": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "category": "4000",
+   "name": "Harness",
+   "items": [
+    {
+     "id": "4010",
+     "name": "Busbar Pair, Positive + Negative",
+     "qty": 2,
+     "sourcing": "laser-cut",
+     "material": "Copper",
+     "spec": null,
+     "unitCostUsd": 30.74,
+     "designRef": "src/quiver/harness/steps/",
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "RapidDirect",
+       "partNumber": null,
+       "url": "https://www.rapiddirect.com/",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "HAR-0001",
+     "name": "Harness, Pushbutton",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0002",
+     "name": "Harness, BC PCB Signal",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0003",
+     "name": "Harness, BC PCB SSR",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0004",
+     "name": "Harness, ESC Power FR",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0005",
+     "name": "Harness, ESC Power FL",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0006",
+     "name": "Harness, ESC Power BR",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0007",
+     "name": "Harness, ESC Power BL",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0008",
+     "name": "Harness, ESC Signal FR",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0009",
+     "name": "Harness, ESC Signal FL",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0010",
+     "name": "Harness, ESC Signal BR",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0011",
+     "name": "Harness, ESC Signal BL",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0012",
+     "name": "Harness, Side Payload Right",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0013",
+     "name": "Harness, Side Payload Left",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0014",
+     "name": "Harness, Bottom Payload",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0015",
+     "name": "Harness, Altimeter",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0016",
+     "name": "Harness, 360 LiDAR",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0017",
+     "name": "Harness, Front Radar",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0018",
+     "name": "Harness, HM30 Power",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0019",
+     "name": "Harness, HM30 Signal A",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0020",
+     "name": "Harness, HM30 Signal B",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0021",
+     "name": "Harness, Navigation Primary GNSS",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0022",
+     "name": "Harness, Navigation Backup GNSS",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0023",
+     "name": "Harness, PPP2ETH A",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0024",
+     "name": "Harness, PPP2ETH B",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0025",
+     "name": "Harness, PPP2ETH C",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0026",
+     "name": "Harness, Remote ID",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0027",
+     "name": "Harness, SIYI Camera",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HAR-0028",
+     "name": "Harness, Antenna",
+     "qty": 1,
+     "sourcing": "harness",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": "docs/Manufacturing/Harness-Manufacturing-Guide.mdx",
+     "notes": null,
+     "suppliers": []
+    },
+    {
+     "id": "HSUP-001",
+     "name": "XT30 Male Connector, Amass XT30U-M",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 0.83,
+     "designRef": null,
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "TME",
+       "partNumber": "XT30U-M",
+       "url": "https://www.tme.com/us/en-us/details/xt30u-m/dc-power-connectors/amass/",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "HSUP-002",
+     "name": "XT60 Male Connector, Amass XT60U-M",
+     "qty": 4,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 0.7,
+     "designRef": null,
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "TME",
+       "partNumber": "XT60U-M",
+       "url": "https://www.tme.com/us/en-us/details/xt60u-m/dc-power-connectors/amass/",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "HSUP-003",
+     "name": "Pluggable Terminal Block, Phoenix PTSM 0,5/2-P-2,5 WH",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": null,
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Mouser",
+       "partNumber": "1704853",
+       "url": "https://mou.sr/3TUNxPr",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "HSUP-004",
+     "name": "Pluggable Terminal Block, Phoenix PTSM 0,5/4-P-2,5 WH",
+     "qty": 18,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": null,
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Mouser",
+       "partNumber": "1704857",
+       "url": "https://mou.sr/4bSpp8f",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "HSUP-005",
+     "name": "Pluggable Terminal Block, Phoenix PTSM 0,5/5-P-2,5 WH",
+     "qty": 5,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": null,
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Mouser",
+       "partNumber": "1704858",
+       "url": "https://mou.sr/4nxik2l",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "HSUP-006",
+     "name": "Pluggable Terminal Block, Phoenix PTSM 0,5/6-P-2,5 WH",
+     "qty": 5,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": null,
+     "designRef": null,
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Mouser",
+       "partNumber": "1704859",
+       "url": "https://mou.sr/44ach9V",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "HSUP-007",
+     "name": "Hook-Up Wire Kit, 26 AWG PTFE, 10 colors",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": "15 feet per color",
+     "unitCostUsd": null,
+     "designRef": null,
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Remington Industries",
+       "partNumber": null,
+       "url": "https://www.remingtonindustries.com/hook-up-wire/custom-hook-up-wire-26-awg-ptfe-stranded-kit-2-spool-sizes-available-choose-10-colors/",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "HSUP-008",
+     "name": "Molex 12-Pin Connector, 207760-1281",
+     "qty": 6,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 1.51,
+     "designRef": null,
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Mouser",
+       "partNumber": "207760-1281",
+       "url": "https://www.mouser.com/ProductDetail/Molex/207760-1281",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "HSUP-009",
+     "name": "Molex MLP Receptacle Housing, 204523-1201, 12 circuits",
+     "qty": 6,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 0.42,
+     "designRef": null,
+     "notes": "Cable-side connector; does not go on the PCB.",
+     "suppliers": [
+      {
+       "name": "Mouser",
+       "partNumber": "204523-1201",
+       "url": "https://www.mouser.com/ProductDetail/Molex/204523-1201",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "HSUP-010",
+     "name": "Spring-Loaded Connector, Mill-Max 813-22-010-30-000101",
+     "qty": 6,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 8.6,
+     "designRef": null,
+     "notes": "Can populate with just one.",
+     "suppliers": [
+      {
+       "name": "Mouser",
+       "partNumber": "813-22-010-30-000101",
+       "url": "https://www.mouser.com/ProductDetail/Mill-Max/813-22-010-30-000101",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "HSUP-011",
+     "name": "SLC Target Connector, Mill-Max 419-10-210-30-054000",
+     "qty": 6,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 3.63,
+     "designRef": null,
+     "notes": "Can populate with just one.",
+     "suppliers": [
+      {
+       "name": "Mouser",
+       "partNumber": "419-10-210-30-054000",
+       "url": "https://www.mouser.com/ProductDetail/Mill-Max/419-10-210-30-054000",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "HSUP-012",
+     "name": "Attachment Interface Cable, Molex 79758-1149",
+     "qty": 50,
+     "sourcing": "cots",
+     "material": null,
+     "spec": null,
+     "unitCostUsd": 1.29,
+     "designRef": null,
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Mouser",
+       "partNumber": "79758-1149",
+       "url": "https://www.mouser.com/ProductDetail/Molex/79758-1149",
+       "note": null
+      }
+     ]
+    },
+    {
+     "id": "HSUP-013",
+     "name": "JST GH Pre-Made Cable Assortment",
+     "qty": 1,
+     "sourcing": "cots",
+     "material": null,
+     "spec": "kit covering positions 3, 4, 5, 6, 9",
+     "unitCostUsd": null,
+     "designRef": null,
+     "notes": null,
+     "suppliers": [
+      {
+       "name": "Amazon",
+       "partNumber": null,
+       "url": "https://www.amazon.com/dp/B07PBHN7TM",
+       "note": "reference kit; an equivalent AliExpress assortment is acceptable"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "T-01",
+   "number": 248,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/248",
+   "title": "Battery failsafe posture, review and approve the BMS capacity based values (yes or no)",
+   "state": "OPEN",
+   "claimable": false,
+   "fundingLabel": "fund-QGB-FLEX",
+   "priceText": "$75",
+   "priceUsd": 75,
+   "fundingText": "QGB-FLEX (open task pool)",
+   "owner": "Julius",
+   "deadline": "2026-09-30",
+   "doneWhen": "Two answers on the record in this issue: (1) yes or no on the low and critical values below, (2) yes or no on the arming block, judged on its own. A no comes with the number you would use instead and why.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-01** (see `tasks.md`)\r\n\r\n| | |\r\n|---|---|\r\n| Price | $75 |\r\n| Funding line | QGB-FLEX (open task pool) |\r\n| Owner | Julius |\r\n| Deadline | 2026-09-30 |\r\n| Done when | Two answers on the record in this issue: (1) yes or no on the low and critical values below, (2) yes or no on the arming block, judged on its own. A no comes with the number you would use instead and why. |\r\n\r\n**What is being asked**\r\n\r\nReview the proposed battery failsafe posture below and approve or reject it. The design work is done, the numbers are chosen, and the documentation carries them as proposed changes (Pilot's Handbook §4.2.1, Initial Configuration Guide §7.3 and §7.4). No parameter file is cut until this issue closes with a yes. You own the battery PCB and the pack integration, so this is your call to check.\r\n\r\n**The proposal**\r\n\r\nBat2 (the Tattu 4.0 pack's own BMS, GBMS063E12, DroneCAN node 125) becomes the primary failsafe source on consumed capacity. Bat1 (ESC monitor, voltage) stays as the backstop.\r\n\r\n| Parameter | Today (911 card) | Proposed | Meaning |\r\n|---|---|---|---|\r\n| `BATT2_LOW_MAH` | 6000 | 7500 | Low stage at 25 percent remaining |\r\n| `BATT2_FS_LOW_ACT` | 0 | 0 during the OA campaign, 2 (RTL) after RTL plus obstacle avoidance is validated in Test 5 | Warn now, return home later |\r\n| `BATT2_CRT_MAH` | 0 | 4500 | Critical stage at 15 percent remaining |\r\n| `BATT2_FS_CRT_ACT` | 1 | 1 | Land in place, unchanged |\r\n| `BATT2_LOW_VOLT` / `BATT2_CRT_VOLT` | 46.2 / 44.8 | unchanged | 3.3 and 3.2 V per cell, last line on Bat2 |\r\n| Bat1 (`BATT_*`) | 46.2 warn / 44.8 land, sag compensated | unchanged | Independent backstop if the BMS stops reporting |\r\n\r\n**Second question, judged separately: an arming block**\r\n\r\n`BATT2_ARM_MAH` 0 to 9000 would refuse arming with less than 30 percent remaining. Because the BMS count persists across boots, a pack installed half used would be caught. The lead has not adopted this into the Handbook or the guide yet. Say yes or no to it on its own. A yes adds it to the same card revision.\r\n\r\n**Why capacity on the BMS and not voltage on the ESC**\r\n\r\n1. The BMS coulomb count is validated. On September 3 the charger restored 23,889 mAh into a pack whose BMS had counted 25,476 mAh consumed, 93.8 percent, inside normal charge efficiency. The count is accurate.\r\n2. The BMS sees the whole aircraft. Bat1 sums the four ESCs and never sees the avionics, the Pi, the radios, or the sensors. On the same flight Bat2 reads about 22 percent more consumed than Bat1 (log 45: 26,106 vs 21,291 mAh, log 47: 27,365 vs 22,377 mAh). That gap is the avionics load, not an error, and it is exactly the energy a voltage only failsafe on the ESC monitor does not account for.\r\n3. The count persists across power cycles. The BMS reports consumed since last charge over DroneCAN and the flight controller does not reset it at boot (logs 48 to 49, same pack: ended 7,652, restarted 7,840 mAh). A pack installed half used arms with the correct remaining figure. The ESC counter starts from zero every boot.\r\n4. The pack does not sag enough for voltage to be an early trigger. At the capacity trip in log 47 (24,005 mAh consumed, 22.3 minutes airborne) the pack read 48.75 V raw, 3.48 V per cell. A voltage threshold high enough to fire before the capacity stage would fire under heavy mass and make the capacity logic pointless.\r\n5. Flight 10 (July 30) proved the capacity failsafe works as configured: the Bat2 stage commanded RTL at 20.7 minutes and the aircraft came home. The low stage was moved to warn only afterwards because that RTL was the first autonomous mode ever engaged on the aircraft and the path planner came with it. That reason expires when Test 5 (RTL plus obstacle avoidance) passes.\r\n\r\n**How the reserve was sized**\r\n\r\nHover draw on the BMS is 50 to 80 A, so one minute costs roughly 1,100 mAh. A return from the 60 m fence boundary at mission speed, the landing, and a 6 percent counter error band come to about 5,000 mAh. 7,500 mAh (25 percent) covers that with margin for pack ageing and a heavier payload. 4,500 mAh (15 percent) is the point where the aircraft lands itself with no pilot discretion. Hover flights currently end at the 6,000 mAh warning around 22 minutes, so the low stage moves about two minutes earlier.\r\n\r\n**Known Bat2 quirks, judged not to block this**\r\n\r\nThe BMS reports discharge current with a negative sign, `CurrTot` advances in coarse steps, and `VoltR` and `Res` stay at zero (guide open item 8). None of these affect the consumed count the failsafe reads. If you disagree, say so here.\r\n\r\n**Your answer**\r\n\r\nYes on question 1: the low and critical numbers go into the next parameter card (912) as a controlled revision alongside the AUTO phase changes, and the Handbook and guide text loses its \"proposed\" marker.\r\nNo on question 1: give the values you would set and the reason, and the documentation is updated to match.\r\nQuestion 2 (arming block) is adopted or dropped on its own answer.\r\n\r\nSource: `docs/Operations/Initial-Configuration-Guide.md` §7.3, §7.4, §17.8, open item 8. `2026 OA Testing/oa-next-steps-2026-09-10.md` §5 decision 6. Decision taken by the Project Lead 2026-09-10.\r\n\r\n**Acceptance and payment**\r\nPayment lands on acceptance by the Project Lead. Payouts batch monthly through the CSV airdrop flow. Board rules in `tasks.md`.\r\n",
+   "topics": [
+    "flight",
+    "power"
+   ],
+   "parts": [
+    "3410",
+    "3320"
+   ],
+   "comments": 0,
+   "updatedAt": "2026-09-10T19:49:22Z"
+  },
+  {
+   "id": "T-02",
+   "number": 249,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/249",
+   "title": "Configuration guide finalized, split from the commissioning record, consistency pass applied, first outside build gaps resolved",
+   "state": "OPEN",
+   "claimable": false,
+   "fundingLabel": "fund-QGB-01",
+   "priceText": "$300 (the QGB-01 Manufacturing Guide first time setup line, rolled forward in May and held under review against this guide)",
+   "priceUsd": 300,
+   "fundingText": "QGB-01",
+   "owner": "Erick (author)",
+   "deadline": "2026-10-15",
+   "doneWhen": "The three items below are merged on `main` and Thomas has signed off in this issue.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-02** (see `tasks.md`)\n\n| | |\n|---|---|\n| Price | $300 (the QGB-01 Manufacturing Guide first time setup line, rolled forward in May and held under review against this guide) |\n| Funding line | QGB-01 |\n| Owner | Erick (author) |\n| Accepted by | Thomas. The Project Lead does not accept his own payout. |\n| Deadline | 2026-10-15 |\n| Done when | The three items below are merged on `main` and Thomas has signed off in this issue. |\n\n**What is being asked**\n\nFinish the Initial Configuration Guide so a builder who has never seen the first unit can configure a new aircraft from it alone.\n\n1. **Split.** The master document is a procedure and a lab notebook in one file. The procedure (sections 0 to 13 and 16) becomes the guide. The first unit's commissioning history (sections 14, 15, 17, and the open items list) becomes `first-unit-commissioning-record.md`. Draft extraction exists locally as of 2026-09-10. The master stays canonical until the split is finalized, then the procedure replaces it.\n2. **Consistency pass applied.** Internal contradictions, ordering blockers (a step that needs something configured in a later section), claims the parameter files or the other documents contradict, first unit narrative that leaked into the procedure, and cross references that now point into the record. The pass is run on the procedure draft and its findings are applied by the author.\n3. **First outside build gaps resolved.** The issues filed from the first configuration done by someone other than the author (see the companion build task) are fixed or answered in the guide.\n\n**Why the author owns this and not a reviewer**\n\nA read through by a third party finds typos. The review that matters is a builder executing the guide on a unit that is not the author's. That is the companion task. What the author owes is the document those builders will hold: split from the notebook, consistent with the parameter files and the Handbook, and corrected where the first outside build proved it wrong.\n\n**Acceptance and payment**\nPayment lands on acceptance by Thomas in this issue, since the author is the Project Lead. Payouts batch monthly through the CSV airdrop flow. Board rules in `tasks.md`.\n",
+   "topics": [
+    "docs"
+   ],
+   "parts": [],
+   "comments": 0,
+   "updatedAt": "2026-09-10T20:03:49Z"
+  },
+  {
+   "id": "T-03",
+   "number": 250,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/250",
+   "title": "Endurance metrics study, six flight matrix flown by the lead, study by KBM",
+   "state": "OPEN",
+   "claimable": false,
+   "fundingLabel": "fund-QGB-03",
+   "priceText": "$150 for the study (about three hours of log review and write up). The flights are paid separately, see below.",
+   "priceUsd": 150,
+   "fundingText": "QGB-03 Endurance Metrics Study. The bounty was allocated $600 in March for six flights at $100 each. Under the September restructure the flying moves to the flight test campaign pool and the $450 not used here folds into QGB-FLEX unassigned at the October checkpoint.",
+   "owner": "KBM (study). Erick (flights).",
+   "deadline": "Flights by 2026-10-17, study by 2026-10-31",
+   "doneWhen": "The six logs are on the flight tracking platform and the study page is merged in the repository.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-03** (see `tasks.md`)\n\n| | |\n|---|---|\n| Price | $150 for the study (about three hours of log review and write up). The flights are paid separately, see below. |\n| Funding line | QGB-03 Endurance Metrics Study. The bounty was allocated $600 in March for six flights at $100 each. Under the September restructure the flying moves to the flight test campaign pool and the $450 not used here folds into QGB-FLEX unassigned at the October checkpoint. |\n| Owner | KBM (study). Erick (flights). |\n| Deadline | Flights by 2026-10-17, study by 2026-10-31 |\n| Done when | The six logs are on the flight tracking platform and the study page is merged in the repository. |\n\n**The flights, flown by the Project Lead**\n\nThe March test matrix holds: no payload, 5 kg, 7 kg, each flown as a hover and as a circle, six flights. Two changes from the March text. The circle is a flown AUTO mission, not a manual orbit, so it is repeatable across masses and it doubles as post Test 5 autonomous time. And the existing record flights (logs 47 and 79, no payload hover, 25.2 and 20.7 minutes) already give the no payload hover point, so the new work is the four payload flights and the two circles, with one fresh no payload hover only if the pack or the airframe has changed since log 47.\n\nEach flight runs to the low battery stage (25 percent remaining under the posture in #248, 20 percent until that closes), lands, and records the mass on the airframe, the pack serial, the ambient temperature, and the wind. Site is the Houston backyard used for the OA campaign. Payload mounting is the lead's problem to solve before the first payload flight.\n\nThe flying is compensated from the 10,000 $ARROW Flight Test Campaign pool per validated log, under the V1 campaign mechanics being defined in #263. It is not paid from this bounty and it is not covered by the retainer's flight operations scope, because these are campaign flights with a defined deliverable. The lead accepts $ARROW for them.\n\n**The study, by KBM**\n\nFrom the six logs plus the two record flights, using the multi log viewer or Mission Planner, whichever holds up:\n\n1. Endurance versus takeoff mass, hover and circle, as a table and one chart.\n2. Energy per minute by flight phase (takeoff, hover or cruise, descent) from the BMS instance (Bat2), which sees the whole aircraft. Note the ESC instance (Bat1) beside it so the avionics share is visible.\n3. Hover current versus mass, and the hover throttle the flight controller learned at each mass.\n4. One paragraph on what the 25 percent reserve buys at each mass, in minutes.\n5. The method: which log fields, which instance, how phases were cut, so the next person can repeat it on the next airframe.\n\nDeliverable is one markdown page under `docs/Operations/` or the flight testing folder, charts as images, merged by PR. Not a check in note. Three hours is the sizing. If the logs are messier than that, say so in the issue before spending more.\n\n**Acceptance and payment**\nThe study is accepted by the Project Lead on merge. The flights are accepted by the study's author confirming the six logs are usable, and paid from the campaign pool under its mechanics. Payouts batch monthly through the CSV airdrop flow. Board rules in `tasks.md`.\n",
+   "topics": [
+    "flight"
+   ],
+   "parts": [],
+   "comments": 1,
+   "updatedAt": "2026-09-10T20:33:21Z"
+  },
+  {
+   "id": "T-04",
+   "number": 251,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/251",
+   "title": "Pilot's Handbook field edition, interview the pilots and write what the logs cannot say",
+   "state": "OPEN",
+   "claimable": true,
+   "fundingLabel": "fund-QGB-01",
+   "priceText": "$1,000",
+   "priceUsd": 1000,
+   "fundingText": "QGB-01 Pilot's Handbook line, held since the Handbook merged in June pending field driven updates",
+   "owner": "OPEN. You do not need to own or fly a Quiver. You need to listen well and write clearly.",
+   "deadline": "2026-11-30. Claim now, interviews begin once a second operator has flown missions, expected October.",
+   "doneWhen": "A revised Pilot's Handbook is merged with a change log that traces every change to a flight, a log, or an interview.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-04** (see `tasks.md`)\n\n| | |\n|---|---|\n| Price | $1,000 |\n| Funding line | QGB-01 Pilot's Handbook line, held since the Handbook merged in June pending field driven updates |\n| Owner | OPEN. You do not need to own or fly a Quiver. You need to listen well and write clearly. |\n| Deadline | 2026-11-30. Claim now, interviews begin once a second operator has flown missions, expected October. |\n| Done when | A revised Pilot's Handbook is merged with a change log that traces every change to a flight, a log, or an interview. |\n\n**The job**\n\nThe Pilot's Handbook was written before the aircraft had flown. Since July it has flown more than forty times across two operators, an obstacle avoidance campaign, an endurance record, one battery failsafe return, and a set of attachment tests, and none of that is in the Handbook except two sections the Project Lead wrote himself. The lead does not have the hours to do the rest. This task is for someone to go and get it out of the pilots' heads and into the book.\n\n**How it works**\n\n1. **Read the record first.** The first unit commissioning record, the OA campaign folder (`2026 OA Testing/`), the flight tracking platform records, and the two sections already updated (§2.5.5 post shipment recalibration, §4.2.1 battery failsafe). You should arrive at every interview knowing what the logs say happened.\n2. **Interview every pilot who has flown a Quiver.** The Project Lead (Houston, most of the flights), Thomas (West Texas), and the second operator once they have missions. Forty five minutes each, recorded with consent, on a question list you write from step 1 and post in this issue before the first interview. The questions that matter most: what did you do that the Handbook does not say, what did the Handbook say that you did differently and why, what surprised you, and what would you tell the next pilot on day one.\n3. **Write the changes.** Every procedure that changed, every warning that was earned, every number that moved. Known items waiting for you, so you are not starting blind: the RTL recovery procedure (a channel 9 edge exits RTL, channel 10 high recommands it, learned on flight 10), the path planner note (BendyRuler arrives with any autonomous mode and steers around obstacles it sees, which surprised the pilot on that same flight), the preflight rule on motor arm screws and latches, the open sky GPS soak while the interference investigation runs, the MK32 warm up and the USB COM versus Remote ID exclusivity, the pilot takeover briefing before any AUTO run from the OA campaign, and the abort criteria from the OA test plan.\n4. **Reconcile with the rest.** Where the Handbook and the Initial Configuration Guide disagree, say which one is right in the PR and fix the Handbook side. The docs backlog (`docs-update-backlog.md`, section 1) lists ten known Handbook defects, most of them one line fixes. Close them in the same PR.\n5. **Deliver.** One PR against `docs/Operations/Pilot-Handbook.md` with a change log at the top of the PR description: change, source (flight number, log, or interviewee), section. The lead reviews the technical content, the pilots you interviewed confirm you heard them right.\n\n**Why the interviews and not just the logs**\n\nThe logs say what the aircraft did. Only the pilot knows what they were thinking, what they nearly did, and what they would do differently. The Handbook exists for the next pilot, and the next pilot needs the second thing.\n\n**Acceptance and payment**\nPayment lands on acceptance by the Project Lead when the PR merges. Payouts batch monthly through the CSV airdrop flow. If the second operator has not flown by the end of October, the task proceeds with the two pilots available and the third interview becomes a follow up at retro rates. Board rules in `tasks.md`.\n",
+   "topics": [
+    "docs",
+    "flight"
+   ],
+   "parts": [],
+   "comments": 2,
+   "updatedAt": "2026-09-11T18:02:33Z"
+  },
+  {
+   "id": "T-05",
+   "number": 252,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/252",
+   "title": "Attachment Developer Guide, the one document for building a Quiver attachment",
+   "state": "OPEN",
+   "claimable": true,
+   "fundingLabel": "fund-QGB-01",
+   "priceText": "$750 in three milestones: M1 $250, M2 $350, M3 $150 (below)",
+   "priceUsd": 750,
+   "fundingText": "QGB-01 Attachment Developer Guide line, open since May 2026",
+   "owner": "OPEN. Reviewers: Thomas (integrator, he asked for this guide in May and built two attachments with it missing), Erick (electrical).",
+   "deadline": "M1 2026-10-10, M2 2026-10-24, M3 2026-10-31",
+   "doneWhen": "`docs/Develop-Attachments-Software/Attachment-Developer-Guide.md` is merged, passes the link checker and cspell, and both reviewers have signed off in this issue.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-05** (see `tasks.md`)\r\n\r\n| | |\r\n|---|---|\r\n| Price | $750 in three milestones: M1 $250, M2 $350, M3 $150 (below) |\r\n| Funding line | QGB-01 Attachment Developer Guide line, open since May 2026 |\r\n| Owner | OPEN. Reviewers: Thomas (integrator, he asked for this guide in May and built two attachments with it missing), Erick (electrical). |\r\n| Deadline | M1 2026-10-10, M2 2026-10-24, M3 2026-10-31 |\r\n| Done when | `docs/Develop-Attachments-Software/Attachment-Developer-Guide.md` is merged, passes the link checker and cspell, and both reviewers have signed off in this issue. |\r\n\r\n**The job in one sentence**\r\n\r\nWrite the one document a third party reads to build a Quiver attachment: how to get a payload connected physically, connected electrically without browning out the aircraft, and talking to the flight controller and the Hub software.\r\n\r\n**This is compilation, not research**\r\n\r\nNearly every fact the guide needs already exists. It is scattered across two GitHub issues, a KiCad project, a netlist, the configuration guide, the SDK guide, three org repositories, six attachment requirement documents, and three attachments built at the August meetup. The author's work is to read all of it, resolve the contradictions by going to the schematic, and write the contract down once. This issue is the complete brief. There is no other scope document.\r\n\r\n**Sources you will work from**\r\n\r\n- Issue #233: the pogo array, the signal set, the HV battery taps, the DroneCAN adapter board pattern.\r\n- Issue #234: the power truth. The 12 V payload rail is about 13 W shared across all three ports, `12VSW` exists on the bottom port only, and high power attachments go to the switched HV path.\r\n- `src/pcb/attach_pcb/QuiverAttachPCB` V1.4 KiCad and the Main PCB netlist: the per port pinout. Three facts the author must carry that the silkscreen gets wrong: the aux signal is `FMU_CH1` on the bottom port but `FMU_CH7` and `FMU_CH8` on the side ports (servo outputs 9, 15, 16), the bottom and side 1 ports sit on CAN1, the flight critical bus, and only side 2 is on CAN2. Payload Ethernet is 100BASE-TX, pairs A and B only. There is no GPS timepulse line to any bay, the aux channel is the timing path.\r\n- Initial Configuration Guide §11.6 (PWM on the aux channels, the `SERVO_GPIO_MASK` bits to clear), the relay table (Pilot Handbook §2.8.5), the SSR power hierarchy.\r\n- SDK Developer Guide: the software side, link it, do not duplicate it. Payload IP range `.100` to `.199`, bottom port `.100`. Note: the address table on `main` is stale until the repo sync lands (CubeNode `.50`, Pi `.49`, FC `.51`). Use the corrected values and cite the sync PR.\r\n- Org repositories: `payload-systems` (open source payload designs), `quiver-payload-template` (the starting point for a payload app), `quiver-sdk` (the Python SDK).\r\n- The August meetup builds as worked examples: the servo latch (aux pins moved from GPIO to PWM, 12 V regulated to 6 V payload side), the multispectral camera (clean power plus a native PWM trigger), the Starlink Mini (high voltage line through a regulator, unresolved link drop). Info notes and design files are T-11.\r\n- Field lessons: the JMRRC dispenser's internal PCB corrupts PWM (bypass and wire direct), the dispenser browned out on the switched 12 V line and moved to HV.\r\n- `task-grant-bounty/equipment/attachment/0002-*`: six attachment requirement documents (cargo, lidar, machine vision, camera, stabilized carrier, floodlight). Demand side context, list them as the attachments people want to build.\r\n- `task-grant-bounty/pt3/electronics/0003-Attachment-Interface-PCB/`: the interface PCB history, design constraints, and the V1.4 BOM. Traceability anchor for every pinout claim.\r\n- Interface conventions already written down elsewhere: relay semantics `Add HV`, `P1 Sig`, `P1 12V`, `12V Pay` (Pilot Handbook §2.8.5), the SSR power hierarchy (configuration guide §11), the payload IP range (configuration guide §0 network topology).\r\n\r\n**What no document covers yet, and where each answer comes from**\r\n\r\n| Gap | State today | Where the author gets it |\r\n|---|---|---|\r\n| Empty weight, battery weight, max payload mass | Documented nowhere. Issue #209 has asked since April | A weigh in at the next bench session, requested in this issue on day one |\r\n| Pogo pad coordinates and a mechanical drawing | Only inside the V1.4 KiCad files | Vector extracted the coordinates for the #233 adapter board, ask for that extraction or re-extract from KiCad |\r\n| Measured power limits | #234's numbers are traced from the schematic, PTC thermal derating unmeasured | One bench load test on the 12 V payload rail, requested in this issue on day one |\r\n| Aux signal per port | The attach PCB silkscreen says `FMU_CH1` on every port. Netlist says bottom J31 = `FMU_CH1` (output 9), side 1 J29 = `FMU_CH7` (output 15), side 2 J30 = `FMU_CH8` (output 16) | Netlist, verified July 20, plus parameter readback (configuration guide §11.6) |\r\n| Attachment CAN routing | #233 says CAN2 for all payloads. Netlist says J29 and J31 sit on CAN1, the flight critical bus at 1 Mbit, and only J30 is on CAN2 (RadarCAN, 500k, with the two NanoRadar sensors) | Netlist, verified July 20. Highest safety fact in the guide, a payload node on CAN1 shares the bus with the ESCs, the GNSS, and Remote ID |\r\n| Ethernet reach, which ports carry it | Engineering Report reportedly inconsistent on C1/C2 versus C1/C2/C3 | Netlist plus the harness guide, continuity check at the bench |\r\n| Hot swap rules | Nobody has written whether attachments may be connected or removed powered, or what the rails do across arm, disarm, and kill | Design intent from Erick, confirmed at the bench |\r\n| Ethernet path from the pogo pins to the switch | Physical path lives only in harness guide fragments | Harness guide plus the Engineering Report network section |\r\n| Side versus bottom port structural load limits | No ratings anywhere | CAD or FEA from Alperen, or a conservative documented limit marked as pending analysis |\r\n\r\nAbout half of these close from existing files and people. The rest need one bench session and one weigh in, both of which can happen before the author has written a line.\r\n\r\n**Chapters**\r\n\r\n1. What a Quiver attachment is: the three ports, the hot swap concept, what exists today.\r\n2. Mechanical interface: pogo geometry from V1.4, envelope, mass guidance, mounting, orientation.\r\n3. Electrical contract: the pin table per port with real limits, the HV tap path, what trips and what browns out. Versioned to V1.4 as built, with a banner, so the coming interface redesign changes one chapter.\r\n4. Power budgeting: three worked examples, a logic payload, a 25 W floodlight, the dispenser.\r\n5. Control and data paths: PWM versus DroneCAN node versus Ethernet, when each is right, and the flight controller parameters each needs. The CAN1 warning lives here.\r\n6. Flight controller integration: relay functions and labels, servo outputs, arming interactions, what the SSR hierarchy means for attachment power timing.\r\n7. Software handoff: one page into the SDK guide, the template repository, and the Hub.\r\n8. Validation: a bench checklist usable on its own (power draw, PWM verified on the pin, CAN enumeration, no rail sag), then the flight rules.\r\n9. Lessons learned from the builds above.\r\n\r\n**Milestones**\r\n\r\n| | Deliverable | Amount |\r\n|---|---|---|\r\n| M1 | Chapters 1 to 3, every electrical claim traced to V1.4 KiCad, the netlist, or a cited issue | $250 |\r\n| M2 | Chapters 4 to 9 complete, meetup builds written up as the examples, gap inputs incorporated with their source recorded | $350 |\r\n| M3 | Review revisions merged, navigation entry, link checker and cspell green | $150 |\r\n\r\n**Two inputs the team owes the author, not the other way round**\r\n\r\nThe weigh in (#209) and the 12 V rail load test from the gap table. The author asks for both in this issue on day one. If either is not delivered by M2, the guide publishes the schematic numbers with the gap marked open.\r\n\r\n**Out of scope**\r\n\r\nResolving #234 (the power delivery redesign), building the #233 adapter board, the interface replacement decision, and the dispenser path decision. The guide documents today's interface and links the open threads.\r\n\r\n**Acceptance criteria**\r\n\r\n1. File at the target path, in the docs navigation beside the SDK guide (the two together are the Build on Quiver section), link checker and cspell green.\r\n2. Every electrical claim traceable to V1.4 KiCad, the Main PCB sources, or a cited issue. No invented values.\r\n3. Power limits match #234's traced numbers, or newer measurements with the measurement cited.\r\n4. The bench validation checklist is usable on its own, without the rest of the guide.\r\n5. Open engineering questions are marked open and never turned into requirements.\r\n6. Every gap table input is sourced from the team or from a measurement, with the source recorded in the text.\r\n7. Sign off from both reviewers in this issue.\r\n\r\n**Claiming**\r\n\r\nAfter the July bot claim wave on this line (an unsolicited 549 line guide arrived as a PR with payout first behavior and was not honored), claimants need an established Discord or forum presence before assignment. Say who you are and what you have read before you ask for M1.\r\n\r\n**Acceptance and payment**\r\nEach milestone is accepted by Thomas and Erick in this issue. Payouts batch monthly through the CSV airdrop flow. Board rules in `tasks.md`.\r\n",
+   "topics": [
+    "attachments",
+    "software",
+    "docs"
+   ],
+   "parts": [],
+   "comments": 6,
+   "updatedAt": "2026-09-17T06:39:37Z"
+  },
+  {
+   "id": "T-06",
+   "number": 253,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/253",
+   "title": "Multispectral camera V2, scope from the V1 note, then build and fly",
+   "state": "OPEN",
+   "claimable": true,
+   "fundingLabel": "fund-QGB-05",
+   "priceText": "Set at milestone 0 (below), from the QGB-05 Attachment Development allocation of $3,000, which funds this task and its sibling (T-07) together, with QGB-FLEX unassigned as overflow if the two scopes outgrow it",
+   "priceUsd": null,
+   "fundingText": "QGB-05",
+   "owner": "OPEN",
+   "deadline": "Milestone 0 by 2026-10-15, build flown by 2026-11-15",
+   "doneWhen": "The V2 multispectral camera attachment has flown on the attachment interface with a logged flight and its design files are merged.",
+   "status": "opens when the V1 information note lands",
+   "whoShouldClaim": "Someone with a printer and bench access. The V1 housing and mount were Alperen's designs, so his review of the V2 mechanical changes is expected whoever builds it.\r",
+   "milestones": [
+    {
+     "n": 0,
+     "title": "the scope, priced at $100",
+     "text": "Read the V1 note and its files. Post in this issue a one page V2 scope: what changes and why, the parts list with sources, the print or machining plan, the bench test before flight, the flight test that proves it, and a price for the build. Known V2 ideas from the meetup, not requirements: component protection, a repeatable mount, and the trigger path documented for the developer guide. The Project Lead accepts the scope and its price in this issue, and that becomes the build milestone.\r"
+    },
+    {
+     "n": 1,
+     "title": "the build, priced at milestone 0",
+     "text": "Build it, bench test it against the Attachment Developer Guide checklist once that exists (T-05), fly it on the attachment interface, upload the log, merge the design files and a short build note next to the V1 note.\r"
+    }
+   ],
+   "body": "**Task board row T-06** (see `tasks.md`)\r\n\r\n| | |\r\n|---|---|\r\n| Price | Set at milestone 0 (below), from the QGB-05 Attachment Development allocation of $3,000, which funds this task and its sibling (T-07) together, with QGB-FLEX unassigned as overflow if the two scopes outgrow it |\r\n| Funding line | QGB-05 |\r\n| Owner | OPEN |\r\n| Deadline | Milestone 0 by 2026-10-15, build flown by 2026-11-15 |\r\n| Done when | The V2 multispectral camera attachment has flown on the attachment interface with a logged flight and its design files are merged. |\r\n\r\n**Status: opens when the V1 information note lands**\r\n\r\nThe V1 multispectral camera attachment was built and tested at the August meetup. Its information note and design files are task T-11 (#257), due September 30. Nothing about V2 is decided yet, on purpose. The V1 note is the input, and whoever claims this task writes the V2 scope from it. Do not start before T-11 merges.\r\n\r\n**What V1 is**\r\n\r\nA multispectral camera on the attachment interface with clean power, a native PWM trigger from the flight controller's aux channel, and a USB power configuration, on a mount designed by Alperen. Ground tested, then flown on Gray's Quiver at the meetup. Results went out in the Arrow account's tweet. Field usable, but the components are exposed.\r\n\r\n**Milestone 0, the scope, priced at $100**\r\n\r\nRead the V1 note and its files. Post in this issue a one page V2 scope: what changes and why, the parts list with sources, the print or machining plan, the bench test before flight, the flight test that proves it, and a price for the build. Known V2 ideas from the meetup, not requirements: component protection, a repeatable mount, and the trigger path documented for the developer guide. The Project Lead accepts the scope and its price in this issue, and that becomes the build milestone.\r\n\r\n**Milestone 1, the build, priced at milestone 0**\r\n\r\nBuild it, bench test it against the Attachment Developer Guide checklist once that exists (T-05), fly it on the attachment interface, upload the log, merge the design files and a short build note next to the V1 note.\r\n\r\n**Who should claim this**\r\n\r\nSomeone with a printer and bench access. The V1 housing and mount were Alperen's designs, so his review of the V2 mechanical changes is expected whoever builds it.\r\n\r\n**Acceptance and payment**\r\nMilestone 0 is accepted by the Project Lead in this issue and sets the price of the build. The build is accepted on the flight log. Payouts batch monthly through the CSV airdrop flow. Board rules in `tasks.md`.",
+   "topics": [
+    "attachments",
+    "flight"
+   ],
+   "parts": [
+    "3331",
+    "2112",
+    "3310"
+   ],
+   "comments": 0,
+   "updatedAt": "2026-09-10T20:50:03Z"
+  },
+  {
+   "id": "T-07",
+   "number": 254,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/254",
+   "title": "Payload latch V2, scope from the V1 note, then build and fly",
+   "state": "OPEN",
+   "claimable": true,
+   "fundingLabel": "fund-QGB-05",
+   "priceText": "Set at milestone 0 (below), from the QGB-05 Attachment Development allocation of $3,000, which funds this task and its sibling (T-06) together, with QGB-FLEX unassigned as overflow if the two scopes outgrow it",
+   "priceUsd": null,
+   "fundingText": "QGB-05",
+   "owner": "OPEN",
+   "deadline": "Milestone 0 by 2026-10-15, build flown by 2026-11-15",
+   "doneWhen": "The V2 payload latch has flown on the attachment interface with a logged flight and its design files are merged.",
+   "status": "opens when the V1 information note lands",
+   "whoShouldClaim": "Someone with a printer and bench access. The V1 housing and mount were Alperen's designs, so his review of the V2 mechanical changes is expected whoever builds it.\r",
+   "milestones": [
+    {
+     "n": 0,
+     "title": "the scope, priced at $100",
+     "text": "Read the V1 note and its files. Post in this issue a one page V2 scope: what changes and why, the parts list with sources, the print or machining plan, the bench test before flight, the flight test that proves it, and a price for the build. Known V2 ideas from the meetup, not requirements: a fully 3D printed assembly, self sourced parts, a larger size, and the linkage twist designed out. The Project Lead accepts the scope and its price in this issue, and that becomes the build milestone.\r"
+    },
+    {
+     "n": 1,
+     "title": "the build, priced at milestone 0",
+     "text": "Build it, bench test it against the Attachment Developer Guide checklist once that exists (T-05), fly it on the attachment interface, upload the log, merge the design files and a short build note next to the V1 note.\r"
+    }
+   ],
+   "body": "**Task board row T-07** (see `tasks.md`)\r\n\r\n| | |\r\n|---|---|\r\n| Price | Set at milestone 0 (below), from the QGB-05 Attachment Development allocation of $3,000, which funds this task and its sibling (T-06) together, with QGB-FLEX unassigned as overflow if the two scopes outgrow it |\r\n| Funding line | QGB-05 |\r\n| Owner | OPEN |\r\n| Deadline | Milestone 0 by 2026-10-15, build flown by 2026-11-15 |\r\n| Done when | The V2 payload latch has flown on the attachment interface with a logged flight and its design files are merged. |\r\n\r\n**Status: opens when the V1 information note lands**\r\n\r\nThe V1 payload latch was built and tested at the August meetup. Its information note and design files are task T-11 (#257), due September 30. Nothing about V2 is decided yet, on purpose. The V1 note is the input, and whoever claims this task writes the V2 scope from it. Do not start before T-11 merges.\r\n\r\n**What V1 is**\r\n\r\nA servo latch driven by PWM from the flight controller (the attachment interface pins were reconfigured from GPIO to PWM), the 12 V line regulated to 6 V on the payload side, in a housing designed by Alperen. Tested with cans and a first aid kit. A late test open and close fault traced to a twisted pin linkage on the PWM tester, straightened, with dust also suspected.\r\n\r\n**Milestone 0, the scope, priced at $100**\r\n\r\nRead the V1 note and its files. Post in this issue a one page V2 scope: what changes and why, the parts list with sources, the print or machining plan, the bench test before flight, the flight test that proves it, and a price for the build. Known V2 ideas from the meetup, not requirements: a fully 3D printed assembly, self sourced parts, a larger size, and the linkage twist designed out. The Project Lead accepts the scope and its price in this issue, and that becomes the build milestone.\r\n\r\n**Milestone 1, the build, priced at milestone 0**\r\n\r\nBuild it, bench test it against the Attachment Developer Guide checklist once that exists (T-05), fly it on the attachment interface, upload the log, merge the design files and a short build note next to the V1 note.\r\n\r\n**Who should claim this**\r\n\r\nSomeone with a printer and bench access. The V1 housing and mount were Alperen's designs, so his review of the V2 mechanical changes is expected whoever builds it.\r\n\r\n**Acceptance and payment**\r\nMilestone 0 is accepted by the Project Lead in this issue and sets the price of the build. The build is accepted on the flight log. Payouts batch monthly through the CSV airdrop flow. Board rules in `tasks.md`.",
+   "topics": [
+    "attachments",
+    "flight"
+   ],
+   "parts": [
+    "3331",
+    "2112",
+    "3310"
+   ],
+   "comments": 0,
+   "updatedAt": "2026-09-10T20:50:05Z"
+  },
+  {
+   "id": "T-08",
+   "number": 255,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/255",
+   "title": "Dispenser field test and path decision input",
+   "state": "CLOSED",
+   "claimable": false,
+   "fundingLabel": "fund-QGB-05",
+   "priceText": "Sub priced from QGB-05 at scope",
+   "priceUsd": null,
+   "fundingText": "QGB-05",
+   "owner": "Thomas",
+   "deadline": "2026-10-15",
+   "doneWhen": "Field test report filed in the repository.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-08** (see `tasks.md`)\r\n\r\n| | |\r\n|---|---|\r\n| Price | Sub priced from QGB-05 at scope |\r\n| Funding line | QGB-05 |\r\n| Owner | Thomas |\r\n| Deadline | 2026-10-15 |\r\n| Done when | Field test report filed in the repository. |\r\n\r\n**Scope**\r\nField test the granular dispenser that was rewired past the faulty JMRRC PCB and bench tested before the meetup. Report what worked, what failed, and a recommendation on the path: keep the off the shelf unit with the direct wiring, or build an Arrow dispenser in house. Feeds the Phase 2 attachment decisions.\r\n\r\n**Acceptance and payment**\r\nPayment lands on acceptance by the Project Lead: the PR merges, the review is filed, or the test is flown and its log accepted. Payouts batch monthly through the CSV airdrop flow. Prices are set within the bucket budgets and published on the board before work starts. An OPEN task with no claimant after two weeks gets repriced, rescoped, or escalated at the team call.\r\n\r\nBoard rules and budget authority: `tasks.md` in this repository. Funding context: [Phased Project Proposal, September to November 2026](https://dao.arrowair.com/t/project-quiver-phased-project-proposal-september-to-november-2026/187).\r\n",
+   "topics": [
+    "attachments",
+    "docs"
+   ],
+   "parts": [
+    "2112",
+    "3331"
+   ],
+   "comments": 1,
+   "updatedAt": "2026-09-10T20:50:07Z"
+  },
+  {
+   "id": "T-09",
+   "number": 256,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/256",
+   "title": "Platform Engineering Report, the decision register from PT1 to the 2026 dev kit",
+   "state": "OPEN",
+   "claimable": true,
+   "fundingLabel": "fund-QGB-01",
+   "priceText": "$500 in two paid milestones after an unpaid gate: M0 the sample (unpaid, it is the application), M1 the decision register $300, M2 the narrative, images, weight breakdown, and review revisions $200",
+   "priceUsd": 500,
+   "fundingText": "QGB-01, Platform Engineering Report, reserved since May",
+   "owner": "OPEN. Applicants submit milestone 0 in this issue. Assignment follows an accepted sample, never precedes it.",
+   "deadline": "M0 whenever you apply, M1 2026-11-07, M2 2026-11-30",
+   "doneWhen": "`docs/Engineering-Reports/Platform-Engineering-Report.md` is merged with every entry in the decision register verified by a reviewer against its citation.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [
+    {
+     "n": 0,
+     "title": "the application, unpaid",
+     "text": "Post in this issue: the index of every source you found (reports, notes, issues) with one line each on what decisions it holds, and ten register rows in the format above chosen from at least three different phases. Reviewers check every citation. If a citation does not say what the row says, the sample fails and there is no assignment. If it passes, you are assigned and M1 opens. This gate exists because the reserved line has already drawn applications that read as generated text, and the register format is chosen so that generated text cannot pass it."
+    },
+    {
+     "n": 1,
+     "title": "the register, $300",
+     "text": "The complete register merged as the first section of the report. Reviewers spot check at least twenty rows against their citations. One row that misstates its source sends the milestone back."
+    },
+    {
+     "n": 2,
+     "title": "the narrative, $200",
+     "text": "One section per phase, two to four pages each, that reads the register as a story: what problem that phase was solving, which decisions it made, what it learned that the next phase used. Then the weight breakdown and the final build images still owed from the Dev Kit report (its Weight and Payload Summary is the starting point, the current airframe has to be weighed, issue #209). Then the open decisions at the end of 2026: the attachment interface replacement, the GPS interference mitigation, the dock. Review revisions merged, navigation entry, link checker and cspell green."
+    }
+   ],
+   "body": "**Task board row T-09** (see `tasks.md`)\n\n| | |\n|---|---|\n| Price | $500 in two paid milestones after an unpaid gate: M0 the sample (unpaid, it is the application), M1 the decision register $300, M2 the narrative, images, weight breakdown, and review revisions $200 |\n| Funding line | QGB-01, Platform Engineering Report, reserved since May |\n| Owner | OPEN. Applicants submit milestone 0 in this issue. Assignment follows an accepted sample, never precedes it. |\n| Reviewers | Erick (electrical, configuration), Alperen (structure, CAD) |\n| Deadline | M0 whenever you apply, M1 2026-11-07, M2 2026-11-30 |\n| Done when | `docs/Engineering-Reports/Platform-Engineering-Report.md` is merged with every entry in the decision register verified by a reviewer against its citation. |\n\n**What this report is**\n\nThe Quiver has three engineering reports (PT1, PT2, PT3) and a Dev Kit report, plus about thirty information notes under `task-grant-bounty/` across pt1, pt2, pt3, Dev-Kit, equipment, and general. Nobody can read that stack and come away knowing why the aircraft is the way it is. This report is the answer to that question: every design decision from the PT1 concept to the 2026 dev kit, what was chosen, what it replaced, why, and where the evidence is.\n\n**What this report is not**\n\nIt is not a rewrite of the four reports. It is not an overview of the drone industry. It contains no sentence that cannot be traced to a file in this repository, a GitHub issue, a pull request, or a flight log. A paragraph that could appear in any UAV report is a paragraph that will be cut.\n\n**The core artifact: the decision register**\n\nA table, one row per design decision, in chronological order, with these columns:\n\n| Column | What goes there |\n|---|---|\n| ID | D-001 upward |\n| Phase | PT1, PT2, PT3, Dev Kit, or 2026 |\n| Decision | One sentence. What was chosen. |\n| Replaced | What it replaced, or \"new\" |\n| Why | The reason in the words of the source, two sentences at most |\n| Evidence | A link to the report section, information note, issue, PR, or log that records the decision |\n| Status | Standing, superseded by D-xxx, or open |\n\nExamples of rows that exist in the sources and that a reviewer will look for: the 25 kg MTOW and the propulsion selection (PT1 section 6), the move to DroneCAN ESCs and the Hobbywing X6 Plus G2, the Pixhawk 6C and the Arrow firmware build, the Main PCB and battery PCB split, the attachment interface and its V1.4 revision, the SSR and precharge power hierarchy, the two GNSS units and their roles, the native DroneCAN BMS on Bat2, the RPLidar S2 on SERIAL5, the two NanoRadar sensors on CAN2, the CubeNode ETH addressing, the Ethernet switches and the 2026 interference finding, the folding motor arms and the airframe modifications in the pt3 structural notes, the enclosure latch and sensor mounts, the transport case. Between sixty and one hundred rows is the expected size. Fewer than forty means the sources were not read.\n\n**Milestone 0, the application, unpaid**\n\nPost in this issue: the index of every source you found (reports, notes, issues) with one line each on what decisions it holds, and ten register rows in the format above chosen from at least three different phases. Reviewers check every citation. If a citation does not say what the row says, the sample fails and there is no assignment. If it passes, you are assigned and M1 opens. This gate exists because the reserved line has already drawn applications that read as generated text, and the register format is chosen so that generated text cannot pass it.\n\n**Milestone 1, the register, $300**\n\nThe complete register merged as the first section of the report. Reviewers spot check at least twenty rows against their citations. One row that misstates its source sends the milestone back.\n\n**Milestone 2, the narrative, $200**\n\nOne section per phase, two to four pages each, that reads the register as a story: what problem that phase was solving, which decisions it made, what it learned that the next phase used. Then the weight breakdown and the final build images still owed from the Dev Kit report (its Weight and Payload Summary is the starting point, the current airframe has to be weighed, issue #209). Then the open decisions at the end of 2026: the attachment interface replacement, the GPS interference mitigation, the dock. Review revisions merged, navigation entry, link checker and cspell green.\n\n**Rules**\n\nEvery number has a source. Where two sources disagree, the row says so and cites both. Open questions stay open. No sentence about the future of aviation, the promise of open source, or what drones can do for humanity.\n\n**Acceptance and payment**\nEach milestone is accepted by both reviewers in this issue. Payouts batch monthly through the CSV airdrop flow. Board rules in `tasks.md`.\n",
+   "topics": [
+    "docs"
+   ],
+   "parts": [],
+   "comments": 14,
+   "updatedAt": "2026-09-17T00:13:00Z"
+  },
+  {
+   "id": "T-11",
+   "number": 257,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/257",
+   "title": "Information notes for the V1 payload latch and V1 multispectral camera",
+   "state": "OPEN",
+   "claimable": false,
+   "fundingLabel": null,
+   "priceText": "None. Retainer scope, documentation is what the lead retainer pays for.",
+   "priceUsd": null,
+   "fundingText": "Not funded from the board",
+   "owner": "Erick",
+   "deadline": "2026-09-30",
+   "doneWhen": "Two information notes are merged in the repository's information note convention, one for the V1 payload latch and one for the V1 multispectral camera attachment, each with its design files or a link to where they live.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-11** (see `tasks.md`)\n\n| | |\n|---|---|\n| Price | None. Retainer scope, documentation is what the lead retainer pays for. |\n| Funding line | Not funded from the board |\n| Owner | Erick |\n| Deadline | 2026-09-30 |\n| Done when | Two information notes are merged in the repository's information note convention, one for the V1 payload latch and one for the V1 multispectral camera attachment, each with its design files or a link to where they live. |\n\n**What is being written**\n\nTwo comprehensive information notes for the attachments built and tested at the August meetup, in the same format as the existing notes under `task-grant-bounty/`. Each note records what was built, how it is wired to the attachment interface, the flight controller configuration that made it work, what was tested and what happened, and what a V2 should change.\n\n**Latch V1.** Servo latch driven by PWM from the flight controller. The attachment interface pins were reconfigured from GPIO to PWM (the `SERVO_GPIO_MASK` bit for the port's aux output, configuration guide §11.6). The 12 V line is regulated to 6 V on the payload side. Housing designed by Alperen. Tested with cans and a first aid kit. A late open and close fault traced to a twisted pin linkage on the PWM tester, straightened, dust also suspected.\n\n**Multispectral camera V1.** Camera on the attachment interface with clean power, a native PWM trigger from the port's aux channel, USB power configuration, on Alperen's mount. Ground tested, then flown on Gray's Quiver at the meetup. Field usable, components exposed.\n\n**Why these two notes matter beyond the record**\n\nThey are the input to T-06 and T-07 (the V2 tasks, which do not open until these merge), and they are two of the three worked examples in the Attachment Developer Guide (T-05). Whoever picks up those tasks reads these notes first, so the wiring, the parameters, and the failure are the parts that must be exact.\n\nDesign files: Alperen's housing and mount files are included in the notes if they are in hand, otherwise the note links to where they will land and T-06 and T-07 collect them at milestone 0.\n",
+   "topics": [
+    "attachments"
+   ],
+   "parts": [
+    "2112",
+    "3331"
+   ],
+   "comments": 1,
+   "updatedAt": "2026-09-17T19:46:02Z"
+  },
+  {
+   "id": "T-12",
+   "number": 258,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/258",
+   "title": "QuiverHub next scope, written after the bring up, priced at the October checkpoint",
+   "state": "OPEN",
+   "claimable": false,
+   "fundingLabel": "fund-checkpoint",
+   "priceText": "Priced at the October checkpoint from the scope written here. The scope itself is part of T-18 and is not separately paid.",
+   "priceUsd": null,
+   "fundingText": "Requested at the roadmap checkpoint, not funded from the current board",
+   "owner": "Alex",
+   "deadline": "Scope accepted by 2026-10-31. Milestones follow the checkpoint.",
+   "doneWhen": "A scope for the next QuiverHub work is accepted by the Project Lead in this issue, with milestones, prices, and acceptance criteria that the checkpoint can fund.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-12** (see `tasks.md`)\n\n| | |\n|---|---|\n| Price | Priced at the October checkpoint from the scope written here. The scope itself is part of T-18 and is not separately paid. |\n| Funding line | Requested at the roadmap checkpoint, not funded from the current board |\n| Owner | Alex |\n| Deadline | Scope accepted by 2026-10-31. Milestones follow the checkpoint. |\n| Done when | A scope for the next QuiverHub work is accepted by the Project Lead in this issue, with milestones, prices, and acceptance criteria that the checkpoint can fund. |\n\n**Where this stands, honestly**\n\nQuiverHub V1 shipped and was paid (milestones M1 to M3). Two further milestones were named at the time, M4 mission planning and M5 deployment, and never scoped. That was months ago. Nobody on the project, the lead included, can say today what M4 and M5 were meant to contain, and the aircraft has changed since: the Pi now ships on the Ethernet builds, the flight controller is reached over PPP through the CubeNode, the switches are a known GPS interference source, and the aircraft has flown an obstacle avoidance campaign and an endurance record without the Hub involved at all.\n\nSo this task does not ask for M4 and M5. It asks for the scope of whatever should come next, written by the person who knows the code, after the Hub has run on a real aircraft (T-18, #264).\n\n**What the scope has to contain**\n\n1. What QuiverHub does today on the Houston unit, from the T-18 bring up, in one paragraph.\n2. What the aircraft and its operators need from a companion computer now: the flight tracking platform upload path, log access in the field, the OTA path, camera streaming, a payload app pattern (T-05 will point developers here), whatever else you saw at the bench.\n3. Two to four milestones, each with a deliverable, an acceptance test the lead can run, and a price. Use the V1 milestone sizes as the anchor.\n4. The documentation bridge: which parts of the configuration guide section 6 and the SDK guide you will write or correct as part of the work.\n5. What you are explicitly not doing.\n\nIf mission planning and deployment are still the right next steps, say so and define them. If they are not, say that instead. Either answer is fine, a scope nobody can fund is not.\n\n**Acceptance and payment**\nThe scope is accepted by the Project Lead in this issue and carried into the October checkpoint request. Milestones are paid on acceptance after the checkpoint funds them. Board rules in `tasks.md`.\n",
+   "topics": [
+    "software"
+   ],
+   "parts": [
+    "3312"
+   ],
+   "comments": 0,
+   "updatedAt": "2026-09-10T21:14:42Z"
+  },
+  {
+   "id": "T-13",
+   "number": 259,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/259",
+   "title": "Does the Ethernet switch build fly with clean GPS under the Houston operating setup? Recreate it, read the M9N, fly once",
+   "state": "OPEN",
+   "claimable": false,
+   "fundingLabel": "fund-QGB-FLEX",
+   "priceText": "$150 for the preparation, the readings, and the upload (sized at two hours). The flight itself is paid in $ARROW per validated log from the Flight Test Campaign pool under its V1 mechanics (#263).",
+   "priceUsd": 150,
+   "fundingText": "QGB-FLEX (open task pool) for the $150. Campaign pool for the flight.",
+   "owner": "Julius (back September 15)",
+   "deadline": "2026-09-30",
+   "doneWhen": "The readings table below, the flight log, and the parameter export are in this issue or on the flight tracking platform, and the question in the title has a yes or a no with the numbers behind it.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-13** (see `tasks.md`)\n\n| | |\n|---|---|\n| Price | $150 for the preparation, the readings, and the upload (sized at two hours). The flight itself is paid in $ARROW per validated log from the Flight Test Campaign pool under its V1 mechanics (#263). |\n| Funding line | QGB-FLEX (open task pool) for the $150. Campaign pool for the flight. |\n| Owner | Julius (back September 15) |\n| Deadline | 2026-09-30 |\n| Done when | The readings table below, the flight log, and the parameter export are in this issue or on the flight tracking platform, and the question in the title has a yes or a no with the numbers behind it. |\n\n**The question**\n\nYour full Quiver build has the same parts as the Houston unit: two GigaBlox switches beside the M9N, the CubeNode ETH, the Raspberry Pi. On the Houston unit, and on the West Texas unit, the M9N loses satellites with the switches installed and recovers when they are removed. Your build has never shown it, but nobody has checked whether your build was ever exercised the way the Houston unit is exercised in the field. This task settles that. The hypothesis is that the interference comes from Ethernet traffic, not from the switches merely being powered, so the test has to recreate the Houston operating setup, not just power the aircraft.\n\n**Recreate the Houston setup, then read the GPS**\n\n1. Switches installed and powered, CubeNode ETH up, Raspberry Pi up on the network, a laptop on the aircraft network. Mission Planner connected over TCP to the flight controller's Ethernet port (`192.168.144.51:5760`) with a live parameter session, so the Ethernet link is carrying traffic. Remote ID active on CAN (the db200 transmitting). `GPS2_TYPE 9` so the M9N is enabled.\n2. Outdoors, open sky, aircraft on battery power, ten minute soak. Read and record for GPS 2: satellite count, HDOP, fix type, and `GPA.SAcc` from the log. Note the F9P (GPS 1) beside it as the control.\n3. Same readings with the Mission Planner TCP session closed but the switches still powered. Then with both switches unplugged. Three rows, one change between each.\n4. One flight in the first configuration (switches in, TCP session live, RID active), a few minutes of hover and gentle maneuvers. Paid from the campaign pool.\n5. Parameter export on battery power after landing.\n\n**Also record**\n\nWhere your two GigaBlox switches came from (official distributor or marketplace) and what the PHY chip on them reads, since sourcing is one of the open variables. How far the M9N sits from the nearest switch on your build, in millimeters. Any shielding, ferrites, or cable routing that differs from the Houston unit.\n\n**Deliver**\n\nA table of the three static rows plus the flight, the flight log uploaded to the flight tracking platform, the parameter export attached or committed under `docs/Operations/firmware/parameters/` with your unit's name, and the switch sourcing and distance notes. The answer to the title question, yes or no, with the numbers.\n\n**Why it is worth two hours of your time**\n\nSame parts, same layout, different builders, different outcomes. If your build is clean under the Houston operating setup, the fault is in build or configuration and the fix is cheap. If your build degrades once Ethernet traffic flows, the fault is in the design and the shielding work on the Houston unit is the right path. Either answer moves the devkit shipping blocker.\n\n**Acceptance and payment**\nAccepted by the Project Lead in this issue on the table, the log, and the export. The $150 pays through the monthly CSV airdrop. The flight is computed under the campaign mechanics. Board rules in `tasks.md`.\n",
+   "topics": [
+    "software",
+    "flight"
+   ],
+   "parts": [
+    "3250",
+    "3251",
+    "2331",
+    "3313"
+   ],
+   "comments": 0,
+   "updatedAt": "2026-09-10T21:00:58Z"
+  },
+  {
+   "id": "T-14",
+   "number": 260,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/260",
+   "title": "Reliability metrics page on flights.arrowair.com, scoped at the October checkpoint",
+   "state": "OPEN",
+   "claimable": false,
+   "fundingLabel": "fund-QGB-FLEX",
+   "priceText": "Scoped and priced at the October checkpoint. Default split of the $1,000 commercial readiness earmark is $500 here and $500 to T-15, to be confirmed then.",
+   "priceUsd": null,
+   "fundingText": "QGB-FLEX commercial readiness earmark",
+   "owner": "OPEN. Not claimable until the checkpoint.",
+   "deadline": "Scope at the checkpoint (October report), delivery 2026-11-30",
+   "doneWhen": "A public page on flights.arrowair.com shows, per aircraft: validated flight hours, flights completed without pilot intervention, and demonstrated endurance, computed from the platform's own records.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-14** (see `tasks.md`)\r\n\r\n| | |\r\n|---|---|\r\n| Price | Scoped and priced at the October checkpoint. Default split of the $1,000 commercial readiness earmark is $500 here and $500 to T-15, to be confirmed then. |\r\n| Funding line | QGB-FLEX commercial readiness earmark |\r\n| Owner | OPEN. Not claimable until the checkpoint. |\r\n| Deadline | Scope at the checkpoint (October report), delivery 2026-11-30 |\r\n| Done when | A public page on flights.arrowair.com shows, per aircraft: validated flight hours, flights completed without pilot intervention, and demonstrated endurance, computed from the platform's own records. |\r\n\r\n**Why this waits**\r\n\r\nTwo things have to exist before this can be scoped honestly. First, the definition of a validated flight and of a flight without intervention, which is being written in T-17 (the campaign mechanics, #263) and which this page will display. Second, agreement from whoever maintains flights.arrowair.com on where the page lives and how it reads the data, since the platform is a separate codebase from this repository. Scoping the page before either exists would produce numbers nobody has agreed on.\r\n\r\n**What is known now**\r\n\r\nThe platform already shows hours per aircraft. The campaign logs carry the flight records. Endurance is on record (25.2 minutes, log 47). The page is mostly arithmetic on data that exists, plus the agreement above.\r\n\r\n**At the checkpoint**\r\n\r\nThe lead posts the scope here: the metric definitions from T-17, the platform owner's answer on hosting, the price, and the acceptance test. Then the row opens for claims.\r\n",
+   "topics": [
+    "market",
+    "flight"
+   ],
+   "parts": [],
+   "comments": 0,
+   "updatedAt": "2026-09-10T21:17:47Z"
+  },
+  {
+   "id": "T-15",
+   "number": 261,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/261",
+   "title": "Sales page refresh from the marketing discovery, scoped at the October checkpoint",
+   "state": "OPEN",
+   "claimable": false,
+   "fundingLabel": "fund-QGB-FLEX",
+   "priceText": "Scoped and priced at the October checkpoint. Default split of the $1,000 commercial readiness earmark is $500 here and $500 to T-14, to be confirmed then.",
+   "priceUsd": null,
+   "fundingText": "QGB-FLEX commercial readiness earmark",
+   "owner": "OPEN. Not claimable until the checkpoint.",
+   "deadline": "Scope at the checkpoint (October report), delivery 2026-11-30",
+   "doneWhen": "The sales page on arrowair.com carries the updates the marketing discovery recommended, live.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-15** (see `tasks.md`)\r\n\r\n| | |\r\n|---|---|\r\n| Price | Scoped and priced at the October checkpoint. Default split of the $1,000 commercial readiness earmark is $500 here and $500 to T-14, to be confirmed then. |\r\n| Funding line | QGB-FLEX commercial readiness earmark |\r\n| Owner | OPEN. Not claimable until the checkpoint. |\r\n| Deadline | Scope at the checkpoint (October report), delivery 2026-11-30 |\r\n| Done when | The sales page on arrowair.com carries the updates the marketing discovery recommended, live. |\r\n\r\n**Why this waits**\r\n\r\nThe Marketing and Sales Page Discovery deliverable (target audience, positioning, channel strategy, budget recommendation) is the input to this task and it has not been filed yet. It is a $375 line on the same earmark, written by the Project Lead, in review since May, and due to close in September. Until it is filed, nobody can say what the updates are. The sales page already exists, so this is a refresh, not a build.\r\n\r\n**At the checkpoint**\r\n\r\nThe lead posts the scope here: the filed discovery document, the list of page changes it recommends, the price, and who maintains the website repository (the lead does today, which is a reason to price it for someone else). Then the row opens for claims.\r\n",
+   "topics": [
+    "market"
+   ],
+   "parts": [],
+   "comments": 0,
+   "updatedAt": "2026-09-10T21:17:50Z"
+  },
+  {
+   "id": "T-16",
+   "number": 262,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/262",
+   "title": "Configure one new unit from the guide alone, file every gap",
+   "state": "OPEN",
+   "claimable": true,
+   "fundingLabel": "fund-QGB-FLEX",
+   "priceText": "$200",
+   "priceUsd": 200,
+   "fundingText": "QGB-FLEX (open task pool)",
+   "owner": "OPEN, claimable by whoever configures the next West Texas unit",
+   "deadline": "2026-10-15",
+   "doneWhen": "One aircraft is configured from the Initial Configuration Guide alone, and this issue carries the record described below.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-16** (see `tasks.md`)\n\n| | |\n|---|---|\n| Price | $200 |\n| Funding line | QGB-FLEX (open task pool) |\n| Owner | OPEN, claimable by whoever configures the next West Texas unit |\n| Deadline | 2026-10-15 |\n| Done when | One aircraft is configured from the Initial Configuration Guide alone, and this issue carries the record described below. |\n\n**What is being asked**\n\nConfigure one new Quiver from the guide, top to bottom, without asking the author. Every place the guide fails you becomes a GitHub issue. The configuration work itself is not what this task pays for, the record is.\n\n**The record**\n\n1. **One issue per failure.** Title it with the guide section number. Say what the guide told you to do, what actually happened, and what you did instead. A screenshot or a parameter readback is worth more than a paragraph.\n2. **One comment on this issue per section** of the guide, in order, with one of three words: worked, worked with a workaround (link the issue), or blocked (link the issue).\n3. **Time per section**, roughly. This is how the first time setup effort gets sized for the next builder and for the dev kit price.\n4. **The parameter export** from the finished unit, on battery power, attached here or committed under `docs/Operations/firmware/parameters/` with the unit's name.\n\n**Rules**\n\n- Use the procedure file `Initial-Configuration-Guide-procedure-draft.md` if it exists on `main` when you start, otherwise the master guide. Say which one you used.\n- Do not read the first unit commissioning record or the OA campaign files to fill gaps. If you needed them, that is a failure to file.\n- If a step cannot be completed at all, stop that section, file it as blocked, and continue with the next section that does not depend on it.\n\n**Why this is priced**\n\nThe builder does the configuration anyway. The board pays for the two to three hours of writing down where the guide broke, because that record is the only review of the guide that does not require the author's context.\n\n**Acceptance and payment**\nPayment lands on acceptance by the Project Lead once the per section comments, the issues, and the parameter export are in. Payouts batch monthly through the CSV airdrop flow. Board rules in `tasks.md`.\n",
+   "topics": [
+    "docs"
+   ],
+   "parts": [],
+   "comments": 0,
+   "updatedAt": "2026-09-10T20:21:33Z"
+  },
+  {
+   "id": "T-17",
+   "number": 263,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/263",
+   "title": "Flight test campaign V1 payment mechanics",
+   "state": "OPEN",
+   "claimable": false,
+   "fundingLabel": "fund-retro",
+   "priceText": "Retainer scope, no board price. Task board administration is what the lead retainer pays for.",
+   "priceUsd": null,
+   "fundingText": "The mechanics govern the 10,000 $ARROW Flight Test Campaign pool approved in April 2026 and carried on the project multisig.",
+   "owner": "Erick",
+   "deadline": "2026-09-30 (Phase 1 exit item in the September to November proposal)",
+   "doneWhen": "A one page mechanics document is merged in the repository and linked from `tasks.md`, and the first payout under it (the T-03 endurance flights) has been computed from it.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-17** (see `tasks.md`)\n\n| | |\n|---|---|\n| Price | Retainer scope, no board price. Task board administration is what the lead retainer pays for. |\n| Funding line | The mechanics govern the 10,000 $ARROW Flight Test Campaign pool approved in April 2026 and carried on the project multisig. |\n| Owner | Erick |\n| Deadline | 2026-09-30 (Phase 1 exit item in the September to November proposal) |\n| Done when | A one page mechanics document is merged in the repository and linked from `tasks.md`, and the first payout under it (the T-03 endurance flights) has been computed from it. |\n\n**What is being asked**\n\nDefine the V1 mechanics for paying people who fly. Until this exists the pool has sat untouched for five months while 23 validated flights were logged, and nobody who flew has been paid for flying. The September proposal committed to finalizing this in Phase 1 before any draw from the pool.\n\n**What the page has to settle**\n\n1. **What counts as a validated flight.** A log on the flight tracking platform, with the flight record fields filled, reviewed by someone other than the pilot. Say who that someone is by default.\n2. **The rate.** A flat $ARROW amount per validated flight, with at most one multiplier for a flight that is part of a defined campaign (obstacle avoidance, endurance, an attachment test) versus a free flight. Keep the table to two rows.\n3. **What is excluded.** Flights already paid under a bounty, flights that end in a failsafe or a crash, ferry hops, and flights by the retained lead that are inside the retainer's own operations (bench checks, hover checks after maintenance). Campaign flights by the lead with a defined deliverable are included, which is the T-03 case.\n4. **The cap.** How much of the 10,000 one operator can draw in a phase, so the majority of the pool remains for future operators as the dev kit fleet grows, which is what the proposal promised the DAO.\n5. **The clock.** Monthly, computed with the retro nominations, paid in the same airdrop batch.\n6. **The first computation.** Apply it to the T-03 endurance flights as the worked example on the page.\n\n**Why it is retainer work and not priced**\n\nThe lead retainer covers task board administration and treasury execution. This is both. Putting a price on it would be the retainer paying twice.\n\n**Acceptance**\nAccepted at the team call by adoption, recorded in the wiki notes for that call. No payment attached.\n",
+   "topics": [
+    "flight"
+   ],
+   "parts": [],
+   "comments": 0,
+   "updatedAt": "2026-09-10T20:33:18Z"
+  },
+  {
+   "id": "T-18",
+   "number": 264,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/264",
+   "title": "QuiverHub V1 deployed on the Houston unit, remote over Tailscale",
+   "state": "OPEN",
+   "claimable": false,
+   "fundingLabel": "fund-QGB-FLEX",
+   "priceText": "$100 (two hours, remote)",
+   "priceUsd": 100,
+   "fundingText": "QGB-FLEX (open task pool)",
+   "owner": "Alex",
+   "deadline": "2026-10-10",
+   "doneWhen": "QuiverHub V1 runs on the Houston unit's Raspberry Pi, the three checks below pass from the Houston bench, and the M4 and M5 note is posted in this issue.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-18** (see `tasks.md`)\n\n| | |\n|---|---|\n| Price | $100 (two hours, remote) |\n| Funding line | QGB-FLEX (open task pool) |\n| Owner | Alex |\n| Deadline | 2026-10-10 |\n| Done when | QuiverHub V1 runs on the Houston unit's Raspberry Pi, the three checks below pass from the Houston bench, and the M4 and M5 note is posted in this issue. |\n\n**What is being asked**\n\nDeploy QuiverHub V1 on the aircraft it was written for. The Houston unit's Raspberry Pi is imaged (OS Lite 64 bit, hostname Quiver-HOU), sits at `192.168.144.49` on the aircraft network, and reaches the flight controller at `.51` through the CubeNode ETH at `.50`. Tailscale on the Pi advertises the aircraft subnet, so the work is remote. Nothing from the Hub has ever run on it. The configuration guide section 6 stops at \"Hub and SDK services come next.\"\n\n**Access**\n\nErick adds you to the tailnet and approves the Pi's advertised route before the first session. Say in this issue when you can take a session, Erick has to be at the bench for power cycles, the SSR, and the flight controller side.\n\n**Two sessions**\n\n1. **Bring up.** Install the Hub services on the Pi from the SDK guide (telemetry forwarder, the log access web server on the flight controller SD card, the OTA puller from `.49:8080`, camera streaming if the A8 path is reachable). Note every step where the SDK guide is wrong or missing, the network section on `main` is stale (CubeNode `.50`, Pi `.49`, FC `.51`, the corrected values are in the guide's network topology) and the repo sync fixing it is in progress.\n2. **Verify from the bench.** With Erick present: telemetry reaches the Hub from the flight controller, a log downloads through the web server, and the OTA path is exercised once without flashing (a pull to the SD card that is then removed). Power cycle and confirm the services come back on their own.\n\n**The note that closes it**\n\nOne page in this issue: what runs, what does not, what the SDK guide needs corrected (file it as a PR or as issues), and what you now think milestones M4 and M5 should be, given the Pi, the Ethernet switches, and the way the aircraft is actually flown. Nobody remembers what those milestones were meant to contain. This note is the input to T-12.\n\n**Acceptance and payment**\nAccepted by the Project Lead in this issue after the bench verification. Payouts batch monthly through the CSV airdrop flow. Board rules in `tasks.md`.\n",
+   "topics": [
+    "software"
+   ],
+   "parts": [
+    "3312"
+   ],
+   "comments": 0,
+   "updatedAt": "2026-09-10T21:14:39Z"
+  }
+ ],
+ "issues": [
+  {
+   "number": 24,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/24",
+   "title": "Upload Flight Reports 4, 5, and 6",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "docs",
+    "flight"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-03-31T18:27:59Z",
+   "updatedAt": "2025-05-07T13:24:02Z"
+  },
+  {
+   "number": 25,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/25",
+   "title": "Update PT1 Battery Enclosure",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Update the enclosure so that the battery is 6mm further back, and add provisions for a dust lid for the pixhawk",
+   "topics": [
+    "power"
+   ],
+   "parts": [
+    "3410",
+    "3320"
+   ],
+   "comments": 0,
+   "createdAt": "2025-03-31T18:31:42Z",
+   "updatedAt": "2025-05-07T13:24:00Z"
+  },
+  {
+   "number": 26,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/26",
+   "title": "PT1 First 20hrs of Flight Testing",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "flight"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-03-31T18:35:18Z",
+   "updatedAt": "2025-08-18T21:04:52Z"
+  },
+  {
+   "number": 29,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/29",
+   "title": "04/14 - Flight Test Setup",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "- Creating a flight test setup similar to one we have in Texas - \"arrow-ge\" discord account - Order 1 more battery",
+   "topics": [
+    "flight",
+    "power"
+   ],
+   "parts": [
+    "3410",
+    "3320"
+   ],
+   "comments": 3,
+   "createdAt": "2025-04-03T18:42:11Z",
+   "updatedAt": "2026-01-29T17:16:54Z"
+  },
+  {
+   "number": 30,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/30",
+   "title": "04/21 - Flight Test Log Analyzer",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Develop a tool able to: - Access and Extract relevant data from Autopilot .Bin Data Log files - Generate accessible Data Plots and Graphics - Produce qualitative Flight Characteristic reports based on provided test information",
+   "topics": [
+    "docs",
+    "flight"
+   ],
+   "parts": [],
+   "comments": 3,
+   "createdAt": "2025-04-03T18:50:53Z",
+   "updatedAt": "2026-01-29T17:16:55Z"
+  },
+  {
+   "number": 31,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/31",
+   "title": "04/10 - Flight Test Log Review & List of Issues",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "- Get the logs and flight test documents of all 6 flights we conducted with PT1 - Create a list of all the issues we encounter",
+   "topics": [
+    "flight"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-04-03T18:54:30Z",
+   "updatedAt": "2025-04-10T21:07:24Z"
+  },
+  {
+   "number": 32,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/32",
+   "title": "04/07 - 20-Hour Test Campaign Plan",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "- Generate a 20-hour test campaign plan for PT1 & PT2",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-04-03T18:56:27Z",
+   "updatedAt": "2025-04-07T17:12:39Z"
+  },
+  {
+   "number": 33,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/33",
+   "title": "04/08 - PT1.5 Harnessing Modifications",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "- Routing the cables for the battery, FC and the motors for the new PCB on PT1.5",
+   "topics": [
+    "power"
+   ],
+   "parts": [
+    "3410",
+    "3320"
+   ],
+   "comments": 2,
+   "createdAt": "2025-04-03T18:59:40Z",
+   "updatedAt": "2025-05-01T16:53:19Z"
+  },
+  {
+   "number": 34,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/34",
+   "title": "04/08 - PT1.5 Battery Enclosure & Landing Gear Design",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "- PT1.5 Battery Enclosure & Landing Gear Design",
+   "topics": [
+    "power"
+   ],
+   "parts": [
+    "3410",
+    "3320"
+   ],
+   "comments": 1,
+   "createdAt": "2025-04-03T19:00:37Z",
+   "updatedAt": "2026-01-29T17:16:55Z"
+  },
+  {
+   "number": 35,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/35",
+   "title": "04/07 - Flight Test Setup",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Creating a flight test setup similar to one we have in Texas \"arrow-ge\" discord account Order 1 more battery",
+   "topics": [
+    "flight",
+    "power"
+   ],
+   "parts": [
+    "3410",
+    "3320"
+   ],
+   "comments": 0,
+   "createdAt": "2025-04-03T19:08:17Z",
+   "updatedAt": "2026-01-29T17:16:56Z"
+  },
+  {
+   "number": 37,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/37",
+   "title": "04/11 - Accomplish large EU operator license for drones",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "- Receive license to operate drones up to 25kg in the EU - Insure the Quiver PT2 prototype",
+   "topics": [
+    "market"
+   ],
+   "parts": [],
+   "comments": 4,
+   "createdAt": "2025-04-07T08:33:06Z",
+   "updatedAt": "2025-04-11T16:01:04Z"
+  },
+  {
+   "number": 40,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/40",
+   "title": "04/10 Finalize Engineering Report",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "docs"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-04-07T19:19:24Z",
+   "updatedAt": "2025-04-10T04:41:19Z"
+  },
+  {
+   "number": 41,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/41",
+   "title": "04/14 - PT1 Flight Log Issues Review",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "flight"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-04-10T17:31:24Z",
+   "updatedAt": "2025-08-18T21:05:12Z"
+  },
+  {
+   "number": 43,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/43",
+   "title": "04/14 - PT2 Flight Test Log Review & Suggestions for First Flight Test",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "flight"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-04-11T16:09:59Z",
+   "updatedAt": "2026-01-29T17:16:56Z"
+  },
+  {
+   "number": 44,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/44",
+   "title": "04/16 - PT2 First Flight Test Review",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "flight"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-04-14T18:22:20Z",
+   "updatedAt": "2026-01-29T17:16:56Z"
+  },
+  {
+   "number": 45,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/45",
+   "title": "04/15 - PT2 Realignment of the motor positions",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Issue of motor power contrast",
+   "topics": [
+    "power"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-04-15T16:19:05Z",
+   "updatedAt": "2025-04-16T11:14:49Z"
+  },
+  {
+   "number": 46,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/46",
+   "title": "04/25 - Small manual for PT2 electronics assembly",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Small manual to have an overview how to assemble the electronics of PT2.",
+   "topics": [],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-04-15T16:20:58Z",
+   "updatedAt": "2025-04-18T13:09:32Z"
+  },
+  {
+   "number": 47,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/47",
+   "title": "04/18 - 002.md flight log",
+   "state": "CLOSED",
+   "labels": [
+    "documentation"
+   ],
+   "excerpt": "Complete flight test doc of the second flight.",
+   "topics": [
+    "flight"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-04-16T12:58:40Z",
+   "updatedAt": "2025-04-17T14:04:31Z"
+  },
+  {
+   "number": 48,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/48",
+   "title": "04/18 - 003.md flight log",
+   "state": "CLOSED",
+   "labels": [
+    "documentation"
+   ],
+   "excerpt": "Complete flight test doc of the 3. flight.",
+   "topics": [
+    "flight"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-04-16T12:59:27Z",
+   "updatedAt": "2025-04-17T14:04:31Z"
+  },
+  {
+   "number": 49,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/49",
+   "title": "04/18 - Create information note for correcting the motor orientation",
+   "state": "CLOSED",
+   "labels": [
+    "documentation"
+   ],
+   "excerpt": "Create information note for correcting the motor orientation. Motor orientation needs to be corrected in case a continuous thrust imbalance is occurring during flight (diagonally pairs have different power level).",
+   "topics": [
+    "flight",
+    "power"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-04-16T13:02:51Z",
+   "updatedAt": "2025-04-22T15:57:13Z"
+  },
+  {
+   "number": 55,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/55",
+   "title": "04/24 - Attach payload dummy to PT2",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Attach a payload dummy to PT2 similar to the brush bullet applicator. Weight around 1,5kg.",
+   "topics": [
+    "attachments"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-04-22T16:52:03Z",
+   "updatedAt": "2025-04-24T15:16:29Z"
+  },
+  {
+   "number": 56,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/56",
+   "title": "04/24 - Small repair on PT2",
+   "state": "CLOSED",
+   "labels": [
+    "bug"
+   ],
+   "excerpt": "During the last flight, a screw became loose, causing the connection to heat up. There are two main causes for this: 1. an iron washer led to moderate heat generation 2. the clamping of the screw connection involved the 3D printing. The heat has reduced the contact pressure as the plastic has softened due to the heat. The lack of contact pressure exacerbated the heating. The landing was completed on time.",
+   "topics": [
+    "flight"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-04-23T11:54:26Z",
+   "updatedAt": "2025-04-24T15:22:36Z"
+  },
+  {
+   "number": 58,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/58",
+   "title": "04/28 - PT2 Flight Test Campaign",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "flight"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-04-24T19:02:05Z",
+   "updatedAt": "2026-01-29T17:16:57Z"
+  },
+  {
+   "number": 59,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/59",
+   "title": "04/28 - Finding a Way to Remove GPS Data from Flight Test Logs",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "flight"
+   ],
+   "parts": [
+    "3250",
+    "3251",
+    "2331"
+   ],
+   "comments": 0,
+   "createdAt": "2025-04-24T19:05:01Z",
+   "updatedAt": "2025-04-30T16:19:33Z"
+  },
+  {
+   "number": 62,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/62",
+   "title": "05/02 - PT3 Baseline Design Evaluation",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-04-28T18:17:05Z",
+   "updatedAt": "2026-01-29T17:16:57Z"
+  },
+  {
+   "number": 63,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/63",
+   "title": "04/30 - Attachment Possibilities",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Research & report the possible Project Quiver attachments ",
+   "topics": [
+    "attachments",
+    "docs"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-04-28T18:25:28Z",
+   "updatedAt": "2025-04-30T16:14:54Z"
+  },
+  {
+   "number": 64,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/64",
+   "title": "04/29 - GPS-Removed-Flight Log & Flight Test Log Analyzer Tool Compatibility",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "flight"
+   ],
+   "parts": [
+    "3250",
+    "3251",
+    "2331"
+   ],
+   "comments": 2,
+   "createdAt": "2025-04-28T18:33:37Z",
+   "updatedAt": "2025-05-14T14:47:16Z"
+  },
+  {
+   "number": 69,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/69",
+   "title": "05/08 - Picking Top 5 Attachments for Incentives",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "attachments"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-05-06T16:25:30Z",
+   "updatedAt": "2025-05-19T18:30:41Z"
+  },
+  {
+   "number": 70,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/70",
+   "title": "05/08 - PT3 PCB Discussions & Guideline",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "docs"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-05-06T16:30:04Z",
+   "updatedAt": "2025-05-09T14:54:09Z"
+  },
+  {
+   "number": 71,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/71",
+   "title": "05/09 - PT3 Flight Controller Options & Guideline",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "docs",
+    "flight"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-05-06T16:32:42Z",
+   "updatedAt": "2025-05-14T14:48:56Z"
+  },
+  {
+   "number": 72,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/72",
+   "title": "05/08 - PT2 Maximum Payload Test & No Payload Endurance Test",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "attachments",
+    "flight"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-05-06T16:39:54Z",
+   "updatedAt": "2025-05-12T17:56:36Z"
+  },
+  {
+   "number": 73,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/73",
+   "title": "05/09 - PT3 Baseline Discussion Summary",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-05-06T16:46:23Z",
+   "updatedAt": "2026-01-29T17:16:58Z"
+  },
+  {
+   "number": 76,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/76",
+   "title": "05/15 - PT3 Battery Connector PCB Design",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "power"
+   ],
+   "parts": [
+    "3410",
+    "3320"
+   ],
+   "comments": 2,
+   "createdAt": "2025-05-08T18:50:08Z",
+   "updatedAt": "2025-05-20T19:10:37Z"
+  },
+  {
+   "number": 77,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/77",
+   "title": "05/14 - RTK/GNSS Options",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [
+    "3250",
+    "3251",
+    "2331"
+   ],
+   "comments": 1,
+   "createdAt": "2025-05-08T19:00:23Z",
+   "updatedAt": "2025-05-19T18:32:44Z"
+  },
+  {
+   "number": 78,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/78",
+   "title": "05/26 - PT3 EMI Study",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-05-08T19:06:08Z",
+   "updatedAt": "2026-01-29T17:16:58Z"
+  },
+  {
+   "number": 90,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/90",
+   "title": "05/27 - Adapter PCB Design and Main PCB Modification",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [
+    "3310"
+   ],
+   "comments": 1,
+   "createdAt": "2025-05-19T18:35:05Z",
+   "updatedAt": "2025-06-04T13:18:49Z"
+  },
+  {
+   "number": 91,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/91",
+   "title": "05/21 - Attachment Interface PCB Grant",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "attachments"
+   ],
+   "parts": [
+    "3331",
+    "2112",
+    "3310"
+   ],
+   "comments": 0,
+   "createdAt": "2025-05-19T18:36:08Z",
+   "updatedAt": "2025-06-09T18:35:57Z"
+  },
+  {
+   "number": 92,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/92",
+   "title": "05/28 - Structural Design Freeze",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "- Waterproof & Dustproof - Seal for top cap - Provisions for PCBs - 2 new attachment interfaces on sides ",
+   "topics": [
+    "attachments"
+   ],
+   "parts": [
+    "3331",
+    "2112",
+    "3310"
+   ],
+   "comments": 0,
+   "createdAt": "2025-05-19T18:39:43Z",
+   "updatedAt": "2026-01-29T17:16:59Z"
+  },
+  {
+   "number": 93,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/93",
+   "title": "05/22 - Aircraft Performance Metrics",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-05-19T18:40:31Z",
+   "updatedAt": "2026-01-29T17:16:59Z"
+  },
+  {
+   "number": 94,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/94",
+   "title": "05/29 - Attachment Firmware Template",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "attachments",
+    "software"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-05-19T18:43:49Z",
+   "updatedAt": "2025-05-29T18:12:17Z"
+  },
+  {
+   "number": 95,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/95",
+   "title": "05/21 - Harnessing & Wiring Review",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-05-19T18:46:15Z",
+   "updatedAt": "2025-06-23T15:16:26Z"
+  },
+  {
+   "number": 96,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/96",
+   "title": "05/27 - Lidar & Radar Altimeter & SiYi System Integration",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-05-19T18:48:38Z",
+   "updatedAt": "2025-06-16T18:35:39Z"
+  },
+  {
+   "number": 101,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/101",
+   "title": "06/13 - Testing of V1 of battery connector PCB (BC_PCB)",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "power"
+   ],
+   "parts": [
+    "3410",
+    "3320"
+   ],
+   "comments": 1,
+   "createdAt": "2025-05-30T10:22:35Z",
+   "updatedAt": "2025-06-20T17:29:19Z"
+  },
+  {
+   "number": 103,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/103",
+   "title": "06/06 - Data preparation and ordering of Main PCB and FC PCB",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [
+    "3310"
+   ],
+   "comments": 1,
+   "createdAt": "2025-06-04T13:22:27Z",
+   "updatedAt": "2025-06-06T11:20:31Z"
+  },
+  {
+   "number": 105,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/105",
+   "title": "06/11 - Flight Controller Setup Guide",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "docs",
+    "flight"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-06-06T16:37:37Z",
+   "updatedAt": "2025-06-16T18:35:29Z"
+  },
+  {
+   "number": 110,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/110",
+   "title": "06/19 - Research Harnessing on CAD Environment",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-06-16T18:35:16Z",
+   "updatedAt": "2026-01-29T17:17:00Z"
+  },
+  {
+   "number": 111,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/111",
+   "title": "07/15 - Detailed Performance Metrics Study",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-06-16T18:38:24Z",
+   "updatedAt": "2025-08-04T18:26:48Z"
+  },
+  {
+   "number": 115,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/115",
+   "title": "08/22 - Quiver Payload Attachment Firmware Development",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "**Title**: 🛠️ Implement Payload Integration Architecture for Quiver UAS **Description**: This issue tracks the end-to-end implementation of the standardized payload interface for the Quiver, enabling modular, hot-swappable payload support across current and future Arrow-air platforms. The effort includes mechanical, electrical, firmware, and protocol layers. **Objectives**: * Establish working CAN and Ethernet commu",
+   "topics": [
+    "attachments",
+    "software"
+   ],
+   "parts": [],
+   "comments": 3,
+   "createdAt": "2025-06-18T16:34:09Z",
+   "updatedAt": "2026-01-29T17:17:00Z"
+  },
+  {
+   "number": 116,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/116",
+   "title": "06/27 - Assembly of Main PCB and FC PCB",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [
+    "3310"
+   ],
+   "comments": 0,
+   "createdAt": "2025-06-20T17:30:38Z",
+   "updatedAt": "2026-01-29T17:17:01Z"
+  },
+  {
+   "number": 118,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/118",
+   "title": "08/04 - FEA on 3D Printed Parts",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "07/07 - Research FEA Possibility on 3D Printed Parts - Report: - If it's possible to run FEA on 3D printed parts - Options if any 07/15 - If FEA is possible: Conduct FEA analyses on various parts, validate with online/academic sources - If FEA is not possible: Research how to assess plastic enclosure shape & sizing, what to consider, how to size, industry standards, etc. - Document all the findings in an information ",
+   "topics": [
+    "docs"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-07-01T16:31:54Z",
+   "updatedAt": "2025-08-04T18:04:53Z"
+  },
+  {
+   "number": 119,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/119",
+   "title": "07/07 -  Include Harnessing BOM in the Main BOM",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-07-03T17:55:38Z",
+   "updatedAt": "2025-07-09T16:15:21Z"
+  },
+  {
+   "number": 120,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/120",
+   "title": "07/10 - Specialized Test Plan for PT3",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-07-03T18:28:00Z",
+   "updatedAt": "2025-07-14T18:22:37Z"
+  },
+  {
+   "number": 121,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/121",
+   "title": "07/17 - Preliminary Investigation of Ranch Compass Calibration Problem",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-07-03T18:33:43Z",
+   "updatedAt": "2025-08-18T17:49:59Z"
+  },
+  {
+   "number": 122,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/122",
+   "title": "08/08 - PT3 Engineering Report First Draft",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "docs"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-07-03T18:46:42Z",
+   "updatedAt": "2025-09-02T15:58:53Z"
+  },
+  {
+   "number": 123,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/123",
+   "title": "07/07 - Ship the Main, BC & FC PCBs to US",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-07-03T18:48:05Z",
+   "updatedAt": "2025-07-08T14:58:24Z"
+  },
+  {
+   "number": 124,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/124",
+   "title": "07/21 - Build the Second Set of PCBs & Test Ethernet",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-07-03T18:50:21Z",
+   "updatedAt": "2025-07-16T16:19:03Z"
+  },
+  {
+   "number": 125,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/125",
+   "title": "07/15 - General PT3 Assembly Preparations",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-07-03T18:50:38Z",
+   "updatedAt": "2026-01-29T17:17:01Z"
+  },
+  {
+   "number": 126,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/126",
+   "title": "07/09 - RTK System Setup Guide",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Add RTK system setup guide to FC setup guide Rename it to \"avionics-setup-guide\"",
+   "topics": [
+    "docs"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-07-03T18:53:17Z",
+   "updatedAt": "2025-07-14T18:22:34Z"
+  },
+  {
+   "number": 129,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/129",
+   "title": "07/18 - Test and send second set of PCBs to US",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Second PCB set for Quiver PT3",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-07-16T16:20:37Z",
+   "updatedAt": "2025-07-22T16:02:08Z"
+  },
+  {
+   "number": 130,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/130",
+   "title": "08/04 - PT3 mechanical and electrical build (Germany)",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Complete structure, mounted PCBs and wiring",
+   "topics": [],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-07-16T16:23:25Z",
+   "updatedAt": "2025-08-04T08:35:54Z"
+  },
+  {
+   "number": 132,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/132",
+   "title": "07/21 - Erick will fly PT1",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-07-22T01:28:44Z",
+   "updatedAt": "2025-07-25T16:09:55Z"
+  },
+  {
+   "number": 133,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/133",
+   "title": "07/31 - PT3 investigate voltage drop issue",
+   "state": "CLOSED",
+   "labels": [
+    "bug"
+   ],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-07-24T19:04:20Z",
+   "updatedAt": "2025-07-29T08:00:00Z"
+  },
+  {
+   "number": 134,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/134",
+   "title": "08/04 - Write information note for startup problem and precharge resistor change",
+   "state": "CLOSED",
+   "labels": [
+    "documentation"
+   ],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-07-29T16:04:07Z",
+   "updatedAt": "2025-08-04T11:06:46Z"
+  },
+  {
+   "number": 135,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/135",
+   "title": "09/05 - PCB adjustments and improvements for next batch",
+   "state": "CLOSED",
+   "labels": [
+    "enhancement"
+   ],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-07-29T16:06:27Z",
+   "updatedAt": "2025-09-22T09:23:44Z"
+  },
+  {
+   "number": 136,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/136",
+   "title": "08/07 - Compass Findings Information Note",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "We had some issues with compass setup in PT3 and while debugging that, we acquired some know-how. We'll prepare an information note for archiving that information and for future reference.",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-07-29T17:02:30Z",
+   "updatedAt": "2025-09-03T16:27:52Z"
+  },
+  {
+   "number": 137,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/137",
+   "title": "08/06 - Enclosure Modification",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "The current enclosure has problems as indicated in Problem Sheet",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-07-31T18:32:42Z",
+   "updatedAt": "2026-01-29T17:17:02Z"
+  },
+  {
+   "number": 138,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/138",
+   "title": "08/31 - PT3 GE Flight Tests",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "flight"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-07-31T18:36:23Z",
+   "updatedAt": "2026-01-29T17:17:02Z"
+  },
+  {
+   "number": 142,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/142",
+   "title": "08/12 - Review Attachment Requirements",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "attachments"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-08-04T18:25:40Z",
+   "updatedAt": "2025-09-03T16:28:07Z"
+  },
+  {
+   "number": 144,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/144",
+   "title": "08/08 - Camera Mount Modification",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Move the camera from the rear to the front, modify the altitude sensor mount to house the camera",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-08-06T16:57:36Z",
+   "updatedAt": "2025-08-20T16:04:37Z"
+  },
+  {
+   "number": 145,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/145",
+   "title": "08/08 - Update the Flight Controller Setup Guide",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "docs",
+    "flight"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-08-06T17:00:56Z",
+   "updatedAt": "2026-01-29T17:17:03Z"
+  },
+  {
+   "number": 146,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/146",
+   "title": "08/12 - PT3 US Flight Test Documents Preparation",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Add the test logs to the flight test documents in this PR: https://github.com/Arrow-air/project-quiver/pull/141 Write an information note reviewing the logs",
+   "topics": [
+    "flight"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-08-06T17:03:41Z",
+   "updatedAt": "2026-01-29T17:17:03Z"
+  },
+  {
+   "number": 147,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/147",
+   "title": "08/12 - Update Harnessing Guide",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "docs"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-08-06T17:07:10Z",
+   "updatedAt": "2026-01-29T17:17:04Z"
+  },
+  {
+   "number": 148,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/148",
+   "title": "08/12 - Attachment Interface PCB Verification",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Design a dummy model of the pcb with the connector 3D print and test on the attachment interface",
+   "topics": [
+    "attachments"
+   ],
+   "parts": [
+    "3331",
+    "2112",
+    "3310"
+   ],
+   "comments": 0,
+   "createdAt": "2025-08-06T17:24:27Z",
+   "updatedAt": "2026-01-29T17:17:04Z"
+  },
+  {
+   "number": 152,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/152",
+   "title": "08/22 - FEA Model Preparation",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-08-20T16:10:09Z",
+   "updatedAt": "2025-08-22T16:29:34Z"
+  },
+  {
+   "number": 153,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/153",
+   "title": "08/28 - PT3 RTK Information Note",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-08-25T17:17:04Z",
+   "updatedAt": "2026-01-29T17:17:05Z"
+  },
+  {
+   "number": 155,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/155",
+   "title": "09/04 - Obstacle Avoidance System Selection",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [
+    "3210",
+    "3290"
+   ],
+   "comments": 0,
+   "createdAt": "2025-09-02T16:26:38Z",
+   "updatedAt": "2025-09-10T11:01:47Z"
+  },
+  {
+   "number": 158,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/158",
+   "title": "09/09 - PT3 Germany repair and installation of F9P GNSS",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [
+    "3250",
+    "3251",
+    "2331"
+   ],
+   "comments": 1,
+   "createdAt": "2025-09-09T16:04:30Z",
+   "updatedAt": "2025-09-09T16:04:58Z"
+  },
+  {
+   "number": 161,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/161",
+   "title": "10/03 - Ordering weight-reduced aluminum components",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "In talks with local company and also backup option from china.",
+   "topics": [],
+   "parts": [],
+   "comments": 2,
+   "createdAt": "2025-09-22T09:28:39Z",
+   "updatedAt": "2025-10-31T09:41:52Z"
+  },
+  {
+   "number": 162,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/162",
+   "title": "09/26 - Update PCBs and overall assembly in Fusion with the new PCB designs",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-09-22T09:31:04Z",
+   "updatedAt": "2025-09-29T13:23:01Z"
+  },
+  {
+   "number": 163,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/163",
+   "title": "09/26 - Flight test with the 20Ah Tattu battery",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "flight",
+    "power"
+   ],
+   "parts": [
+    "3410",
+    "3320"
+   ],
+   "comments": 0,
+   "createdAt": "2025-09-22T09:32:29Z",
+   "updatedAt": "2025-10-02T13:35:17Z"
+  },
+  {
+   "number": 164,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/164",
+   "title": "10/09 - Meetup preparations",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2025-09-22T09:33:22Z",
+   "updatedAt": "2025-10-31T09:43:38Z"
+  },
+  {
+   "number": 165,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/165",
+   "title": "09/30 - Integration of obstacle avoidance system on PT3 GER",
+   "state": "CLOSED",
+   "labels": [
+    "enhancement"
+   ],
+   "excerpt": "Mechanical, electrical and FC integration",
+   "topics": [],
+   "parts": [
+    "3210",
+    "3290"
+   ],
+   "comments": 3,
+   "createdAt": "2025-09-25T17:03:39Z",
+   "updatedAt": "2025-11-07T10:05:07Z"
+  },
+  {
+   "number": 170,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/170",
+   "title": "11/07 - Start of dust and water protection information note",
+   "state": "CLOSED",
+   "labels": [
+    "enhancement"
+   ],
+   "excerpt": "https://github.com/Julius-eng/project-quiver-05032025/blob/main/task-grant-bounty/pt3/structural/0004-improvement_of_dust_and_water_resistance/information-note.md",
+   "topics": [],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2025-11-07T10:07:37Z",
+   "updatedAt": "2025-11-07T10:07:39Z"
+  },
+  {
+   "number": 175,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/175",
+   "title": "Add an \"Attachment wish list\" to the docs",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Reference the attachment ideas and bounty specifications that we have already written. This will be to engage new contributors and be an easy to comprehend into to some of our attachment ideas. Add link to \"about Quiver\" page too",
+   "topics": [
+    "attachments",
+    "docs"
+   ],
+   "parts": [],
+   "comments": 2,
+   "createdAt": "2026-01-30T17:48:47Z",
+   "updatedAt": "2026-09-09T20:58:45Z"
+  },
+  {
+   "number": 176,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/176",
+   "title": "Add BOM",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Maybe partially generated from the build123d project, definitely linked to it. Probably in the docs, but could just be in the repo directly",
+   "topics": [
+    "docs"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2026-02-10T02:39:12Z",
+   "updatedAt": "2026-07-21T18:44:08Z"
+  },
+  {
+   "number": 179,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/179",
+   "title": "Add tool list for assembly/manufacturing guide",
+   "state": "OPEN",
+   "labels": [],
+   "excerpt": "What is needed to build this",
+   "topics": [
+    "market",
+    "docs"
+   ],
+   "parts": [],
+   "comments": 0,
+   "createdAt": "2026-02-12T16:35:35Z",
+   "updatedAt": "2026-02-12T16:35:35Z"
+  },
+  {
+   "number": 188,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/188",
+   "title": "Custom 21700 Li-ion battery pack — drop-in replacement for Tattu 14S smart battery",
+   "state": "CLOSED",
+   "labels": [
+    "enhancement"
+   ],
+   "excerpt": "## Overview **Status: Preliminary concept — main components to be specified week of March 9** Exploring a custom 14S Li-ion battery pack using 21700 cells as a drop-in replacement for the Tattu 14S 30Ah smart battery. The goal is a significant energy upgrade with better safety characteristics and comparable weight. ## Background The current Tattu 14S 30Ah smart battery: - Dimensions: 333 × 237 × 92.5mm - Weight: 11.5",
+   "topics": [
+    "power"
+   ],
+   "parts": [
+    "3410",
+    "3320"
+   ],
+   "comments": 1,
+   "createdAt": "2026-03-06T18:25:49Z",
+   "updatedAt": "2026-07-21T18:42:59Z"
+  },
+  {
+   "number": 189,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/189",
+   "title": "Modify A8 mini mount to work with M2.5 heat set inserts",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "The current design doesn't work well with threaded inserts and I've been using locknuts, which adds installation time",
+   "topics": [],
+   "parts": [],
+   "comments": 2,
+   "createdAt": "2026-03-31T21:31:37Z",
+   "updatedAt": "2026-03-31T23:20:32Z"
+  },
+  {
+   "number": 190,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/190",
+   "title": "Remote ID module: investigate Bluetooth data during arming",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "During arming, investigate what data is accessible via the Bluetooth app interface from the Remote ID module. Document findings for community reference. **Tasks:** - Identify what telemetry/status data the BT app exposes during arming sequence - Document the data fields and any arming-related behavior - Add findings to docs or engineering notes",
+   "topics": [
+    "software",
+    "docs"
+   ],
+   "parts": [
+    "3202"
+   ],
+   "comments": 1,
+   "createdAt": "2026-04-08T01:46:57Z",
+   "updatedAt": "2026-04-11T08:22:30Z"
+  },
+  {
+   "number": 191,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/191",
+   "title": "4G RPi shield: retest for GPS interference",
+   "state": "OPEN",
+   "labels": [],
+   "excerpt": "Perform a controlled test to determine if the 4G RPi shield causes GPS interference on Quiver. **Tasks:** - Run controlled test: shield on vs. shield off - Monitor HDop, satellite count, and position stability in both states - Document results and recommend mitigation if interference is confirmed",
+   "topics": [
+    "flight"
+   ],
+   "parts": [
+    "3250",
+    "3251",
+    "2331",
+    "3312"
+   ],
+   "comments": 0,
+   "createdAt": "2026-04-08T01:46:59Z",
+   "updatedAt": "2026-04-08T01:46:59Z"
+  },
+  {
+   "number": 192,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/192",
+   "title": "Transport case: documentation note + contact manufacturer for foam cutout",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Document the transport case specifications and follow up with the manufacturer regarding custom foam cutout options. **Tasks:** - Document case specs in the repo (dimensions, model, supplier) - Contact manufacturer to inquire about custom foam cutout for Quiver hardware - Add documentation note to relevant docs section",
+   "topics": [
+    "market",
+    "docs"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2026-04-08T01:47:01Z",
+   "updatedAt": "2026-04-16T10:17:57Z"
+  },
+  {
+   "number": 200,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/200",
+   "title": "Remove silicone adhesive from dev-kit manufacturing guide",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "market",
+    "docs"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2026-04-15T23:44:47Z",
+   "updatedAt": "2026-04-19T15:15:02Z"
+  },
+  {
+   "number": 203,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/203",
+   "title": "QGB-02: Obstacle Avoidance System — Test, Tune & Document",
+   "state": "OPEN",
+   "labels": [],
+   "excerpt": "## Overview **Type:** Grant **Reward:** $4,000 USDC **Approved via:** [Quiver — March 2026 Grants & Bounties (Snapshot)](https://snapshot.box/#/s:arrowair.eth/proposal/0x667f547e1b7d9128f2cf5de7f0ab262ed8874e98eed7a13d0cd822fe7fcc0949) Thoroughly test and tune the Quiver's obstacle avoidance system (360° LiDAR + forward-facing radar). Develop a recommended configuration and parameter set for reliable obstacle avoidan",
+   "topics": [
+    "software"
+   ],
+   "parts": [
+    "3210",
+    "3290"
+   ],
+   "comments": 6,
+   "createdAt": "2026-04-20T14:14:22Z",
+   "updatedAt": "2026-08-30T21:47:32Z"
+  },
+  {
+   "number": 206,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/206",
+   "title": "Update locktite guide for motor arm connectors",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "Using locktite red now, and one of the circled areas doesn't need locktite![image](https://github.com/user-attachments/assets/6fa98978-d54a-4259-9a41-123a040f559d)",
+   "topics": [
+    "attachments",
+    "docs"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2026-04-21T00:08:46Z",
+   "updatedAt": "2026-04-21T22:01:22Z"
+  },
+  {
+   "number": 209,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/209",
+   "title": "Add empty and battery weight to docs",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "",
+   "topics": [
+    "docs",
+    "power"
+   ],
+   "parts": [
+    "3410",
+    "3320"
+   ],
+   "comments": 2,
+   "createdAt": "2026-04-23T22:42:23Z",
+   "updatedAt": "2026-07-21T18:44:30Z"
+  },
+  {
+   "number": 233,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/233",
+   "title": "Attachment adapter board for JMRRC FS2516 granular spreader (DroneCAN reference design)",
+   "state": "OPEN",
+   "labels": [],
+   "excerpt": "## Context Thomas is integrating a JMRRC FS2516 granular spreader (6S–14S DC spinner, PWM door servo, PWM turnplate speed, hopper-empty sensor) as a Quiver attachment. Thread: Discord #bot-chat › \"Granular Dispenser\". The stock JMRRC breakout is a passive board (Speed/Door servo headers + DC pads + sensor). We want a purpose-built **attachment adapter board** that replaces it, so the spreader connects to the Quiver a",
+   "topics": [
+    "attachments"
+   ],
+   "parts": [
+    "3331",
+    "2112",
+    "3310"
+   ],
+   "comments": 16,
+   "createdAt": "2026-07-09T14:18:16Z",
+   "updatedAt": "2026-07-11T11:54:09Z"
+  },
+  {
+   "number": 234,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/234",
+   "title": "Attachment interface power delivery: 12V payload rail is ~13W shared — high-power attachments need a real power path",
+   "state": "OPEN",
+   "labels": [],
+   "excerpt": "## Motivation Granular dispenser integration work (#233) surfaced this: the attachment interface's power delivery is sized for logic-level payloads only, but a large class of realistic attachments wants **20–100W+** — floodlights/spotlights, dispensers/spreaders, larger cameras and gimbals, heaters, speakers. Right now every one of those needs a custom pigtail to battery voltage, which defeats the \"hot-swap attachmen",
+   "topics": [
+    "attachments",
+    "power"
+   ],
+   "parts": [
+    "3331",
+    "2112",
+    "3310",
+    "3410",
+    "3320"
+   ],
+   "comments": 1,
+   "createdAt": "2026-07-10T02:38:00Z",
+   "updatedAt": "2026-08-20T18:47:26Z"
+  },
+  {
+   "number": 236,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/236",
+   "title": "Claim: QGB-01 Attachment Developer Guide ($750 USDC)",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "The [June 2026 Project Quiver report](https://dao.arrowair.com/t/project-quiver-june-2026-progress-report/172) lists the **Attachment Developer Guide** under QGB-01 as **Open** with a **$750 USDC** allocation. I would like to claim and lock this bounty. ## Proposed deliverable Add a dedicated guide under `docs/Develop-Attachments-Software/` that takes a contributor from concept to a reviewable Quiver attachment, with",
+   "topics": [
+    "attachments",
+    "software",
+    "docs"
+   ],
+   "parts": [],
+   "comments": 2,
+   "createdAt": "2026-07-18T20:12:13Z",
+   "updatedAt": "2026-07-21T19:00:51Z"
+  },
+  {
+   "number": 237,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/237",
+   "title": "Claim: QGB-01 Platform Engineering Report ($500 USDC)",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "The [June 2026 Project Quiver report](https://dao.arrowair.com/t/project-quiver-june-2026-progress-report/172) lists the **Platform Engineering Report** under QGB-01 as **Open** with a **$500 USDC** allocation. The current `Dev-Kit-Engineering-Report.md` also identifies a complete platform reference as a separate planned document. I would like to claim and lock this bounty if the reserved item is open to an external ",
+   "topics": [
+    "docs"
+   ],
+   "parts": [],
+   "comments": 4,
+   "createdAt": "2026-07-18T21:20:17Z",
+   "updatedAt": "2026-08-23T19:23:41Z"
+  },
+  {
+   "number": 238,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/238",
+   "title": "Claim: QGB-01 Manufacturing Guide First-Time Setup ($300 USDC)",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "The [May 2026 Project Quiver report](https://dao.arrowair.com/t/project-quiver-may-2026-progress-report/168) lists **Manufacturing Guide - First time Setup** under QGB-01 as **Open** with a **$300 USDC** allocation. I found no existing issue or claim for this item and would like to claim and lock it if it is open to an external contributor. ## Proposed deliverable Add a source-traceable first-time setup guide to the ",
+   "topics": [
+    "market",
+    "docs"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2026-07-19T01:23:34Z",
+   "updatedAt": "2026-07-19T01:28:32Z"
+  },
+  {
+   "number": 239,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/239",
+   "title": "Proposal: QGB-01 Simplified Chinese operations docs localization ($750 USDC)",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "## Proposal The June 2026 report records $3,486 USDC as unassigned within QGB-01 after the priced documentation items, and this repository explicitly welcomes documentation translations. I propose a scoped Simplified Chinese operations-documentation localization for **$750 USDC**. ## Deliverable Localize the current English source at a maintainer-approved pinned commit: - `docs/index.md` (953 words) - `docs/Operation",
+   "topics": [
+    "docs"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2026-07-19T02:40:06Z",
+   "updatedAt": "2026-07-21T19:01:04Z"
+  },
+  {
+   "number": 240,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/240",
+   "title": "Proposal: QGB-01 Korean operations docs localization ($750 USDC)",
+   "state": "CLOSED",
+   "labels": [],
+   "excerpt": "## Proposal The June 2026 Project Quiver report records **$3,486 USDC in unassigned QGB-01 funds** after the priced documentation items, and Arrow's contribution guide explicitly welcomes documentation work. I propose a scoped Korean (`ko-KR`) operations-documentation localization for **$750 USDC**. ## Deliverable Localize the current English source at a maintainer-approved pinned commit: - `docs/index.md` - `docs/Op",
+   "topics": [
+    "docs"
+   ],
+   "parts": [],
+   "comments": 1,
+   "createdAt": "2026-07-19T04:35:25Z",
+   "updatedAt": "2026-07-21T19:01:13Z"
+  }
+ ],
+ "fundingLines": [
+  {
+   "label": "fund-QGB-01",
+   "name": "QGB-01 Documentation",
+   "statedBudgetUsd": null,
+   "statedBudgetSource": null,
+   "pricedUsd": 2550,
+   "unpriced": 0,
+   "tasks": [
+    "T-02",
+    "T-04",
+    "T-05",
+    "T-09"
+   ]
+  },
+  {
+   "label": "fund-QGB-03",
+   "name": "QGB-03 Endurance Study",
+   "statedBudgetUsd": null,
+   "statedBudgetSource": null,
+   "pricedUsd": 150,
+   "unpriced": 0,
+   "tasks": [
+    "T-03"
+   ]
+  },
+  {
+   "label": "fund-QGB-05",
+   "name": "QGB-05 Attachment Development",
+   "statedBudgetUsd": 3000,
+   "statedBudgetSource": "T-07",
+   "pricedUsd": 0,
+   "unpriced": 3,
+   "tasks": [
+    "T-06",
+    "T-07",
+    "T-08"
+   ]
+  },
+  {
+   "label": "fund-QGB-FLEX",
+   "name": "QGB-FLEX Open task pool",
+   "statedBudgetUsd": null,
+   "statedBudgetSource": null,
+   "pricedUsd": 525,
+   "unpriced": 2,
+   "tasks": [
+    "T-01",
+    "T-13",
+    "T-14",
+    "T-15",
+    "T-16",
+    "T-18"
+   ]
+  },
+  {
+   "label": "fund-checkpoint",
+   "name": "Priced at the October checkpoint",
+   "statedBudgetUsd": null,
+   "statedBudgetSource": null,
+   "pricedUsd": 0,
+   "unpriced": 1,
+   "tasks": [
+    "T-12"
+   ]
+  },
+  {
+   "label": "fund-retro",
+   "name": "Monthly retroactive $ARROW",
+   "statedBudgetUsd": null,
+   "statedBudgetSource": null,
+   "pricedUsd": 0,
+   "unpriced": 1,
+   "tasks": [
+    "T-17"
+   ]
+  }
+ ],
+ "flights": [
+  {
+   "id": "001",
+   "date": "2025-07-25 11:30",
+   "location": "Balmorhea, TX",
+   "aircraft": "QVR-PT-US02B",
+   "weather": "Clear",
+   "wind": "3 kts 122",
+   "aim": "- Moderate vibration existed during the last flight\n  - Try the harmonic notch filter\n- Tune the aircraft and try position hold mode",
+   "path": "flight-test/PT3-TX/001.md"
+  },
+  {
+   "id": "002",
+   "date": "07/27/2025 15:00 Local Time",
+   "location": "Balmorhea",
+   "aircraft": "QVR-PT-US02B",
+   "weather": "Clear",
+   "wind": "6 kts from 63",
+   "aim": "- The first flight after the repairs\n- Check system integrity",
+   "path": "flight-test/PT3-TX/002.md"
+  },
+  {
+   "id": "002",
+   "date": "07/28/2025 11:50 Local Time",
+   "location": "Balmorhea",
+   "aircraft": "QVR-PT-US02B",
+   "weather": "Partially Cloud",
+   "wind": "2.7 kts from 100",
+   "aim": "Tuning the aircraft, switching to loiter mode",
+   "path": "flight-test/PT3-TX/003.md"
+  }
+ ],
+ "guides": [
+  {
+   "group": "Attachment and software",
+   "path": "docs/Develop-Attachments-Software/Quiver-SDK-Developer-Guide.md",
+   "title": "Quiver SDK Developer Guide",
+   "lines": 815,
+   "outline": [
+    {
+     "depth": 1,
+     "text": "Quiver SDK Developer Guide"
+    },
+    {
+     "depth": 2,
+     "text": "1. System Overview"
+    },
+    {
+     "depth": 2,
+     "text": "2. Architecture"
+    },
+    {
+     "depth": 2,
+     "text": "3. Network Configuration"
+    },
+    {
+     "depth": 2,
+     "text": "4. Companion Services"
+    },
+    {
+     "depth": 2,
+     "text": "5. Hub REST API — Complete Endpoint Reference"
+    },
+    {
+     "depth": 2,
+     "text": "6. WebSocket Events (Socket.IO)"
+    },
+    {
+     "depth": 2,
+     "text": "7. Play-by-Play: Setting Up a New Drone"
+    },
+    {
+     "depth": 1,
+     "text": "Test Hub connectivity"
+    },
+    {
+     "depth": 1,
+     "text": "Test FC web server (from Pi)"
+    },
+    {
+     "depth": 2,
+     "text": "8. FC Web Server Setup (ArduPilot)"
+    },
+    {
+     "depth": 1,
+     "text": "Should return HTML directory listing"
+    },
+    {
+     "depth": 2,
+     "text": "9. Building a Custom Payload App"
+    },
+    {
+     "depth": 2,
+     "text": "10. Operational Walkthroughs"
+    },
+    {
+     "depth": 1,
+     "text": "Or test with ffprobe:"
+    },
+    {
+     "depth": 1,
+     "text": "Should show the go2rtc port being funneled"
+    },
+    {
+     "depth": 2,
+     "text": "11. Quick Reference"
+    },
+    {
+     "depth": 1,
+     "text": "Service management"
+    },
+    {
+     "depth": 1,
+     "text": "CAN bus"
+    },
+    {
+     "depth": 1,
+     "text": "MAVLink debugging"
+    },
+    {
+     "depth": 1,
+     "text": "Test Hub endpoint"
+    }
+   ]
+  },
+  {
+   "group": "Operate",
+   "path": "docs/Operations/Pilot-Handbook.md",
+   "title": "Pilot Handbook",
+   "lines": 815,
+   "outline": [
+    {
+     "depth": 1,
+     "text": "Pilot Handbook"
+    },
+    {
+     "depth": 2,
+     "text": "1. Safety & Compliance"
+    },
+    {
+     "depth": 2,
+     "text": "2. System Setup"
+    },
+    {
+     "depth": 2,
+     "text": "3. Power Up Procedure"
+    },
+    {
+     "depth": 2,
+     "text": "4. Emergency Procedures"
+    },
+    {
+     "depth": 2,
+     "text": "5. Checklist"
+    },
+    {
+     "depth": 2,
+     "text": "6. Flight tracking platform"
+    }
+   ]
+  },
+  {
+   "group": "Operate",
+   "path": "docs/Operations/Maintenance-Guide.md",
+   "title": "Maintenance Guide",
+   "lines": 266,
+   "outline": [
+    {
+     "depth": 1,
+     "text": "Maintenance Guide"
+    },
+    {
+     "depth": 2,
+     "text": "1. General Maintenance Principles"
+    },
+    {
+     "depth": 2,
+     "text": "2. Subsystems Maintenance Checklist"
+    },
+    {
+     "depth": 2,
+     "text": "3. Tools Requirement"
+    },
+    {
+     "depth": 2,
+     "text": "4. Regular Maintenance"
+    },
+    {
+     "depth": 2,
+     "text": "5. Troubleshooting & Unscheduled Maintenance"
+    },
+    {
+     "depth": 2,
+     "text": "6. Remarks"
+    }
+   ]
+  },
+  {
+   "group": "Build",
+   "path": "docs/Manufacturing/Manufacturing-Guide.md",
+   "title": "Dev-Kit Manufacturing Guide",
+   "lines": 1146,
+   "outline": [
+    {
+     "depth": 1,
+     "text": "Dev-Kit Manufacturing Guide"
+    },
+    {
+     "depth": 2,
+     "text": "PCB Fabrication and Assembly"
+    },
+    {
+     "depth": 2,
+     "text": "Harness Fabrication"
+    },
+    {
+     "depth": 2,
+     "text": "BOM for the Assembly"
+    },
+    {
+     "depth": 2,
+     "text": "Preparation"
+    },
+    {
+     "depth": 2,
+     "text": "Assembly Steps"
+    }
+   ]
+  },
+  {
+   "group": "Build",
+   "path": "docs/Manufacturing/BOM.md",
+   "title": "Bill of Materials",
+   "lines": 210,
+   "outline": [
+    {
+     "depth": 1,
+     "text": "Bill of Materials"
+    },
+    {
+     "depth": 2,
+     "text": "Airframe Structure"
+    },
+    {
+     "depth": 2,
+     "text": "Supporting Structure"
+    },
+    {
+     "depth": 2,
+     "text": "Equipment"
+    },
+    {
+     "depth": 2,
+     "text": "Harness"
+    },
+    {
+     "depth": 2,
+     "text": "Fasteners"
+    },
+    {
+     "depth": 2,
+     "text": "Consumables and Tools"
+    },
+    {
+     "depth": 2,
+     "text": "Notes"
+    }
+   ]
+  }
+ ],
+ "devGuideMd": "# Quiver SDK Developer Guide\n\n**Version:** April 2026\n\n---\n\n## 1. System Overview\n\nQuiver Hub is a cloud-hosted web application that provides real-time visualization, remote management, and data logging for UAV operations. The companion computer (Raspberry Pi) runs Python services that bridge the flight controller, payload devices, and Hub over HTTPS and WebSocket. Operators interact through the Hub web UI; the companion computer handles all local hardware communication and data forwarding autonomously.\n\nThe system supports five concurrent data pipelines: telemetry (MAVLink + UAVCAN), point cloud (LiDAR), camera (WebRTC via go2rtc), FC logs and OTA firmware, and custom payload apps. Each pipeline has a dedicated companion service, REST endpoint, and WebSocket broadcast channel.\n\n---\n\n## 2. Architecture\n\n```\n┌─────────────────────────────────────────────────────────────────┐\n│                        QUIVER HUB (Cloud)                       │\n│  React UI · tRPC · REST API · Socket.IO · S3 · TiDB            │\n└──────────────────────────┬──────────────────────────────────────┘\n                           │ HTTPS / WSS (cellular or WiFi)\n┌──────────────────────────┴──────────────────────────────────────┐\n│              COMPANION COMPUTER  (Raspberry Pi)                  │\n│  192.168.144.50                                                  │\n│                                                                  │\n│  Services:                                                       │\n│    raspberry_pi_client.py   — Job polling & file delivery        │\n│    telemetry_forwarder.py   — MAVLink + UAVCAN → Hub            │\n│    logs_ota_service.py      — FC logs, OTA, diagnostics          │\n│    camera_stream_service.py — go2rtc + Tailscale stream mgmt     │\n│    siyi_camera_controller.py— Gimbal control (SIYI UDP SDK)      │\n│                                                                  │\n│  Connects to FC via Ethernet (MAVLink) and CAN bus (DroneCAN)    │\n└──────────┬──────────────────────────────┬───────────────────────┘\n           │ Ethernet                     │ CAN bus\n┌──────────┴──────────┐     ┌─────────────┴───────────────────────┐\n│  FLIGHT CONTROLLER  │     │  PAYLOAD PORTS (C1 / C2 / C3)       │\n│  192.168.144.51     │     │  Ethernet: 192.168.144.100–.199     │\n│  ArduPilot + Lua    │     │  CAN: DroneCAN protocol             │\n│  net_webserver.lua  │     │  Sensors, cameras, actuators        │\n│  (port 8080)        │     └─────────────────────────────────────┘\n└─────────────────────┘\n```\n\n---\n\n## 3. Network Configuration\n\nThe Quiver network is flat — no DHCP runs on the Pi (Siyi firmware conflicts with DHCP servers). All IPs are static on the `192.168.144.0/24` subnet.\n\n### Reserved Addresses (Do Not Use)\n\n| IP | Device |\n|---|---|\n| 192.168.144.11 | Siyi air unit |\n| 192.168.144.12 | Siyi ground unit |\n| 192.168.144.20 | Android GCS (Siyi reserved) |\n| 192.168.144.25 | Siyi A8 Mini camera |\n| 192.168.144.60 | Siyi camera reserved |\n| 192.168.144.50 | Raspberry Pi (companion computer) |\n| 192.168.144.51 | Flight controller |\n\n### Payload Port Assignments\n\nDeveloper-assigned static range: `192.168.144.100` – `192.168.144.199`\n\n| Port | Recommended IP |\n|---|---|\n| Bottom (J31) | 192.168.144.100 |\n| Side 1 (J29) | 192.168.144.101 |\n| Side 2 (J30) | 192.168.144.102 |\n\n### Key Connections\n\n| Path | Protocol | Details |\n|---|---|---|\n| Companion → Hub | HTTPS + WSS | REST API, Socket.IO (cellular/WiFi) |\n| Companion → FC | Ethernet (MAVLink) | `192.168.144.51`, also CAN bus for DroneCAN |\n| Companion → FC Web Server | HTTP | `http://192.168.144.51:8080` (net_webserver.lua, FC log access) |\n| Companion → Payloads | Ethernet | `192.168.144.100–.199` via integrated switch |\n| Companion → Siyi Camera | Ethernet | `192.168.144.25` (RTSP stream + UDP SDK) |\n| Mission Planner → FC | RF telemetry | 915 MHz / 433 MHz radio (MAVLink) |\n\n---\n",
+ "attachmentSpec": {
+  "status": "Draft",
+  "date": "2026-03-31",
+  "purpose": "This document defines the contract that Quiver payload attachments must implement to be compatible with `quiver.attachment` in the quiver-sdk.\n\nThere are two physical interfaces on every Quiver attachment port:\n- **Ethernet** — high-bandwidth, for cameras, LiDAR, compute modules, custom sensors\n- **CAN bus** — low-bandwidth, for actuators, simple sensors, battery monitors\n\nEach has a different contract. CAN payloads use DroneCAN/UAVCAN (DSDL-typed messages — already standardized). Ethernet payloads need an explicit format contract, which this document defines.\n\nA payload that implements this contract gets:\n- Automatic typed discovery via `Attachment.scan()`\n- Typed stream callbacks with schema-validated data\n- Automatic QuiverHub App Builder integration (Hub knows which widget to render)\n- mDNS-based name resolution (`sprayer.quiver.local`)\n- Clean SDK API: `device.stream(\"scan\")`, `device.command(\"start\")`\n\nA payload that does not implement this contract still works — but only as a raw byte pipe (`device.raw`).",
+  "url": "https://github.com/Arrow-air/quiver-sdk/blob/main/PAYLOAD_SPEC.md"
+ }
+}

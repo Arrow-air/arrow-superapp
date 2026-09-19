@@ -13,3 +13,5 @@ Throwaway builds. One folder per experiment. Each folder's README states the que
 - **Agent pre-meeting round.** Each person's agent debates the open questions before a call; humans approve or correct the brief. Tests Q3 and Q4. See `ideas/agent-delegates.md`.
 - **Component threads on the Quiver viewer.** Click a part, get its discussion. See `ideas/cad-anchored-discussion.md`.
 - **Meeting consensus UI.** Turn OPEN-QUESTIONS.md into a vote page. See `ideas/meeting-consensus-ui.md`.
+
+- `quiver-app/` One app for one aircraft. Real Quiver data, pretend interactions. See its README.
