@@ -19,3 +19,8 @@ Numbered so ideas and notes can point at them. Add, don't renumber. Mark answere
 | Q13 | What is the minimum version to build first? | Thomas, 2026-09-17 | ~54:00 |
 | Q14 | Should we replace Snapshot with our own governance system, or layer on top of it? | Gavin, 2026-09-17 | ~04:35 |
 | Q15 | Should decision threads live in a separate app, or attach to the work itself (CAD part, PCB region, code line) and render wherever that work is shown? What is a stable anchor for each kind of artifact? | Thomas, 2026-09-18 (reviewing prototype 1) | `ideas/discussion-at-the-work.md` |
+| Q16 | Is the primary output of a thread a codified decision in a project register, with bounties as one downstream use? What are the first ten decisions worth registering for Quiver or Spearhead? | Thomas, 2026-09-18 (discussions #7, #11) | `ideas/decision-register.md` |
+| Q17 | Two rounds: a direction round, then a funded proposal round only when needed. Does every thread need the lead at both steps? | Thomas, 2026-09-18 (discussion #11) | `ideas/spec-thread-to-bounty.md` |
+| Q18 | How do we keep $ARROW worth buying for say in decisions without letting it dominate? Log with cap, square root, or staking on positions? | Thomas, 2026-09-18 (discussion #3) | `ideas/weighted-voting.md` |
+| Q19 | How is builder intent verified: build or flight history, a token bond, or reputation strikes? | Thomas, 2026-09-18 (discussion #5) | `ideas/weighted-voting.md` |
+| Q20 | Should the system be headless first, with the app, Discord, the CAD viewer, and agent-made views as renderers? Where do people actually want decisions to reach them? | Thomas, 2026-09-18 (discussion #10) | `ideas/discussion-at-the-work.md` |

@@ -23,3 +23,4 @@ One file per idea, using the template in the root README. Status is the first li
 | `personal-dashboard.md` | seed | Gavin |
 | `community-solutions.md` | seed | Gavin |
 | `discussion-at-the-work.md` | exploring | Thomas |
+| `decision-register.md` | exploring | Thomas |

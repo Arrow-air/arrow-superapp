@@ -1,5 +1,7 @@
 # Roadmap: a conversation tool of our own
 
+> **Paused, 2026-09-18.** Thomas: keep working through the ideas and concepts before diving into engineering. Nothing here is scheduled. The concept work is happening in the [discussions](https://github.com/Arrow-air/arrow-superapp/discussions) and `ideas/`, and it has already changed the shape: see `ideas/decision-register.md` and the revisions in `ideas/spec-thread-to-bounty.md`. Revise this roadmap after that settles.
+
 **Decision (Thomas, 2026-09-18):** build the full conversation tool ourselves rather than layering on GitHub Discussions. Assume engineering effort is not the constraint. If we build it all and still can't justify it over GitHub Discussions, we shift back.
 
 That fallback only stays cheap if we design for it, so two rules hold from day one:

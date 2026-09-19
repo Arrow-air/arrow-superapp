@@ -15,6 +15,11 @@ Prototype 1 made the problem visible. To discuss a power budget you leave the bo
 - Storage can be boring. The giscus pins in prototype 1 already do a small version of this: the conversation is stored in GitHub Discussions and rendered next to the feature it is about. The same thread could render in the Quiver Three.js viewer.
 - A need in spec-threads gains an optional anchor, and the thread page shows the artifact (or a link into it) at the top.
 
+### Addition from Thomas's comment (discussion #10, 2026-09-18)
+The best way to present a thread varies by context, and agents may soon render a fitting interface for each situation. That argues for building the thing **headless first**: a small data model and API (question, positions, ballots, decision, anchor) with many renderers on top. The web app is one renderer. Others: a widget in the CAD viewer, a Discord message with vote buttons posted by Vector, an agent-made view for one specific board review.
+
+The risk Thomas names is the same one the DAO forum and GitHub issues have: a separate place you have to remember to visit. The answer is push, not pull. Decisions that need you come to where you already are, which for Arrow today is Discord, with a digest for everything else.
+
 ## Risks and tensions
 - Anchors rot. Parts get renumbered, lines move, boards get re-laid-out. Anchors need a stable ID scheme per artifact type, and a graceful "this moved" state.
 - Much of Arrow's CAD is still in Fusion, not in Git or a web viewer. You can't embed a widget in Fusion. Web-viewable exports come first.

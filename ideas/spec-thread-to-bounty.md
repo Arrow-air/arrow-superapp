@@ -19,5 +19,14 @@ Spec quality still needs a competent judge. Small expert hints must be rewardabl
 
 Finding from prototype 1 (2026-09-18): as built, the thread is a destination you travel to, away from the CAD or the board. See `discussion-at-the-work.md`.
 
+### Revision after Thomas's comments (discussion #11, 2026-09-18)
+The single round in prototype 1 is wrong. What people post first are ideas and directions, not specs. Proposed shape:
+
+1. **Direction round.** Open discussion of positions. Weighted vote. The lead picks a direction. Output: a decision in the register (`decision-register.md`).
+2. **Proposal round, only if work needs funding.** People submit specific grant or bounty proposals against the chosen direction: scope, cost, timeline, who. Second weighted vote. The lead funds the best one.
+3. **Or it stops at round 1.** The decision stands as a constraint on the project and no bounty follows. Some threads never decide anything and stay as open discussion, and that is fine.
+
+Rename accordingly: replies in round 1 are *positions*, not specs.
+
 ## Open questions
 Q1, Q6, Q7
