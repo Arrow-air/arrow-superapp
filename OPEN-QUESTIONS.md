@@ -27,3 +27,4 @@ Numbered so ideas and notes can point at them. Add, don't renumber. Mark answere
 | Q21 | Which moments matter most to get right first: a decision reaching you in Discord, commenting from inside the CAD or a board, co-writing a bounty spec, the lead's decision screen, the register for newcomers, the funds view, or catch-up? | Thomas, 2026-09-18 | `ideas/ux-moments.md` |
 | Q22 | How are spec authors rewarded? A spec pool on each bounty, split by attributed contribution and corrected by peer allocation and lead sign-off? | Thomas, 2026-09-18 | `ideas/retro-rewards-reddit-coordinape.md` |
 | Q23 | What is the token's full role: funding rounds, staking, streaming budgets, rewards? (With Erick.) | Thomas, 2026-09-18 | `ideas/weighted-voting.md` |
+| Q24 | For a single-aircraft app (Quiver): which sections earn their place, and what would Quiver's leads and reviewers actually open every week? | Thomas, 2026-09-18 | `ideas/quiver-app.md` |
