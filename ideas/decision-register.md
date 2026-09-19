@@ -18,6 +18,14 @@ The main thing a thread produces is a **codified decision attached to the projec
 - Reopening is the normal way to challenge a decision. The extreme case is a governance proposal to replace the lead (Thomas, #7).
 - Software has a version of this called architecture decision records. This is that, for aircraft, with weighted community input in front of it.
 
+### Not instead of specs (Thomas, 2026-09-18)
+The register does not replace collaborative spec writing. Writing the detailed spec for what becomes a grant or bounty, together, stays a core use. The two are different activities with different interfaces:
+
+- **Deciding** is choosing between positions. Votes, tallies, a lead's call, a record.
+- **Spec writing** is co-authoring one document. Suggested edits, inline comments on a sentence, attributed changes. This is where the Google Docs model fits.
+
+A decision often comes first and the spec is written under it. The spec's edit history then doubles as the record of who contributed what, which is the raw material for rewarding spec authors (`retro-rewards-reddit-coordinape.md`).
+
 ## Risks and tensions
 - Writing decisions down makes them feel more final than they are. Status and "superseded by" have to be cheap to use.
 - A dependency graph nobody maintains is worse than none. Dependencies should be few and added when a conflict actually bites.

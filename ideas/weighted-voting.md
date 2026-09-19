@@ -21,5 +21,13 @@ Weighting formulas get gamed. Balancing lead authority vs. multiple experts vs. 
 - **Builder intent needs gating** so it is not a free weight grab. Options: only members with a verified build or flight history get the bonus (the flight-tracking database already knows who flies what); a token bond returned on delivery; a reputation strike for declaring and not building. At small scale the lead can discount bad-faith votes by hand. That stops working with many voters.
 - **An override is a failure signal.** Ideally the lead never disagrees with the top option. Track override rate per project and treat a falling rate as the coordination getting better. The optimistic end state is that the lead is not needed for most decisions: a position with a wide margin and no unanswered objections could decide itself.
 
+### Principle (Thomas, 2026-09-18): token for funds flow, signal for engineering
+The token matters most where money moves: which projects and decisions get budget, which grant proposal gets funded, how retro rewards are split. For engineering spec decisions the prototype's blend (role, expertise, builder intent, a modest token term) is about right. So there are two kinds of vote with two weightings, not one formula stretched over both:
+
+- **What is technically right?** Signal-weighted. Expertise and accountability dominate.
+- **Where does the money go?** Token-weighted. This is what makes $ARROW worth holding.
+
+The token's role across all of this (funding rounds, staking, streaming budgets, rewards) needs its own exploration with Erick.
+
 ## Open questions
 Q1, Q2, Q6, Q14
