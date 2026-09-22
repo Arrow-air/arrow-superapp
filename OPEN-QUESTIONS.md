@@ -28,3 +28,8 @@ Numbered so ideas and notes can point at them. Add, don't renumber. Mark answere
 | Q22 | How are spec authors rewarded? A spec pool on each bounty, split by attributed contribution and corrected by peer allocation and lead sign-off? | Thomas, 2026-09-18 | `ideas/retro-rewards-reddit-coordinape.md` |
 | Q23 | What is the token's full role: funding rounds, staking, streaming budgets, rewards? (With Erick.) | Thomas, 2026-09-18 | `ideas/weighted-voting.md` |
 | Q24 | For a single-aircraft app (Quiver): which sections earn their place, and what would Quiver's leads and reviewers actually open every week? | Thomas, 2026-09-18 | `ideas/quiver-app.md` |
+| Q25 | Would you let your personal agent vote on your behalf? Call answers: probably no (Thomas), only with a well-tended soul file (Gavin), never (Alperen). Agreed as the test for how far agents go. | 2026-09-22 call | `ideas/agent-delegates.md` |
+| Q26 | One discussions database with an API, embedded everywhere: build it, or keep GitHub Discussions underneath with weighting on our side? | Thomas, Gavin, 2026-09-22 | `ideas/discussions-store.md` |
+| Q27 | How do competing design candidates (forks of a part or an attachment interface) sit side by side and get compared, now that forking is replacing commenting? | Thomas, 2026-09-22 | `ideas/cad-anchored-discussion.md` |
+| Q28 | Onboarding quests with token rewards: which steps deserve pay, and does paying attract farmers? | Gavin, 2026-09-22 | `ideas/sleety-app-shell.md` |
+| Q29 | Slop defence in practice: weighted votes, team-only upvotes, a slop button with negative reputation, agent judges? | Alperen, 2026-09-22 | `ideas/weighted-voting.md` |

@@ -16,3 +16,7 @@ Big scope. Much of Arrow's CAD is still in Fusion, not Git. Keep it a later laye
 
 ## Open questions
 Q12, Q13
+
+
+## Update 2026-09-22
+Gavin's shell has a 3D Quiver overview where each subassembly is a gateway to bounties and an improve-this flow; ours anchors on BOM ids. Both agree this is where discussion belongs. New wrinkle from Thomas: people would rather fork than comment. So a part that is still being designed (a new attachment interface, Caribou's structure) needs to hold several candidates side by side, with comments on corners of each candidate, and a way to compare them. See Q27.

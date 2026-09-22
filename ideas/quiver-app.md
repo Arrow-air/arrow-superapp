@@ -55,3 +55,7 @@ A clickable front end with **real read-only data** pulled from the repo at build
 
 ## Open questions
 Q24. Related: nearly every idea in this folder.
+
+
+## Update 2026-09-22
+First clickable version built (`prototypes/quiver-app`, 2026-09-18). On the call Thomas restated the centre of gravity: the drone is done, Quiver needs attachments, software and a route to market, and Gavin's shell doesn't capture that yet. Likely merge: Gavin's onboarding and project shell outside, this app's pages inside. Erick would use Overview/Components/Tasks/Team today and populate Tasks with his open issues.

@@ -1,0 +1,857 @@
+**sleety.eth:** Must be pretty early for you.
+
+**errrks.eth:** Uh, 9 AM. It's like a, a very— for a bit.
+
+**errrks.eth:** I was picking some cucumbers.
+
+**errrks.eth:** This not
+
+**sleety.eth:** Nice.
+
+**sleety.eth:** Sì.
+
+**thomasg:** You're growing cucumbers?
+
+**errrks.eth:** Yeah, yeah, um, I've been growing them for like 3 months now.
+
+**thomasg:** Oh, cool.
+
+**errrks.eth:** I—
+
+**errrks.eth:** have a ton of cucumbers. I have, I need to ferment some of them, but yeah, I have a drawer full of cucumbers right now.
+
+**thomasg:** We gotta start like a gardening channel or something. I'm wanting to start growing.
+
+**errrks.eth:** Yeah, I probably should. I have, uh, what else? I have sweet potatoes growing also.
+
+**thomasg:** Oh, I love sweet potatoes.
+
+**sleety.eth:** Good job. Are you, are you planning on being a farmer in the future, Eric? Is this practice when we reach state of abundance?
+
+**errrks.eth:** I would, I would like to be able to grow enough food to feed myself. I don't know if I'd actually get there, but it's a nice challenge.
+
+**sleety.eth:** Yeah, you've always liked that. You used to like fishing stuff as well. Like, I'm pretty sure if you lived beside a river, you'd, you'd be fishing all the time.
+
+**errrks.eth:** There is a creek nearby me. Um, it's just been way too hot outside to go fishing. But yeah, I actually been— I walk around my property a lot and try finding everything that's edible, and I've found a grape edible, um, a berry that's edible, and these naturally grown cucumbers. They're like really tiny.
+
+**sleety.eth:** Let's go.
+
+**errrks.eth:** They grow up.
+
+**errrks.eth:** Yeah, I probably put more stuff in my mouth than I should be doing.
+
+**thomasg:** This is
+
+**sleety.eth:** Yeah.
+
+**errrks.eth:** Thomas, you have plans for starting a garden too, right? You're, you're thinking of doing it like right in front of your kitchen area.
+
+**errrks.eth:** Or is it somewhere else?
+
+**thomasg:** Yeah, I'm trying to figure out like how to, how to do it and where to put things.
+
+**thomasg:** I think I want to plant some, uh, like some apple trees and things this fall.
+
+**thomasg:** And then I'll probably do like raised beds and stuff for the spring and start growing veggies and things like that.
+
+**errrks.eth:** Thank you.
+
+**errrks.eth:** Huh.
+
+**errrks.eth:** Do people— is it— have people had success growing apples out there?
+
+**thomasg:** I think so. I was talking with my openclaw about it and it seemed to think they would do well.
+
+**thomasg:** Oh yeah, there's other, like, outside of Fort Davis. So yes, definitely.
+
+**errrks.eth:** You thinking of me?
+
+**errrks.eth:** Okay.
+
+**sleety.eth:** I know for sure that pecans will grow well there.
+
+**thomasg:** I have become trees.
+
+**thomasg:** Yeah, by the pool.
+
+**errrks.eth:** That's cool.
+
+**errrks.eth:** Have, like, were they already there or you, you planted them there?
+
+**thomasg:** They were here already.
+
+**errrks.eth:** Okay.
+
+**thomasg:** Usually the javelinas get into them before I can harvest it, but
+
+**thomasg:** That's okay.
+
+**sleety.eth:** I don't mind. Have Elena's eaten all the food?
+
+**errrks.eth:** Thank you.
+
+**sleety.eth:** Can have everything.
+
+**thomasg:** Yeah.
+
+**thomasg:** Well,
+
+**errrks.eth:** You say that you can't survive because the javelinas are eating all of your food.
+
+**thomasg:** That's when the Evelynas become food.
+
+**sleety.eth:** No.
+
+**thomasg:** No, I'd have to be starving to want to kill Evelina.
+
+**thomasg:** Well, how y'all feeling about the super app?
+
+**thomasg:** I was really impressed by just that little demo app I made with like a quick, like, live coding session.
+
+**sleety.eth:** Yeah, it was, um,
+
+**alperenag:** Hello guys.
+
+**sleety.eth:** Hey Alperen, it was way more like in-depth than like
+
+**errrks.eth:** Yeah.
+
+**errrks.eth:** 以上です
+
+**sleety.eth:** than, like, I could even imagine. Like, you know, if we sat down to write out the token weighting and stuff like that, it would get complicated. Now we can tweak it.
+
+**errrks.eth:** The pool is leaking.
+
+**sleety.eth:** And, uh,
+
+**sleety.eth:** come up with a
+
+**thomasg:** I didn't even like, this is like Fable, like a Fable session. I didn't even like tell it the token weighting and stuff. It just kind of like made a guess at it.
+
+**sleety.eth:** It's amazing.
+
+**sleety.eth:** Um, well, I was, I was really happy with that. And like, I mean, for that section of the super app, that's like perfect if we can just like polish the UI and obviously discuss the, the weighting and, um, and all those things. Um, I, I, I kind of was thinking like even a step backwards from that, um,
+
+**sleety.eth:** But I do realize that this is probably the core of what you think. You post your need and you vote on it and someone else chooses to be on like, I think that's the nuts and bolts of what we need. If I can, I'll just share my screen and I'll show you guys what I was thinking about from a sort of high-level like UI sort of perspective. And you guys can tell me if you agree or you think that it's not what you guys are thinking at all. But, um, so
+
+**sleety.eth:** Can everybody see the screen?
+
+**thomasg:** Is again.
+
+**sleety.eth:** Okay, so I was thinking of it more for like, obviously each of those individual apps, like the flight testing is an app which needs its own attention and love and all that there. And how was just to plug everything else. Same with, you know, your specification app or your comment and discussion app. They're all things. So I tried to think about what I would imagine would be the coolest thing that we could have that tied everything together. So I thought.
+
+**sleety.eth:** I, I thought about it in this— I'll maybe zoom in a little.
+
+**thomasg:** To be clear, that specification app was just kind of like a fragment. I wanted to like show off that one UI component. I'm not necessarily saying it should be its own app.
+
+**sleety.eth:** I—
+
+**sleety.eth:** Yeah.
+
+**sleety.eth:** Yeah, yeah. So this one was, it's like a tabular sort of thing. So whenever you arrive in the app, there will be some sort of, I know, there will be some sort of sign up and then you get issued with some, maybe like some Arrow token for completing small tasks. Like we can discuss on how important that might be, but like I'm imagining the most important things are the the profile, the contributor profile, we'd want that to be filled out so we can find out a bit about someone, maybe their GitHub username,
+
+**sleety.eth:** if they've attended a welcome call, things like this. And there's obviously loads of things, maybe a message in the introduction channel would grant you some more. So just general onboarding steps that I think all of us would agree that we want from everybody, but coordinating them to get to a stage where they're fully like, everybody's keeping track of things is the best we've got now is our Arrow member role on Discord. But still some things are leaking out. And I think this could quite this could help filter out some of the fluff we're getting on GitHub with bots. So these sorts of things, then you could add in extra quests or challenges for just posting us on social media or something like that. All that, there is something, but the general flow is you reach an onboarding stage and then once you've got that done, you can go forward to the next stage or you're kind of limited in what you can
+
+**sleety.eth:** once we go into a project, so Spearhead or say Quiver here, you get the assembly, which is just like a really nice like intro to the project. And then you get like all the open bounties on Quiver collated together. And then this is just how to get involved with Quiver itself. There might be different ways you want to get involved with like Caribou versus Quiver. And then just a mirror of the docs. But I think I was doing this as it was, I was putting it together. But like one thing I thought would be cool is if all of these components were gateways to contributions, because looking at an aircraft like that, it feels like so overwhelming to know where you can help. So maybe the project lead can divide it up into logical sections where contributions
+
+**sleety.eth:** it focuses in on that actual component, and then all of the related bounties or bug bounties or improvement bounties are kind of related to each component. And it mightn't be a component, it might be an entire system of things where the bounty to improve the system. Um, so that's what I'm imagining. It would be a good
+
+**sleety.eth:** workflow. Um, and then like maybe for each component we just start out with having like, um, basically improvement, improvement bounties. So if you choose your component, um, there's some sort of bounty attached to all of them where there's steps to how you can post your own improvement. And I'm imagining this from a perspective of we're sharing this and we want people to contribute. I'm imagining like someone has been working on this and they post it as like a small win and then it's posted on our socials as being like one of our contributors created this universal attachment spacer or whatever. And then you're like all open for contributions to improve it. And then someone else will come in and be like, oh, well, I could do a better job than that. And then they come in and then they came in there, buddy. So I'm thinking about it from like a
+
+**sleety.eth:** their account here. So I've got like Sleety 1200 Arrow tokens to my name. I'm logged in and I'm allowed certain permissions here to edit this and reflect it on GitHub. That sometimes just accessing that kind of like our, our Dwork setup. And then I imagine then the docs reflected here and people want to know who else contributed to this project and like they want to better UI than going on to GitHub directly. Here's the people involved, a quick pull from the bio on their profile and what their skill set is based on the— I don't know if people have looked at this in a while, but the disciplines that we decided upon.
+
+**sleety.eth:** So keeping everybody together. And then whatever, we can either have a discussion here for the component, or we could have, once you choose the component, we can just have another window open up that will show the historical discussion on this component. And maybe we could have like a versioning thing here. So you know you're on the latest version of the component and you're not sort of like starting new conversations. That's how I like that flow of, you know, you get onboarded, you go into a contributing zone, you choose where you want to jump in here. It might not even be aircraft, it might be just this app itself might have its own flow for how to get involved. And that's why I separated it because like Quiver might, like Caribou might have a different way than get involved or one of the software projects might have a very like limited amount of
+
+**sleety.eth:** What's—
+
+**sleety.eth:** That's how I'm thinking of our upend digested, but I'm fully open to being critiqued on that and saying, you know, this won't work. This is not how aircraft are built or whatever.
+
+**thomasg:** Yeah, I
+
+**thomasg:** I feel like I have some critiques, but overall I'm liking the flow of it.
+
+**thomasg:** I almost want to just like fork, fork your code here and like, um, change it to fit my own critiques rather than start rattling them off with you. But
+
+**sleety.eth:** Yeah.
+
+**thomasg:** I don't know. I guess I think for Quiver specifically, like the, the big thing we're omitting right now is attachments. Like the drone itself is, we're probably not making big like design changes to the drone. We really want attachments and software.
+
+**thomasg:** and that doesn't get captured quite as well here.
+
+**thomasg:** And then for something like Spearhead or Caribou, where we're like still designing the drone, like the
+
+**thomasg:** 3D model, like
+
+**thomasg:** I don't know if it's the best place or not to start having these discussions and things. Maybe it is.
+
+**thomasg:** Cause like Caribou, we're gonna build a whole new structure. So it's like, we're gonna maybe have different candidates for structure kind of coming together into one place.
+
+**sleety.eth:** Do you have like, I don't know, a live
+
+**sleety.eth:** like state of the design on CAD so, um, people can have discussion around the— not necessarily the components, but like here on Quiver, but like, could you have a discussion around the CAD?
+
+**sleety.eth:** Is that
+
+**thomasg:** Yeah, I think that's great.
+
+**sleety.eth:** I'm imagining like if there was like a live
+
+**thomasg:** Okay, let me see.
+
+**sleety.eth:** I'd love to get, I'd love to get to the point where, um, where like if there's a meeting about a particular component or part of the aircraft, like people could all be in this app.
+
+**sleety.eth:** simultaneously and be writing the comments, recording like what's going on, leaving a trail. Um, I think that would be cool because it means that everybody who's using the app has got token, they're like permission to a certain degree so they can contribute, and all their contributions are kind of, uh,
+
+**sleety.eth:** have a trail of breadcrumbs.
+
+**sleety.eth:** And everybody can sort of
+
+**sleety.eth:** I don't know, comment in different ways. And like even your comments would be recorded as like some sort of metric for, you know, contribution.
+
+**thomasg:** Um, this is another— yeah, another little demo app I started on and kind of abandoned because it just became sloppified pretty quickly. But, um, one feature I really liked about it is you can click on a component
+
+**sleety.eth:** Is showing your screen.
+
+**thomasg:** And then you can, like, it tells you some info about it.
+
+**thomasg:** And then start discussing it, saying,
+
+**thomasg:** It can start a thread.
+
+**sleety.eth:** Oh, perfect.
+
+**thomasg:** and we are discussing
+
+**thomasg:** in the CAD with the components.
+
+**sleety.eth:** Yeah.
+
+**sleety.eth:** I love that. That's, that's pretty much what I was thinking about could slot in here.
+
+**thomasg:** Yeah.
+
+**sleety.eth:** Is that a constructive way to do it, or is—
+
+**sleety.eth:** Is, or is it a
+
+**sleety.eth:** Like, are, are, are aircraft, are the aircraft designed with those like small sort of
+
+**sleety.eth:** I don't know, uh, comments or whatever, or is it— is it— would that be like information for the project lead to then make their, their final call? Or I guess we've got the voting.
+
+**thomasg:** I mean, that's definitely part of it. I guess I'm imagining Quiver. We're gonna wanna design our own attachment interface some point soon.
+
+**thomasg:** So like you could click on the attachment interface and say, hey, like this one is bad for these reasons, I think a new one would be good for these reasons. And then maybe someone's going to design a concept and then you would go and look at their concept and
+
+**sleety.eth:** Yeah.
+
+**thomasg:** and want to like give some feedback on it. Maybe you even want to like click at certain like parts of that part and say, oh, like this, this corner needs to be more rounded or something like that.
+
+**thomasg:** And then maybe other people are designing like candidates.
+
+**thomasg:** And there'd be like multiple different possible
+
+**thomasg:** possible designs as you kind of look at it.
+
+**sleety.eth:** Yeah, like the way you just said, you just said there to me, like, I'll just fork this and play around with it a bit. I can imagine people doing that with attachments and they're just like, um, you know, I'm just going to take this and give my version of it and then we'll compare notes at the end rather than working on the same model.
+
+**thomasg:** Yeah.
+
+**sleety.eth:** Like, you move this over here and move that, like, I don't know.
+
+**thomasg:** Yeah, it just feels like that might be the way things are going, where instead of
+
+**thomasg:** having much of the discussion in chat. Like, I mean, just like I said with your app, it's like, well, I can give you feedback, but I'd probably rather just fork it and show you what I'm imagining.
+
+**thomasg:** I think that's cool.
+
+**alperenag:** I have one concern about this.
+
+**alperenag:** or for the way you describe it, Kevin.
+
+**sleety.eth:** Yeah, please.
+
+**alperenag:** Um, how are we gonna
+
+**alperenag:** Um, like, kinda
+
+**alperenag:** Blog.
+
+**alperenag:** prevent people from like posting AI slop, or even it can be, it can be something that makes sense.
+
+**alperenag:** But
+
+**alperenag:** It can be the, like, thank you Captain Obvious situation. People can be posting a lot of things just to get some, uh, some Arrow tokens.
+
+**sleety.eth:** Yeah.
+
+**alperenag:** Um, like, it doesn't have to be slop, Eric. Like, someone can
+
+**alperenag:** Common Save.
+
+**alperenag:** I don't know, like I'm just making this up, but someone can say, okay, quadcopters are great for this and this and this purposes. So we should keep going with quadcopter.
+
+**alperenag:** And—
+
+**alperenag:** the AI agent might find it useful somehow, or people might give it, give him some upvotes.
+
+**alperenag:** That's—
+
+**alperenag:** That was a very basic example and it wasn't a good one. Sorry guys, but—
+
+**thomasg:** That's a good point though, because we're already seeing that with like GitHub people just wanting to jump in and like say things and, and contribute places where they probably shouldn't be.
+
+**alperenag:** Mm-hmm. And this is gonna be even, even better. Like, I'm gonna ask something about
+
+**alperenag:** I'm gonna ask something about the gasoline engine and people will post
+
+**alperenag:** 5.
+
+**alperenag:** different, uh, different texts with the same context from AI, and our AI bot will find all of them useful and give them credits or something.
+
+**alperenag:** I don't know.
+
+**thomasg:** I mean, did you look at the voting thing I posted last week, Alperen? The Spex app?
+
+**alperenag:** Where is it? I'm sorry.
+
+**thomasg:** I think it posts to it in general.
+
+**sleety.eth:** Here it is, here.
+
+**sleety.eth:** Yeah, it's specs.ourware.com.
+
+**alperenag:** Oh yeah, I saw this.
+
+**thomasg:** Like that, that's one possible answer to your concern, which is like you have, you have a weighting, like a weighted vote system where
+
+**thomasg:** People's comments are kind of ranked.
+
+**thomasg:** So no one's gonna upvote the sloppy one, hopefully.
+
+**alperenag:** Yeah.
+
+**alperenag:** Or we only give the upvotes.
+
+**alperenag:** featured to the team members.
+
+**thomasg:** Yeah, so I guess it was a little confusing.
+
+**sleety.eth:** Minimum, right?
+
+**thomasg:** But there's like a weighting system where like your vote weight
+
+**thomasg:** is like a factor of, uh, how many Arrow token you have, logarithmically scaled. Um, if you have like expertise in the subject, so if there's a PCB discussion and you're like a verified PCB expert, your vote will count for more.
+
+**thomasg:** Then if you have a role in the project, if you're a project lead or a set member in the project, you'll get more vote weight.
+
+**alperenag:** Okay.
+
+**alperenag:** Yeah, I think this makes sense.
+
+**sleety.eth:** I was playing around with this and I was like absolutely like maxing out my tokens and, uh, Project Lead, I've got a million tokens. I've declared an intent to build it. My expertise matches the subject, like I am an authoritarian in this situation.
+
+**alperenag:** I gave the name PCB to all the PCBs.
+
+**sleety.eth:** Yeah.
+
+**thomasg:** I mean, it's like, oh, we can play with the, the way the scale works. Like, that's just like kind of a tricky like economics problem and I don't, I don't know the answers, but.
+
+**sleety.eth:** Of course.
+
+**sleety.eth:** It is cool though, because, you know, it does solve that kind of the AI slopification answers. And especially if you build in kind of like, which I've always, I've kind of wanted now on social media, is like, it's just a simple like, this is AI slop, uh, button, which just gets triggered whenever like it's quite clearly a fully bought answer. Um,
+
+**errrks.eth:** It's just—
+
+**sleety.eth:** Like, it almost like
+
+**sleety.eth:** It could put someone into negative, um, uh, reputation, and you're just like, oh, you're not never rising to the top here.
+
+**thomasg:** Yeah, we can do that.
+
+**thomasg:** Yeah.
+
+**sleety.eth:** But yeah, I think it's a fun game. And once you have this in place and you have your
+
+**sleety.eth:** you know, your contributions and your comments and your, um, and, um, all of the ways someone can contribute. I think it should start to like separate the levels of, of, um,
+
+**sleety.eth:** like who's, who's being legitimate and who's just like spamming. Um,
+
+**thomasg:** One thing that like gave me concern as I started building all this is I feel like we have
+
+**thomasg:** One of the big problems in Arrow right now is that our discussions are just getting fragmented. We've got the DAO forum, we have Discord, we have meetings like this and GitHub. I feel like things slip through the cracks for me and I'm trying to be a part of Arrow every day. So if you're new, that's just going to be magnified. And I don't want to build a bunch of apps that have discussions happening in tons of different places and have it get even more chaotic.
+
+**sleety.eth:** Yeah.
+
+**sleety.eth:** Well, I guess the, the super app, because it's so interlinked, you know, it kind of is the source of truth on the discussions. Um, that if you ever did want to keep up with something, it's all tied back to its component, or at least it's
+
+**sleety.eth:** You know.
+
+**thomasg:** I kind of like this idea, like, the super apps keeping state over all the discussions.
+
+**thomasg:** And then you can almost like, just like I did with that GitHub, like, discuss thing on my specs thing, you could just embed those discussions in other places, uh,
+
+**sleety.eth:** You know.
+
+**sleety.eth:** Yeah.
+
+**thomasg:** wherever sense, or we can use those GitHub discussions and, and not build our own. Like, that's another option.
+
+**alperenag:** Personally, um, I would be so happy if Vector also manages the connection between Discord and the Super App.
+
+**alperenag:** Like in the projects, in the project meeting, we might not decide on something and I basically say, okay, Vector, like we need to ask this to our community to see if there is an expert
+
+**alperenag:** and Vectors picks it up and creates a discussion for that subject or something.
+
+**alperenag:** Like, I think it will be pretty
+
+**sleety.eth:** Yeah.
+
+**sleety.eth:** Sorry, in that case, it would tag the people with the specific discipline, you know, who are obviously, you know, if you're into PCBs, then you're going to get tagged in that discussion too. You could like pull in all the relevant people into the room, which is something that would happen when everybody is onboarded properly with a contributor profile. Well, theoretically.
+
+**thomasg:** I guess that kind of bridges us into another— we keep talking about agents and how all this is just going to be mediated by AI agents.
+
+**thomasg:** Have you guys given any thought to what that looks like in practice?
+
+**thomasg:** I don't know if like everyone using vectors is like the scalable
+
+**thomasg:** version of this or not.
+
+**sleety.eth:** Mm, yeah.
+
+**thomasg:** Is there like a dedicated Spearhead agent, or does like Alperen have his own agent that's, that's speaking on his behalf?
+
+**alperenag:** So.
+
+**alperenag:** Oh man.
+
+**alperenag:** our member count will be like triple
+
+**alperenag:** The one
+
+**sleety.eth:** Yeah, I am really interested in that idea, but I haven't folded it into this concept, but I definitely think it's something.
+
+**alperenag:** We have real people.
+
+**sleety.eth:** I guess I'm imagining the agents populating a lot of these, you know, very, I don't know how good it would be right now, but I'm imagining it populating a lot of our dashboards. So like if you went into like this Sleety dashboard here, I'm imagining you get your own dashboard with
+
+**sleety.eth:** conversations that you're interested in based on your disciplines and open bounties for, I don't know, for your level or lots of ways that you can plug into the contributions, which is orchestrated by either Vector or your own personal agent having a conversation with Vector to work out what would suit you and then displaying that on the dashboard.
+
+**sleety.eth:** Lots of
+
+**alperenag:** I think there is one thing that we
+
+**alperenag:** Don't know.
+
+**alperenag:** Please be in detail.
+
+**alperenag:** Is it better to have multiple agents for dedicated subjects talking with each other whenever necessary?
+
+**alperenag:** Or is it better to have one super agent that manages everything?
+
+**thomasg:** That's, that's the big question. And
+
+**thomasg:** I don't know, like, I think if you have
+
+**thomasg:** agents with kind of different
+
+**thomasg:** rep— like things they're trying to represent, or like, you know, incentives or something, that maybe it's interesting. Like if I have a personal agent, you have a personal agent, and they're, you know, mine's maybe arguing for what I want here and yours is arguing for what you can do there, and like that, that could be interesting.
+
+**thomasg:** if we had like Vector1 and Vector2 that are both like pointed at the same like wiki of Arrow knowledge and one's arguing or one's trying to talk about PCBs and they're just talking about structures, like that's just gonna be Claude talking to Claude and I don't know how useful that really is.
+
+**alperenag:** Yeah.
+
+**alperenag:** Yeah, the personal ones, like, that, that's something, but for Arrow, um,
+
+**alperenag:** Should we have like
+
+**alperenag:** vector fragments for each of these different subjects.
+
+**alperenag:** and telling Vector to like, okay, act professional in
+
+**alperenag:** Um, in super app and
+
+**alperenag:** be a salesman for the customer service in our, um,
+
+**alperenag:** our websites and be
+
+**alperenag:** a little bit more chill but informative in our Discord, you know, like different characters for Vector for different context.
+
+**thomasg:** Yeah, that's—
+
+**thomasg:** So I mean, right now all of these agents are, are running like kind of the same few models under the hood. Like they're running GPT or Claude or DeepSeq or GLM or whatever.
+
+**thomasg:** And they're really only unique by like the prompting and context you give them.
+
+**thomasg:** And now maybe in the future you'll have actual fine-tunes that are more unique than that and that'll be interesting.
+
+**thomasg:** Like, in that case, I don't think it's really bad to have multiple agents, and I don't think it's really bad to have them all be the same either. I don't know if it really makes a difference.
+
+**thomasg:** The one that freaks me out with the Vector is like, because it's just like a public agent that anyone can prompt, like there's, there's just some risk that it like
+
+**thomasg:** Idin id.
+
+**thomasg:** imports the slop that people prompt it. If you have people just like giving it slop and like kind of bad ideas, like if it's running OpenClaw, that just like gets logged to the memory and then, and then maybe it becomes less useful for everyone.
+
+**thomasg:** Like maybe the, maybe the pattern we drive towards is like all of the state that's important being, being properly logged into the super app and GitHub.
+
+**alperenag:** Thanks.
+
+**thomasg:** And then the agent's just kind of this like bridge between this like big corpus of knowledge and the human that's trying to understand what's going on.
+
+**thomasg:** like, yeah, I guess, I guess the sloppy version of this is like Vector holding all the state, like in-memory files and stuff locally to, to my Mac Mini. And the better version is like all the important stuff gets logged into like Git or the superapp.
+
+**alperenag:** Yeah, this is tricky.
+
+**thomasg:** But then you can spin up lots of little agents where it's like, "Oh, give me a little agent to read Sleety's bio and represent Sleety's skills and interests and then go read all the bounties and decide how likely it is that Sleety's going to be able to contribute usefully and then send that back to Sleety and kind of recommend him the path forward."
+
+**sleety.eth:** Yeah.
+
+**sleety.eth:** I kind of like the idea. Imagine like the agents are work— like Vector's working in the background as like an all-listening ear to the Discord transcriptions, and then it has been tasked with like almost like sending
+
+**sleety.eth:** emails, I say email, but it's more like posting something to each individual contributor's dashboard, but it's kind of like, it's been tasked with listening. It knows about our contributors, it knows about their contribution history, it knows about their involvement on projects. So,
+
+**sleety.eth:** I'm imagining the agent would be really, really useful for just listening to hooks, which then it can automatically go out and disseminate into contributors' dashboards. So then when a contributor is looking at their dashboard, seeing where they can contribute, they're being told like, oh, in one of the Caribou meetings, they wanted a UI for a web shop, or they wanted some like fun graphic to show off something, that would definitely register on my dashboard as being like, someone, they're looking help with this, they're looking help with this. Or if you said your expertise was in
+
+**sleety.eth:** I don't know, regulatory airspace rules or something, and you have completed your Arrow profile saying that you're into regulation, I don't know, anything related to that, it would definitely show up in your dashboard as being a hook to get you involved, saying we're always looking for someone to help with the Quiver certification or something. So I, I have a bit of faith in that, that it's just good at those like pretty simple, uh, category tasks like
+
+**sleety.eth:** Something like that.
+
+**thomasg:** Yeah. I wonder what the reverse of that looks like. So say a new guy joins and they're the regulatory expert.
+
+**thomasg:** And
+
+**thomasg:** Is there some just like chat prompt where they can like type in and say, hey, like I think
+
+**thomasg:** Spearhead needs, uh, needs position lights on the wingtip or whatever it is. And like, then that gets routed into the— into Alperen's dashboard or something and saying, hey, like, this, this new person has an expertise in regulatory and proposed this idea.
+
+**sleety.eth:** Oh.
+
+**sleety.eth:** Well, that's fun. I guess it can listen from the comms on every part of the aircraft as well in a reverse sort of way. Like maybe, like Alperen's maybe not going to, um,
+
+**sleety.eth:** either get that or it's like a coordination thing. It's like maybe it's just something that falls out of— I know there's just so many things to keep up with and there's so many like different threads that something like that would be useful. Maybe not in Alperen's case, but in combining two contributors who
+
+**sleety.eth:** Maybe someone's asked something and someone else is capable of doing it and just pair them up. The agent in the background's pairing up.
+
+**sleety.eth:** Collaboration.
+
+**sleety.eth:** So like if I went on and had wrote a comment on something,
+
+**sleety.eth:** in my dashboard the next day would be some sort of solutions or some sort of opportunity for a solution where it's like, oh, you asked yesterday, do I need to add something to the Winfr certification? And then you're like,
+
+**sleety.eth:** I know it shows up on the dashboard like, oh, you would want to talk to this person.
+
+**sleety.eth:** It's done some digestion in the background and paired you up with someone who's relevant.
+
+**sleety.eth:** I don't know what the answer is, but I'm imagining this is what the future is going to look like, so we can think in that direction.
+
+**thomasg:** No, yeah, neither do I.
+
+**thomasg:** I'm thinking now a version of like the spec threads app or some merged version of that in this.
+
+**thomasg:** Um, but instead of humans doing all the commenting, it's like the humans' personal agents representing them are, are doing all the discussion for them.
+
+**thomasg:** And it really feels like we're playing with fire because there's a version of that that's like super incredible and it's this, this coordination that people have never seen before and it works super well. And then there's also a version where we're just like crazy slop cannons and, and push out tons of slop and it's totally illegible to everyone and horrible.
+
+**sleety.eth:** Yeah.
+
+**sleety.eth:** Hey!
+
+**sleety.eth:** Yeah, well, I'm imagining the spec discussions are built into something like this. This is just like, this isn't like fixed or anything. I just think, you know, if you went into, if you went into the discussion on the landing gear or something, um,
+
+**sleety.eth:** And I'm pretty sure there would be a discussion here with its own weighted upvote and downvote and weighted ability to get to the top of some sort of Reddit-style algorithm thing. So I think that would be an essential part of this because we've got people's tokens, we've got their contributions, we've got their contributor profile. Like you need all those ingredients to make the weighting or to make the, the, the sort of decision rubric that we're using work. So I think that's why you have to sort of contain everything within a super app. If they're all separated, they don't work together. But if you contain it within a super app, so many more things are possible. And a lot of things, a lot of that's around reputation and just like, you know,
+
+**thomasg:** Yes.
+
+**sleety.eth:** Should be, um,
+
+**sleety.eth:** is eligible to be— their opinions to be voted up, I guess.
+
+**thomasg:** I guess one, one threshold to look at is, as we talk about how much we're allowing agents to be part of the system, is
+
+**thomasg:** Would you trust your own personal agent to vote on your behalf?
+
+**thomasg:** Um, like for comments and things, if we're doing the weighted voting.
+
+**thomasg:** And I feel like for me, the answer's probably no.
+
+**sleety.eth:** I think if, if you give your agent like a really
+
+**sleety.eth:** like a really— if you spent a lot of time on your Claude.md or your Soul or whatever, but you can't trust everybody to spend, you know, have this perfectly polished representation of your values and your trust levels and all these things. I think you could find a lot of people that just like boilerplate values that just don't match up to your own personal opinion. But
+
+**thomasg:** Yeah, then we get some scenario where it's just like whatever ideas Claude happens to like are the ones that get upvoted, and Claude's driving the ship and we don't even realize it.
+
+**sleety.eth:** Yeah.
+
+**alperenag:** I would, I would never trust it for any of it.
+
+**alperenag:** uh, speak on behalf of me or, or vote for me. Nothing. Like, I, I keep arguing with that shit, so
+
+**alperenag:** No way.
+
+**thomasg:** Well, I guess that's, that's an important test we should keep in mind as we push this forward, because I hope it gets to a point where the answer is yes. Um, but I generally agree with you.
+
+**sleety.eth:** Has anybody else got any thoughts for the record? I'm imagining, uh, your hair will create a
+
+**sleety.eth:** a bullet point list of concerns. So if anybody has any, any sort of like questions, we can get it logged for the record so we can, can work on it.
+
+**sleety.eth:** Anything at all, just to
+
+**sleety.eth:** I don't know.
+
+**thomasg:** I can turn vector back on. I can do that today.
+
+**thomasg:** Is there anything in particular you wanna try with the vector if we're doing vector round 2?
+
+**sleety.eth:** Sorry, what was that, Thomas? Can I connect?
+
+**thomasg:** Is there anything in particular you guys want to do with Vector when I turn it back on?
+
+**thomasg:** It was kind of just draining my, my Claude credits for a while. So, um,
+
+**thomasg:** I think I'm gonna turn down the heartbeat and stuff, and then we can also put a cheaper model in if we're doing a lot more stuff with it.
+
+**sleety.eth:** I've heard in the last couple of days that, uh, Sonnet 5.1 is, is really good.
+
+**sleety.eth:** It's cheaper.
+
+**sleety.eth:** Belief was so good.
+
+**kbmollysuh:** I'm wondering the
+
+**thomasg:** I've been running
+
+**thomasg:** Go ahead, KBM.
+
+**kbmollysuh:** I'm wondering the monthly cost, the current monthly cost of the Vector.
+
+**thomasg:** Well, zero right now because it's not turned on.
+
+**kbmollysuh:** Um, before it's
+
+**thomasg:** I had it on my, like, I had it on my shared, like, $200 Cloud account that I use personally, and it started just draining all my, my credits.
+
+**thomasg:** So I might put on OpenRouter and, and run Quiver through it or something.
+
+**alperenag:** And it's pretty cool.
+
+**alperenag:** I bet it will do whatever you ask.
+
+**thomasg:** Yeah. If it's just like kind of trying to organize the state of our projects and things, I think Quiver will be great. And then
+
+**thomasg:** If you wanna do actual engineering work, it's like pay for your own compute.
+
+**errrks.eth:** I'm good. I was mainly using Vector for meeting notes anyways, but I can—
+
+**thomasg:** No, it's perfect for that.
+
+**errrks.eth:** No, that's perfect.
+
+**errrks.eth:** I was gonna use it to help me, kind of sync my local version of the Quiver repo to GitHub. But cool.
+
+**errrks.eth:** No rush on doing that. I can also probably do that mostly with, with my Claude.
+
+**thomasg:** Oh, we'll get it back on. I think honestly the, like, heartbeats were what was killing my credits more than anything we were prompting it with.
+
+**errrks.eth:** Damn.
+
+**errrks.eth:** Was it updating the dashboard at least?
+
+**thomasg:** I don't know. It was like responding to people's like GitHub PRs and things.
+
+**errrks.eth:** Oh yeah, yeah, that wasn't—
+
+**errrks.eth:** That's it.
+
+**alperenag:** Did you see Joe?
+
+**alperenag:** J-E-V.
+
+**alperenag:** New agent.
+
+**errrks.eth:** Thank you.
+
+**thomasg:** I haven't like understood yet. I know a lot of people are talking about it.
+
+**sleety.eth:** Yeah.
+
+**alperenag:** Yeah, I'm planning on using, like, trying one at least, but it seems promising for
+
+**alperenag:** For the things that Vector is doing for us.
+
+**thomasg:** Doesn't it just give you like an instant yes or no to your prompt?
+
+**alperenag:** And it is,
+
+**alperenag:** No, it's, um,
+
+**alperenag:** Like it's
+
+**alperenag:** arranging things for you, or at least it can call another agent to do it for you.
+
+**alperenag:** But for
+
+**alperenag:** for some people's questions, I think this is pretty good.
+
+**thomasg:** Interesting.
+
+**sleety.eth:** Yeah, I think it works under a specific set of categories rather than the LLM kind of like, I don't know, sort of sleepwalks into the correct answer. Whereas Jev is based around a constrained set of values, so it chooses really quickly because it only has like 15 things to choose from or whatever you give it. Whereas the LLM has literally every word and syllable to choose from, so it takes a bit longer. Whereas Jev, you can literally just give it like yes or no to everything and it'll answer only with yes or no. So that's, that's how I've understood it.
+
+**alperenag:** I saw some people connecting their, like, usual, uh, Claude or, uh, Codex agents to Joe.
+
+**alperenag:** And people were trying a lot of things, and it was looking pretty promising for me, at least.
+
+**alperenag:** The reason why I'm saying this is like, it's basically free compared to the others.
+
+**sleety.eth:** One other part of this app, like, we haven't even discussed are things like, um, flight testing. And I'm imagining, like, again, if you've got the basis of, uh, everybody's contributor profile and their token balance and their, you know, whatever way we would do reputation or whatever, um, we could do like everything from like our flight test app. Our flight testing app can be migrated into this environment where it just, um, increases people's balances based on their, their leader, their, their score. And we love the leaderboard. Um,
+
+**sleety.eth:** Then we could have governance under this as well, which could have all of the— basically, I think there's so many broad topics that could inherit lots of the same mechanisms. If we're talking about a really effective system that's working well for
+
+**sleety.eth:** for weighted voting and upvoting. And that system could be used in governance proposals. We could even have a whole section of the app for ideas or brainstorming where it's kind of like a loose, like a blank canvas for discussions where someone's like, oh, I want to, I've had this really like fun idea for an attachment. And then they go into like a collaborative working space where it's just like, idea area, we draw things out, discuss, upvote things in there. It's like a self-contained FigJam that inherits our winning mechanism. So like, I don't know, the person presenting the meeting could be like, here's a list of options I've thought of, like, what's your quick vote on these? And I just, I don't know, I guess I'm a bit worried that it could be too ambitious and just ends up being like
+
+**thomasg:** I think the most exciting part of building that whole, like, specs demo was the, like, embedded discussions that I was able to do.
+
+**thomasg:** And if we had that with our waiting
+
+**thomasg:** And we just started kind of embedding these things in all of our little app discussions. Like, that just feels so nice and powerful.
+
+**sleety.eth:** Yeah.
+
+**sleety.eth:** And
+
+**sleety.eth:** Do you think we'd keep the comments in Discord or sorry, in GitHub, but then the weighting is on our side of things? And I mean, GitHub's not really cool.
+
+**thomasg:** No, that's an open question. Like, I think
+
+**thomasg:** Maybe it makes the engineering a little bit more tricky if we have, like, this discussion thread and then we're separately tracking the weighting.
+
+**thomasg:** But
+
+**sleety.eth:** Yeah, it just looks like all a bunch of comments.
+
+**thomasg:** I don't know, I don't want to add yet another tool, yet another place where we're
+
+**thomasg:** where we're tracking things.
+
+**thomasg:** So I don't know, like,
+
+**thomasg:** I'm leaning towards just building it ourselves, but
+
+**thomasg:** I don't know for sure. What do you think?
+
+**sleety.eth:** I wonder if there's any way we could get Vector or someone to—
+
+**sleety.eth:** to retroactively go across and like, uh, add the weightings to our GitHub comments. So like once it, once it gets what we have like algorithmically, um, determined is the highest like weighted vote, we can get it to go back retroactively and just sort of either add in text or add in emojis or something, or just like do something to the GitHub to get all the benefits of the, like the system that the GitHub engineers have worked out. But we also get, as a layer on top of it, to add our own, um,
+
+**thomasg:** I guess, what's— what are the benefits of using GitHub in this scenario? Like
+
+**sleety.eth:** ArduPilot.
+
+**thomasg:** We're probably not gonna be using the GitHub Discussions UI in this scenario 'cause it's just, it might get a little messy.
+
+**sleety.eth:** Yeah, I guess.
+
+**sleety.eth:** I guess it's just that desire for like
+
+**sleety.eth:** completion of like, you know, traceability, like where would, where would our discussions live then, just on our own server? Um.
+
+**thomasg:** Yeah.
+
+**thomasg:** Which is kind of cool. Like, there might just be, like, a single, like, discussions database.
+
+**thomasg:** And there's like an API that we can embed it on, on any other little app or thing.
+
+**sleety.eth:** Mia.
+
+**sleety.eth:** Yeah, that's a good idea.
+
+**thomasg:** So there's, there's one place that has all the discussions and, you know, you can read 'em all in a list or your agent can read 'em or you can, uh, build yourself a, a Tender front end like we talked about and, and read 'em in different ways.
+
+**thomasg:** And then it's just, they kind of get like dropped in wherever they're needed most.
+
+**sleety.eth:** He's occupied.
+
+**sleety.eth:** Yeah, that's actually nice. We can, we can do a lot, a lot of other stuff. It's effectively a discourse for, um, but just more tightly integrated with our super app.
+
+**sleety.eth:** Okay, well, um,
+
+**sleety.eth:** How should we, how should we go on next? Like, I'm happy to keep, keep developing, but at what stage should we start, like, like, have some sort of requirements document, or
+
+**sleety.eth:** How do we
+
+**sleety.eth:** How do we build even a part of the tree that works well for us?
+
+**thomasg:** Yeah.
+
+**thomasg:** I'd love for, if you don't mind, I'd love to fork what you've started on so far, 'cause it's
+
+**thomasg:** stronger than anything I've built yet, I think. And I can just kind of start
+
+**thomasg:** playing with it and seeing what I can change and what I like.
+
+**sleety.eth:** Yeah, I'll just, I'll push it, I'll push it now, but it's just a branch under, I think, development or something, or concept.
+
+**thomasg:** Yeah, you can just push it to main where, I mean, I'm just playing around in this repo, so it's, it's fine.
+
+**errrks.eth:** Oh, oh.
+
+**errrks.eth:** I know Thomas said he has some ideas on forking it, but is there
+
+**errrks.eth:** a version we could start using
+
+**errrks.eth:** sooner than later to kind of maybe start giving feedback.
+
+**errrks.eth:** Brrr.
+
+**errrks.eth:** I don't know.
+
+**thomasg:** Yeah, I mean, I guess the benefits having all these AI agents is we can always refactor this and migrate whatever we've started into another format. Um, what, what version do you feel most confident about here, Eric? Like, what's— what are things that you would, you would love to actually start using?
+
+**errrks.eth:** Ja nie pamiętam co to było.
+
+**errrks.eth:** So I like how this is laid out right here with the overview component task, like teams and everything, because it kind of gives an easy, nice visual to get a state of where the project is at.
+
+**errrks.eth:** It would be cool to
+
+**errrks.eth:** I mean, like the task I could already start populating with, with issues that I have open, or I can migrate to, to a project on GitHub.
+
+**errrks.eth:** Nothing for the— oh, can you go back to the overview tab, Gavin?
+
+**errrks.eth:** like the open bounties are a nice feature to have, but again, you can just find that through GitHub issues also. I do like the idea of where you have the community being able to figure out how to get involved and kind of getting an easy, yeah, easy onboarding.
+
+**errrks.eth:** Um, but again, that's, that's not pressing. Um, I guess I didn't really have anything in particular that I would think we could start trying.
+
+**errrks.eth:** It was more of so just to maybe get some
+
+**errrks.eth:** trial and error in and give some real— and get some feedback to help improve the design. But I feel like— I like how it looks. I think it's pretty smooth and it lays out things. And I could always, you know, obviously, like you said, you have feedback on it too.
+
+**thomasg:** Me, uh,
+
+**thomasg:** Yeah, maybe, maybe we do a round of feedback on this first version and then we meet back up tomorrow or Thursday and, and kind of merge our best ideas together and
+
+**thomasg:** Then take it and build a real life version. Does that feel roughly right?
+
+**sleety.eth:** Yeah, I'm happy with that. Um, I mean, this is, this is very thin on the, the depth. It's just, it's very superficial, but, um,
+
+**thomasg:** Of course.
+
+**sleety.eth:** I—
+
+**sleety.eth:** I think a lot of the general, yeah, like Eric was saying, a lot of the general construction of things are kind of, I'm kind of happy with, but I mean, there's loads more things we could put in. But happy to meet tomorrow or just have a working call for an hour or two in voice chat if anybody wants to jump in and we can have a discussion live and plug in stuff. It could take 2 minutes to plug in another module to this and get a concept for it and see if it would work. So it might be a fun call just to sort of build quickly and plug in things we think could work and not work regarding to the UI. And then we can start to like freeze stuff and start working on actually making sure it's like robust and, um, and actually develop, develop it out.
+
+**thomasg:** Yeah, let's do it. I'm, uh, I'm free all day, so I'll be like— can spend time this today or tomorrow at the same time, whatever you guys want to do.
+
+**sleety.eth:** Yeah, me too.
+
+**sleety.eth:** Yeah.
+
+**sleety.eth:** All right guys, I think there's a call on my end, so I'll better end this call.
+
+**thomasg:** Caribou hanging.
+
+**sleety.eth:** Thanks everybody who come.
+
+**thomasg:** Yeah, thank you.
+
+**errrks.eth:** Thanks, guys.
+
+**sleety.eth:** Hi guys.
