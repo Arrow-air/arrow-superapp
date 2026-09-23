@@ -53,4 +53,4 @@ Link to OPEN-QUESTIONS.md numbers.
 
 ## Next call
 
-Around Tuesday. Come with what you'd want to see, filed as an idea or a question.
+No date set. Thomas is building the next spec-app iteration from the 2026-09-23 brief (`prototypes/spec-threads/ROADMAP.md` → "Next iteration"). Gavin and Alperen: file reactions as ideas or questions, or on the thread.

@@ -33,3 +33,6 @@ Numbered so ideas and notes can point at them. Add, don't renumber. Mark answere
 | Q27 | How do competing design candidates (forks of a part or an attachment interface) sit side by side and get compared, now that forking is replacing commenting? | Thomas, 2026-09-22 | `ideas/cad-anchored-discussion.md` |
 | Q28 | Onboarding quests with token rewards: which steps deserve pay, and does paying attract farmers? | Gavin, 2026-09-22 | `ideas/sleety-app-shell.md` |
 | Q29 | Slop defence in practice: weighted votes, team-only upvotes, a slop button with negative reputation, agent judges? | Alperen, 2026-09-22 | `ideas/weighted-voting.md` |
+| Q30 | Loose discussion → fundable grant: who writes the final text? The lead's agent from the thread, the idea's author for a small fee, or the thread by construction? | Thomas, Alperen, 2026-09-23 | `ideas/spec-thread-to-bounty.md` |
+| Q31 | Retro tiers: how are ideas that shaped a decision but were not adopted rewarded, and is a per-system split of the bucket the right frame? | Gavin, Thomas, 2026-09-23 | `ideas/retro-rewards-reddit-coordinape.md` |
+| Q32 | Dogfooding the tools on Spearhead mid-build: how much distraction is acceptable, and who calls it? | Gavin, 2026-09-23 | `meetings/2026-09-23/notes.md` |

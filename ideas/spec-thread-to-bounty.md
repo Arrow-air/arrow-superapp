@@ -28,5 +28,8 @@ The single round in prototype 1 is wrong. What people post first are ideas and d
 
 Rename accordingly: replies in round 1 are *positions*, not specs.
 
+### The freeze (2026-09-23 call)
+Threads are addressed to the next version (`next-version-contributions.md`). The lead votes and comments as they go, then at the version freeze resolves every thread: **reject**, **promote to spec/requirement**, **turn into a grant or bounty**, or **defer** to the version after. Grants promoted this way carry a proposer award (`retro-rewards-reddit-coordinape.md`). The lead's agent can draft the grant text from the thread; the hazy step is still going from loose discussion to a fundable document (Q30). Alperen's alternative: pay the idea's author a small amount to write it up properly.
+
 ## Open questions
-Q1, Q6, Q7
+Q1, Q6, Q7, Q17, Q30

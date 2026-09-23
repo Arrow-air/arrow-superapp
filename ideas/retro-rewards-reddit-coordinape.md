@@ -18,8 +18,14 @@ Starting points, none settled:
 - **Correct the ledger with judgment.** The contributors allocate among themselves, the lead signs off. This is where the hard case gets handled: weeks of groundwork versus one small decisive edit (Q5).
 - **Reward the decisive hint.** A short expert comment that changes the outcome has to be payable, or experts won't bother.
 
+### Two tiers, agreed as an experiment (2026-09-23 call)
+1. **Session retro, upvote-weighted.** A bucket of $ARROW per discussion round (e.g. the PT2 discussion up to the freeze), split toward the best or most-upvoted ideas, including ones that were not adopted. Gavin: the lead can pre-split the bucket by aircraft system so a PCB idea and an airframe idea aren't competing for the same pool.
+2. **Proposer award.** When a thread is promoted into a real grant or bounty, a fixed slice of that grant (a quarter was floated) goes to whoever wrote the idea or spec. Rationale: if the discussion did its job, the grant text already exists; writing the spec *was* the work.
+
+Not settled: how ideas that shaped the decision but were not adopted get paid (Gavin: perhaps just as the vote stands), and whether the per-system split is the right frame. See Q31.
+
 ## Risks and tensions
-Gavin's unsolved case: weeks of careful groundwork vs. one decisive small edit. Coordinape degrades beyond small trusted circles. Slop can still attract votes.
+Gavin's unsolved case: weeks of careful groundwork vs. one decisive small edit. Coordinape degrades beyond small trusted circles. Slop can still attract votes. Payout is tied to the version freeze (`next-version-contributions.md`), so the feedback loop can be months long.
 
 ## Open questions
-Q5, Q6, Q7
+Q5, Q6, Q7, Q22, Q31

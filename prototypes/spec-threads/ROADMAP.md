@@ -9,6 +9,19 @@ That fallback only stays cheap if we design for it, so two rules hold from day o
 1. **Every thread exports** to plain markdown and to a GitHub Discussion, at any time.
 2. **We decide now how we'd know it isn't justified** (see "The test" at the bottom), not after we're attached to it.
 
+## Next iteration — brief from the 2026-09-23 call
+
+Thomas is taking these into the next spec-app iteration. They reshape the thread model more than the UI; see `meetings/2026-09-23/notes.md`.
+
+1. **Threads are addressed to a version.** Each project shows the version in build (PT1) and the version in discussion (PT2). New threads default to the discussion version. Front page copy says outside contributions land in the next version. (`ideas/next-version-contributions.md`)
+2. **Lead actions on a thread, all the time:** upvote/downvote, comment. The lead is a reader during the discussion, not a gate.
+3. **The freeze.** A per-version "freeze" screen lists every open thread and forces one of four resolutions: reject (with a line of why), promote to spec/requirement (writes a decision to the register), turn into a grant or bounty (pre-fills the grant from the thread), defer to the next version (thread re-targets, keeps history). A version can't be frozen with unresolved threads.
+4. **Grant drafts from threads.** The "turn into grant" action produces a draft: title, scope, interfaces/constraints extracted from the thread, proposer(s) with attribution. Human edits before it is real. Q30 is whether this draft is good enough, or the proposer is paid to finish it.
+5. **Retro session award.** At freeze, a bucket per version (optionally pre-split by aircraft system) is allocated across threads by weighted votes; the lead can correct before it's published. No tokens move in the prototype; the app shows the allocation.
+6. **Proposer award.** A grant created from a thread carries a `proposerShare` (default 25%) and the proposer(s) it goes to. Shown on the grant, carried into `grant-and-bounties` hand-off later.
+7. **Two test projects.** Spearhead PT2 as the live one; Quiver Mini as the re-run of the earlier experiment (Alperen's suggestion), possibly with Vector seeding threads from the repos.
+8. **Dogfood immediately.** Once threads can be version-targeted and frozen, use it for real Spearhead PT2 discussion even in demo-quality UI. Everything else in the sequence below still stands, but this is what gets built next.
+
 ## What has to be true for this to earn its place
 
 Matching GitHub Discussions feature for feature is table stakes and justifies nothing. The tool is justified by the things a general-purpose forum structurally cannot do:

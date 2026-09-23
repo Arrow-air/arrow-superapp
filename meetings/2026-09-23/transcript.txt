@@ -1,0 +1,158 @@
+# Spearhead Chat voice call, 2026-09-23 13:00-13:25 CT (18:00-18:25 UTC)
+# Captured by Hex (listen-only), local Whisper large-v3-turbo, diarized by Discord handle.
+# Whisper hallucinations on silence ("Thank you.", repeated words) removed. Times are UTC.
+
+[18:00:15] **sleety:** Okay, so let's just take that as the example. Do you think, you know, if you're working on PT 1.5 now, do you think it would be worthwhile to, like, invite people to, you know, contribute to, you know, the discussions for PT 2 and sort of be like, okay, have a look at our, here's, we're open source, have a look at our, the, have a look at the internals of our current prototypes and please like any like feedback, it's, you know, it's going to be considered in like a Reddit style forum or discuss for Prototype 2. Would that be useful for you to like hopefully go to like a series of discussions about each part of the aircraft whenever PT2 is coming into play? Or have you already sort of pre-decided what's going to go into PT2 and like people proposing solutions probably won't be useful to you?
+
+[18:01:37] **alperenag:** I mean, anything can be useful. Without seeing it, I cannot say it won't be useful. So let's say I'm optimistic. And of course, someone can be very helpful with some things. Even if I have something in my mind, there can be one person thinking about something better than me.
+
+[18:02:05] **sleety:** Yeah. Yeah. And I think it's nice to invite people to contribute, but be honest that like, you know, you're probably not going to be able to contribute to like a project we've been working on for the last three months and is due to finish or a prototype that's due to finish in like 30 days or something. So like, I think you're being honest when you say like, you know, When we say we would like you to contribute, you're going to be contributing to the next phase of this or the next version of this aircraft. You're not contributing to the current one, which creates a lot of noise for the current team. So maybe that's... I don't know the answer here, but I'm just thinking maybe, should that be part of our default messaging as an organization that invites collaboration. Maybe we're really inviting to the next viable prototype and that's where all of our collaborative threads and discussion come into play and are actually useful for collaborative stuff. I'm actually just saying a lot of this for the benefit of Hex because I'm pretty sure he's out of the loop.
+
+[18:03:32] **alperenag:** Yeah. Oh, yeah.
+
+[18:03:39] **sleety:** Hi, Hex.
+
+[18:03:40] **thomasg:** Yeah, it looks like I finally got his transcription working.
+
+[18:03:44] **alperenag:** Nice.
+
+[18:03:50] **alperenag:** Did you do something yourself, Thomas, or did you just ask it to figure it out for you?
+
+[18:03:57] **thomasg:** I mean, mostly just, yeah, it's like a few iterations of prompting open call.
+
+[18:04:02] **alperenag:** I'm just asking because I might do the same with Atlas at some point. If we can get along.
+
+[18:04:15] **thomasg:** good luck
+
+[18:04:17] **alperenag:** No, I'm joking.
+
+[18:04:21] **thomasg:** I think I gated him only I can mention him just so we weren't having everyone in error prompt tags.
+
+[18:04:26] **sleety:** All right, sorry. No, it's okay. I was just testing.
+
+[18:04:30] **thomasg:** I can add you to the whitelist if you want to talk to him.
+
+[18:04:43] **thomasg:** Yeah, so I guess I can have Hex start on another iteration of the Specs app, if that's useful. Or we can commit to Gavin's version either way.
+
+[18:05:01] **sleety:** Honestly, mine was just a way for me to visualize what was going on and trying to come up with some sort of solution. So, I mean, I'd probably be starting from scratch again if I wanted to actually build something out. It's just this was quicker than building like a prototype in Figma or something.
+
+[18:05:21] **thomasg:** Honestly, yeah. Okay, well, maybe I'll keep playing with that Specs app because it feels like I don't like the UI, but I'm not a UI guy, so that's okay.
+
+[18:05:26] **sleety:** yeah yeah
+
+[18:05:33] **thomasg:** Yes, we're all in.
+
+[18:05:34] **sleety:** What do you think about the versioning, you know, sort of the next versioning contribution as opposed to like the in the room contributions? Do you think that's a good path forward?
+
+[18:05:51] **thomasg:** Yeah, so you mean like where the like discussions we're having in this this threads set up are for the next version in development. So if we're like we're falling at PT1 now we would be discussing stuff that would get merged into PT2.
+
+[18:06:05] **sleety:** I mean, yeah.
+
+[18:06:12] **sleety:** yeah i i guess um as a as an idea i mean it feels like it it makes sense because it solves what alburn was where it it seems to solve what alburn was saying about like it's just very difficult to juggle like a lot of work on focused work on something with like probably a lot of noise for very little signal or very little um benefit at the end because all the wheels are in motion at that stage and maybe the next version is where like all of the additive stuff can come in.
+
+[18:06:51] **thomasg:** Yeah, I kind of like that. So Alperin, as project lead for Spearhead, he's working on PT1 and building it and flying it and doing all that. And at the same time, we have this discussion happening in the app for PT2. And when the time comes that he's ready to get serious about starting to build PT2 or starting to design PT2, he's hopefully upvoting and downvoting things and giving feedback to people's ideas. And then like then he maybe sits down for a few days and you can you can take all those ideas, you know, pick the ones that that you like and want to promote to like official, I guess you could call them specifications or requirements and then go from there even to bounties and grants. So hopefully by now you have someone's discussed like, you know, gasoline engine integration and like what that PCB is going to require. And then that discussion, when it becomes time, it's like you promote that from a discussion and turn it into an actual bounty or grant for someone to design that PCB. And you kind of go down the list and you go through all these specs. And now that you're freezing PT2, everything kind of gets resolved in one way or another. And maybe it's like, no, we're not doing any of this, or we're going to take this idea and promote it to a specification or this into a bounty or a grant. And then maybe some things get kicked further along. It's like, well, this isn't done being discussed yet, so we'll push it to PT3. Does that feel about right?
+
+[18:08:20] **sleety:** Shit, that's a good summary.
+
+[18:08:24] **sleety:** Yeah, that's better than I could have summarized it. Yeah, it feels good. What do you think, Alperin?
+
+[18:08:45] **sleety:** Not sure if you're talking, Alpern, but you're on mute.
+
+[18:08:47] **alperenag:** Oh man, I left my mic closed, sorry. No, I think it makes sense. I think it's a good way of doing it. At least it's going to be a great experiment.
+
+[18:09:04] **thomasg:** And then I guess maybe like another feature we could add on is like some coordinate style retro grant where we take a bucket of arrow tokens and retroactively grant them to the most upvoted or best ideas that were submitted in the session.
+
+[18:09:24] **sleety:** Yeah, perhaps the project lead or someone could, I don't know, sort of break up the aircraft into like different systems or whatever. and use that as a bunch of RO tokens for these retros and just be like, oh, you contributed to the PCB, so it's worth this amount, so we retroactively grant this. But yeah, effectively some sort of retroactive.
+
+[18:10:08] **sleety:** I'm just wondering if things don't get incorporated, but are like useful in the decision process. I don't know. Maybe you just award the token as the voting stands or something.
+
+[18:10:19] **thomasg:** Maybe there's like two tiers of retro here where you could just like directly map to the like upvote waiting for some amount, which would just cover like good ideas that we didn't end up going with. And then maybe when you turn something into an actual grant or bounty, you give some portion of that grant or bounty as like kind of a proposer award to whoever came up with the idea.
+
+[18:10:43] **sleety:** oh yeah like a multiplier on the on the the idea
+
+[18:10:50] **thomasg:** Yeah, because that's basically, if we're doing it right, hopefully that process has written the grant as we've had the discussion. So if it's a PCB, we know exactly what we want that PCB to do. It's supposed to have these voltages and these interfaces and do these things. And that's a very clear grant to give an electrical engineer. But a big part of the work was just writing out that spec. I think that's a worthy retro to give a quarter of the grant or something to just overwrite the spec.
+
+[18:11:16] **sleety:** you know.
+
+[18:11:24] **sleety:** Yeah, it's like the grunts are just appearing by themselves without, like...
+
+[18:11:33] **thomasg:** Yeah, I guess that's the game I want to work towards, where Alperin doesn't have to sit down and write out all these grants as project lead. You kind of want them to be emergent and somewhat autonomous.
+
+[18:11:41] **sleety:** ...
+
+[18:11:44] **alperenag:** Mm-hmm. That's actually what I want to come up with using Atlas or any other AI bots.
+
+[18:11:44] **sleety:** That's smart.
+
+[18:12:00] **thomasg:** Yeah, so I think you could put your agent to review the discussion and everyone's talking about what we want to go into this PCB or whatever it is. And then you, I guess, as project lead, it's like, OK, like we're taking these ideas, we're rejecting these ideas, turn this into a grant. I think that's that's an task for sure.
+
+[18:12:23] **sleety:** we've got all that sort of valuable discussion that's happening in anticipation of the next prototype that then can be the agents, everyone's AI agents can go to town on all that rich information and come up with different sort of summaries and presentations of solutions and stuff like that. Whereas if you just asked your agent to solve this problem without any contextual relevant information, is just going to give you like not very good answers. So it's like ready-made food for the agents for the next phase. I like that because one of my main concerns was just the people who come in. I want the app to sort of be able to almost encourage people to contribute and have some sort of like honest expectation of, not reward, but like a governance token, let's just say. And I think by telling people, there's a bit of a protocol here where your discussions won't be taken on board like in the next meeting or the meeting after that, or maybe in the next couple of weeks. But in the next phase your opinion will be valuable and we'll you know make uh rewards based on that and i'm pretty sure if people started to see like their grant their retroactive grant rewards they'd be like oh shit this process works um i'm gonna offer my contributions for the next prototype or you know whatever and then through this like trusted contributors will emerge and then they can sit in like on any current discussions and
+
+[18:14:16] **sleety:** and offer opinions um so it's it's kind of it's a good way to build a reputation sort of or give people our token and actually get reputation based on contribution which is which is the ultimate like way of the ultimate meritocracy so sounds good
+
+[18:14:47] **thomasg:** I guess maybe one part that still feels hazy is like if you have a discussion and a lot of people are like putting in ideas, it may still be difficult to go from kind of like loose open discussion to, you know, well written grant.
+
+[18:15:06] **thomasg:** I guess maybe AI can just do that for us if we're taking all the things that we discussed and voted on, but maybe there's still something missing.
+
+[18:15:17] **alperenag:** I think it depends on the context, to be honest. If we actually like the person, we can also hire him to do it for us, like give him the grants or at least give him a little bit of Aero token to make it a nice, readable document, present his ideas.
+
+[18:15:48] **thomasg:** Yeah, I guess I'm maybe thinking too far forward where I want this to be totally hands-off, autonomous process. But of course, the project lead can have a hand in the pool here.
+
+[18:16:05] **alperenag:** An autonomous version would be very cool. And I think we should rerun the Quiver experiments with Vector, especially with AI being advanced day by day.
+
+[18:16:22] **thomasg:** What, what Clover experiment?
+
+[18:16:24] **alperenag:** the Quiverr mini experiment.
+
+[18:16:26] **thomasg:** Oh, yeah. Honestly, it was not very good at first, but that's a good point. We could use this whole process for Quiver Mini.
+
+[18:16:45] **sleety:** i've heard opus 5.5 is is really good for agenda coding so i'm gonna play about with it this evening
+
+[18:16:51] **alperenag:** Guys, I'm sorry Gavin, but how did it become popular again? It's an old model. I see...
+
+[18:17:02] **sleety:** Which one? Opus.
+
+[18:17:07] **alperenag:** oh opus okay it's it was yeah i'm so sorry
+
+[18:17:15] **thomasg:** No, this was just yesterday. They released 5.5.
+
+[18:17:20] **alperenag:** I was so confused. I was trying to make sense to all the discussions on the internet. I was like, it's an old model. What the hell, man? Um, I think I cannot.
+
+[18:17:23] **sleety:** Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not Not
+
+[18:17:34] **sleety:** A new version of an old name.
+
+[18:17:37] **alperenag:** yeah um i'm so sorry it was on me i don't want to break the conversation here
+
+[18:17:49] **sleety:** No, I was just saying that I'm going to play around with Opus 5.5 today and see what I can get out of it.
+
+[18:18:12] **sleety:** So I'm wondering what do we go through next? Do we get Hex to kind of give us some ideas? I don't want to build pretty UIs for the sake of it.
+
+[18:18:32] **thomasg:** Yeah, I feel like I've got a lot to work on my spec app with what we just discussed, so I'm feeling good about that. I guess the game for us is just keep exploring different features and flows until we find a set of things that we really like and want to then turn into a real app. I've been putting all of my notes and things in that repo I sent you. It's just Aero Super App Repo. If you want to put an agent to look over it, and you can find all the open questions and ideas we had that might be useful.
+
+[18:19:14] **thomasg:** I'll just drop the link again.
+
+[18:19:52] **sleety:** Yeah, so one of the things me and Alperin were talking about was, you know, with these coordination tools that we're building and hopefully integrating soon, like, you know, we're using, like, in the same way as we're starting with smaller drones and building up and satisfying and selling them and stuff like that. Like we need to make sure that we use the tools that we're building here in our projects from the start, because when we do go to a larger project, we don't want to make mistakes or start experimenting then when the stakes are much higher. so I think whatever solutions we need to come up with even though they mightn't be fully suitable for Spearhead as it currently is, we should at least try and run the experiment with it so we can kind of like perfect what we're talking about here before it gets before the stakes get even higher you know, so I'm just worried that that might in some way distract the Spearhead team but I think as a as a larger organization like in order for us to be successful for the the next iteration we should um we should try as much as we can to use our projects as like proving grounds for the coordination ops um I think um so maybe on maybe we could whatever we decide for the next you know for the spec op or whatever we can start using it like immediately even if it feels kind of like clunky or whatever
+
+[18:21:48] **sleety:** but we have to practice it in the wild somewhere. That's just my main concern of mine.
+
+[18:24:27] **sleety:** Guys, I'm going to go get some dinner and then I'll be back up to work through some of this. Talk later.
+
+[18:24:39] **thomasg:** Cool. All the techs drop out and give us some notes. Okay. Well, I'll be around if you guys want to work more better tonight.
+
+[18:24:46] **alperenag:** I need to go get logs to Zeynep. I think it's been so long.
+
+[18:25:01] **alperenag:** Yeah, you can ping me whenever we're...
+
+[18:25:04] **thomasg:** I mean, I'll be around. I'll just lurk in the voice channel or something.
+
+[18:25:08] **alperenag:** Thank you guys. Nice discussion.
+
+[18:25:09] **sleety:** All right. See you guys.
+
+[18:25:11] **thomasg:** Oh yeah.
+
+[18:25:15] **sleety:** Yep.
+
+[18:25:28] **Dow Fisher KBM:** and hexhermio transcription
+
