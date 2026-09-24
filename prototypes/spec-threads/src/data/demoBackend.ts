@@ -1,12 +1,18 @@
 // Demo backend: everything lives in this browser's localStorage, seeded from seed.ts.
 // No server, no accounts. A persona switcher stands in for sign-in so one person can
-// play the lead, the expert, and the crowd to see how the weighting behaves.
+// play the lead, the expert, and the crowd to see how the weighting and the freeze behave.
+//
+// The resolution rules live in src/lib and run here, on the "server" side of the seam, so
+// the UI only states intent ("turn this thread into a grant") and cannot skip a check.
 
-import type { Comment, Member, Thread, Position } from '../lib/types';
-import { NotSignedInError, type Backend, type ThreadBundle } from './backend';
+import { analyzeThread, roleOf } from '../lib/analyze';
+import { deferThread, promoteToGrant, promoteToSpec, rejectThread } from '../lib/resolution';
+import type { Comment, Grant, Member, Position, Project, Thread } from '../lib/types';
+import { discussingVersion, freezeCheck, freezeVersions, versionById } from '../lib/versions';
+import { NotSignedInError, type Backend, type ResolveInput, type ThreadBundle } from './backend';
 import { seedState, type DemoState } from './seed';
 
-const KEY = 'arrow-spec-threads-demo-v1';
+const KEY = 'arrow-spec-threads-demo-v2';
 
 interface StorageLike {
   getItem(key: string): string | null;
@@ -54,6 +60,22 @@ export class DemoBackend implements Backend {
     const m = this.state.members.find((x) => x.id === this.state.actingAs);
     if (!m) throw new NotSignedInError();
     return m;
+  }
+
+  private project(id: string): Project {
+    const p = this.state.projects.find((x) => x.id === id);
+    if (!p) throw new Error('No such project.');
+    return p;
+  }
+
+  private thread(id: string): Thread {
+    const t = this.state.threads.find((x) => x.id === id);
+    if (!t) throw new Error('No such thread.');
+    return t;
+  }
+
+  private requireLead(projectId: string, me: Member) {
+    if (roleOf(this.state.roles, projectId, me.id) !== 'lead') throw new Error('Only the project lead can do that.');
   }
 
   private bundle(thread: Thread): ThreadBundle {
@@ -108,21 +130,41 @@ export class DemoBackend implements Backend {
     const thread = this.state.threads.find((n) => n.id === threadId);
     return thread ? this.bundle(thread) : null;
   }
+  async listDecisions() {
+    return structuredClone(this.state.decisions).sort((a, b) => b.at.localeCompare(a.at));
+  }
+  async listGrants() {
+    return structuredClone(this.state.grants).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+  async getGrant(grantId: string) {
+    const g = this.state.grants.find((x) => x.id === grantId);
+    return g ? structuredClone(g) : null;
+  }
 
-  async createThread(input: { projectId: string; title: string; body: string; tags: string[] }) {
+  async createThread(input: { projectId: string; versionId?: string; system?: string; title: string; body: string; tags: string[] }) {
     const me = this.me();
-    if (!this.state.projects.some((p) => p.id === input.projectId)) throw new Error('No such project.');
+    const project = this.project(input.projectId);
+    const version = input.versionId ? versionById(project, input.versionId) : discussingVersion(project);
+    if (!version) throw new Error('No such version.');
+    if (version.state !== 'discussing' && version.state !== 'planned') {
+      throw new Error(`${version.name} is ${version.state}. New threads go to the version in discussion.`);
+    }
     const title = input.title.trim();
     if (!title) throw new Error('A thread requires a title.');
+    const system = input.system?.trim().toLowerCase();
+    if (system && !project.systems.includes(system)) throw new Error('No such system on this project.');
     const thread: Thread = {
       id: newId('n'),
-      projectId: input.projectId,
+      projectId: project.id,
+      versionId: version.id,
+      system: system || undefined,
       title,
       body: input.body.trim(),
       tags: [...new Set(input.tags.map((t) => t.trim().toLowerCase()).filter(Boolean))],
       authorId: me.id,
       status: 'open',
       createdAt: new Date().toISOString(),
+      deferrals: [],
     };
     this.state.threads.push(thread);
     this.save();
@@ -131,8 +173,7 @@ export class DemoBackend implements Backend {
 
   async createPosition(input: { threadId: string; body: string }) {
     const me = this.me();
-    const thread = this.state.threads.find((n) => n.id === input.threadId);
-    if (!thread) throw new Error('No such thread.');
+    const thread = this.thread(input.threadId);
     if (thread.status !== 'open') throw new Error('This thread is closed to new positions.');
     const body = input.body.trim();
     if (!body) throw new Error('A position cannot be empty.');
@@ -173,14 +214,123 @@ export class DemoBackend implements Backend {
     return structuredClone(comment);
   }
 
-  async recordPromotion(input: { threadId: string; promotion: NonNullable<Thread['promotion']> }) {
-    this.me();
-    const thread = this.state.threads.find((n) => n.id === input.threadId);
-    if (!thread) throw new Error('No such thread.');
-    if (thread.status !== 'open') throw new Error('This thread already has a promoted position.');
-    thread.promotion = structuredClone(input.promotion);
-    thread.status = 'bounty';
+  async resolveThread(input: ResolveInput) {
+    const me = this.me();
+    const thread = this.thread(input.threadId);
+    const project = this.project(thread.projectId);
+    const leadRole = roleOf(this.state.roles, project.id, me.id);
+    const bundle = this.bundle(thread);
+    const { tallies } = analyzeThread({ bundle, members: this.state.members, roles: this.state.roles, project });
+    const findPosition = (id: string) => {
+      const p = bundle.positions.find((s) => s.id === id);
+      if (!p) throw new Error('No such position on this thread.');
+      return p;
+    };
+
+    switch (input.kind) {
+      case 'reject': {
+        thread.resolution = rejectThread({ thread, leadId: me.id, leadRole, note: input.note });
+        thread.status = 'resolved';
+        break;
+      }
+      case 'spec': {
+        const { resolution, decision } = promoteToSpec({
+          thread,
+          position: findPosition(input.positionId),
+          leadId: me.id,
+          leadRole,
+          tallies,
+          overrideRationale: input.overrideRationale,
+          decisionId: newId('d'),
+        });
+        this.state.decisions.push(decision);
+        thread.resolution = resolution;
+        thread.status = 'resolved';
+        break;
+      }
+      case 'grant': {
+        const position = findPosition(input.positionId);
+        const { resolution, grant } = promoteToGrant({
+          thread,
+          position,
+          comments: bundle.comments.filter((c) => c.positionId === position.id),
+          leadId: me.id,
+          leadRole,
+          tallies,
+          overrideRationale: input.overrideRationale,
+          proposerShare: input.proposerShare,
+          grantId: newId('g'),
+        });
+        this.state.grants.push(grant);
+        thread.resolution = resolution;
+        thread.status = 'resolved';
+        break;
+      }
+      case 'defer': {
+        const deferral = deferThread({ thread, project, leadId: me.id, leadRole, toVersionId: input.toVersionId, note: input.note });
+        thread.deferrals.push(deferral);
+        thread.versionId = deferral.toVersionId;
+        break;
+      }
+    }
     this.save();
+    return structuredClone(thread);
+  }
+
+  async updateGrant(input: { id: string } & Partial<Pick<Grant, 'title' | 'scope' | 'constraints' | 'proposerShare' | 'proposerIds'>>) {
+    const me = this.me();
+    const grant = this.state.grants.find((g) => g.id === input.id);
+    if (!grant) throw new Error('No such grant.');
+    this.requireLead(grant.projectId, me);
+    if (grant.status !== 'draft') throw new Error('This grant is published. Edit it where it was published.');
+    if (input.title !== undefined) {
+      const title = input.title.trim();
+      if (!title) throw new Error('A grant requires a title.');
+      grant.title = title;
+    }
+    if (input.scope !== undefined) grant.scope = input.scope.trim();
+    if (input.constraints !== undefined) grant.constraints = input.constraints.map((c) => c.trim()).filter(Boolean);
+    if (input.proposerShare !== undefined) {
+      if (!Number.isFinite(input.proposerShare) || input.proposerShare < 0 || input.proposerShare > 1) throw new Error('Proposer share must be between 0 and 1.');
+      grant.proposerShare = input.proposerShare;
+    }
+    if (input.proposerIds !== undefined) {
+      const ids = [...new Set(input.proposerIds)];
+      if (ids.some((id) => !this.state.members.some((m) => m.id === id))) throw new Error('Unknown proposer.');
+      if (ids.length === 0) throw new Error('A grant from a thread keeps at least one proposer.');
+      grant.proposerIds = ids;
+    }
+    grant.updatedAt = new Date().toISOString();
+    this.save();
+    return structuredClone(grant);
+  }
+
+  async publishGrant(grantId: string) {
+    const me = this.me();
+    const grant = this.state.grants.find((g) => g.id === grantId);
+    if (!grant) throw new Error('No such grant.');
+    this.requireLead(grant.projectId, me);
+    grant.status = 'published';
+    grant.updatedAt = new Date().toISOString();
+    this.save();
+    return structuredClone(grant);
+  }
+
+  async freezeVersion(input: { projectId: string; versionId: string }) {
+    const me = this.me();
+    const project = this.project(input.projectId);
+    this.requireLead(project.id, me);
+    const check = freezeCheck(project, input.versionId, this.state.threads);
+    if (!check.canFreeze) {
+      throw new Error(
+        check.version.state !== 'discussing'
+          ? `${check.version.name} is not in discussion.`
+          : `${check.open.length} ${check.open.length === 1 ? 'thread is' : 'threads are'} still open on ${check.version.name}. Resolve or defer every one first.`,
+      );
+    }
+    project.versions = freezeVersions({ project, versionId: input.versionId, byMemberId: me.id });
+    this.save();
+    return structuredClone(project);
   }
 
   async updateProfile(input: Partial<Pick<Member, 'tokenBalance' | 'expertise' | 'location' | 'bio'>>) {

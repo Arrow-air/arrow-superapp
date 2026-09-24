@@ -12,9 +12,9 @@ export interface ThreadAnalysis {
   weightingChangedWinner: boolean;
   /** Distinct members who voted on any position in this thread. */
   participants: number;
-  /** If promoted: did the lead pick the weighted top position? null while still open. */
+  /** If the lead chose a position (spec or grant): was it the weighted top? null otherwise. */
   leadFollowedWeighted: boolean | null;
-  /** If promoted: did the lead pick the raw top position? */
+  /** If the lead chose a position: was it the raw top? */
   leadFollowedRaw: boolean | null;
 }
 
@@ -49,13 +49,14 @@ export function analyzeThread(args: {
     // A voter we have no profile for still counts, at base weight.
     weightFor: (id) => weights.get(id)?.total ?? project.weights.base,
   });
-  const promo = bundle.thread.promotion;
+  const res = bundle.thread.resolution;
+  const chosen = res && res.kind !== 'reject' ? res : undefined;
   return {
     weights,
     tallies,
     weightingChangedWinner: weightingChangedWinner(tallies),
     participants: new Set(bundle.votes.map((v) => v.memberId)).size,
-    leadFollowedWeighted: promo ? promo.weightedRankAtPromotion === 1 : null,
-    leadFollowedRaw: promo ? promo.rawRankAtPromotion === 1 : null,
+    leadFollowedWeighted: chosen ? chosen.weightedRankAtResolution === 1 : null,
+    leadFollowedRaw: chosen ? chosen.rawRankAtResolution === 1 : null,
   };
 }

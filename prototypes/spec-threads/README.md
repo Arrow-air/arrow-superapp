@@ -1,16 +1,17 @@
-# Prototype 1: spec threads → bounty
+# Prototype 2: spec threads → freeze → spec, grant, or defer
 
 **Live demo: https://specs.arrowair.com** (demo mode: data stays in your own browser, nothing is shared between visitors)
 
-**The question this tests:** if Arrow decides medium-sized design questions in a weighted public thread, with the project lead keeping the final say, do we get better specs than one lead deciding alone? And does weighting change anything compared with one person one vote?
+**The question this tests:** if outside contributions are addressed to the *next* version of an aircraft, and the lead has to resolve every thread at a freeze, does the discussion write the specs and grants by itself? And does weighting still change anything compared with one person one vote?
 
-See `ideas/spec-thread-to-bounty.md`, `ideas/weighted-voting.md`, and `ideas/decision-ladder.md` for where this came from.
+Prototype 1 asked only the second half. Prototype 2 keeps all of it (the weighting, tallies, readout, and tests) and changes what a thread *is*, per the 2026-09-23 call. See `meetings/2026-09-23/notes.md`, `ideas/next-version-contributions.md`, `ideas/spec-thread-to-bounty.md`, and `ROADMAP.md` → "Next iteration".
 
 ## How it works
 
-1. Someone posts a **need**: a decision Arrow has to make, tagged by subject. "Attachment interface: how much power should it supply?"
-2. People reply with **specs**. A full spec or a short expert hint both count.
-3. Members **vote** specs up or down. Votes are weighted:
+1. A **project** is building one version and discussing the next. Spearhead builds PT1 while PT2 is in discussion. Outside ideas go to PT2; that is the honest offer, and it keeps them from being noise for the PT1 team.
+2. Someone posts a **thread**: a question addressed to the version in discussion, optionally filed under an aircraft system. "Gasoline engine integration: what does the engine PCB have to do?"
+3. People reply with **positions**. A full spec or a short expert hint both count.
+4. Members **vote** positions up or down. Votes are weighted, exactly as in prototype 1:
 
    ```
    weight = (base + tokens + expertise + builder) × role
@@ -20,25 +21,25 @@ See `ideas/spec-thread-to-bounty.md`, `ideas/weighted-voting.md`, and `ideas/dec
    |---|---|---|
    | base | showing up | everyone gets it |
    | tokens | skin in the game | logarithmic in $ARROW held, capped. 100× the tokens is about 3× the term |
-   | expertise | knowing the subject | flat bonus if any of your tags matches the need's tags |
+   | expertise | knowing the subject | flat bonus if any of your tags matches the thread's tags |
    | builder | living with the result | flat bonus if you publicly declare you will build or operate it |
    | role | accountability | multiplier for lead / core / member, set **per project** |
 
-4. Every spec shows its **weighted** score and its **raw** one-person-one-vote score side by side, plus a bar with one block per voter sized by their weight, so you can see who is behind a score. When the two tallies disagree about the winner, the thread puts both picks side by side at the top. A sidebar lists who counts for how much on that need.
-5. The **project lead promotes** one spec to a bounty. The lead can pick any spec. If it is not the weighted top, the lead must write down why, and that rationale is published on the bounty.
-6. Promotion closes the thread and generates bounty markdown, with a one-click link to open it as an issue in `Arrow-air/grant-and-bounties`.
+5. The lead reads and votes along the way. No obligation to act until the **freeze**.
+6. At the freeze the lead resolves every open thread one of four ways:
+   - **Reject**, with a line of why, published on the thread.
+   - **Promote to spec.** The chosen position becomes a requirement in the project's **decision register**.
+   - **Turn into a grant.** A **grant draft** is written from the thread: the question, the chosen position as the spec, every constraint anyone named (list items, anything with a number and a unit), the proposer(s) with attribution, and a **proposer award** (default 25% of the grant). The lead edits it before it is real, then publishes it or opens it as an issue in `Arrow-air/grant-and-bounties`.
+   - **Defer** to the next version. The thread stays open with its votes and history, addressed to PT3 instead.
 
-The **Readout** page counts what matters: how often weighting changed the winner, how often leads overrode the weighted result and why, and how many people took part.
+   Choosing any position other than the weighted top requires a written rationale, published on the decision or the grant.
+7. A version cannot be frozen with anything still open. Once frozen, the next planned version opens for discussion.
+
+The **Readout** page counts how often weighting changed the winner, how often leads overrode it and why, how threads end at the freeze, and what the grants carry for their proposers.
 
 ## Discussing the prototype, inside the prototype
 
-Key features carry a dashed **Discuss** pin: the weight formula, the token curve, the role multiplier, builder intent, the crowd-versus-weighted comparison, the lead override, the bounty, and the readout. A pin opens a side drawer with a thread about that exact feature, seeded with the question it raises.
-
-The threads are ordinary [GitHub Discussions](https://github.com/Arrow-air/arrow-superapp/discussions) in this repo, rendered in place by [giscus](https://giscus.app). Sign in with GitHub to reply. Pins and their discussion numbers live in `src/discuss/anchors.ts`.
-
-**One-time setup:** an org admin installs the giscus GitHub app on `Arrow-air/arrow-superapp` at https://github.com/apps/giscus. Until then each pin shows the question and links straight to its discussion on GitHub, so nothing is a dead end.
-
-This is also a small proof of a bigger point, `ideas/discussion-at-the-work.md`: the conversation is stored in one place and rendered next to the thing it is about. The same thread could be rendered beside a part in the CAD viewer.
+Key features carry a dashed **Discuss** pin that opens a GitHub Discussion in this repo, rendered in place by [giscus](https://giscus.app). Pins and their discussion numbers live in `src/discuss/anchors.ts`. The freeze, resolutions, and grant drafts reuse the existing pins (lead override, bounty) until there are discussions of their own.
 
 ## Run it
 
@@ -48,16 +49,16 @@ npm install
 npm run dev
 ```
 
-It starts in **demo mode**: no server, no accounts. Data lives in your browser and is seeded with fictional personas and an illustrative Quiver thread arranged so the crowd and the weighting disagree. Use the "Acting as" switcher to vote as the lead, the domain expert, a whale, or a newcomer and watch the thread re-rank. "Reset demo data" restores the seed.
+It starts in **demo mode**: no server, no accounts. Data lives in your browser. The seed has Spearhead (PT1 building, PT2 in discussion with a freeze date, PT3 planned; one PT2 thread already in the register), Quiver (the power-budget thread from prototype 1, arranged so the crowd and the weighting disagree), and Quiver Mini (empty on purpose; the re-run of the earlier experiment). Use "Acting as" to be the lead (Omar on Spearhead, Lena on Quiver), the expert, a whale, or a newcomer. "Reset demo data" restores the seed.
 
-Everything in the seed is illustrative. The people are made up and the engineering numbers are placeholders, not Quiver specifications.
+Everything in the seed is illustrative. The people are made up and the engineering numbers are placeholders, not Spearhead or Quiver specifications.
 
 ```bash
-npm test          # 35 unit tests: weighting, tallies, promotion rules, formatting, demo backend flow
+npm test          # 53 unit tests: weighting, tallies, resolutions, freeze, grant drafts, demo backend flow
 npm run typecheck
 npm run build
 
-# browser walkthrough, 66 checks incl. mobile layout and discussion pins, uses your installed Chrome
+# browser walkthrough, 80 checks incl. the full freeze flow, mobile layout, and discussion pins; uses your installed Chrome
 npm run preview -- --port 4179   # terminal 1
 npm run e2e                      # terminal 2
 ```
@@ -67,47 +68,37 @@ npm run e2e                      # terminal 2
 | Path | What |
 |---|---|
 | `src/lib/weights.ts` | The weighting formula and tallying. Pure functions. **Start here if you want to argue with the numbers.** |
-| `src/lib/promotion.ts` | Who can promote, when a rationale is required, bounty markdown |
-| `src/lib/analyze.ts` | Per-need analysis shared by the thread page and the readout |
+| `src/lib/resolution.ts` | The four resolutions: who can, when a rationale is required, what each one writes |
+| `src/lib/grant.ts` | Grant drafts from a thread: constraint extraction, proposer share, markdown |
+| `src/lib/versions.ts` | Which version is in build or discussion, defer targets, the freeze check |
+| `src/lib/analyze.ts` | Per-thread analysis shared by the thread page, the freeze screen, and the readout |
+| `src/lib/types.ts` | The model: projects, versions, threads, positions, resolutions, decisions, grants |
 | `src/data/backend.ts` | The one interface the UI talks to |
-| `src/data/demoBackend.ts`, `seed.ts` | Browser-storage backend and its seed |
-| `src/data/supabaseBackend.ts` | Supabase backend (see status below) |
-| `supabase/migrations/` | Schema and row-level security |
-| `src/pages/` | Needs list, thread, new need, profile, readout, explainer |
+| `src/data/demoBackend.ts`, `seed.ts` | Browser-storage backend and its seed. The resolution rules run here, not in the UI |
+| `src/data/supabaseBackend.ts` | Prototype 1 shape only; see status below |
+| `src/components/ResolvePanel.vue` | The four resolution actions, shared by the thread page and the freeze screen |
+| `src/pages/` | Projects, project, thread, freeze, register, grants, grant, readout, how it works, profile |
 | `e2e/walkthrough.cjs` | Browser walkthrough |
 
 Stack matches `Arrow-air/flight-tracking`: Vue 3, Vite, TypeScript, Supabase, and the same design tokens.
 
 ## Hosting
 
-Deployed on Arrow's Openship as project `spec-threads`, root directory `prototypes/spec-threads`, same setup as flight-tracking. Auto-deploy is on: every push to `main` of this repo rebuilds it, including notes-only pushes, which takes under a minute.
+Deployed on Arrow's Openship as project `spec-threads`, root directory `prototypes/spec-threads`. Auto-deploy is on: every push to `main` of this repo rebuilds it, including notes-only pushes. Prototype 2 was built on the `spec-threads-v2` branch for that reason.
 
 ## Status, honestly
 
-**Works and is verified:** everything in demo mode. Unit tests, typecheck, production build, and the browser walkthrough all pass, including a check that markdown typed by users cannot run scripts.
+**Works and is verified:** everything in demo mode. Unit tests, typecheck, production build, and the browser walkthrough all pass, including the whole freeze flow and a check that markdown typed by users cannot run scripts.
 
-**Written but never run against a real database:** `supabaseBackend.ts` and the migration. They typecheck and were written carefully against each other, but no one has applied the migration or signed in through it yet. Expect to fix things the first time. To try it:
-
-1. Apply `supabase/migrations/20260918000000_spec_threads.sql`. It is written for the shared instance at `supabase.arrowair.com`: every object is prefixed `st_` and nothing touches `auth.users`. **Try it on a scratch Supabase project first.**
-2. Insert rows into `st_project_roles` to name the leads. Roles are admin-set on purpose.
-3. Copy `.env.example` to `.env`, set `VITE_BACKEND=supabase` and the publishable key.
+**Backend:** Thomas's call on 2026-09-23 was to leave it alone and stay in demo mode. `supabaseBackend.ts` and the migration are still the prototype 1 shape (needs, specs, promotions), never run against a database, and only kept compilable against the new interface. Before dogfooding on real Spearhead PT2 discussion, the migration needs versions, resolutions, decisions, and grants, and GitHub sign-in has to be tried for real. Until then, demo mode is one browser, one person.
 
 ## What it does not do yet
 
-- **Token balances are self-reported.** The real version reads $ARROW from a linked wallet. Until then the token term runs on trust, which is fine among people who know each other and not fine in the open.
-- **Expertise tags are self-declared.** Nothing verifies them. Reputation from shipped work is its own idea (`ideas/profiles-and-reputation.md`).
-- **No rewards move.** The bounty text leaves the spec retro grant and the build bounty as TBD. Paying out is a later experiment (`ideas/retro-rewards-reddit-coordinape.md`).
-- **No agents.** Delegates and pre-meeting briefs are a separate experiment (`ideas/agent-delegates.md`).
-- **No notifications, editing, or moderation.** Deliberately. This is a question with code around it.
-- **Body text uses your system font.** Arrow's Neue Haas Grotesk is commercially licensed, so it is not shipped in this public repo. The mono faces are open-licensed and included.
+- **Retro session award.** The upvote-weighted bucket per version, optionally pre-split by aircraft system, allocated across threads at the freeze. Slice two; the freeze screen has a place for it. See `ideas/retro-rewards-reddit-coordinape.md`, Q31.
+- **Agent-drafted grants.** The draft is a deterministic template. An agent pass over the thread is a later button, and only useful once there is a real corpus to feed it (Q30).
+- **Token balances are self-reported. Expertise tags are self-declared. No rewards move. No notifications, editing, or moderation.** As in prototype 1.
+- **Body text uses your system font.** Arrow's Neue Haas Grotesk is commercially licensed, so it is not shipped in this public repo.
 
 ## Running the actual experiment
 
-The demo proves the instrument works. It proves nothing about Arrow. To learn something:
-
-1. Pick **one real, live, medium-sized decision** on Quiver or Spearhead where the lead is genuinely undecided.
-2. Get the backend running for real, or for a first pass have one person host the demo and enter everyone's votes on a call.
-3. Let it run for a week. Then read the Readout page together and ask: did the thread surface information the lead did not have? Did weighting change the outcome, and was the weighted answer the better one? Did the lead override, and does the rationale hold up?
-4. Change the weights in `st_projects.weights` and see whether the argument about them is more productive with numbers on the table.
-
-Things worth watching for: the expertise bonus is easy to game by tagging yourself with everything, a project with two core members gives those two a lot of say, and a lead multiplier of 2 may be too much or too little. All of these are guesses until a real thread runs.
+The demo proves the instrument works. It proves nothing about Arrow. To learn something, the tool has to hold real Spearhead PT2 discussion, which means the shared backend first. Then: let PT2 threads run to the freeze, have Alperen resolve them on the freeze screen, and read the Readout together. Did the discussion write the grants, or did the lead still write them? Did anyone outside the team post a position that became a spec? Did weighting change a winner? Did the lead override, and does the rationale hold up?

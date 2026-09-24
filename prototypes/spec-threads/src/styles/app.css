@@ -1,4 +1,4 @@
-/* Position threads prototype. Built on Arrow's tokens.css / base.css from flight-tracking:
+/* Spec threads prototype. Built on Arrow's tokens.css / base.css from flight-tracking:
    square corners, hairline borders, mono labels, one blue. */
 
 /* ---- shell ---- */
@@ -158,7 +158,7 @@ table.data td.num, table.data th.num { text-align: right; font-family: var(--fon
 @media (max-width: 860px) {
   .layout-2 { grid-template-columns: 1fr; }
   .side { position: static; }
-  .nav-links { order: 3; flex-basis: 100%; padding-bottom: 8px; }
+  .nav-links { order: 3; flex-basis: 100%; padding-bottom: 8px; flex-wrap: wrap; gap: 4px 16px; }
 }
 
 /* ---- review pass: re-ranking, vote bars, pick comparison, guide, calculator ---- */
@@ -294,3 +294,77 @@ h1 .pin, h2 .pin { position: relative; top: -3px; }
 @media (max-width: 640px) { .demo-strip { flex-wrap: wrap; } }
 
 .pin-compact { padding: 5px 6px; }
+
+/* ---- v2: projects, versions, freeze, resolutions, grants ---- */
+.chip-version { border-color: var(--docs-primary); color: var(--docs-primary-dark); background: var(--docs-primary-light); }
+.chip-system { border-color: var(--subnav-line); color: var(--docs-text-secondary); background: var(--docs-bg-subtle); }
+.chip-reject { border-color: var(--status-danger); color: var(--status-danger-text); background: var(--status-danger-bg); }
+.chip-spec { border-color: var(--status-success); color: var(--status-success-text); background: var(--status-success-bg); }
+.chip-grant { border-color: var(--status-info); color: var(--status-info); background: var(--status-info-bg); }
+.chip-defer { border-color: var(--status-warning); color: var(--status-warning-text); background: var(--status-warning-bg); }
+
+.project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 22px; }
+.project-card { display: block; text-decoration: none; color: inherit; border: 1px solid var(--docs-border); background: #fff; padding: 18px 20px; }
+.project-card:hover { border-color: var(--docs-primary); box-shadow: var(--shadow-hard); }
+.project-card h2 { color: var(--docs-text); }
+.project-versions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.project-version { border: 1px solid var(--docs-border); padding: 10px 12px; background: var(--docs-bg-subtle); display: flex; flex-direction: column; gap: 3px; }
+.project-version.is-discussing { border-color: var(--docs-primary); background: var(--docs-primary-light); }
+.project-version-name { font-family: var(--font-mono); font-weight: 700; font-size: 1.15rem; color: var(--docs-text); }
+
+.version-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 18px; }
+.version-card { border: 1px solid var(--docs-border); background: #fff; padding: 14px 16px; }
+.version-card.is-building { background: var(--docs-bg-subtle); }
+.version-card.is-discussing { border-color: var(--docs-primary); box-shadow: var(--shadow-hard); }
+.version-card.is-frozen { border-style: dashed; }
+.version-card.is-planned { color: var(--docs-text-secondary); }
+.version-name { font-family: var(--font-mono); font-weight: 700; font-size: 1.2rem; color: var(--docs-text); }
+
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--docs-border); flex-wrap: wrap; }
+.tab { font: inherit; font-size: 0.9rem; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; padding: 8px 12px; cursor: pointer; color: var(--docs-text-secondary); }
+.tab:hover { color: var(--docs-text); }
+.tab.on { border-bottom-color: var(--docs-primary); color: var(--docs-text); font-weight: 600; }
+.tab:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.freeze-progress .progress { margin-top: 12px; }
+.progress { height: 8px; background: var(--docs-bg-subtle); border: 1px solid var(--docs-border); }
+.progress span { display: block; height: 100%; background: var(--docs-primary); transition: width 0.4s ease; }
+.freeze-row { border: 1px solid var(--docs-border); background: #fff; padding: 14px 16px; }
+.freeze-row + .freeze-row { margin-top: 10px; }
+.freeze-title { display: block; font-size: 1.05rem; font-weight: 600; color: var(--docs-text); text-decoration: none; margin: 6px 0 4px; }
+.freeze-title:hover { color: var(--docs-primary); }
+
+.resolve-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.resolve-actions .btn.on { color: #fff; }
+.btn-reject { color: var(--status-danger-text); border-color: var(--status-danger); }
+.btn-reject:hover, .btn-reject.on { background: var(--status-danger); border-color: var(--status-danger); color: #fff; }
+.btn-spec { color: var(--status-success-text); border-color: var(--status-success); }
+.btn-spec:hover, .btn-spec.on { background: var(--status-success); border-color: var(--status-success); color: #fff; }
+.btn-grant { color: var(--status-info); border-color: var(--status-info); }
+.btn-grant:hover, .btn-grant.on { background: var(--status-info); border-color: var(--status-info); color: #fff; }
+.btn-defer { color: var(--status-warning-text); border-color: var(--status-warning); }
+.btn-defer:hover, .btn-defer.on { background: var(--status-warning); border-color: var(--status-warning); color: #fff; }
+.btn-ghost:disabled:hover { background: transparent; }
+.resolve-form { margin-top: 12px; border: 1px solid var(--docs-border); background: var(--docs-bg-subtle); padding: 14px 16px; }
+.resolve-compact .resolve-form { background: #fff; }
+.lead-card { border-color: var(--docs-primary); }
+
+.pick-list { display: flex; flex-direction: column; gap: 6px; }
+.pick-row { display: flex; align-items: center; gap: 10px; border: 1px solid var(--docs-border); background: #fff; padding: 8px 10px; cursor: pointer; }
+.pick-row.on { border-color: var(--docs-primary); box-shadow: var(--shadow-hard); }
+.pick-row input { margin: 0; }
+.pick-row-main { flex: 1; min-width: 0; }
+
+.resolution { border-left: 4px solid var(--docs-border); }
+.resolution-reject { border-left-color: var(--status-danger); }
+.resolution-spec { border-left-color: var(--status-success); }
+.resolution-grant { border-left-color: var(--status-info); }
+.deferrals { margin-top: 12px; }
+
+table.register td:nth-child(2) { min-width: 220px; }
+table.register td:nth-child(3) { min-width: 240px; }
+
+@media (max-width: 640px) {
+  .project-versions { grid-template-columns: 1fr; }
+  .resolve-actions .btn { flex: 1 1 45%; text-align: center; }
+}

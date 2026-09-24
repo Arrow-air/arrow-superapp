@@ -24,12 +24,15 @@ async function resetDemo() {
     <div class="nav-inner">
       <RouterLink to="/" class="brand">
         <span class="brand-mark">ARROW</span>
-        <span class="brand-sub">position threads · prototype</span>
+        <span class="brand-sub">spec threads · prototype 2</span>
       </RouterLink>
       <nav class="nav-links">
-        <RouterLink to="/">Threads</RouterLink>
+        <RouterLink to="/">Projects</RouterLink>
+        <RouterLink to="/threads">Threads</RouterLink>
+        <RouterLink to="/register">Register</RouterLink>
+        <RouterLink to="/grants">Grants</RouterLink>
         <RouterLink to="/readout">Readout</RouterLink>
-        <RouterLink to="/how">How weighting works</RouterLink>
+        <RouterLink to="/how">How it works</RouterLink>
       </nav>
       <div class="nav-user">
         <template v-if="isDemo">

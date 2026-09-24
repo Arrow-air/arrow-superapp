@@ -1,7 +1,10 @@
-// Domain types for the position-thread experiment.
-// A Thread is a question Arrow has to answer ("what power budget does the attachment
-// interface thread?"). People reply with candidate Positions. Votes on positions are weighted.
-// The project lead promotes one position to a bounty.
+// Domain types for the spec-thread experiment, v2.
+//
+// A Project has Versions. One is being built, one is being discussed. A Thread is a question
+// addressed to a version ("what does the engine PCB need for PT2?"). People reply with
+// Positions. Votes on positions are weighted. At the version freeze the lead resolves every
+// open thread one of four ways: reject, promote to spec (a Decision in the register), turn
+// into a Grant draft, or defer to the next version. See ROADMAP.md, "Next iteration".
 
 export type Role = 'lead' | 'core' | 'member';
 
@@ -25,25 +28,53 @@ export interface ProjectRole {
   role: Role;
 }
 
+/**
+ * building:   the team is building and flying it; outside discussion does not target it.
+ * discussing: open threads target this version. New threads default here.
+ * frozen:     the lead resolved every thread; the design is fixed and moves to the build.
+ * planned:    exists so threads can be deferred to it; becomes "discussing" when the one before freezes.
+ */
+export type VersionState = 'building' | 'discussing' | 'frozen' | 'planned';
+
+export interface Version {
+  id: string;
+  name: string; // "PT1", "PT2"
+  state: VersionState;
+  /** Order within the project. Deferral goes to the next one. */
+  order: number;
+  /** Intended freeze date (ISO date), shown so the queue does not grow forever. */
+  freezeTarget?: string;
+  frozenAt?: string;
+  frozenBy?: string;
+}
+
 export interface Project {
   id: string;
   name: string;
   weights: WeightConfig;
+  versions: Version[];
+  /** Aircraft systems a thread can be filed under. Used later to split the retro bucket. */
+  systems: string[];
 }
 
-export type ThreadStatus = 'open' | 'spec_selected' | 'bounty';
+export type ThreadStatus = 'open' | 'resolved';
 
 export interface Thread {
   id: string;
   projectId: string;
+  /** The version this thread is addressed to. Changes when deferred. */
+  versionId: string;
+  system?: string;
   title: string;
   body: string; // markdown
   tags: string[]; // matched against Member.expertise
   authorId: string;
   status: ThreadStatus;
   createdAt: string;
-  /** Set when the lead promotes a position. */
-  promotion?: Promotion;
+  /** Set when the lead resolves the thread (reject, spec, grant). Defer keeps it open. */
+  resolution?: Resolution;
+  /** Every time the lead pushed it to a later version. */
+  deferrals: Deferral[];
 }
 
 export interface Position {
@@ -75,17 +106,85 @@ export interface Comment {
   createdAt: string;
 }
 
-export interface Promotion {
-  positionId: string;
+export type ResolutionKind = 'reject' | 'spec' | 'grant' | 'defer';
+
+interface ResolutionBase {
   byMemberId: string;
   at: string;
-  /** Rank of the promoted position by weighted score at promotion time (1 = top). */
-  weightedRankAtPromotion: number;
-  /** Rank by raw one-person-one-vote score at promotion time. */
-  rawRankAtPromotion: number;
+}
+
+/** The lead chose a position. Both ranks are recorded so the readout can count overrides. */
+export interface ChosenPosition {
+  positionId: string;
+  /** Rank of the chosen position by weighted score at resolution time (1 = top). */
+  weightedRankAtResolution: number;
+  /** Rank by raw one-person-one-vote score at resolution time. */
+  rawRankAtResolution: number;
   /** Required when the lead picks something other than the weighted top position. */
   overrideRationale?: string;
-  bountyMarkdown: string;
+}
+
+export type Resolution =
+  | (ResolutionBase & { kind: 'reject'; note: string })
+  | (ResolutionBase & { kind: 'spec'; decisionId: string } & ChosenPosition)
+  | (ResolutionBase & { kind: 'grant'; grantId: string } & ChosenPosition);
+
+export interface Deferral {
+  fromVersionId: string;
+  toVersionId: string;
+  byMemberId: string;
+  at: string;
+  note?: string;
+}
+
+/** An entry in the project's decision register. A thread promoted to a spec or requirement. */
+export interface Decision {
+  id: string;
+  projectId: string;
+  versionId: string;
+  threadId: string;
+  positionId: string;
+  /** The question, from the thread title. */
+  question: string;
+  /** The chosen position's title. */
+  chosen: string;
+  /** Lead's rationale. Required when the choice was not the weighted top. */
+  rationale?: string;
+  weightedRankAtDecision: number;
+  rawRankAtDecision: number;
+  byMemberId: string;
+  at: string;
+  status: 'decided' | 'superseded';
+}
+
+/**
+ * A grant or bounty drafted from a thread. Pre-filled from the chosen position and its
+ * discussion; a human edits it before it is real. Carries the proposer award.
+ */
+export interface Grant {
+  id: string;
+  projectId: string;
+  versionId: string;
+  threadId: string;
+  positionId: string;
+  title: string;
+  /** Markdown. Starts as the thread body plus the chosen position. */
+  scope: string;
+  /** Interfaces and constraints extracted from the discussion, one per line. */
+  constraints: string[];
+  /** Who wrote the idea. Gets proposerShare of the grant. */
+  proposerIds: string[];
+  /** Fraction of the grant paid to the proposers. Default 0.25. No tokens move in this prototype. */
+  proposerShare: number;
+  /** Members who commented on the chosen position, for attribution. */
+  contributorIds: string[];
+  overrideRationale?: string;
+  weightedRankAtResolution: number;
+  rawRankAtResolution: number;
+  byMemberId: string;
+  createdAt: string;
+  updatedAt: string;
+  status: 'draft' | 'published';
 }
 
 /** Tunable per project. Every number here is a hypothesis; the readout page exists to test them. */

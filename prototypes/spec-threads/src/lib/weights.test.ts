@@ -21,12 +21,14 @@ const member = (over: Partial<Member> = {}): Member => ({
 const thread = (over: Partial<Thread> = {}): Thread => ({
   id: 'n1',
   projectId: 'quiver',
+  versionId: 'qv-2',
   title: 't',
   body: 'b',
   tags: ['pcb', 'power'],
   authorId: 'm1',
   status: 'open',
   createdAt: '2026-09-18T00:00:00Z',
+  deferrals: [],
   ...over,
 });
 

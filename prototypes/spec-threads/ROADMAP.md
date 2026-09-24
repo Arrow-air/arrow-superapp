@@ -13,6 +13,8 @@ That fallback only stays cheap if we design for it, so two rules hold from day o
 
 Thomas is taking these into the next spec-app iteration. They reshape the thread model more than the UI; see `meetings/2026-09-23/notes.md`.
 
+**Status (2026-09-23, evening):** items 1–4, 6, and 7 are built as prototype 2 on the `spec-threads-v2` branch, demo mode only (Thomas: leave the backend alone for now). Threads are addressed to a version; the freeze screen forces one of four resolutions; grant drafts are written from the thread with a `proposerShare`; the decision register exists; Spearhead PT2 and Quiver Mini are the seeded projects. Item 5, the retro session award, is slice two. Item 8, dogfooding, is blocked on the shared backend, which is prototype 1's untouched Supabase draft. See the prototype README, "Status, honestly".
+
 1. **Threads are addressed to a version.** Each project shows the version in build (PT1) and the version in discussion (PT2). New threads default to the discussion version. Front page copy says outside contributions land in the next version. (`ideas/next-version-contributions.md`)
 2. **Lead actions on a thread, all the time:** upvote/downvote, comment. The lead is a reader during the discussion, not a gate.
 3. **The freeze.** A per-version "freeze" screen lists every open thread and forces one of four resolutions: reject (with a line of why), promote to spec/requirement (writes a decision to the register), turn into a grant or bounty (pre-fills the grant from the thread), defer to the next version (thread re-targets, keeps history). A version can't be frozen with unresolved threads.

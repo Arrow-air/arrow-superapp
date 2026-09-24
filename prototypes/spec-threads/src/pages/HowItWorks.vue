@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import DiscussPin from '../components/DiscussPin.vue';
 import WeightBox from '../components/WeightBox.vue';
+import { RouterLink } from 'vue-router';
 import { state } from '../data/store';
 import { tokens as fmtTokens } from '../lib/format';
 import type { Member, Thread, Role } from '../lib/types';
@@ -24,7 +25,7 @@ const calc = computed(() => {
 </script>
 
 <template>
-  <h1>How weighting works</h1>
+  <h1>How it works</h1>
   <div class="stack" style="max-width: 780px">
     <p>
       On the 2026-09-17 call we agreed votes on design decisions should not be one person one vote. Otherwise strangers, or
@@ -120,11 +121,34 @@ const calc = computed(() => {
     </section>
 
     <section>
+      <h2>Versions and the freeze</h2>
+      <p>
+        From the 2026-09-23 call: outside contributions target the <b>next</b> version, not the one in flight. A build that is thirty days
+        from done cannot absorb new ideas; they become noise for the team. So each project shows the version in build and the version in
+        discussion side by side, and every thread is addressed to the one in discussion.
+      </p>
+      <p>
+        When the lead sits down to design that version they <b>freeze</b> it. The freeze screen lists every open thread and each one has to end
+        one of four ways:
+      </p>
+      <table class="data">
+        <thead><tr><th>Resolution</th><th>What happens</th></tr></thead>
+        <tbody>
+          <tr><td><span class="chip chip-reject">rejected</span></td><td>With a line of why, published on the thread.</td></tr>
+          <tr><td><span class="chip chip-spec">promoted to spec</span></td><td>The chosen position becomes a requirement in the <RouterLink to="/register">decision register</RouterLink>.</td></tr>
+          <tr><td><span class="chip chip-grant">turned into a grant</span></td><td>A grant draft is written from the thread: the question, the chosen position as the spec, every constraint anyone named, and a proposer award for whoever wrote the idea. The lead edits it before it is real.</td></tr>
+          <tr><td><span class="chip chip-defer">deferred</span></td><td>Not done being discussed. The thread moves to the next version with its votes and history.</td></tr>
+        </tbody>
+      </table>
+      <p>A version cannot be frozen with anything still open. Once frozen, the next planned version opens for discussion.</p>
+    </section>
+
+    <section>
       <h2>The lead keeps the final say <DiscussPin anchor="lead-override" class="pin-inline" /></h2>
       <p>
-        Aircraft are trade-offs and someone has to be opinionated. Only the project lead can promote a position to a bounty, and the lead
-        may promote any position. If it is not the top weighted position, the lead has to write down why, and that reasoning is published on the bounty.
-        The community gets a voice and an explanation. The lead keeps authority.
+        Aircraft are trade-offs and someone has to be opinionated. Only the project lead resolves threads, and the lead may choose any position
+        for a spec or a grant. If it is not the top weighted position, the lead has to write down why, and that reasoning is published on the
+        decision or the grant. The community gets a voice and an explanation. The lead keeps authority.
       </p>
     </section>
 

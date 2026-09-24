@@ -1,25 +1,32 @@
 // Supabase backend. Mirrors supabase/migrations/20260918000000_spec_threads.sql.
 //
-// STATUS: written against the schema but NOT yet exercised against a live database.
-// The demo backend is the one that has been run. Treat this as a first draft to be
-// tested once the migration is applied somewhere safe.
+// STATUS: v1 shape, NOT yet exercised against a live database, and NOT updated for v2.
+// The demo backend is the one that has been run. Thomas's call on 2026-09-23: keep demo mode,
+// leave the backend alone for now. So this file only stays compilable against the v2
+// interface: the v1 methods still map the v1 tables (needs, specs, promotions), rows get
+// the v2 fields they lack (versions, deferrals) as empty defaults, and every v2 method
+// throws. When the backend is picked up again, the migration needs versions, resolutions,
+// decisions, and grants before any of this is real.
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type {
   BuilderIntent,
   Comment,
+  Decision,
+  Grant,
   Member,
-  Thread,
+  Position,
   Project,
   ProjectRole,
-  Promotion,
-  Position,
+  Thread,
   Vote,
 } from '../lib/types';
-import { NotSignedInError, type Backend, type ThreadBundle } from './backend';
+import { NotSignedInError, type Backend, type ResolveInput, type ThreadBundle } from './backend';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Row = Record<string, any>;
+
+const NOT_V2 = 'The Supabase backend has not been updated for v2 (versions, freeze, grants). Use demo mode.';
 
 const toMember = (r: Row): Member => ({
   id: r.id,
@@ -32,26 +39,30 @@ const toMember = (r: Row): Member => ({
   bio: r.bio ?? undefined,
 });
 
-const toPromotion = (r: Row): Promotion => ({
-  positionId: r.spec_id,
-  byMemberId: r.by_member_id,
-  at: r.at,
-  weightedRankAtPromotion: r.weighted_rank_at_promotion,
-  rawRankAtPromotion: r.raw_rank_at_promotion,
-  overrideRationale: r.override_rationale ?? undefined,
-  bountyMarkdown: r.bounty_markdown,
-});
-
+// A v1 promotion becomes a v2 grant-style resolution. The grant record itself does not exist in v1.
 const toThread = (r: Row, promotion?: Row): Thread => ({
   id: r.id,
   projectId: r.project_id,
+  versionId: '',
   title: r.title,
   body: r.body,
   tags: r.tags ?? [],
   authorId: r.author_id,
-  status: r.status,
+  status: promotion ? 'resolved' : 'open',
   createdAt: r.created_at,
-  promotion: promotion ? toPromotion(promotion) : undefined,
+  deferrals: [],
+  resolution: promotion
+    ? {
+        kind: 'grant',
+        grantId: '',
+        positionId: promotion.spec_id,
+        byMemberId: promotion.by_member_id,
+        at: promotion.at,
+        weightedRankAtResolution: promotion.weighted_rank_at_promotion,
+        rawRankAtResolution: promotion.raw_rank_at_promotion,
+        overrideRationale: promotion.override_rationale ?? undefined,
+      }
+    : undefined,
 });
 
 const toPosition = (r: Row): Position => ({ id: r.id, threadId: r.need_id, authorId: r.author_id, body: r.body, createdAt: r.created_at });
@@ -112,7 +123,7 @@ export class SupabaseBackend implements Backend {
 
   async listProjects(): Promise<Project[]> {
     const rows = unwrap(await this.db.from('st_projects').select('*').order('name'));
-    return (rows as Row[]).map((r) => ({ id: r.id, name: r.name, weights: r.weights }));
+    return (rows as Row[]).map((r) => ({ id: r.id, name: r.name, weights: r.weights, versions: [], systems: [] }));
   }
 
   async listMembers(): Promise<Member[]> {
@@ -166,7 +177,19 @@ export class SupabaseBackend implements Backend {
     return (await this.bundlesFor([thread]))[0];
   }
 
-  async createThread(input: { projectId: string; title: string; body: string; tags: string[] }) {
+  async listDecisions(): Promise<Decision[]> {
+    return [];
+  }
+
+  async listGrants(): Promise<Grant[]> {
+    return [];
+  }
+
+  async getGrant(): Promise<Grant | null> {
+    return null;
+  }
+
+  async createThread(input: { projectId: string; versionId?: string; system?: string; title: string; body: string; tags: string[] }) {
     const author_id = await this.uid();
     const tags = [...new Set(input.tags.map((t) => t.trim().toLowerCase()).filter(Boolean))];
     const row = unwrap(
@@ -217,22 +240,20 @@ export class SupabaseBackend implements Backend {
     return toComment(row as Row);
   }
 
-  async recordPromotion(input: { threadId: string; promotion: Promotion }) {
-    const by_member_id = await this.uid();
-    const p = input.promotion;
-    // The insert trigger closes the thread; RLS checks the caller is the project lead.
-    unwrap(
-      await this.db.from('st_promotions').insert({
-        need_id: input.threadId,
-        spec_id: p.positionId,
-        by_member_id,
-        at: p.at,
-        weighted_rank_at_promotion: p.weightedRankAtPromotion,
-        raw_rank_at_promotion: p.rawRankAtPromotion,
-        override_rationale: p.overrideRationale ?? null,
-        bounty_markdown: p.bountyMarkdown,
-      }),
-    );
+  async resolveThread(_input: ResolveInput): Promise<Thread> {
+    throw new Error(NOT_V2);
+  }
+
+  async updateGrant(): Promise<Grant> {
+    throw new Error(NOT_V2);
+  }
+
+  async publishGrant(): Promise<Grant> {
+    throw new Error(NOT_V2);
+  }
+
+  async freezeVersion(): Promise<Project> {
+    throw new Error(NOT_V2);
   }
 
   async updateProfile(input: Partial<Pick<Member, 'tokenBalance' | 'expertise' | 'location' | 'bio'>>) {
