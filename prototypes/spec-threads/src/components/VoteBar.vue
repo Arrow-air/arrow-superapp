@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Shows what a spec's weighted score is made of: one segment per voter, sized by that
+// Shows what a position's weighted score is made of: one segment per voter, sized by that
 // voter's weight. Upvotes grow right from the centre line, downvotes grow left.
 // Bars across a thread share one scale so they can be compared by eye. The centre line sits
 // where the thread needs it: if nobody voted against anything, the against side takes no room.

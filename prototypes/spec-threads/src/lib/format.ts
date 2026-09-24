@@ -18,8 +18,8 @@ export function parseTags(input: string): string[] {
   return [...new Set(input.split(',').map((t) => t.trim().toLowerCase()).filter(Boolean))];
 }
 
-/** A short human title for a spec: its first markdown heading, else its first line. */
-export function specTitle(body: string, max = 70): string {
+/** A short human title for a position: its first markdown heading, else its first line. */
+export function positionTitle(body: string, max = 70): string {
   const lines = (body ?? '').split('\n').map((l) => l.trim()).filter(Boolean);
   const heading = lines.find((l) => /^#{1,6}\s+\S/.test(l));
   const raw = (heading ?? lines.find((l) => !/^#{1,6}\s*$/.test(l)) ?? '')
@@ -27,5 +27,5 @@ export function specTitle(body: string, max = 70): string {
     .replace(/^[-*>]\s+/, '')
     .replace(/[*_`]/g, '')
     .trim();
-  return raw.length > max ? raw.slice(0, max - 1).trimEnd() + '…' : raw || 'Untitled spec';
+  return raw.length > max ? raw.slice(0, max - 1).trimEnd() + '…' : raw || 'Untitled position';
 }

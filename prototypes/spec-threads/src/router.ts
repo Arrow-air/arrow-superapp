@@ -4,9 +4,9 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    { path: '/', name: 'needs', component: () => import('./pages/NeedsList.vue') },
-    { path: '/needs/new', name: 'new-need', component: () => import('./pages/NewNeed.vue') },
-    { path: '/needs/:id', name: 'need', component: () => import('./pages/NeedDetail.vue'), props: true },
+    { path: '/', name: 'threads', component: () => import('./pages/ThreadsList.vue') },
+    { path: '/threads/new', name: 'new-thread', component: () => import('./pages/NewThread.vue') },
+    { path: '/threads/:id', name: 'thread', component: () => import('./pages/ThreadDetail.vue'), props: true },
     { path: '/readout', name: 'readout', component: () => import('./pages/Readout.vue') },
     { path: '/how', name: 'how', component: () => import('./pages/HowItWorks.vue') },
     { path: '/profile', name: 'profile', component: () => import('./pages/Profile.vue') },

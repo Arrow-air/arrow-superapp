@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import type { Member, Need, Spec, Vote } from './types';
+import type { Member, Thread, Position, Vote } from './types';
 import {
   DEFAULT_WEIGHTS,
   matchedTags,
-  tallySpecs,
+  tallyPositions,
   tokenTerm,
   voteWeight,
   weightingChangedWinner,
@@ -18,7 +18,7 @@ const member = (over: Partial<Member> = {}): Member => ({
   ...over,
 });
 
-const need = (over: Partial<Need> = {}): Need => ({
+const thread = (over: Partial<Thread> = {}): Thread => ({
   id: 'n1',
   projectId: 'quiver',
   title: 't',
@@ -30,16 +30,16 @@ const need = (over: Partial<Need> = {}): Need => ({
   ...over,
 });
 
-const spec = (id: string): Spec => ({
+const position = (id: string): Position => ({
   id,
-  needId: 'n1',
+  threadId: 'n1',
   authorId: 'a',
   body: 'x',
   createdAt: '2026-09-18T00:00:00Z',
 });
 
-const vote = (specId: string, memberId: string, value: 1 | -1): Vote => ({
-  specId,
+const vote = (positionId: string, memberId: string, value: 1 | -1): Vote => ({
+  positionId,
   memberId,
   value,
   castAt: '2026-09-18T00:00:00Z',
@@ -68,23 +68,23 @@ describe('tokenTerm', () => {
 
 describe('matchedTags', () => {
   it('matches case and whitespace insensitively', () => {
-    expect(matchedTags(member({ expertise: [' PCB ', 'firmware'] }), need())).toEqual(['pcb']);
+    expect(matchedTags(member({ expertise: [' PCB ', 'firmware'] }), thread())).toEqual(['pcb']);
   });
   it('returns nothing when there is no overlap', () => {
-    expect(matchedTags(member({ expertise: ['design'] }), need())).toEqual([]);
+    expect(matchedTags(member({ expertise: ['design'] }), thread())).toEqual([]);
   });
 });
 
 describe('voteWeight', () => {
   it('a plain member with nothing gets the base weight', () => {
-    const w = voteWeight({ member: member(), need: need(), role: 'member', isBuilder: false, cfg: DEFAULT_WEIGHTS });
+    const w = voteWeight({ member: member(), thread: thread(), role: 'member', isBuilder: false, cfg: DEFAULT_WEIGHTS });
     expect(w.total).toBe(1);
   });
 
   it('stacks token, expertise, and builder terms, then applies the role multiplier', () => {
     const w = voteWeight({
       member: member({ tokenBalance: 9_000, expertise: ['pcb'] }),
-      need: need(),
+      thread: thread(),
       role: 'lead',
       isBuilder: true,
       cfg: DEFAULT_WEIGHTS,
@@ -95,7 +95,7 @@ describe('voteWeight', () => {
   it('expertise bonus is flat, not per matched tag', () => {
     const w = voteWeight({
       member: member({ expertise: ['pcb', 'power'] }),
-      need: need(),
+      thread: thread(),
       role: 'member',
       isBuilder: false,
       cfg: DEFAULT_WEIGHTS,
@@ -105,11 +105,11 @@ describe('voteWeight', () => {
   });
 });
 
-describe('tallySpecs', () => {
+describe('tallyPositions', () => {
   it('computes raw and weighted scores and ranks', () => {
     const weights: Record<string, number> = { expert: 6, a: 1, b: 1, c: 1 };
-    const tallies = tallySpecs({
-      specs: [spec('popular'), spec('expert-pick')],
+    const tallies = tallyPositions({
+      positions: [position('popular'), position('expert-pick')],
       votes: [
         vote('popular', 'a', 1),
         vote('popular', 'b', 1),
@@ -119,8 +119,8 @@ describe('tallySpecs', () => {
       ],
       weightFor: (id) => weights[id],
     });
-    const popular = tallies.find((t) => t.specId === 'popular')!;
-    const expertPick = tallies.find((t) => t.specId === 'expert-pick')!;
+    const popular = tallies.find((t) => t.positionId === 'popular')!;
+    const expertPick = tallies.find((t) => t.positionId === 'expert-pick')!;
     expect(popular.rawScore).toBe(2);
     expect(popular.weightedScore).toBe(-3);
     expect(expertPick.rawScore).toBe(1);
@@ -131,28 +131,28 @@ describe('tallySpecs', () => {
   });
 
   it('ties share a rank and the next rank skips', () => {
-    const tallies = tallySpecs({
-      specs: [spec('x'), spec('y'), spec('z')],
+    const tallies = tallyPositions({
+      positions: [position('x'), position('y'), position('z')],
       votes: [vote('x', 'a', 1), vote('y', 'b', 1)],
       weightFor: () => 1,
     });
-    const rank = (id: string) => tallies.find((t) => t.specId === id)!.rawRank;
+    const rank = (id: string) => tallies.find((t) => t.positionId === id)!.rawRank;
     expect(rank('x')).toBe(1);
     expect(rank('y')).toBe(1);
     expect(rank('z')).toBe(3);
   });
 
   it('reports no change when weighting agrees with the crowd', () => {
-    const tallies = tallySpecs({
-      specs: [spec('x'), spec('y')],
+    const tallies = tallyPositions({
+      positions: [position('x'), position('y')],
       votes: [vote('x', 'a', 1), vote('x', 'b', 1)],
       weightFor: () => 2,
     });
     expect(weightingChangedWinner(tallies)).toBe(false);
   });
 
-  it('handles specs with no votes', () => {
-    const tallies = tallySpecs({ specs: [spec('x')], votes: [], weightFor: () => 1 });
+  it('handles positions with no votes', () => {
+    const tallies = tallyPositions({ positions: [position('x')], votes: [], weightFor: () => 1 });
     expect(tallies[0]).toMatchObject({ rawScore: 0, weightedScore: 0, voters: 0, rawRank: 1 });
     expect(weightingChangedWinner(tallies)).toBe(false);
   });

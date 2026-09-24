@@ -9,7 +9,7 @@ defineProps<{ breakdown: WeightBreakdown; title?: string; pin?: AnchorKey }>();
 <template>
   <div class="weight-box">
     <div class="spread" style="align-items: center; flex-wrap: nowrap">
-      <div class="label">{{ title ?? 'Your vote weight on this need' }}</div>
+      <div class="label">{{ title ?? 'Your vote weight on this thread' }}</div>
       <DiscussPin v-if="pin" :anchor="pin" compact />
     </div>
     <div class="row" style="margin-top: 6px; align-items: baseline">

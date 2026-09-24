@@ -1,11 +1,11 @@
 // Seed data for the demo backend.
 //
 // EVERYTHING HERE IS ILLUSTRATIVE. The people are fictional personas, the token balances
-// are made up, and the engineering numbers in the specs are placeholders written to make
+// are made up, and the engineering numbers in the positions are placeholders written to make
 // the threads feel real. None of it is an Arrow decision or a Quiver specification.
 //
-// The first need is arranged so that weighting changes the winner: the crowd's favourite
-// spec is not the one the domain expert, the builder, and the lead prefer. That is the
+// The first thread is arranged so that weighting changes the winner: the crowd's favourite
+// position is not the one the domain expert, the builder, and the lead prefer. That is the
 // situation the experiment exists to look at.
 
 import { DEFAULT_WEIGHTS } from '../lib/weights';
@@ -13,10 +13,10 @@ import type {
   BuilderIntent,
   Comment,
   Member,
-  Need,
+  Thread,
   Project,
   ProjectRole,
-  Spec,
+  Position,
   Vote,
 } from '../lib/types';
 
@@ -25,8 +25,8 @@ export interface DemoState {
   projects: Project[];
   members: Member[];
   roles: ProjectRole[];
-  needs: Need[];
-  specs: Spec[];
+  threads: Thread[];
+  positions: Position[];
   votes: Vote[];
   intents: BuilderIntent[];
   comments: Comment[];
@@ -59,17 +59,17 @@ export function seedState(): DemoState {
     { projectId: 'spearhead', memberId: 'm-jun', role: 'core' },
   ];
 
-  const needs: Need[] = [
+  const threads: Thread[] = [
     {
       id: 'n-power',
       projectId: 'quiver',
       title: 'Attachment interface: how much power should it supply?',
       body: [
-        'Attachments (sprayers, cameras, droppers) all draw from the attachment interface. We need to fix a power budget before the next interface board revision.',
+        'Attachments (sprayers, cameras, droppers) all draw from the attachment interface. We thread to fix a power budget before the next interface board revision.',
         '',
         'Different workshops want different things. A spray rig wants a lot of continuous current. A camera gimbal wants clean low-noise rails. Every watt we reserve costs battery and harness weight for everyone.',
         '',
-        '**Reply with a spec:** voltage rails, continuous and peak current, connector, protection. Say who it serves and who it leaves out.',
+        '**Reply with a position:** voltage rails, continuous and peak current, connector, protection. Say who it serves and who it leaves out.',
         '',
         '_Illustrative thread. Numbers in the replies are placeholders, not Quiver specifications._',
       ].join('\n'),
@@ -83,9 +83,9 @@ export function seedState(): DemoState {
       projectId: 'spearhead',
       title: 'Spearhead avionics carrier: what goes on the board?',
       body: [
-        'Spearhead needs an avionics carrier board. Before anyone lays it out we need agreement on what it carries: flight controller interface, power distribution, CAN, telemetry, payload breakouts.',
+        'Spearhead threads an avionics carrier board. Before anyone lays it out we thread agreement on what it carries: flight controller interface, power distribution, CAN, telemetry, payload breakouts.',
         '',
-        '**Reply with a spec.** A short expert hint is welcome too, for example "run two CAN buses and here is why."',
+        '**Reply with a position.** A short expert hint is welcome too, for example "run two CAN buses and here is why."',
         '',
         '_Illustrative thread._',
       ].join('\n'),
@@ -96,10 +96,10 @@ export function seedState(): DemoState {
     },
   ];
 
-  const specs: Spec[] = [
+  const positions: Position[] = [
     {
       id: 's-max',
-      needId: 'n-power',
+      threadId: 'n-power',
       authorId: 'm-sam',
       body: [
         '### Go big: one high-power rail',
@@ -114,7 +114,7 @@ export function seedState(): DemoState {
     },
     {
       id: 's-tiered',
-      needId: 'n-power',
+      threadId: 'n-power',
       authorId: 'm-jun',
       body: [
         '### Two tiers: regulated low-power plus switched high-power',
@@ -132,7 +132,7 @@ export function seedState(): DemoState {
     },
     {
       id: 's-min',
-      needId: 'n-power',
+      threadId: 'n-power',
       authorId: 'm-ade',
       body: [
         '### Keep it light: low-power only',
@@ -146,7 +146,7 @@ export function seedState(): DemoState {
     },
     {
       id: 's-can',
-      needId: 'n-avionics',
+      threadId: 'n-avionics',
       authorId: 'm-jun',
       body: [
         '### Hint: run two CAN buses',
@@ -159,24 +159,24 @@ export function seedState(): DemoState {
 
   // Crowd likes "go big". The expert, the builder, and the lead prefer "two tiers".
   const votes: Vote[] = [
-    { specId: 's-max', memberId: 'm-whale', value: 1, castAt: t(14, 20) },
-    { specId: 's-max', memberId: 'm-ade', value: 1, castAt: t(14, 21) },
-    { specId: 's-max', memberId: 'm-sam', value: 1, castAt: t(14, 22) },
-    { specId: 's-max', memberId: 'm-kim', value: 1, castAt: t(15, 7) },
-    { specId: 's-tiered', memberId: 'm-jun', value: 1, castAt: t(15, 8) },
-    { specId: 's-tiered', memberId: 'm-rosa', value: 1, castAt: t(15, 14) },
-    { specId: 's-tiered', memberId: 'm-lena', value: 1, castAt: t(15, 16) },
-    { specId: 's-min', memberId: 'm-ade', value: 1, castAt: t(15, 11) },
-    { specId: 's-min', memberId: 'm-rosa', value: -1, castAt: t(15, 14) },
+    { positionId: 's-max', memberId: 'm-whale', value: 1, castAt: t(14, 20) },
+    { positionId: 's-max', memberId: 'm-ade', value: 1, castAt: t(14, 21) },
+    { positionId: 's-max', memberId: 'm-sam', value: 1, castAt: t(14, 22) },
+    { positionId: 's-max', memberId: 'm-kim', value: 1, castAt: t(15, 7) },
+    { positionId: 's-tiered', memberId: 'm-jun', value: 1, castAt: t(15, 8) },
+    { positionId: 's-tiered', memberId: 'm-rosa', value: 1, castAt: t(15, 14) },
+    { positionId: 's-tiered', memberId: 'm-lena', value: 1, castAt: t(15, 16) },
+    { positionId: 's-min', memberId: 'm-ade', value: 1, castAt: t(15, 11) },
+    { positionId: 's-min', memberId: 'm-rosa', value: -1, castAt: t(15, 14) },
   ];
 
-  const intents: BuilderIntent[] = [{ needId: 'n-power', memberId: 'm-rosa' }];
+  const intents: BuilderIntent[] = [{ threadId: 'n-power', memberId: 'm-rosa' }];
 
   const comments: Comment[] = [
-    { id: 'c-1', specId: 's-max', authorId: 'm-jun', body: 'A 30 A rail means 30 A wiring and a 30 A connector on every airframe, including the ones that only ever carry a camera. That weight is paid by everyone.', createdAt: t(15, 8) },
-    { id: 'c-2', specId: 's-tiered', authorId: 'm-rosa', body: 'This covers my spray rig. 15 A continuous is enough with the pump I use. I would build this.', createdAt: t(15, 14) },
-    { id: 'c-3', specId: 's-min', authorId: 'm-rosa', body: 'A second battery on the sprayer is a second thing to charge and balance in the field. Hard no from me.', createdAt: t(15, 14) },
+    { id: 'c-1', positionId: 's-max', authorId: 'm-jun', body: 'A 30 A rail means 30 A wiring and a 30 A connector on every airframe, including the ones that only ever carry a camera. That weight is paid by everyone.', createdAt: t(15, 8) },
+    { id: 'c-2', positionId: 's-tiered', authorId: 'm-rosa', body: 'This covers my spray rig. 15 A continuous is enough with the pump I use. I would build this.', createdAt: t(15, 14) },
+    { id: 'c-3', positionId: 's-min', authorId: 'm-rosa', body: 'A second battery on the sprayer is a second thing to charge and balance in the field. Hard no from me.', createdAt: t(15, 14) },
   ];
 
-  return { actingAs: 'm-lena', projects, members, roles, needs, specs, votes, intents, comments };
+  return { actingAs: 'm-lena', projects, members, roles, threads, positions, votes, intents, comments };
 }

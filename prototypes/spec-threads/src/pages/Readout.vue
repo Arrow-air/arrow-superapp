@@ -2,16 +2,16 @@
 import { computed, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
 import DiscussPin from '../components/DiscussPin.vue';
-import type { NeedBundle } from '../data/backend';
+import type { ThreadBundle } from '../data/backend';
 import { backend, memberById, projectById, state } from '../data/store';
-import { analyzeNeed } from '../lib/analyze';
+import { analyzeThread } from '../lib/analyze';
 
 // The point of the prototype. Three questions from OPEN-QUESTIONS.md, answered with counts:
 //   Q6  does weighting change outcomes versus one person one vote?
 //   Q2  how often does the lead go against the weighted result, and why?
 //   Q13 does anyone actually take part?
 
-const bundles = ref<NeedBundle[]>([]);
+const bundles = ref<ThreadBundle[]>([]);
 const loading = ref(true);
 
 watch(
@@ -30,34 +30,34 @@ watch(
 
 const rows = computed(() =>
   bundles.value.flatMap((b) => {
-    const project = projectById.value.get(b.need.projectId);
+    const project = projectById.value.get(b.thread.projectId);
     if (!project) return [];
-    const a = analyzeNeed({ bundle: b, members: state.members, roles: state.roles, project });
+    const a = analyzeThread({ bundle: b, members: state.members, roles: state.roles, project });
     const top = (k: 'rawRank' | 'weightedRank') =>
       a.tallies
         .filter((t) => t[k] === 1 && t.voters > 0)
-        .map((t) => '@' + (memberById.value.get(b.specs.find((s) => s.id === t.specId)?.authorId ?? '')?.handle ?? '?'))
+        .map((t) => '@' + (memberById.value.get(b.positions.find((s) => s.id === t.positionId)?.authorId ?? '')?.handle ?? '?'))
         .join(', ') || '—';
     return [{ bundle: b, project, a, rawTop: top('rawRank'), weightedTop: top('weightedRank') }];
   }),
 );
 
-const contested = computed(() => rows.value.filter((r) => r.bundle.specs.length >= 2 && r.a.participants > 0));
+const contested = computed(() => rows.value.filter((r) => r.bundle.positions.length >= 2 && r.a.participants > 0));
 const diverged = computed(() => contested.value.filter((r) => r.a.weightingChangedWinner));
-const promoted = computed(() => rows.value.filter((r) => r.bundle.need.promotion));
+const promoted = computed(() => rows.value.filter((r) => r.bundle.thread.promotion));
 const overrides = computed(() => promoted.value.filter((r) => r.a.leadFollowedWeighted === false));
 const totalVoters = computed(() => new Set(bundles.value.flatMap((b) => b.votes.map((v) => v.memberId))).size);
-const specAuthors = computed(() => new Set(bundles.value.flatMap((b) => b.specs.map((s) => s.authorId))).size);
+const positionAuthors = computed(() => new Set(bundles.value.flatMap((b) => b.positions.map((s) => s.authorId))).size);
 
 const weightTable = computed(() =>
   state.projects.map((p) => ({
     project: p,
     members: state.members
       .map((m) => {
-        // Weight with no need context: no expertise match, no builder intent. The floor each person votes from.
+        // Weight with no thread context: no expertise match, no builder intent. The floor each person votes from.
         const role = state.roles.find((r) => r.projectId === p.id && r.memberId === m.id)?.role ?? 'member';
-        const a = analyzeNeed({
-          bundle: { need: { id: '', projectId: p.id, title: '', body: '', tags: [], authorId: '', status: 'open', createdAt: '' }, specs: [], votes: [], intents: [], comments: [] },
+        const a = analyzeThread({
+          bundle: { thread: { id: '', projectId: p.id, title: '', body: '', tags: [], authorId: '', status: 'open', createdAt: '' }, positions: [], votes: [], intents: [], comments: [] },
           members: [m],
           roles: state.roles,
           project: p,
@@ -81,7 +81,7 @@ const weightTable = computed(() =>
     <div class="stat-grid">
       <div class="stat">
         <div class="stat-value">{{ diverged.length }} / {{ contested.length }}</div>
-        <div class="label stat-label">contested needs where weighting changed the winner</div>
+        <div class="label stat-label">contested threads where weighting changed the winner</div>
       </div>
       <div class="stat">
         <div class="stat-value">{{ overrides.length }} / {{ promoted.length }}</div>
@@ -92,43 +92,43 @@ const weightTable = computed(() =>
         <div class="label stat-label">distinct voters</div>
       </div>
       <div class="stat">
-        <div class="stat-value">{{ specAuthors }}</div>
-        <div class="label stat-label">distinct spec authors</div>
+        <div class="stat-value">{{ positionAuthors }}</div>
+        <div class="label stat-label">distinct position authors</div>
       </div>
     </div>
 
     <section>
-      <h2>Per need</h2>
-      <div class="need-cards">
-        <RouterLink v-for="r in rows" :key="r.bundle.need.id" :to="{ name: 'need', params: { id: r.bundle.need.id } }" class="card need-card">
+      <h2>Per thread</h2>
+      <div class="thread-cards">
+        <RouterLink v-for="r in rows" :key="r.bundle.thread.id" :to="{ name: 'thread', params: { id: r.bundle.thread.id } }" class="card thread-card">
           <div class="row" style="gap: 6px">
             <span class="chip chip-project">{{ r.project.name }}</span>
-            <span v-if="r.bundle.specs.length >= 2 && r.a.participants && r.a.weightingChangedWinner" class="chip chip-warn">weighting changed the winner</span>
+            <span v-if="r.bundle.positions.length >= 2 && r.a.participants && r.a.weightingChangedWinner" class="chip chip-warn">weighting changed the winner</span>
             <span v-if="r.a.leadFollowedWeighted === false" class="chip chip-warn">lead overrode</span>
             <span v-else-if="r.a.leadFollowedWeighted" class="chip chip-open">lead followed weighted</span>
           </div>
-          <div style="font-weight: 600; margin: 6px 0 4px; color: var(--docs-text)">{{ r.bundle.need.title }}</div>
-          <div class="small muted">{{ r.bundle.specs.length }} specs · {{ r.a.participants }} voters · raw top {{ r.rawTop }} · weighted top {{ r.weightedTop }}</div>
+          <div style="font-weight: 600; margin: 6px 0 4px; color: var(--docs-text)">{{ r.bundle.thread.title }}</div>
+          <div class="small muted">{{ r.bundle.positions.length }} positions · {{ r.a.participants }} voters · raw top {{ r.rawTop }} · weighted top {{ r.weightedTop }}</div>
         </RouterLink>
       </div>
-      <div class="table-scroll need-table">
+      <div class="table-scroll thread-table">
         <table class="data">
           <thead>
             <tr>
-              <th>Need</th><th>Project</th><th class="num">Specs</th><th class="num">Voters</th>
+              <th>Thread</th><th>Project</th><th class="num">Positions</th><th class="num">Voters</th>
               <th>Raw top</th><th>Weighted top</th><th>Weighting mattered</th><th>Lead's pick</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="r in rows" :key="r.bundle.need.id">
-              <td><RouterLink :to="{ name: 'need', params: { id: r.bundle.need.id } }">{{ r.bundle.need.title }}</RouterLink></td>
+            <tr v-for="r in rows" :key="r.bundle.thread.id">
+              <td><RouterLink :to="{ name: 'thread', params: { id: r.bundle.thread.id } }">{{ r.bundle.thread.title }}</RouterLink></td>
               <td>{{ r.project.name }}</td>
-              <td class="num">{{ r.bundle.specs.length }}</td>
+              <td class="num">{{ r.bundle.positions.length }}</td>
               <td class="num">{{ r.a.participants }}</td>
               <td class="mono small">{{ r.rawTop }}</td>
               <td class="mono small">{{ r.weightedTop }}</td>
               <td>
-                <span v-if="r.bundle.specs.length < 2 || !r.a.participants" class="muted">n/a</span>
+                <span v-if="r.bundle.positions.length < 2 || !r.a.participants" class="muted">n/a</span>
                 <span v-else-if="r.a.weightingChangedWinner" class="chip chip-warn">yes</span>
                 <span v-else class="chip">no</span>
               </td>
@@ -146,19 +146,19 @@ const weightTable = computed(() =>
     <section v-if="overrides.length">
       <h2>Override rationales</h2>
       <p class="muted small">Where a lead chose against the weighted result, in their words. Raw material for open question Q2.</p>
-      <div v-for="r in overrides" :key="r.bundle.need.id" class="card" style="margin-top: 10px">
-        <RouterLink :to="{ name: 'need', params: { id: r.bundle.need.id } }"><strong>{{ r.bundle.need.title }}</strong></RouterLink>
+      <div v-for="r in overrides" :key="r.bundle.thread.id" class="card" style="margin-top: 10px">
+        <RouterLink :to="{ name: 'thread', params: { id: r.bundle.thread.id } }"><strong>{{ r.bundle.thread.title }}</strong></RouterLink>
         <div class="small muted">
-          picked weighted rank {{ r.bundle.need.promotion!.weightedRankAtPromotion }}, raw rank {{ r.bundle.need.promotion!.rawRankAtPromotion }}
+          picked weighted rank {{ r.bundle.thread.promotion!.weightedRankAtPromotion }}, raw rank {{ r.bundle.thread.promotion!.rawRankAtPromotion }}
         </div>
-        <p style="margin-bottom: 0">{{ r.bundle.need.promotion!.overrideRationale }}</p>
+        <p style="margin-bottom: 0">{{ r.bundle.thread.promotion!.overrideRationale }}</p>
       </div>
     </section>
 
     <section>
       <h2>Who counts for how much</h2>
       <p class="muted small">
-        Each member's floor weight per project, before any expertise match or builder intent on a specific need.
+        Each member's floor weight per project, before any expertise match or builder intent on a specific thread.
         If this table looks wrong to you, the weights are wrong. Say so.
       </p>
       <div v-for="t in weightTable" :key="t.project.id" style="margin-top: 14px">

@@ -24,10 +24,10 @@ async function resetDemo() {
     <div class="nav-inner">
       <RouterLink to="/" class="brand">
         <span class="brand-mark">ARROW</span>
-        <span class="brand-sub">spec threads · prototype</span>
+        <span class="brand-sub">position threads · prototype</span>
       </RouterLink>
       <nav class="nav-links">
-        <RouterLink to="/">Needs</RouterLink>
+        <RouterLink to="/">Threads</RouterLink>
         <RouterLink to="/readout">Readout</RouterLink>
         <RouterLink to="/how">How weighting works</RouterLink>
       </nav>

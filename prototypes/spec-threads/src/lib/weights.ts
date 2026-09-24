@@ -9,10 +9,10 @@
 
 import type {
   Member,
-  Need,
+  Thread,
   Role,
-  Spec,
-  SpecTally,
+  Position,
+  PositionTally,
   Vote,
   WeightBreakdown,
   WeightConfig,
@@ -36,20 +36,20 @@ export function tokenTerm(balance: number, cfg: WeightConfig): number {
   return round2(Math.min(cfg.tokenCap, raw));
 }
 
-export function matchedTags(member: Member, need: Need): string[] {
+export function matchedTags(member: Member, thread: Thread): string[] {
   const have = new Set(member.expertise.map((t) => t.trim().toLowerCase()));
-  return need.tags.map((t) => t.trim().toLowerCase()).filter((t) => have.has(t));
+  return thread.tags.map((t) => t.trim().toLowerCase()).filter((t) => have.has(t));
 }
 
 export function voteWeight(args: {
   member: Member;
-  need: Need;
+  thread: Thread;
   role: Role;
   isBuilder: boolean;
   cfg: WeightConfig;
 }): WeightBreakdown {
-  const { member, need, role, isBuilder, cfg } = args;
-  const matched = matchedTags(member, need);
+  const { member, thread, role, isBuilder, cfg } = args;
+  const matched = matchedTags(member, thread);
   const base = cfg.base;
   const token = tokenTerm(member.tokenBalance, cfg);
   const expertise = matched.length > 0 ? cfg.expertiseBonus : 0;
@@ -81,14 +81,14 @@ function rankBy<T>(items: T[], score: (t: T) => number): Map<T, number> {
   return ranks;
 }
 
-export function tallySpecs(args: {
-  specs: Spec[];
+export function tallyPositions(args: {
+  positions: Position[];
   votes: Vote[];
   weightFor: (memberId: string) => number;
-}): SpecTally[] {
-  const { specs, votes, weightFor } = args;
-  const partial = specs.map((spec) => {
-    const mine = votes.filter((v) => v.specId === spec.id);
+}): PositionTally[] {
+  const { positions, votes, weightFor } = args;
+  const partial = positions.map((position) => {
+    const mine = votes.filter((v) => v.positionId === position.id);
     let rawUp = 0;
     let rawDown = 0;
     let weightedUp = 0;
@@ -104,7 +104,7 @@ export function tallySpecs(args: {
       }
     }
     return {
-      specId: spec.id,
+      positionId: position.id,
       rawUp,
       rawDown,
       rawScore: rawUp - rawDown,
@@ -123,10 +123,10 @@ export function tallySpecs(args: {
   }));
 }
 
-/** True when weighting changed which spec is on top. This is the experiment's headline number. */
-export function weightingChangedWinner(tallies: SpecTally[]): boolean {
+/** True when weighting changed which position is on top. This is the experiment's headline number. */
+export function weightingChangedWinner(tallies: PositionTally[]): boolean {
   if (tallies.length < 2) return false;
-  const rawTop = tallies.filter((t) => t.rawRank === 1).map((t) => t.specId).sort();
-  const weightedTop = tallies.filter((t) => t.weightedRank === 1).map((t) => t.specId).sort();
+  const rawTop = tallies.filter((t) => t.rawRank === 1).map((t) => t.positionId).sort();
+  const weightedTop = tallies.filter((t) => t.weightedRank === 1).map((t) => t.positionId).sort();
   return rawTop.join('|') !== weightedTop.join('|');
 }

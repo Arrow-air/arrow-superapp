@@ -64,7 +64,7 @@ const myRoles = () =>
       <label class="field-row">
         <span class="label">Expertise tags, comma separated</span>
         <input v-model="expertise" type="text" placeholder="pcb, firmware, propulsion" />
-        <div class="hint">Matched against the tags on each need.</div>
+        <div class="hint">Matched against the tags on each thread.</div>
       </label>
       <label class="field-row">
         <span class="label">Location</span>

@@ -1,22 +1,22 @@
 import { describe, expect, it } from 'vitest';
-import { parseTags, signed, specTitle, timeAgo } from './format';
+import { parseTags, signed, positionTitle, timeAgo } from './format';
 
-describe('specTitle', () => {
+describe('positionTitle', () => {
   it('uses the first markdown heading, wherever it is', () => {
-    expect(specTitle('intro line\n\n### Two tiers: regulated **low-power**\n\n- a')).toBe('Two tiers: regulated low-power');
+    expect(positionTitle('intro line\n\n### Two tiers: regulated **low-power**\n\n- a')).toBe('Two tiers: regulated low-power');
   });
   it('falls back to the first non-empty line, stripping list and emphasis marks', () => {
-    expect(specTitle('\n\n- `180 mm` legs\nmore')).toBe('180 mm legs');
+    expect(positionTitle('\n\n- `180 mm` legs\nmore')).toBe('180 mm legs');
   });
   it('truncates long titles with an ellipsis', () => {
-    const t = specTitle('# ' + 'x'.repeat(200), 20);
+    const t = positionTitle('# ' + 'x'.repeat(200), 20);
     expect(t).toHaveLength(20);
     expect(t.endsWith('…')).toBe(true);
   });
   it('never returns an empty string', () => {
-    expect(specTitle('')).toBe('Untitled spec');
-    expect(specTitle('###   ')).toBe('Untitled spec');
-    expect(specTitle('**')).toBe('Untitled spec');
+    expect(positionTitle('')).toBe('Untitled position');
+    expect(positionTitle('###   ')).toBe('Untitled position');
+    expect(positionTitle('**')).toBe('Untitled position');
   });
 });
 

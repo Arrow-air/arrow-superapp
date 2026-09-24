@@ -9,14 +9,14 @@ import type {
   BuilderIntent,
   Comment,
   Member,
-  Need,
+  Thread,
   Project,
   ProjectRole,
   Promotion,
-  Spec,
+  Position,
   Vote,
 } from '../lib/types';
-import { NotSignedInError, type Backend, type NeedBundle } from './backend';
+import { NotSignedInError, type Backend, type ThreadBundle } from './backend';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Row = Record<string, any>;
@@ -33,7 +33,7 @@ const toMember = (r: Row): Member => ({
 });
 
 const toPromotion = (r: Row): Promotion => ({
-  specId: r.spec_id,
+  positionId: r.spec_id,
   byMemberId: r.by_member_id,
   at: r.at,
   weightedRankAtPromotion: r.weighted_rank_at_promotion,
@@ -42,7 +42,7 @@ const toPromotion = (r: Row): Promotion => ({
   bountyMarkdown: r.bounty_markdown,
 });
 
-const toNeed = (r: Row, promotion?: Row): Need => ({
+const toThread = (r: Row, promotion?: Row): Thread => ({
   id: r.id,
   projectId: r.project_id,
   title: r.title,
@@ -54,10 +54,10 @@ const toNeed = (r: Row, promotion?: Row): Need => ({
   promotion: promotion ? toPromotion(promotion) : undefined,
 });
 
-const toSpec = (r: Row): Spec => ({ id: r.id, needId: r.need_id, authorId: r.author_id, body: r.body, createdAt: r.created_at });
-const toVote = (r: Row): Vote => ({ specId: r.spec_id, memberId: r.member_id, value: r.value, castAt: r.cast_at });
-const toIntent = (r: Row): BuilderIntent => ({ needId: r.need_id, memberId: r.member_id });
-const toComment = (r: Row): Comment => ({ id: r.id, specId: r.spec_id, authorId: r.author_id, body: r.body, createdAt: r.created_at });
+const toPosition = (r: Row): Position => ({ id: r.id, threadId: r.need_id, authorId: r.author_id, body: r.body, createdAt: r.created_at });
+const toVote = (r: Row): Vote => ({ positionId: r.spec_id, memberId: r.member_id, value: r.value, castAt: r.cast_at });
+const toIntent = (r: Row): BuilderIntent => ({ threadId: r.need_id, memberId: r.member_id });
+const toComment = (r: Row): Comment => ({ id: r.id, positionId: r.spec_id, authorId: r.author_id, body: r.body, createdAt: r.created_at });
 
 // The client is untyped (no generated schema types yet), so results come back as any.
 function unwrap(res: { data: unknown; error: { message: string } | null }): any {
@@ -124,49 +124,49 @@ export class SupabaseBackend implements Backend {
     return rows.map((r) => ({ projectId: r.project_id, memberId: r.member_id, role: r.role }));
   }
 
-  async listNeeds(): Promise<Need[]> {
-    const needs = unwrap(await this.db.from('st_needs').select('*').order('created_at', { ascending: false })) as Row[];
+  async listThreads(): Promise<Thread[]> {
+    const threads = unwrap(await this.db.from('st_needs').select('*').order('created_at', { ascending: false })) as Row[];
     const promos = unwrap(await this.db.from('st_promotions').select('*')) as Row[];
-    const byNeed = new Map(promos.map((p) => [p.need_id, p]));
-    return needs.map((n) => toNeed(n, byNeed.get(n.id)));
+    const byThread = new Map(promos.map((p) => [p.need_id, p]));
+    return threads.map((n) => toThread(n, byThread.get(n.id)));
   }
 
-  private async bundlesFor(needs: Need[]): Promise<NeedBundle[]> {
-    if (needs.length === 0) return [];
-    const needIds = needs.map((n) => n.id);
-    const specs = (unwrap(await this.db.from('st_specs').select('*').in('need_id', needIds).order('created_at')) as Row[]).map(toSpec);
-    const specIds = specs.map((s) => s.id);
-    const intents = (unwrap(await this.db.from('st_builder_intents').select('*').in('need_id', needIds)) as Row[]).map(toIntent);
+  private async bundlesFor(threads: Thread[]): Promise<ThreadBundle[]> {
+    if (threads.length === 0) return [];
+    const threadIds = threads.map((n) => n.id);
+    const positions = (unwrap(await this.db.from('st_specs').select('*').in('need_id', threadIds).order('created_at')) as Row[]).map(toPosition);
+    const positionIds = positions.map((s) => s.id);
+    const intents = (unwrap(await this.db.from('st_builder_intents').select('*').in('need_id', threadIds)) as Row[]).map(toIntent);
     let votes: Vote[] = [];
     let comments: Comment[] = [];
-    if (specIds.length > 0) {
-      votes = (unwrap(await this.db.from('st_votes').select('*').in('spec_id', specIds)) as Row[]).map(toVote);
-      comments = (unwrap(await this.db.from('st_comments').select('*').in('spec_id', specIds).order('created_at')) as Row[]).map(toComment);
+    if (positionIds.length > 0) {
+      votes = (unwrap(await this.db.from('st_votes').select('*').in('spec_id', positionIds)) as Row[]).map(toVote);
+      comments = (unwrap(await this.db.from('st_comments').select('*').in('spec_id', positionIds).order('created_at')) as Row[]).map(toComment);
     }
-    return needs.map((need) => {
-      const mySpecs = specs.filter((s) => s.needId === need.id);
-      const ids = new Set(mySpecs.map((s) => s.id));
+    return threads.map((thread) => {
+      const myPositions = positions.filter((s) => s.threadId === thread.id);
+      const ids = new Set(myPositions.map((s) => s.id));
       return {
-        need,
-        specs: mySpecs,
-        votes: votes.filter((v) => ids.has(v.specId)),
-        intents: intents.filter((i) => i.needId === need.id),
-        comments: comments.filter((c) => ids.has(c.specId)),
+        thread,
+        positions: myPositions,
+        votes: votes.filter((v) => ids.has(v.positionId)),
+        intents: intents.filter((i) => i.threadId === thread.id),
+        comments: comments.filter((c) => ids.has(c.positionId)),
       };
     });
   }
 
   async listBundles() {
-    return this.bundlesFor(await this.listNeeds());
+    return this.bundlesFor(await this.listThreads());
   }
 
-  async getBundle(needId: string) {
-    const need = (await this.listNeeds()).find((n) => n.id === needId);
-    if (!need) return null;
-    return (await this.bundlesFor([need]))[0];
+  async getBundle(threadId: string) {
+    const thread = (await this.listThreads()).find((n) => n.id === threadId);
+    if (!thread) return null;
+    return (await this.bundlesFor([thread]))[0];
   }
 
-  async createNeed(input: { projectId: string; title: string; body: string; tags: string[] }) {
+  async createThread(input: { projectId: string; title: string; body: string; tags: string[] }) {
     const author_id = await this.uid();
     const tags = [...new Set(input.tags.map((t) => t.trim().toLowerCase()).filter(Boolean))];
     const row = unwrap(
@@ -176,55 +176,55 @@ export class SupabaseBackend implements Backend {
         .select('*')
         .single(),
     );
-    return toNeed(row as Row);
+    return toThread(row as Row);
   }
 
-  async createSpec(input: { needId: string; body: string }) {
+  async createPosition(input: { threadId: string; body: string }) {
     const author_id = await this.uid();
     const row = unwrap(
-      await this.db.from('st_specs').insert({ need_id: input.needId, body: input.body.trim(), author_id }).select('*').single(),
+      await this.db.from('st_specs').insert({ need_id: input.threadId, body: input.body.trim(), author_id }).select('*').single(),
     );
-    return toSpec(row as Row);
+    return toPosition(row as Row);
   }
 
-  async castVote(input: { specId: string; value: 1 | -1 | 0 }) {
+  async castVote(input: { positionId: string; value: 1 | -1 | 0 }) {
     const member_id = await this.uid();
     if (input.value === 0) {
-      unwrap(await this.db.from('st_votes').delete().eq('spec_id', input.specId).eq('member_id', member_id));
+      unwrap(await this.db.from('st_votes').delete().eq('spec_id', input.positionId).eq('member_id', member_id));
       return;
     }
     unwrap(
       await this.db
         .from('st_votes')
-        .upsert({ spec_id: input.specId, member_id, value: input.value, cast_at: new Date().toISOString() }, { onConflict: 'spec_id,member_id' }),
+        .upsert({ spec_id: input.positionId, member_id, value: input.value, cast_at: new Date().toISOString() }, { onConflict: 'spec_id,member_id' }),
     );
   }
 
-  async setBuilderIntent(input: { needId: string; on: boolean }) {
+  async setBuilderIntent(input: { threadId: string; on: boolean }) {
     const member_id = await this.uid();
     if (input.on) {
-      unwrap(await this.db.from('st_builder_intents').upsert({ need_id: input.needId, member_id }, { onConflict: 'need_id,member_id' }));
+      unwrap(await this.db.from('st_builder_intents').upsert({ need_id: input.threadId, member_id }, { onConflict: 'need_id,member_id' }));
     } else {
-      unwrap(await this.db.from('st_builder_intents').delete().eq('need_id', input.needId).eq('member_id', member_id));
+      unwrap(await this.db.from('st_builder_intents').delete().eq('need_id', input.threadId).eq('member_id', member_id));
     }
   }
 
-  async addComment(input: { specId: string; body: string }) {
+  async addComment(input: { positionId: string; body: string }) {
     const author_id = await this.uid();
     const row = unwrap(
-      await this.db.from('st_comments').insert({ spec_id: input.specId, body: input.body.trim(), author_id }).select('*').single(),
+      await this.db.from('st_comments').insert({ spec_id: input.positionId, body: input.body.trim(), author_id }).select('*').single(),
     );
     return toComment(row as Row);
   }
 
-  async recordPromotion(input: { needId: string; promotion: Promotion }) {
+  async recordPromotion(input: { threadId: string; promotion: Promotion }) {
     const by_member_id = await this.uid();
     const p = input.promotion;
-    // The insert trigger closes the need; RLS checks the caller is the project lead.
+    // The insert trigger closes the thread; RLS checks the caller is the project lead.
     unwrap(
       await this.db.from('st_promotions').insert({
-        need_id: input.needId,
-        spec_id: p.specId,
+        need_id: input.threadId,
+        spec_id: p.positionId,
         by_member_id,
         at: p.at,
         weighted_rank_at_promotion: p.weightedRankAtPromotion,

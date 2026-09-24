@@ -2,8 +2,8 @@
 // No server, no accounts. A persona switcher stands in for sign-in so one person can
 // play the lead, the expert, and the crowd to see how the weighting behaves.
 
-import type { Comment, Member, Need, Spec } from '../lib/types';
-import { NotSignedInError, type Backend, type NeedBundle } from './backend';
+import type { Comment, Member, Thread, Position } from '../lib/types';
+import { NotSignedInError, type Backend, type ThreadBundle } from './backend';
 import { seedState, type DemoState } from './seed';
 
 const KEY = 'arrow-spec-threads-demo-v1';
@@ -56,15 +56,15 @@ export class DemoBackend implements Backend {
     return m;
   }
 
-  private bundle(need: Need): NeedBundle {
-    const specs = this.state.specs.filter((s) => s.needId === need.id);
-    const specIds = new Set(specs.map((s) => s.id));
+  private bundle(thread: Thread): ThreadBundle {
+    const positions = this.state.positions.filter((s) => s.threadId === thread.id);
+    const positionIds = new Set(positions.map((s) => s.id));
     return structuredClone({
-      need,
-      specs,
-      votes: this.state.votes.filter((v) => specIds.has(v.specId)),
-      intents: this.state.intents.filter((i) => i.needId === need.id),
-      comments: this.state.comments.filter((c) => specIds.has(c.specId)),
+      thread,
+      positions,
+      votes: this.state.votes.filter((v) => positionIds.has(v.positionId)),
+      intents: this.state.intents.filter((i) => i.threadId === thread.id),
+      comments: this.state.comments.filter((c) => positionIds.has(c.positionId)),
     });
   }
 
@@ -98,23 +98,23 @@ export class DemoBackend implements Backend {
   async listRoles() {
     return structuredClone(this.state.roles);
   }
-  async listNeeds() {
-    return structuredClone(this.state.needs).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  async listThreads() {
+    return structuredClone(this.state.threads).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
   async listBundles() {
-    return this.state.needs.map((n) => this.bundle(n));
+    return this.state.threads.map((n) => this.bundle(n));
   }
-  async getBundle(needId: string) {
-    const need = this.state.needs.find((n) => n.id === needId);
-    return need ? this.bundle(need) : null;
+  async getBundle(threadId: string) {
+    const thread = this.state.threads.find((n) => n.id === threadId);
+    return thread ? this.bundle(thread) : null;
   }
 
-  async createNeed(input: { projectId: string; title: string; body: string; tags: string[] }) {
+  async createThread(input: { projectId: string; title: string; body: string; tags: string[] }) {
     const me = this.me();
     if (!this.state.projects.some((p) => p.id === input.projectId)) throw new Error('No such project.');
     const title = input.title.trim();
-    if (!title) throw new Error('A need requires a title.');
-    const need: Need = {
+    if (!title) throw new Error('A thread requires a title.');
+    const thread: Thread = {
       id: newId('n'),
       projectId: input.projectId,
       title,
@@ -124,62 +124,62 @@ export class DemoBackend implements Backend {
       status: 'open',
       createdAt: new Date().toISOString(),
     };
-    this.state.needs.push(need);
+    this.state.threads.push(thread);
     this.save();
-    return structuredClone(need);
+    return structuredClone(thread);
   }
 
-  async createSpec(input: { needId: string; body: string }) {
+  async createPosition(input: { threadId: string; body: string }) {
     const me = this.me();
-    const need = this.state.needs.find((n) => n.id === input.needId);
-    if (!need) throw new Error('No such need.');
-    if (need.status !== 'open') throw new Error('This need is closed to new specs.');
+    const thread = this.state.threads.find((n) => n.id === input.threadId);
+    if (!thread) throw new Error('No such thread.');
+    if (thread.status !== 'open') throw new Error('This thread is closed to new positions.');
     const body = input.body.trim();
-    if (!body) throw new Error('A spec cannot be empty.');
-    const spec: Spec = { id: newId('s'), needId: need.id, authorId: me.id, body, createdAt: new Date().toISOString() };
-    this.state.specs.push(spec);
+    if (!body) throw new Error('A position cannot be empty.');
+    const position: Position = { id: newId('s'), threadId: thread.id, authorId: me.id, body, createdAt: new Date().toISOString() };
+    this.state.positions.push(position);
     this.save();
-    return structuredClone(spec);
+    return structuredClone(position);
   }
 
-  async castVote(input: { specId: string; value: 1 | -1 | 0 }) {
+  async castVote(input: { positionId: string; value: 1 | -1 | 0 }) {
     const me = this.me();
-    const spec = this.state.specs.find((s) => s.id === input.specId);
-    if (!spec) throw new Error('No such spec.');
-    const need = this.state.needs.find((n) => n.id === spec.needId);
-    if (need?.status !== 'open') throw new Error('Voting is closed on this need.');
-    this.state.votes = this.state.votes.filter((v) => !(v.specId === input.specId && v.memberId === me.id));
+    const position = this.state.positions.find((s) => s.id === input.positionId);
+    if (!position) throw new Error('No such position.');
+    const thread = this.state.threads.find((n) => n.id === position.threadId);
+    if (thread?.status !== 'open') throw new Error('Voting is closed on this thread.');
+    this.state.votes = this.state.votes.filter((v) => !(v.positionId === input.positionId && v.memberId === me.id));
     if (input.value !== 0) {
-      this.state.votes.push({ specId: input.specId, memberId: me.id, value: input.value, castAt: new Date().toISOString() });
+      this.state.votes.push({ positionId: input.positionId, memberId: me.id, value: input.value, castAt: new Date().toISOString() });
     }
     this.save();
   }
 
-  async setBuilderIntent(input: { needId: string; on: boolean }) {
+  async setBuilderIntent(input: { threadId: string; on: boolean }) {
     const me = this.me();
-    this.state.intents = this.state.intents.filter((i) => !(i.needId === input.needId && i.memberId === me.id));
-    if (input.on) this.state.intents.push({ needId: input.needId, memberId: me.id });
+    this.state.intents = this.state.intents.filter((i) => !(i.threadId === input.threadId && i.memberId === me.id));
+    if (input.on) this.state.intents.push({ threadId: input.threadId, memberId: me.id });
     this.save();
   }
 
-  async addComment(input: { specId: string; body: string }) {
+  async addComment(input: { positionId: string; body: string }) {
     const me = this.me();
-    if (!this.state.specs.some((s) => s.id === input.specId)) throw new Error('No such spec.');
+    if (!this.state.positions.some((s) => s.id === input.positionId)) throw new Error('No such position.');
     const body = input.body.trim();
     if (!body) throw new Error('A comment cannot be empty.');
-    const comment: Comment = { id: newId('c'), specId: input.specId, authorId: me.id, body, createdAt: new Date().toISOString() };
+    const comment: Comment = { id: newId('c'), positionId: input.positionId, authorId: me.id, body, createdAt: new Date().toISOString() };
     this.state.comments.push(comment);
     this.save();
     return structuredClone(comment);
   }
 
-  async recordPromotion(input: { needId: string; promotion: NonNullable<Need['promotion']> }) {
+  async recordPromotion(input: { threadId: string; promotion: NonNullable<Thread['promotion']> }) {
     this.me();
-    const need = this.state.needs.find((n) => n.id === input.needId);
-    if (!need) throw new Error('No such need.');
-    if (need.status !== 'open') throw new Error('This need already has a promoted spec.');
-    need.promotion = structuredClone(input.promotion);
-    need.status = 'bounty';
+    const thread = this.state.threads.find((n) => n.id === input.threadId);
+    if (!thread) throw new Error('No such thread.');
+    if (thread.status !== 'open') throw new Error('This thread already has a promoted position.');
+    thread.promotion = structuredClone(input.promotion);
+    thread.status = 'bounty';
     this.save();
   }
 

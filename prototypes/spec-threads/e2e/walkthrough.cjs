@@ -25,51 +25,51 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
     if (/\.woff2?$/.test(r.url()) && !(r.headers()['content-type'] || '').includes('font')) errors.push('font served as non-font: ' + r.url());
   });
 
-  // 1. Needs list
+  // 1. Threads list
   await page.goto(BASE);
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await page.waitForSelector('.need-item');
-  check('needs list shows 2 seeded needs', (await page.locator('.need-item').count()) === 2);
-  check('list flags the disagreement', await page.locator('.need-item .chip-warn').first().isVisible());
+  await page.waitForSelector('.thread-item');
+  check('threads list shows 2 seeded threads', (await page.locator('.thread-item').count()) === 2);
+  check('list flags the disagreement', await page.locator('.thread-item .chip-warn').first().isVisible());
   check('first visit shows the guide', await page.locator('.guide').isVisible());
-  await page.screenshot({ path: require('node:path').join(SHOTS, 'spec-threads-1-needs.png') });
+  await page.screenshot({ path: require('node:path').join(SHOTS, 'spec-threads-1-threads.png') });
 
   // 2. Thread: weighted ordering and divergence banner
   await page.click('text=Attachment interface');
-  await page.waitForSelector('.spec');
+  await page.waitForSelector('.position');
   check('pick comparison shows disagreement', await page.locator('.picks-disagree').isVisible());
   const picks = await page.locator('.pick-title').allInnerTexts();
   check('both picks named side by side', picks[0] === 'Go big: one high-power rail' && picks[1].startsWith('Two tiers'), picks.join(' | '));
   await page.locator('.pick-link').first().click();
-  await page.waitForSelector('.spec.is-flash');
-  check('clicking a pick jumps to and highlights that spec', (await page.locator('.spec.is-flash .spec-meta strong').innerText()) === '@sam-member');
-  const firstAuthor = await page.locator('.spec').first().locator('.spec-meta strong').innerText();
-  check('top spec by weighted score is the expert\'s', firstAuthor === '@jun-pcb', firstAuthor);
-  const w0 = await page.locator('.spec').first().locator('.score-weighted').innerText();
-  const r0 = await page.locator('.spec').first().locator('.score-raw').innerText();
-  check('top spec scores', w0 === '+12.61' && r0 === 'raw +3', `${w0} / ${r0}`);
+  await page.waitForSelector('.position.is-flash');
+  check('clicking a pick jumps to and highlights that position', (await page.locator('.position.is-flash .position-meta strong').innerText()) === '@sam-member');
+  const firstAuthor = await page.locator('.position').first().locator('.position-meta strong').innerText();
+  check('top position by weighted score is the expert\'s', firstAuthor === '@jun-pcb', firstAuthor);
+  const w0 = await page.locator('.position').first().locator('.score-weighted').innerText();
+  const r0 = await page.locator('.position').first().locator('.score-raw').innerText();
+  check('top position scores', w0 === '+12.61' && r0 === 'raw +3', `${w0} / ${r0}`);
   const leadWeight = await page.locator('.weight-total').innerText();
   check('lead weight box', leadWeight === '5.22', leadWeight);
   await page.screenshot({ path: require('node:path').join(SHOTS, 'spec-threads-2-thread-lead.png'), fullPage: true });
 
   // 3. Who voted
-  check('vote bar has one block per voter', (await page.locator('.spec').first().locator('.votebar .seg').count()) === 3);
-  const bar = await page.locator('.spec').first().locator('.votebar').getAttribute('aria-label');
+  check('vote bar has one block per voter', (await page.locator('.position').first().locator('.votebar .seg').count()) === 3);
+  const bar = await page.locator('.position').first().locator('.votebar').getAttribute('aria-label');
   check('vote bar is described for screen readers', /For: 12\.61 from/.test(bar), bar);
-  await page.locator('.spec').first().locator('.rank-line .link-btn').click();
-  check('voter chips list weights', (await page.locator('.spec').first().locator('.voter').count()) === 3);
-  check('your own vote is marked in the bar', (await page.locator('.spec').first().locator('.seg-me').count()) === 1);
+  await page.locator('.position').first().locator('.rank-line .link-btn').click();
+  check('voter chips list weights', (await page.locator('.position').first().locator('.voter').count()) === 3);
+  check('your own vote is marked in the bar', (await page.locator('.position').first().locator('.seg-me').count()) === 1);
 
   // 4. Switch persona to newcomer: weight 1, no promote button
   await page.selectOption('.persona select', 'm-ade');
   await page.waitForFunction(() => document.querySelector('.weight-total')?.textContent === '1');
   check('newcomer weight is 1', true);
   check('non-lead sees no promote button', (await page.locator('text=Promote to bounty').count()) === 0);
-  const hint = await page.locator('.spec').first().locator('button[aria-label=Upvote]').getAttribute('title');
+  const hint = await page.locator('.position').first().locator('button[aria-label=Upvote]').getAttribute('title');
   check('vote button says what your vote counts', hint === 'Upvote · your vote counts 1', hint);
   // hover bug: an active vote button must keep its white arrow on hover
-  const mine = page.locator('.spec', { hasText: 'Go big' }).locator('button[aria-label=Upvote]');
+  const mine = page.locator('.position', { hasText: 'Go big' }).locator('button[aria-label=Upvote]');
   await mine.hover();
   const arrow = await mine.evaluate((el) => getComputedStyle(el).color);
   check('active vote keeps white arrow on hover', arrow === 'rgb(255, 255, 255)', arrow);
@@ -80,55 +80,55 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   await page.waitForFunction(() => document.querySelector('.weight-total')?.textContent === '2');
   check('builder intent raises weight to 2', true);
 
-  // 6. Newcomer flips vote on top spec: upvote adds 2
-  await page.locator('.spec').first().locator('button[aria-label=Upvote]').click();
-  await page.waitForFunction(() => document.querySelector('.spec .score-weighted')?.textContent === '+14.61');
+  // 6. Newcomer flips vote on top position: upvote adds 2
+  await page.locator('.position').first().locator('button[aria-label=Upvote]').click();
+  await page.waitForFunction(() => document.querySelector('.position .score-weighted')?.textContent === '+14.61');
   check('upvote adds weighted 2', true);
   // toggle off
-  await page.locator('.spec').first().locator('button[aria-label=Upvote]').click();
-  await page.waitForFunction(() => document.querySelector('.spec .score-weighted')?.textContent === '+12.61');
+  await page.locator('.position').first().locator('button[aria-label=Upvote]').click();
+  await page.waitForFunction(() => document.querySelector('.position .score-weighted')?.textContent === '+12.61');
   check('clicking again clears the vote', true);
 
-  // 7. Post a spec with an XSS attempt; must be sanitized
+  // 7. Post a position with an XSS attempt; must be sanitized
   await page.fill('textarea', '### Sneaky\n\n<img src=x onerror="window.__xss=1"> <script>window.__xss=1</script> **bold**');
-  await page.click('text=Post spec');
-  await page.waitForFunction(() => document.querySelectorAll('.spec').length === 4);
-  // An earlier highlight may still be fading, so wait for the highlight on the new spec specifically.
-  const fresh = page.locator('.spec.is-flash', { hasText: 'Sneaky' });
+  await page.click('text=Post position');
+  await page.waitForFunction(() => document.querySelectorAll('.position').length === 4);
+  // An earlier highlight may still be fading, so wait for the highlight on the new position specifically.
+  const fresh = page.locator('.position.is-flash', { hasText: 'Sneaky' });
   await fresh.waitFor();
-  check('posting a spec takes you to it', await fresh.isVisible());
+  check('posting a position takes you to it', await fresh.isVisible());
   const inView = await fresh.evaluate((el) => { const r = el.getBoundingClientRect(); return r.top >= 0 && r.top < window.innerHeight; });
   check('and scrolls it into view', inView);
-  check('an unvoted spec shows no rank noise', (await fresh.locator('.rank-line').innerText()).trim() === 'No votes yet');
+  check('an unvoted position shows no rank noise', (await fresh.locator('.rank-line').innerText()).trim() === 'No votes yet');
   await page.waitForTimeout(300);
   check('markdown is sanitized (no script ran)', (await page.evaluate(() => window.__xss)) === undefined);
   check('no onerror attribute survives', (await page.locator('.md img[onerror]').count()) === 0);
 
   // 8. Comment
-  await page.locator('.spec').first().locator('.comment-form input').fill('Agree, this covers the gimbal case.');
-  await page.locator('.spec').first().locator('.comment-form button').click();
+  await page.locator('.position').first().locator('.comment-form input').fill('Agree, this covers the gimbal case.');
+  await page.locator('.position').first().locator('.comment-form button').click();
   await page.waitForSelector('text=Agree, this covers the gimbal case.');
   check('comment posts', true);
 
-  // 9. Lead overrides: promote the crowd favourite (not weighted top) -> needs rationale
+  // 9. Lead overrides: promote the crowd favourite (not weighted top) -> threads rationale
   await page.selectOption('.persona select', 'm-lena');
   await page.waitForSelector('text=Promote to bounty');
-  const maxSpec = page.locator('.spec', { hasText: 'Go big' });
-  await maxSpec.locator('text=Promote to bounty').click();
-  check('override asks for a rationale', await maxSpec.locator('text=Why this one?').isVisible());
-  const go = maxSpec.locator('button', { hasText: /^Promote$/ });
+  const maxPosition = page.locator('.position', { hasText: 'Go big' });
+  await maxPosition.locator('text=Promote to bounty').click();
+  check('override asks for a rationale', await maxPosition.locator('text=Why this one?').isVisible());
+  const go = maxPosition.locator('button', { hasText: /^Promote$/ });
   check('promote disabled until rationale is long enough', await go.isDisabled());
-  await maxSpec.locator('textarea').fill('too short');
-  check('live counter shows progress', (await maxSpec.locator('[aria-live]').innerText()).trim() === '9 / 20');
+  await maxPosition.locator('textarea').fill('too short');
+  check('live counter shows progress', (await maxPosition.locator('[aria-live]').innerText()).trim() === '9 / 20');
   check('still disabled at 9 characters', await go.isDisabled());
-  await maxSpec.locator('textarea').fill('We expect heavy spray rigs to dominate orders next year, so headroom matters more than weight.');
+  await maxPosition.locator('textarea').fill('We expect heavy spray rigs to dominate orders next year, so headroom matters more than weight.');
   check('enabled once rationale is long enough', await go.isEnabled());
-  await maxSpec.locator('button', { hasText: /^Promote$/ }).click();
+  await maxPosition.locator('button', { hasText: /^Promote$/ }).click();
   await page.waitForSelector('.bounty-md');
   check('promotion recorded, bounty generated', (await page.locator('.bounty-md').innerText()).includes('# Bounty: Attachment interface'));
   check('rationale published', await page.locator('text=Lead\'s rationale').isVisible());
   check('voting disabled after promotion', await page.locator('button[aria-label=Upvote]').first().isDisabled());
-  check('reply box gone after promotion', (await page.locator('h3:has-text("Reply with a spec")').count()) === 0);
+  check('reply box gone after promotion', (await page.locator('h3:has-text("Reply with a position")').count()) === 0);
   const href = await page.locator('a', { hasText: 'Open as GitHub issue' }).getAttribute('href');
   check('issue link targets grant-and-bounties', href.startsWith('https://github.com/Arrow-air/grant-and-bounties/issues/new?'));
   await page.screenshot({ path: require('node:path').join(SHOTS, 'spec-threads-3-promoted.png'), fullPage: true });
@@ -141,18 +141,18 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   check('override rationale listed', await page.locator('text=Override rationales').isVisible());
   await page.screenshot({ path: require('node:path').join(SHOTS, 'spec-threads-4-readout.png'), fullPage: true });
 
-  // 11. New need flow
-  await page.click('nav >> text=Needs');
-  await page.click('text=Post a need');
-  await page.waitForSelector('h1:has-text("Post a need")');
+  // 11. New thread flow
+  await page.click('nav >> text=Threads');
+  await page.click('text=Post a thread');
+  await page.waitForSelector('h1:has-text("Post a thread")');
   await page.selectOption('form select.field', 'spearhead');
   await page.fill('input[placeholder^="Attachment"]', 'Wing spar material');
   await page.fill('textarea', 'Carbon or aluminium?');
   await page.fill('input[placeholder="pcb, power"]', 'Airframe, airframe , structures');
   check('tags dedupe + lowercase in preview', (await page.locator('form .chip').allInnerTexts()).join(',').toLowerCase() === 'airframe,structures');
-  await page.click('button:has-text("Post need")');
+  await page.click('button:has-text("Post thread")');
   await page.waitForSelector('h1:has-text("Wing spar material")');
-  check('new need created and opened', true);
+  check('new thread created and opened', true);
   // Lena is NOT lead on spearhead: weight should be member-level w/ expertise match (airframe)
   const lw = await page.locator('.weight-total').innerText();
   check('Quiver lead is plain member on Spearhead (1+1.61+1)*1 = 3.61', lw === '3.61', lw);
@@ -163,8 +163,8 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   check('state persists across reload', true);
   page.once('dialog', (d) => d.accept());
   await page.click('text=Reset demo data');
-  await page.click('nav >> text=Needs');
-  await page.waitForFunction(() => document.querySelectorAll('.need-item').length === 2);
+  await page.click('nav >> text=Threads');
+  await page.waitForFunction(() => document.querySelectorAll('.thread-item').length === 2);
   check('reset restores seed', true);
 
   // 13. How page + profile + signed out
@@ -172,9 +172,9 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   await page.waitForSelector('text=The lead keeps the final say');
   await page.screenshot({ path: require('node:path').join(SHOTS, 'spec-threads-5-how.png'), fullPage: true });
   await page.selectOption('.persona select', '');
-  await page.click('nav >> text=Needs');
+  await page.click('nav >> text=Threads');
   await page.click('text=Attachment interface');
-  await page.waitForSelector('.spec');
+  await page.waitForSelector('.position');
   check('signed out: vote buttons disabled', await page.locator('button[aria-label=Upvote]').first().isDisabled());
   check('signed out: prompted to sign in', await page.locator('text=Sign in to reply.').isVisible());
 
@@ -192,8 +192,8 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   const barBox = await page.locator('.mobile-weight').boundingBox();
   check('mobile: weight bar is pinned to the bottom', Math.abs(barBox.y + barBox.height - 844) <= 1, JSON.stringify(barBox));
   await page.click('nav >> text=Readout');
-  await page.waitForSelector('.need-card');
-  check('mobile: readout uses cards, not a clipped table', (await page.locator('.need-card').first().isVisible()) && !(await page.locator('.need-table').isVisible()));
+  await page.waitForSelector('.thread-card');
+  check('mobile: readout uses cards, not a clipped table', (await page.locator('.thread-card').first().isVisible()) && !(await page.locator('.thread-table').isVisible()));
   check('mobile: no horizontal overflow on readout', (await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) <= 1);
 
   await page.setViewportSize({ width: 1280, height: 900 });
@@ -206,7 +206,7 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   await page.locator('.calc input[type=checkbox]').nth(1).check();
   check('calculator: lead + expert + builder', (await page.locator('.calc .weight-total').innerText()) === '8.08');
 
-  await page.click('nav >> text=Needs');
+  await page.click('nav >> text=Threads');
   await page.click('text=Attachment interface');
   await page.waitForSelector('.stake-list li');
   const top = await page.locator('.stake-list li').first().innerText();
@@ -214,7 +214,7 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   check('you are marked in that list', (await page.locator('.stake-me').innerText()).includes('(you)'));
 
   // discussion pins
-  await page.click('nav >> text=Needs');
+  await page.click('nav >> text=Threads');
   await page.click('text=Attachment interface');
   await page.waitForSelector('.picks .pin');
   check('thread page carries discussion pins', (await page.locator('.page .pin').count()) >= 5);
@@ -241,10 +241,10 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   giscusOpen = false;
 
   // guide dismissal persists, and reset brings it back
-  await page.click('nav >> text=Needs');
+  await page.click('nav >> text=Threads');
   await page.click('.guide >> text=Hide this');
   await page.reload();
-  await page.waitForSelector('.need-item');
+  await page.waitForSelector('.thread-item');
   check('dismissed guide stays dismissed', (await page.locator('.guide').count()) === 0);
   page.once('dialog', (d) => d.accept());
   await page.click('text=Reset demo data');

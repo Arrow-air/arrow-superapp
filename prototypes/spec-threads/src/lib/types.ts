@@ -1,7 +1,7 @@
-// Domain types for the spec-thread experiment.
-// A Need is a question Arrow has to answer ("what power budget does the attachment
-// interface need?"). People reply with candidate Specs. Votes on specs are weighted.
-// The project lead promotes one spec to a bounty.
+// Domain types for the position-thread experiment.
+// A Thread is a question Arrow has to answer ("what power budget does the attachment
+// interface thread?"). People reply with candidate Positions. Votes on positions are weighted.
+// The project lead promotes one position to a bounty.
 
 export type Role = 'lead' | 'core' | 'member';
 
@@ -31,59 +31,59 @@ export interface Project {
   weights: WeightConfig;
 }
 
-export type NeedStatus = 'open' | 'spec_selected' | 'bounty';
+export type ThreadStatus = 'open' | 'spec_selected' | 'bounty';
 
-export interface Need {
+export interface Thread {
   id: string;
   projectId: string;
   title: string;
   body: string; // markdown
   tags: string[]; // matched against Member.expertise
   authorId: string;
-  status: NeedStatus;
+  status: ThreadStatus;
   createdAt: string;
-  /** Set when the lead promotes a spec. */
+  /** Set when the lead promotes a position. */
   promotion?: Promotion;
 }
 
-export interface Spec {
+export interface Position {
   id: string;
-  needId: string;
+  threadId: string;
   authorId: string;
   body: string; // markdown
   createdAt: string;
 }
 
 export interface Vote {
-  specId: string;
+  positionId: string;
   memberId: string;
   value: 1 | -1;
   castAt: string;
 }
 
-/** "I will actually build or operate the thing this need is about." Per need, per member. */
+/** "I will actually build or operate the thing this thread is about." Per thread, per member. */
 export interface BuilderIntent {
-  needId: string;
+  threadId: string;
   memberId: string;
 }
 
 export interface Comment {
   id: string;
-  specId: string;
+  positionId: string;
   authorId: string;
   body: string;
   createdAt: string;
 }
 
 export interface Promotion {
-  specId: string;
+  positionId: string;
   byMemberId: string;
   at: string;
-  /** Rank of the promoted spec by weighted score at promotion time (1 = top). */
+  /** Rank of the promoted position by weighted score at promotion time (1 = top). */
   weightedRankAtPromotion: number;
   /** Rank by raw one-person-one-vote score at promotion time. */
   rawRankAtPromotion: number;
-  /** Required when the lead picks something other than the weighted top spec. */
+  /** Required when the lead picks something other than the weighted top position. */
   overrideRationale?: string;
   bountyMarkdown: string;
 }
@@ -95,9 +95,9 @@ export interface WeightConfig {
   tokenFactor: number;
   tokenScale: number;
   tokenCap: number;
-  /** Added when any of the member's expertise tags matches any of the need's tags. */
+  /** Added when any of the member's expertise tags matches any of the thread's tags. */
   expertiseBonus: number;
-  /** Added when the member declared builder intent on this need. */
+  /** Added when the member declared builder intent on this thread. */
   builderBonus: number;
   /** Multiplies the sum of the terms above. */
   roleMultiplier: Record<Role, number>;
@@ -114,8 +114,8 @@ export interface WeightBreakdown {
   matchedTags: string[];
 }
 
-export interface SpecTally {
-  specId: string;
+export interface PositionTally {
+  positionId: string;
   rawUp: number;
   rawDown: number;
   rawScore: number;

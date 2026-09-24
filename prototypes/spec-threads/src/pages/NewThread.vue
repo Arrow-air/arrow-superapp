@@ -18,9 +18,9 @@ const canSubmit = computed(() => !!projectId.value && !!title.value.trim() && !s
 async function submit() {
   saving.value = true;
   try {
-    const need = await backend.createNeed({ projectId: projectId.value, title: title.value, body: body.value, tags: tags.value });
+    const thread = await backend.createThread({ projectId: projectId.value, title: title.value, body: body.value, tags: tags.value });
     await refresh();
-    router.push({ name: 'need', params: { id: need.id } });
+    router.push({ name: 'thread', params: { id: thread.id } });
   } catch (e) {
     state.error = e instanceof Error ? e.message : String(e);
   } finally {
@@ -30,13 +30,13 @@ async function submit() {
 </script>
 
 <template>
-  <p class="small"><RouterLink to="/">← All needs</RouterLink></p>
-  <h1>Post a need</h1>
-  <p v-if="!state.me" class="muted">Sign in to post a need.</p>
+  <p class="small"><RouterLink to="/">← All threads</RouterLink></p>
+  <h1>Post a thread</h1>
+  <p v-if="!state.me" class="muted">Sign in to post a thread.</p>
 
   <form v-else class="stack" style="max-width: 760px" @submit.prevent="submit">
     <p class="muted" style="margin-top: 0">
-      Describe the decision, not the answer. Say who is affected and what the trade-offs are. People reply with specs.
+      Describe the decision, not the answer. Say who is affected and what the trade-offs are. People reply with positions.
     </p>
     <label class="field-row">
       <span class="label">Project</span>
@@ -55,7 +55,7 @@ async function submit() {
     <label class="field-row">
       <span class="label">Tags, comma separated</span>
       <input v-model="tagInput" type="text" placeholder="pcb, power" />
-      <div class="hint">Members whose expertise matches a tag get more weight on this need. Tag honestly.</div>
+      <div class="hint">Members whose expertise matches a tag get more weight on this thread. Tag honestly.</div>
     </label>
     <div v-if="tags.length" class="row" style="gap: 5px">
       <span v-for="t in tags" :key="t" class="chip">{{ t }}</span>
@@ -65,7 +65,7 @@ async function submit() {
       <Markdown :source="body" />
     </div>
     <div class="row">
-      <button class="btn" type="submit" :disabled="!canSubmit">{{ saving ? 'Posting…' : 'Post need' }}</button>
+      <button class="btn" type="submit" :disabled="!canSubmit">{{ saving ? 'Posting…' : 'Post thread' }}</button>
       <RouterLink to="/" class="btn btn-ghost">Cancel</RouterLink>
     </div>
   </form>

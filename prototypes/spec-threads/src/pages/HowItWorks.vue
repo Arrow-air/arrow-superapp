@@ -4,7 +4,7 @@ import DiscussPin from '../components/DiscussPin.vue';
 import WeightBox from '../components/WeightBox.vue';
 import { state } from '../data/store';
 import { tokens as fmtTokens } from '../lib/format';
-import type { Member, Need, Role } from '../lib/types';
+import type { Member, Thread, Role } from '../lib/types';
 import { DEFAULT_WEIGHTS, tokenTerm, voteWeight } from '../lib/weights';
 
 // Try-it calculator. Same voteWeight() the threads use, so what you see here is what you get there.
@@ -17,9 +17,9 @@ const cfg = computed(() => state.projects.find((p) => p.id === calcProject.value
 const presets = [0, 1_000, 10_000, 100_000, 1_000_000];
 
 const calc = computed(() => {
-  const need = { id: '', projectId: '', title: '', body: '', tags: ['subject'], authorId: '', status: 'open', createdAt: '' } as Need;
+  const thread = { id: '', projectId: '', title: '', body: '', tags: ['subject'], authorId: '', status: 'open', createdAt: '' } as Thread;
   const member = { id: 'x', handle: 'x', displayName: 'x', tokenBalance: Number(calcTokens.value) || 0, expertise: calcExpert.value ? ['subject'] : [] } as Member;
-  return voteWeight({ member, need, role: calcRole.value, isBuilder: calcBuilder.value, cfg: cfg.value });
+  return voteWeight({ member, thread, role: calcRole.value, isBuilder: calcBuilder.value, cfg: cfg.value });
 });
 </script>
 
@@ -59,7 +59,7 @@ const calc = computed(() => {
               <option value="lead">project lead</option>
             </select>
           </label>
-          <label class="row" style="cursor: pointer"><input v-model="calcExpert" type="checkbox" /> Expertise matches the need's subject</label>
+          <label class="row" style="cursor: pointer"><input v-model="calcExpert" type="checkbox" /> Expertise matches the thread's subject</label>
           <label class="row" style="cursor: pointer"><input v-model="calcBuilder" type="checkbox" /> Declared intent to build or operate it</label>
         </div>
         <div class="stack">
@@ -85,8 +85,8 @@ const calc = computed(() => {
           <td><b>tokens</b></td><td>Skin in the game</td>
           <td>Logarithmic in $ARROW held, and capped. A holder with 100 times the tokens gets about 3 times the term, not 100 times. Whales count for more, never for everything.</td>
         </tr>
-        <tr><td><b>expertise</b></td><td>Knowing the subject</td><td><DiscussPin anchor="expertise" class="pin-right" />Flat bonus if any of your expertise tags matches any tag on the need. One match or five, same bonus.</td></tr>
-        <tr><td><b>builder</b></td><td>Living with the result</td><td><DiscussPin anchor="builder-intent" class="pin-right" />Flat bonus if you publicly declare you intend to build or operate the thing. Per need.</td></tr>
+        <tr><td><b>expertise</b></td><td>Knowing the subject</td><td><DiscussPin anchor="expertise" class="pin-right" />Flat bonus if any of your expertise tags matches any tag on the thread. One match or five, same bonus.</td></tr>
+        <tr><td><b>builder</b></td><td>Living with the result</td><td><DiscussPin anchor="builder-intent" class="pin-right" />Flat bonus if you publicly declare you intend to build or operate the thing. Per thread.</td></tr>
         <tr><td><b>role</b></td><td>Accountability</td><td><DiscussPin anchor="role-multiplier" class="pin-right" />A multiplier: project lead, core contributor, or member. Set per project, so a Quiver lead is an ordinary member on Spearhead.</td></tr>
       </tbody>
     </table>
@@ -122,8 +122,8 @@ const calc = computed(() => {
     <section>
       <h2>The lead keeps the final say <DiscussPin anchor="lead-override" class="pin-inline" /></h2>
       <p>
-        Aircraft are trade-offs and someone has to be opinionated. Only the project lead can promote a spec to a bounty, and the lead
-        may promote any spec. If it is not the top weighted spec, the lead has to write down why, and that reasoning is published on the bounty.
+        Aircraft are trade-offs and someone has to be opinionated. Only the project lead can promote a position to a bounty, and the lead
+        may promote any position. If it is not the top weighted position, the lead has to write down why, and that reasoning is published on the bounty.
         The community gets a voice and an explanation. The lead keeps authority.
       </p>
     </section>
@@ -133,7 +133,7 @@ const calc = computed(() => {
       <ul>
         <li><b>Token balances are self-reported.</b> A real version reads them from a linked wallet. Until then the token term runs on trust.</li>
         <li><b>Expertise tags are self-declared.</b> Nothing checks them. Reputation from shipped work is a separate idea in the repo.</li>
-        <li><b>No rewards move.</b> The bounty text has placeholders for the spec retro grant and the build bounty. Paying out is a later experiment.</li>
+        <li><b>No rewards move.</b> The bounty text has placeholders for the position retro grant and the build bounty. Paying out is a later experiment.</li>
         <li><b>No agents.</b> Agent delegates and pre-meeting briefs are a separate experiment.</li>
       </ul>
     </section>

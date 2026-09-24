@@ -5,14 +5,14 @@ import { signed } from '../lib/format';
 import DiscussPin from './DiscussPin.vue';
 
 export interface Pick {
-  specId: string;
+  positionId: string;
   title: string;
   author: string;
   score: number;
 }
 
 defineProps<{ rawPicks: Pick[]; weightedPicks: Pick[]; disagree: boolean }>();
-defineEmits<{ jump: [specId: string] }>();
+defineEmits<{ jump: [positionId: string] }>();
 </script>
 
 <template>
@@ -25,7 +25,7 @@ defineEmits<{ jump: [specId: string] }>();
     <div class="picks-grid">
       <div class="pick">
         <div class="label">One person, one vote</div>
-        <button v-for="p in rawPicks" :key="p.specId" class="pick-link" @click="$emit('jump', p.specId)">
+        <button v-for="p in rawPicks" :key="p.positionId" class="pick-link" @click="$emit('jump', p.positionId)">
           <span class="pick-title">{{ p.title }}</span>
           <span class="pick-meta">@{{ p.author }} · raw {{ signed(p.score) }}</span>
         </button>
@@ -33,7 +33,7 @@ defineEmits<{ jump: [specId: string] }>();
       <div class="pick-vs" aria-hidden="true">{{ disagree ? '≠' : '=' }}</div>
       <div class="pick">
         <div class="label">Weighted</div>
-        <button v-for="p in weightedPicks" :key="p.specId" class="pick-link" @click="$emit('jump', p.specId)">
+        <button v-for="p in weightedPicks" :key="p.positionId" class="pick-link" @click="$emit('jump', p.positionId)">
           <span class="pick-title">{{ p.title }}</span>
           <span class="pick-meta">@{{ p.author }} · weighted {{ signed(p.score) }}</span>
         </button>

@@ -12,7 +12,7 @@ function makeBackend(): Backend {
     const url = import.meta.env.VITE_SUPABASE_URL;
     const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
     if (!url || !key) {
-      throw new Error('VITE_BACKEND=supabase needs VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.');
+      throw new Error('VITE_BACKEND=supabase threads VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.');
     }
     return new SupabaseBackend(url, key);
   }

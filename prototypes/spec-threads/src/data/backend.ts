@@ -5,17 +5,17 @@ import type {
   BuilderIntent,
   Comment,
   Member,
-  Need,
+  Thread,
   Project,
   ProjectRole,
   Promotion,
-  Spec,
+  Position,
   Vote,
 } from '../lib/types';
 
-export interface NeedBundle {
-  need: Need;
-  specs: Spec[];
+export interface ThreadBundle {
+  thread: Thread;
+  positions: Position[];
   votes: Vote[];
   intents: BuilderIntent[];
   comments: Comment[];
@@ -34,18 +34,18 @@ export interface Backend {
   listProjects(): Promise<Project[]>;
   listMembers(): Promise<Member[]>;
   listRoles(): Promise<ProjectRole[]>;
-  listNeeds(): Promise<Need[]>;
-  /** Every need with its specs, votes, intents, and comments. Used by the readout page. */
-  listBundles(): Promise<NeedBundle[]>;
-  getBundle(needId: string): Promise<NeedBundle | null>;
+  listThreads(): Promise<Thread[]>;
+  /** Every thread with its positions, votes, intents, and comments. Used by the readout page. */
+  listBundles(): Promise<ThreadBundle[]>;
+  getBundle(threadId: string): Promise<ThreadBundle | null>;
 
-  createNeed(input: { projectId: string; title: string; body: string; tags: string[] }): Promise<Need>;
-  createSpec(input: { needId: string; body: string }): Promise<Spec>;
+  createThread(input: { projectId: string; title: string; body: string; tags: string[] }): Promise<Thread>;
+  createPosition(input: { threadId: string; body: string }): Promise<Position>;
   /** value 0 clears the caller's vote. */
-  castVote(input: { specId: string; value: 1 | -1 | 0 }): Promise<void>;
-  setBuilderIntent(input: { needId: string; on: boolean }): Promise<void>;
-  addComment(input: { specId: string; body: string }): Promise<Comment>;
-  recordPromotion(input: { needId: string; promotion: Promotion }): Promise<void>;
+  castVote(input: { positionId: string; value: 1 | -1 | 0 }): Promise<void>;
+  setBuilderIntent(input: { threadId: string; on: boolean }): Promise<void>;
+  addComment(input: { positionId: string; body: string }): Promise<Comment>;
+  recordPromotion(input: { threadId: string; promotion: Promotion }): Promise<void>;
   updateProfile(input: Partial<Pick<Member, 'tokenBalance' | 'expertise' | 'location' | 'bio'>>): Promise<Member>;
 
   /** Demo only: wipe local changes and restore the seed. */
