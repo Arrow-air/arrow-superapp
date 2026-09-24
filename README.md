@@ -53,4 +53,4 @@ Link to OPEN-QUESTIONS.md numbers.
 
 ## Next call
 
-No date set. Thomas is building the next spec-app iteration from the 2026-09-23 brief (`prototypes/spec-threads/ROADMAP.md` → "Next iteration"). Gavin and Alperen: file reactions as ideas or questions, or on the thread.
+No date set. Prototype 2 of the spec app, built from the 2026-09-23 brief, is on the `spec-threads-v2` branch (`prototypes/spec-threads/README.md`): version-targeted threads, the freeze screen, grant drafts with a proposer award, the decision register. Retro session award and the shared backend come next. Gavin and Alperen: file reactions as ideas or questions, or on the thread.
