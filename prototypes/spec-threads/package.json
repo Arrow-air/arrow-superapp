@@ -10,7 +10,8 @@
     "typecheck": "vue-tsc --noEmit",
     "test": "vitest run",
     "start": "serve -s dist -l ${PORT:-3000}",
-    "e2e": "node e2e/walkthrough.cjs"
+    "e2e": "node e2e/workspace.cjs",
+    "e2e:legacy": "node e2e/walkthrough.cjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.0",

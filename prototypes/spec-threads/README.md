@@ -1,4 +1,10 @@
-# Prototype 2: spec threads → freeze → spec, grant, or defer
+# Project workspace concept
+
+**This branch:** `project-workspace-v1`, an interaction and visual redesign of prototype 2. Start with [WORKSPACE-CONCEPT.md](WORKSPACE-CONCEPT.md) for the product model, a walkthrough, and explicit limitations. The current entry point is Spearhead: **Aircraft → Shape the next version → Design review**, in one workspace.
+
+This concept has not been merged or deployed. The public URL below still serves whichever version is on `main`.
+
+## Prototype 2 foundation: threads → decisions → work
 
 **Live demo: https://specs.arrowair.com** (demo mode: data stays in your own browser, nothing is shared between visitors)
 
@@ -58,9 +64,10 @@ npm test          # 53 unit tests: weighting, tallies, resolutions, freeze, gran
 npm run typecheck
 npm run build
 
-# browser walkthrough, 80 checks incl. the full freeze flow, mobile layout, and discussion pins; uses your installed Chrome
-npm run preview -- --port 4179   # terminal 1
-npm run e2e                      # terminal 2
+# browser walkthroughs; use installed Chrome via playwright-core
+npm run preview -- --port 4185   # terminal 1
+npm run e2e                      # terminal 2: project workspace
+BASE_URL=http://localhost:4185/ npm run e2e:legacy # legacy detail pages
 ```
 
 ## Layout

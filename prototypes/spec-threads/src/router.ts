@@ -4,7 +4,8 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    { path: '/', name: 'projects', component: () => import('./pages/Projects.vue') },
+    { path: '/', redirect: '/p/spearhead' },
+    { path: '/projects', name: 'projects', component: () => import('./pages/Projects.vue') },
     { path: '/p/:id', name: 'project', component: () => import('./pages/ProjectPage.vue'), props: true },
     { path: '/p/:projectId/freeze/:versionId', name: 'freeze', component: () => import('./pages/Freeze.vue'), props: true },
     { path: '/threads', name: 'threads', component: () => import('./pages/ThreadsList.vue') },
@@ -20,5 +21,9 @@ export const router = createRouter({
     { path: '/needs/:id', redirect: (to) => ({ name: 'thread', params: { id: to.params.id } }) },
     { path: '/:rest(.*)*', redirect: '/' },
   ],
-  scrollBehavior: () => ({ top: 0 }),
+  scrollBehavior: (to, from, saved) => {
+    if (saved) return saved;
+    if (to.path === from.path && to.query.view === from.query.view) return false;
+    return { top: 0 };
+  },
 });

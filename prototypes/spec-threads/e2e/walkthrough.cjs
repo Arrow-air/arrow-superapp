@@ -26,31 +26,12 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   });
   const go = async (hash) => { await page.goto(BASE + '#' + hash); };
 
-  // 1. Projects home
+  // Project navigation changed; the workspace suite covers it in depth.
   await page.goto(BASE);
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await page.waitForSelector('.project-card');
-  check('home shows 3 seeded projects', (await page.locator('.project-card').count()) === 3);
-  check('first visit shows the guide', await page.locator('.guide').isVisible());
-  const spear = page.locator('.project-card', { hasText: 'Spearhead' });
-  check('Spearhead: PT1 in build, PT2 in discussion', (await spear.innerText()).includes('PT1') && (await spear.locator('.project-version.is-discussing').innerText()).includes('PT2'));
-  check('Spearhead PT2 shows 3 open · 1 resolved', /3\s+open · 1 resolved/.test(await spear.locator('.project-version.is-discussing').innerText()));
-  check('Quiver Mini is empty on purpose', (await page.locator('.project-card', { hasText: 'Quiver Mini' }).innerText()).includes('0 open'));
-  await page.screenshot({ path: shot('1-projects') });
-
-  // 2. Project page: versions strip, tabs, lead sees Freeze
-  await spear.click();
-  await page.waitForSelector('.version-card');
-  check('three version cards', (await page.locator('.version-card').count()) === 3);
-  check('PT2 card is the discussing one with a freeze target', (await page.locator('.version-card.is-discussing').innerText()).includes('Freeze target 2026-11-15'));
-  check('lead (Omar) sees the Freeze button', await page.locator('.version-card.is-discussing a.btn', { hasText: 'Freeze PT2' }).isVisible());
-  check('PT2 tab selected by default with 4 threads', (await page.locator('.tab.on').innerText()).replace(/\s+/g, ' ') === 'PT2 4');
-  check('threads listed, open first', (await page.locator('.thread-item').count()) === 4 && (await page.locator('.thread-item').first().innerText()).includes('OPEN'));
-  check('resolved thread carries its resolution chip', (await page.locator('.thread-item', { hasText: 'wingspan' }).innerText()).includes('PROMOTED TO SPEC'));
-  await page.click('.tab:has-text("PT1")');
-  check('PT1 tab: nothing addressed to the build version', await page.locator('text=No threads here yet').isVisible());
-  await page.screenshot({ path: shot('2-project') });
+  await page.waitForSelector('.overview-hero');
+  check('home opens the project workspace', page.url().includes('/p/spearhead'));
 
   // 3. Thread page: weighted ordering, lead's resolve card, version chip
   await go('/threads/n-engine');
@@ -162,12 +143,11 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   check('PT2 frozen, PT3 in discussion', (await page.locator('.signal-agree').innerText()).includes('PT3 is now in discussion'));
   await page.screenshot({ path: shot('7-frozen'), fullPage: true });
   await go('/p/spearhead');
-  await page.waitForSelector('.version-card.is-frozen');
-  check('project page shows PT2 frozen and PT3 discussing', (await page.locator('.version-card.is-discussing .version-name').innerText()) === 'PT3');
-  check('new-thread button now targets PT3', (await page.locator('a.btn', { hasText: 'Post a thread for PT3' }).count()) === 1);
+  await page.waitForSelector('.overview-hero');
+  check('workspace defaults to the newly opened PT3', (await page.locator('.version-picker select').inputValue()) === 'sh-pt3');
 
   // 9. Register has both decisions
-  await page.click('nav >> text=Register');
+  await go('/register');
   await page.waitForSelector('table.register');
   check('register lists 2 Spearhead decisions', (await page.locator('table.register tbody tr').count()) === 2);
   check('avionics decision names the chosen position', (await page.locator('table.register').innerText()).includes('Hint: run two CAN buses'));
@@ -192,7 +172,7 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   check('rationale published on the thread', await page.locator('text=Lead\'s rationale').isVisible());
 
   // 11. Readout
-  await page.click('nav >> text=Readout');
+  await go('/readout');
   await page.waitForSelector('.stat-value');
   const stats = await page.locator('.stat-grid').first().locator('.stat-value').allInnerTexts();
   check('readout: weighting changed winner 1/3, override 1/4', stats[0].replace(/\s+/g, ' ') === '1 / 3' && stats[1].replace(/\s+/g, ' ') === '1 / 4', stats.join(' | '));
@@ -203,7 +183,7 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   await page.screenshot({ path: shot('8-readout'), fullPage: true });
 
   // 12. New thread flow: defaults to the version in discussion, carries a system
-  await page.click('nav >> text=Threads');
+  await go('/threads');
   await page.click('text=Post a thread');
   await page.waitForSelector('h1:has-text("Post a thread")');
   await page.selectOption('form select.field >> nth=0', 'spearhead');
@@ -225,12 +205,12 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   check('state persists across reload', true);
   page.once('dialog', (d) => d.accept());
   await page.click('text=Reset demo data');
-  await page.click('nav >> text=Projects');
+  await go('/projects');
   await page.waitForFunction(() => /3\s+open/.test(document.querySelector('.project-card .project-version.is-discussing')?.textContent || ''));
   check('reset restores seed', true);
 
   // 14. How page + signed out
-  await page.click('nav >> text=How it works');
+  await go('/how');
   await page.waitForSelector('text=Versions and the freeze');
   await page.screenshot({ path: shot('9-how'), fullPage: true });
   await page.selectOption('.persona select', '');
@@ -252,7 +232,7 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   check('no horizontal overflow on freeze screen at 390px', overflow <= 1, 'overflow px: ' + overflow);
   await page.screenshot({ path: shot('10-mobile-freeze'), fullPage: true });
-  await page.click('nav >> text=Readout');
+  await go('/readout');
   await page.waitForSelector('.thread-card');
   check('mobile: readout uses cards, not a clipped table', (await page.locator('.thread-card').first().isVisible()) && !(await page.locator('.thread-table').isVisible()));
   overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);

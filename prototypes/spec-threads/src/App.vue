@@ -1,82 +1,55 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { RouterLink, RouterView } from 'vue-router';
+import { computed, onMounted } from 'vue';
+import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router';
 import DiscussDrawer from './components/DiscussDrawer.vue';
-import DiscussPin from './components/DiscussPin.vue';
 import { act, backend, isDemo, refresh, state } from './data/store';
 
+const route = useRoute();
+const router = useRouter();
+const activeProject = computed(() => String(route.params.id ?? route.params.projectId ?? route.query.project ?? 'spearhead'));
 onMounted(refresh);
-
+function skipToMain() {
+  const main = document.getElementById('main-content');
+  main?.focus();
+  main?.scrollIntoView();
+}
 async function switchPersona(e: Event) {
   const id = (e.target as HTMLSelectElement).value;
   await act(() => (id ? backend.actAs!(id) : backend.signOut()));
 }
-
 async function resetDemo() {
-  if (!confirm('Discard everything you changed in this browser and restore the seeded threads?')) return;
-  try { localStorage.removeItem('arrow-spec-threads-guide-dismissed'); } catch { /* ignore */ }
+  if (!confirm('Discard your changes in this browser and restore the example workspace?')) return;
   await act(() => backend.reset!());
+  await router.push('/p/spearhead');
 }
 </script>
 
 <template>
-  <header class="nav">
-    <div class="nav-inner">
-      <RouterLink to="/" class="brand">
-        <span class="brand-mark">ARROW</span>
-        <span class="brand-sub">spec threads · prototype 2</span>
-      </RouterLink>
-      <nav class="nav-links">
-        <RouterLink to="/">Projects</RouterLink>
-        <RouterLink to="/threads">Threads</RouterLink>
-        <RouterLink to="/register">Register</RouterLink>
-        <RouterLink to="/grants">Grants</RouterLink>
-        <RouterLink to="/readout">Readout</RouterLink>
-        <RouterLink to="/how">How it works</RouterLink>
-      </nav>
-      <div class="nav-user">
-        <template v-if="isDemo">
-          <label class="persona">
-            <span>Acting as</span>
-            <select :value="state.me?.id ?? ''" @change="switchPersona">
-              <option value="">Signed out</option>
-              <option v-for="m in state.members" :key="m.id" :value="m.id">{{ m.displayName }}</option>
-            </select>
-          </label>
-        </template>
-        <template v-else>
-          <button v-if="!state.me" class="btn btn-on-dark" @click="act(() => backend.signIn())">Sign in with GitHub</button>
-          <button v-else class="btn btn-on-dark" @click="act(() => backend.signOut())">Sign out</button>
-        </template>
-        <RouterLink v-if="state.me" to="/profile" class="me" title="Edit this profile">@{{ state.me.handle }}</RouterLink>
-      </div>
+  <a class="skip-link" href="#main-content" @click.prevent="skipToMain">Skip to workspace</a>
+  <header class="workspace-topbar">
+    <RouterLink to="/" class="workspace-brand" aria-label="Arrow home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 27 16 4l11 23-11-7z" fill="currentColor"/><path d="M16 12v8" stroke="#fff" stroke-width="2"/></svg> ARROW <span> / </span><small>PROJECT WORKSPACE</small></RouterLink>
+    <div class="topbar-account">
+      <label v-if="isDemo" class="persona"><span>Explore as</span><select aria-label="Demo persona" :value="state.me?.id ?? ''" @change="switchPersona"><option value="">Signed out</option><option v-for="m in state.members" :key="m.id" :value="m.id">{{ m.displayName }}</option></select></label>
+      <button v-else class="btn btn-ghost" @click="act(() => state.me ? backend.signOut() : backend.signIn())">{{ state.me ? 'Sign out' : 'Sign in' }}</button>
+      <RouterLink v-if="state.me" to="/profile" class="account-avatar" title="Your profile">{{ state.me.displayName.slice(0, 1) }}</RouterLink>
     </div>
   </header>
-
-  <div v-if="isDemo" class="demo-strip">
-    <span>
-      <strong>Demo.</strong> Fictional people, illustrative numbers. Your changes stay in this browser.
-    </span>
-    <span class="row" style="gap: 14px; flex-wrap: nowrap">
-      <DiscussPin anchor="general" label="Feedback" />
-      <button class="link-btn" @click="resetDemo">Reset demo data</button>
-    </span>
+  <div class="workspace-shell">
+    <aside class="workspace-rail">
+      <div class="rail-heading">Your projects <span>{{ String(state.projects.length).padStart(2, '0') }}</span></div>
+      <nav class="project-navigation" aria-label="Projects">
+        <RouterLink v-for="p in state.projects" :key="p.id" :to="`/p/${p.id}`" :class="{ active: activeProject === p.id && route.name === 'project' }"><span class="project-glyph">{{ p.name.slice(0, 1) }}</span><span>{{ p.name }}</span><span class="project-arrow">↗</span></RouterLink>
+      </nav>
+      <div class="rail-note"><span class="eyebrow">BUILD IN THE OPEN</span><p>Better aircraft.<br />Built together.</p><span>The next version starts with a good question.</span></div>
+      <nav class="rail-tools" aria-label="Workspace resources"><RouterLink to="/how">How this works ↗</RouterLink><RouterLink to="/readout">Experiment readout ↗</RouterLink><details><summary>Browse all records</summary><RouterLink to="/projects">Projects</RouterLink><RouterLink to="/threads">Threads</RouterLink><RouterLink to="/register">Register</RouterLink><RouterLink to="/grants">Grants</RouterLink></details></nav>
+      <div class="rail-bottom"><span class="status-dot"></span> An open development space</div>
+    </aside>
+    <div class="workspace-main">
+      <div v-if="isDemo" class="workspace-demo"><span><strong>Concept preview</strong><span class="demo-description"> · Example people & engineering. Changes stay in your browser.</span><span class="mobile-demo-description"> · Illustrative, browser-only demo.</span></span><button class="link-btn" @click="resetDemo">Reset demo data</button></div>
+      <div v-if="state.error" class="error-banner" role="alert"><span>{{ state.error }}</span><button class="link-btn" @click="state.error = ''">Dismiss</button></div>
+      <main id="main-content" tabindex="-1" class="page" :class="{ 'workspace-page': route.name === 'project' }"><RouterView v-if="state.ready" :key="route.path" /><p v-else class="muted">Opening workspace…</p></main>
+      <footer class="workspace-footer"><span>ARROW / OPEN AIRCRAFT DEVELOPMENT</span><a href="https://github.com/Arrow-air/arrow-superapp" target="_blank" rel="noopener">Source & thinking ↗</a></footer>
+    </div>
   </div>
-
-  <div v-if="state.error" class="error-banner" role="alert">
-    <span>{{ state.error }}</span>
-    <button class="link-btn" @click="state.error = ''">Dismiss</button>
-  </div>
-
-  <main class="page">
-    <RouterView v-if="state.ready" />
-    <p v-else class="muted">Loading…</p>
-  </main>
-
   <DiscussDrawer />
-
-  <footer class="foot">
-    An Arrow superapp experiment. Source and the thinking behind it:
-    <a href="https://github.com/Arrow-air/arrow-superapp" target="_blank" rel="noopener">Arrow-air/arrow-superapp</a>
-  </footer>
 </template>

@@ -8,7 +8,7 @@ import { grantMarkdown } from '../lib/grant';
 import { percent } from '../lib/labels';
 import type { Grant } from '../lib/types';
 
-const props = defineProps<{ id: string }>();
+const props = defineProps<{ id: string; embedded?: boolean }>();
 
 const grant = ref<Grant | null>(null);
 const loading = ref(true);
@@ -102,7 +102,7 @@ const issueUrl = computed(() => {
   </div>
 
   <div v-else>
-    <p class="small" style="margin: 0"><RouterLink to="/grants">← All grants</RouterLink></p>
+    <p v-if="!embedded" class="small" style="margin: 0"><RouterLink to="/grants">← All grants</RouterLink></p>
     <div class="row" style="margin: 10px 0 8px">
       <span class="chip chip-project">{{ project.name }}</span>
       <span class="chip chip-version">{{ version?.name ?? '?' }}</span>
@@ -110,7 +110,7 @@ const issueUrl = computed(() => {
     </div>
     <h1 style="margin-bottom: 6px">{{ title }}</h1>
     <p class="small muted" style="margin-top: 0">
-      From thread <RouterLink :to="{ name: 'thread', params: { id: grant.threadId } }">{{ grant.title }}</RouterLink> ·
+      From thread <RouterLink :to="embedded ? { name: 'project', params: { id: project.id }, query: { view: 'shape', version: grant.versionId, thread: grant.threadId } } : { name: 'thread', params: { id: grant.threadId } }">{{ grant.title }}</RouterLink> ·
       promoted by @{{ handleOf(grant.byMemberId) }} · weighted rank {{ grant.weightedRankAtResolution }}, raw rank {{ grant.rawRankAtResolution }} at promotion
     </p>
 
@@ -119,7 +119,7 @@ const issueUrl = computed(() => {
         <div class="card stack">
           <div class="spread" style="align-items: center">
             <strong>{{ canEdit ? 'Edit the draft' : grant.status === 'draft' ? 'Draft (only the lead edits it)' : 'Published' }}</strong>
-            <span v-if="canEdit" class="small muted">The discussion wrote this. Fix what it got wrong.</span>
+            <span v-if="canEdit" class="small muted">A starting draft from the chosen approach. Review it against the whole discussion.</span>
           </div>
           <label class="field-row">
             <span class="label">Title</span>
