@@ -155,6 +155,7 @@ export interface Decision {
   byMemberId: string;
   at: string;
   status: 'decided' | 'superseded';
+  briefSnapshot?: BriefSnapshot;
 }
 
 /**
@@ -185,6 +186,8 @@ export interface Grant {
   createdAt: string;
   updatedAt: string;
   status: 'draft' | 'published';
+  /** Immutable reviewed starting point; later grant edits do not change this record. */
+  briefSnapshot?: BriefSnapshot;
 }
 
 /** Tunable per project. Every number here is a hypothesis; the readout page exists to test them. */
@@ -224,4 +227,52 @@ export interface PositionTally {
   voters: number;
   rawRank: number;
   weightedRank: number;
+}
+
+
+/** Human-curated synthesis. A source is a snapshot, not an assertion that its claim is true. */
+export interface BriefSource {
+  key: string;
+  kind: 'thread' | 'position' | 'comment';
+  id: string;
+  positionId?: string;
+  authorId: string;
+  body: string;
+}
+export type BriefKind = 'requirement' | 'deliverable' | 'question' | 'evidence' | 'exclusion';
+export interface BriefItem {
+  id: string;
+  kind: BriefKind;
+  text: string;
+  /** How a deliverable will be accepted; not a claim that a test has passed. */
+  verification: string;
+  sources: BriefSource[];
+  authorId: string;
+  updatedBy: string;
+  status: 'proposed' | 'accepted' | 'dismissed';
+  /** Answer to a question or reason for excluding a proposal. */
+  rationale: string;
+  decidedBy?: string;
+}
+export interface BriefApproval {
+  byMemberId: string;
+  at: string;
+  revision: number;
+  versionId: string;
+  corpus: string;
+}
+export interface BriefContent {
+  purpose: string;
+  items: BriefItem[];
+  reviewed: { source: BriefSource; byMemberId: string }[];
+}
+export interface WorkingBrief extends BriefContent {
+  threadId: string;
+  revision: number;
+  approval?: BriefApproval;
+  history: { revision: number; byMemberId: string; at: string; action: string; content: BriefContent }[];
+}
+export interface BriefSnapshot extends BriefContent {
+  threadId: string;
+  approval: BriefApproval;
 }

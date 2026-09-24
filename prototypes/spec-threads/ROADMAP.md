@@ -24,6 +24,8 @@ Thomas is taking these into the next spec-app iteration. They reshape the thread
 7. **Two test projects.** Spearhead PT2 as the live one; Quiver Mini as the re-run of the earlier experiment (Alperen's suggestion), possibly with Vector seeding threads from the repos.
 8. **Dogfood immediately.** Once threads can be version-targeted and frozen, use it for real Spearhead PT2 discussion even in demo-quality UI. Everything else in the sequence below still stands, but this is what gets built next.
 
+**Working-brief follow-up (2026-09-23):** `working-brief-v1` adds human-curated synthesis across approaches, source review, explicit lead approval, deliverables with acceptance checks, and immutable brief-to-grant snapshots. New grants require that reviewed brief. The PCB starter is illustrative, not agent-generated. See `WORKING-BRIEF.md`. Shared backend, retro awards, and AI remain unimplemented.
+
 ## What has to be true for this to earn its place
 
 Matching GitHub Discussions feature for feature is table stakes and justifies nothing. The tool is justified by the things a general-purpose forum structurally cannot do:

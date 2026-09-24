@@ -2,6 +2,7 @@
 //   npm run build && npm run preview -- --port 4179   (in one terminal)
 //   npm run e2e                                        (in another)
 // Uses your installed Google Chrome via playwright-core; no browser download needed.
+const { approveBrief } = require('./brief-helper.cjs');
 const { chromium } = require('playwright-core');
 const path = require('node:path');
 const BASE = process.env.BASE_URL || 'http://localhost:4179/';
@@ -74,6 +75,10 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
 
   // 6. Lead resolves from the thread page: turn the engine thread into a grant (weighted top, no rationale)
   await page.selectOption('.persona select', 'm-omar');
+  await go('/p/spearhead?view=shape&thread=n-engine');
+  await page.waitForSelector('.working-brief');
+  await approveBrief(page);
+  await go('/threads/n-engine');
   await page.waitForSelector('.lead-card');
   await page.locator('.lead-card .btn-grant').click();
   await page.waitForSelector('.pick-row');
@@ -91,9 +96,9 @@ const check = (name, ok, extra = '') => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${n
   await page.locator('a.btn', { hasText: 'Open the grant draft' }).click();
   await page.waitForSelector('.bounty-md');
   const md = await page.locator('.bounty-md').innerText();
-  check('grant markdown carries the need, the spec, and the proposer award', md.includes('## The need') && md.includes('## The spec') && md.includes('Proposer award: **25%** of the grant to @jun-pcb'));
-  check('constraints extracted from the discussion', md.includes('- Engine RPM from a Hall sensor, 0 to 12 kHz') && md.includes('- Mass under 25 g'));
-  check('a measurable comment made it into the constraints, a long prose one did not', md.includes('9 kHz') && !md.includes('- Add a kill-switch input'));
+  check('grant markdown carries the need, the spec, and the proposer award', md.includes('## Intended outcome') && md.includes('## Accepted requirements') && md.includes('Proposer award: **25%** of the grant to @jun-pcb'));
+  check('requirements synthesized across approaches', md.includes('DroneCAN') && md.includes('hardware engine-kill'));
+  check('unaccepted numeric proposals stay out of the scope', !md.includes('Mass under 25 g') && !md.includes('9 kHz'));
   check('contributors attributed', md.includes('**Also contributed:**') && md.includes('@rosa-ranch'));
   const issue = await page.locator('a', { hasText: 'Open as GitHub issue' }).getAttribute('href');
   check('issue link targets grant-and-bounties', issue.startsWith('https://github.com/Arrow-air/grant-and-bounties/issues/new?'));

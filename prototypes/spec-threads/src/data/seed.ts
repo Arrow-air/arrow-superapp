@@ -11,9 +11,11 @@
 // builder, and the lead prefer. Quiver Mini is empty on purpose: it is the re-run of the earlier
 // experiment, waiting for threads (possibly seeded by Vector from the repos).
 
+import { briefContent, discussionSources } from '../lib/brief';
 import { DEFAULT_WEIGHTS } from '../lib/weights';
 import type {
   BuilderIntent,
+  WorkingBrief,
   Comment,
   Decision,
   Grant,
@@ -37,6 +39,7 @@ export interface DemoState {
   comments: Comment[];
   decisions: Decision[];
   grants: Grant[];
+  briefs: WorkingBrief[];
 }
 
 const t = (day: number, hour: number) => new Date(Date.UTC(2026, 8, day, hour)).toISOString();
@@ -420,5 +423,21 @@ export function seedState(): DemoState {
 
   const grants: Grant[] = [];
 
-  return { actingAs: 'm-omar', projects, members, roles, threads, positions, votes, intents, comments, decisions, grants };
+  // Hand-authored illustrative synthesis, not AI output or an approved aircraft specification.
+  const engineSources = discussionSources({ thread: threads[0], positions: positions.filter(p => p.threadId === 'n-engine'), comments: comments.filter(c => c.id.startsWith('c-e')), votes: [], intents: [] });
+  const source = (keys: string[]) => engineSources.filter(s => keys.includes(s.key));
+  const brief: WorkingBrief = {
+    threadId: 'n-engine', revision: 1,
+    purpose: 'Define and bench-validate a PT2 engine interface board that exposes engine telemetry and retains an independent shutdown path. Illustrative scope; not a flight-approved design.',
+    reviewed: [],
+    items: [
+      { id: 'bi-can', kind: 'requirement', text: 'Expose engine RPM and temperature to the flight controller over DroneCAN.', verification: '', sources: source(['position:s-ecu', 'comment:c-e3']), authorId: 'm-jun', updatedBy: 'm-jun', status: 'proposed', rationale: '' },
+      { id: 'bi-kill', kind: 'requirement', text: 'Provide a hardware engine-kill input from the RC link that remains independent of the flight controller.', verification: '', sources: source(['position:s-kill', 'comment:c-e1']), authorId: 'm-rosa', updatedBy: 'm-rosa', status: 'proposed', rationale: '' },
+      { id: 'bi-voltage', kind: 'question', text: 'Which input-voltage envelope should the board support? The proposed 22–50 V range is still a placeholder.', verification: '', sources: source(['position:s-ecu']), authorId: 'm-omar', updatedBy: 'm-omar', status: 'proposed', rationale: '' },
+      { id: 'bi-bench', kind: 'deliverable', text: 'A reviewable schematic, interface definition, and bench-validation report for telemetry and the independent kill path.', verification: 'Review the schematic against each accepted requirement. In a safe bench setup with the flight controller unresponsive, demonstrate the independent kill path and record the observed result; demonstrate RPM and temperature messages on DroneCAN.', sources: source(['thread:n-engine', 'position:s-kill', 'comment:c-e3']), authorId: 'm-omar', updatedBy: 'm-omar', status: 'proposed', rationale: '' },
+      { id: 'bi-ots', kind: 'exclusion', text: 'An off-the-shelf ECU without an engine-telemetry interface does not satisfy this brief.', verification: '', sources: source(['position:s-ots', 'comment:c-e3']), authorId: 'm-jun', updatedBy: 'm-jun', status: 'proposed', rationale: '' },
+    ], history: [],
+  };
+  brief.history.push({ revision: 1, byMemberId: 'm-omar', at: t(23, 20), action: 'illustrative starter', content: briefContent(brief) });
+  return { briefs: [brief], actingAs: 'm-omar', projects, members, roles, threads, positions, votes, intents, comments, decisions, grants };
 }

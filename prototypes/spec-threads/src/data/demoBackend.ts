@@ -5,6 +5,9 @@
 // The resolution rules live in src/lib and run here, on the "server" side of the seam, so
 // the UI only states intent ("turn this thread into a grant") and cannot skip a check.
 
+import { briefContent, briefIssues, briefMarkdown, corpusKey, discussionSources, emptyBrief, grantBriefIssues, snapshotBrief } from '../lib/brief';
+import type { BriefAction } from './backend';
+import type { WorkingBrief } from '../lib/types';
 import { analyzeThread, roleOf } from '../lib/analyze';
 import { deferThread, promoteToGrant, promoteToSpec, rejectThread } from '../lib/resolution';
 import type { Comment, Grant, Member, Position, Project, Thread } from '../lib/types';
@@ -45,7 +48,7 @@ export class DemoBackend implements Backend {
   private load(): DemoState {
     try {
       const raw = this.storage.getItem(KEY);
-      if (raw) return JSON.parse(raw) as DemoState;
+      if (raw) { const saved = JSON.parse(raw) as DemoState; saved.briefs ??= []; return saved; }
     } catch {
       // Corrupt or unreadable storage: fall through to a fresh seed.
     }
@@ -57,6 +60,8 @@ export class DemoBackend implements Backend {
   }
 
   private me(): Member {
+    // Re-read before every write: another tab may have changed the discussion or brief.
+    this.state = this.load();
     const m = this.state.members.find((x) => x.id === this.state.actingAs);
     if (!m) throw new NotSignedInError();
     return m;
@@ -83,6 +88,7 @@ export class DemoBackend implements Backend {
     const positionIds = new Set(positions.map((s) => s.id));
     return structuredClone({
       thread,
+      brief: this.state.briefs.find(b => b.threadId === thread.id),
       positions,
       votes: this.state.votes.filter((v) => positionIds.has(v.positionId)),
       intents: this.state.intents.filter((i) => i.threadId === thread.id),
@@ -91,21 +97,25 @@ export class DemoBackend implements Backend {
   }
 
   async currentMember() {
+    this.state = this.load();
     const m = this.state.members.find((x) => x.id === this.state.actingAs);
     return m ? structuredClone(m) : null;
   }
 
   async signIn() {
+    this.state = this.load();
     this.state.actingAs = this.state.members[0]?.id ?? null;
     this.save();
   }
 
   async signOut() {
+    this.state = this.load();
     this.state.actingAs = null;
     this.save();
   }
 
   async actAs(memberId: string) {
+    this.state = this.load();
     if (!this.state.members.some((m) => m.id === memberId)) throw new Error('No such persona.');
     this.state.actingAs = memberId;
     this.save();
@@ -205,7 +215,9 @@ export class DemoBackend implements Backend {
 
   async addComment(input: { positionId: string; body: string }) {
     const me = this.me();
-    if (!this.state.positions.some((s) => s.id === input.positionId)) throw new Error('No such position.');
+    const position = this.state.positions.find((s) => s.id === input.positionId);
+    if (!position) throw new Error('No such position.');
+    if (this.thread(position.threadId).status !== 'open') throw new Error('This discussion is closed. Start a new thread for changes.');
     const body = input.body.trim();
     if (!body) throw new Error('A comment cannot be empty.');
     const comment: Comment = { id: newId('c'), positionId: input.positionId, authorId: me.id, body, createdAt: new Date().toISOString() };
@@ -214,12 +226,96 @@ export class DemoBackend implements Backend {
     return structuredClone(comment);
   }
 
+  async changeBrief(input: { threadId: string; expectedRevision: number; action: BriefAction }): Promise<WorkingBrief> {
+    const me = this.me();
+    const thread = this.thread(input.threadId);
+    const project = this.project(thread.projectId);
+    if (thread.status !== 'open' || versionById(project, thread.versionId)?.state === 'frozen') throw new Error('This design is closed. Start a new discussion to change it.');
+    const original = this.state.briefs.find(b => b.threadId === thread.id) ?? emptyBrief(thread.id);
+    if (input.expectedRevision !== original.revision) throw new Error('The brief changed. Refresh and review the latest revision.');
+    const brief = structuredClone(original);
+    const sources = discussionSources(this.bundle(thread));
+    const action = input.action;
+    const lead = roleOf(this.state.roles, project.id, me.id) === 'lead';
+    if (action.kind !== 'item') this.requireLead(project.id, me);
+    switch (action.kind) {
+      case 'purpose': {
+        if (!action.text.trim()) throw new Error('Write the intended outcome.');
+        brief.purpose = action.text.trim();
+        break;
+      }
+      case 'item': {
+        if (!['requirement', 'deliverable', 'question', 'evidence', 'exclusion'].includes(action.itemKind)) throw new Error('Unknown brief item kind.');
+        const text = action.text.trim();
+        if (!text) throw new Error('Write a brief item.');
+        const selected = [...new Set(action.sourceKeys)].map(key => {
+          const source = sources.find(s => s.key === key);
+          if (!source) throw new Error('Every source must belong to this discussion.');
+          return structuredClone(source);
+        });
+        if (!selected.length) throw new Error('Link at least one discussion source. New proposals can link to the original question.');
+        const existing = action.id ? brief.items.find(i => i.id === action.id) : undefined;
+        if (action.id && !existing) throw new Error('No such brief item.');
+        if (existing && !lead && (existing.authorId !== me.id || existing.status !== 'proposed')) throw new Error('Only the lead or the author of a pending proposal can edit it.');
+        const item = {
+          id: existing?.id ?? newId('bi'), kind: action.itemKind, text,
+          verification: action.verification.trim(), sources: selected,
+          authorId: existing?.authorId ?? me.id, updatedBy: me.id,
+          status: 'proposed' as const, rationale: '',
+        };
+        if (existing) brief.items.splice(brief.items.indexOf(existing), 1, item);
+        else brief.items.push(item);
+        break;
+      }
+      case 'decide': {
+        const item = brief.items.find(i => i.id === action.id);
+        if (!item) throw new Error('No such brief item.');
+        if (!['accepted', 'dismissed'].includes(action.status)) throw new Error('Unknown decision.');
+        if ((action.status === 'dismissed' || item.kind === 'question' || item.kind === 'exclusion') && !action.rationale.trim()) throw new Error('Record the answer or the reason for leaving this out.');
+        if (action.status === 'accepted' && item.kind === 'deliverable' && !item.verification.trim()) throw new Error('A deliverable needs an acceptance check.');
+        item.status = action.status;
+        item.rationale = action.rationale.trim();
+        item.decidedBy = me.id;
+        break;
+      }
+      case 'review': {
+        const source = sources.find(s => s.key === action.sourceKey);
+        if (!source) throw new Error('No such discussion source.');
+        brief.reviewed = brief.reviewed.filter(r => r.source.key !== source.key);
+        brief.reviewed.push({ source: structuredClone(source), byMemberId: me.id });
+        break;
+      }
+      case 'approve': {
+        const issues = briefIssues({ ...this.bundle(thread), brief });
+        if (issues.length) throw new Error(issues.join(' '));
+        break;
+      }
+      default: throw new Error('Unknown brief action.');
+    }
+    brief.revision++;
+    brief.approval = action.kind === 'approve' ? {
+      byMemberId: me.id, at: new Date().toISOString(), revision: brief.revision,
+      versionId: thread.versionId, corpus: corpusKey(this.bundle(thread)),
+    } : undefined;
+    brief.history.push({ revision: brief.revision, byMemberId: me.id, at: new Date().toISOString(), action: action.kind, content: briefContent(brief) });
+    this.state.briefs = this.state.briefs.filter(b => b.threadId !== thread.id);
+    this.state.briefs.push(brief);
+    this.save();
+    return structuredClone(brief);
+  }
+
   async resolveThread(input: ResolveInput) {
     const me = this.me();
     const thread = this.thread(input.threadId);
     const project = this.project(thread.projectId);
     const leadRole = roleOf(this.state.roles, project.id, me.id);
     const bundle = this.bundle(thread);
+    this.requireLead(project.id, me);
+    if (input.kind === 'grant') {
+      const issues = grantBriefIssues(bundle);
+      if (issues.length) throw new Error(issues.join(' '));
+    }
+    if (input.kind === 'spec' && bundle.brief) snapshotBrief(bundle);
     const { tallies } = analyzeThread({ bundle, members: this.state.members, roles: this.state.roles, project });
     const findPosition = (id: string) => {
       const p = bundle.positions.find((s) => s.id === id);
@@ -243,6 +339,10 @@ export class DemoBackend implements Backend {
           overrideRationale: input.overrideRationale,
           decisionId: newId('d'),
         });
+        if (bundle.brief) {
+          decision.briefSnapshot = snapshotBrief(bundle);
+          decision.chosen = bundle.brief.purpose;
+        }
         this.state.decisions.push(decision);
         thread.resolution = resolution;
         thread.status = 'resolved';
@@ -261,6 +361,13 @@ export class DemoBackend implements Backend {
           proposerShare: input.proposerShare,
           grantId: newId('g'),
         });
+        const snapshot = snapshotBrief(bundle);
+        grant.briefSnapshot = snapshot;
+        // Requirements have one editable home (grant.constraints), not a second copy in scope.
+        grant.scope = briefMarkdown(snapshot, project.id, true);
+        grant.constraints = snapshot.items.filter(i => i.kind === 'requirement' && i.status === 'accepted').map(i => i.text);
+        const credit = snapshot.items.filter(i => i.status === 'accepted').flatMap(i => [i.authorId, i.updatedBy, ...i.sources.map(s => s.authorId)]);
+        grant.contributorIds = [...new Set(credit)].filter(id => !grant.proposerIds.includes(id));
         this.state.grants.push(grant);
         thread.resolution = resolution;
         thread.status = 'resolved';

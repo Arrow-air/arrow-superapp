@@ -4,6 +4,7 @@ import { computed, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
 import Markdown from '../components/Markdown.vue';
 import { act, backend, handleOf, memberById, myRoleOn, projectById, state, versionOf } from '../data/store';
+import { briefMarkdown } from '../lib/brief';
 import { grantMarkdown } from '../lib/grant';
 import { percent } from '../lib/labels';
 import type { Grant } from '../lib/types';
@@ -19,15 +20,18 @@ const sharePercent = ref(25);
 const dirty = ref(false);
 const saved = ref(false);
 const copied = ref(false);
+let hydrating = false;
 
 function load(g: Grant | null) {
   grant.value = g;
   if (!g) return;
+  hydrating = true;
   title.value = g.title;
   scope.value = g.scope;
   constraints.value = g.constraints.join('\n');
   sharePercent.value = Math.round(g.proposerShare * 100);
   dirty.value = false;
+  hydrating = false;
 }
 
 watch(
@@ -43,7 +47,7 @@ watch(
   },
   { immediate: true },
 );
-watch([title, scope, constraints, sharePercent], () => { dirty.value = true; saved.value = false; });
+watch([title, scope, constraints, sharePercent], () => { if (!hydrating) { dirty.value = true; saved.value = false; } }, { flush: 'sync' });
 
 const project = computed(() => (grant.value ? projectById.value.get(grant.value.projectId) : undefined));
 const version = computed(() => (grant.value ? versionOf(grant.value.projectId, grant.value.versionId) : undefined));
@@ -114,12 +118,17 @@ const issueUrl = computed(() => {
       promoted by @{{ handleOf(grant.byMemberId) }} · weighted rank {{ grant.weightedRankAtResolution }}, raw rank {{ grant.rawRankAtResolution }} at promotion
     </p>
 
+    <details v-if="grant.briefSnapshot" class="brief-snapshot">
+      <summary>Approved source brief · r{{ grant.briefSnapshot.approval.revision }} · @{{ handleOf(grant.briefSnapshot.approval.byMemberId) }}</summary>
+      <p>This snapshot is immutable. The editable grant below may diverge; compare it before publishing.</p>
+      <Markdown :source="briefMarkdown(grant.briefSnapshot, project.id)" />
+    </details>
     <div class="layout-2" style="margin-top: 20px">
       <div class="stack">
         <div class="card stack">
           <div class="spread" style="align-items: center">
             <strong>{{ canEdit ? 'Edit the draft' : grant.status === 'draft' ? 'Draft (only the lead edits it)' : 'Published' }}</strong>
-            <span v-if="canEdit" class="small muted">A starting draft from the chosen approach. Review it against the whole discussion.</span>
+            <span v-if="canEdit" class="small muted">{{ grant.briefSnapshot ? 'From an approved, source-linked working brief. Later edits do not change that snapshot.' : 'Legacy draft from one approach; it has no approved working brief.' }}</span>
           </div>
           <label class="field-row">
             <span class="label">Title</span>
@@ -132,7 +141,7 @@ const issueUrl = computed(() => {
           <label class="field-row">
             <span class="label">Interfaces and constraints, one per line</span>
             <textarea v-model="constraints" style="min-height: 120px" :disabled="!canEdit" />
-            <div class="hint">Pulled from the chosen position and its comments: list items and anything with a number and a unit.</div>
+            <div class="hint">{{ grant.briefSnapshot ? 'Accepted requirements from the reviewed brief—not automatically extracted suggestions.' : 'Legacy extraction from the chosen position and its comments.' }}</div>
           </label>
           <label class="field-row" style="max-width: 360px">
             <span class="label">Proposer award</span>

@@ -3,10 +3,12 @@
 // so the rules read the same in both places. The backend re-checks everything; this only
 // mirrors the checks so the button states make sense before you click.
 import { computed, ref, watch } from 'vue';
+import { RouterLink } from 'vue-router';
 import type { ThreadBundle } from '../data/backend';
 import { act, backend, handleOf } from '../data/store';
 import type { ThreadAnalysis } from '../lib/analyze';
 import { positionTitle } from '../lib/format';
+import { briefApproved, grantBriefIssues } from '../lib/brief';
 import { DEFAULT_PROPOSER_SHARE } from '../lib/grant';
 import { RESOLUTION_VERB } from '../lib/labels';
 import { MIN_RATIONALE_LENGTH, needsRationale } from '../lib/resolution';
@@ -46,7 +48,7 @@ const canSubmit = computed(() => {
       return noteLength.value >= MIN_RATIONALE_LENGTH;
     case 'spec':
     case 'grant':
-      return !!positionId.value && (!overriding.value || rationaleLength.value >= MIN_RATIONALE_LENGTH);
+      return !!positionId.value && (!overriding.value || rationaleLength.value >= MIN_RATIONALE_LENGTH) && (mode.value === 'grant' ? !grantBriefIssues(props.bundle).length : !props.bundle.brief || briefApproved(props.bundle));
     case 'defer':
       return !!toVersionId.value;
     default:
@@ -121,10 +123,15 @@ async function submit() {
       <template v-if="mode === 'spec' || mode === 'grant'">
         <div>
           <DiscussPin anchor="lead-override" class="pin-right" />
-          <strong>{{ mode === 'spec' ? 'Which position becomes the specification?' : 'Which position is the spec for the grant?' }}</strong>
+          <strong>{{ mode === 'spec' ? bundle.brief ? 'Which approach anchors the reviewed specification?' : 'Which position becomes the specification?' : 'Which approach is the starting direction?' }}</strong>
           <div class="small muted">
-            {{ mode === 'spec' ? 'It goes into the decision register as a requirement on this version.' : 'A grant draft is written from it and the discussion around it. You edit it before it is real.' }}
+            {{ mode === 'spec' ? (bundle.brief ? 'The reviewed brief and its sources go into the decision register. The selected approach records the voting signal.' : 'It goes into the decision register as a requirement on this version.') : 'Scope comes from the approved working brief, including contributions from other approaches. This choice records the voting signal and initial proposer award only.' }}
           </div>
+        </div>
+        <div v-if="mode === 'grant' && grantBriefIssues(bundle).length || mode === 'spec' && bundle.brief && !briefApproved(bundle)" class="context-note">
+          <strong>Review the working brief first.</strong>
+          <p v-if="mode === 'grant'">{{ grantBriefIssues(bundle).join(' ') }}</p>
+          <RouterLink :to="{ name: 'project', params: { id: project.id }, query: { view: 'shape', thread: bundle.thread.id, version: bundle.thread.versionId } }">Open the discussion and brief →</RouterLink>
         </div>
         <div class="pick-list" role="radiogroup">
           <label v-for="{ p, t } in ranked" :key="p.id" class="pick-row" :class="{ on: positionId === p.id }">
@@ -149,7 +156,7 @@ async function submit() {
           <span class="label">Proposer award <DiscussPin anchor="bounty" compact class="pin-inline" /></span>
           <span class="row" style="flex-wrap: nowrap">
             <input v-model.number="sharePercent" type="number" min="0" max="100" step="5" style="width: 90px" aria-label="Proposer share, percent" />
-            <span class="small">% of the grant to @{{ chosen ? handleOf(chosen.p.authorId) : '…' }} for writing the spec</span>
+            <span class="small">% of the grant to @{{ chosen ? handleOf(chosen.p.authorId) : '…' }} as the starting proposer (allocation is provisional)</span>
           </span>
           <div class="hint">A quarter was floated on the 2026-09-23 call. No tokens move in this prototype.</div>
         </label>

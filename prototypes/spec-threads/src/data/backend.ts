@@ -3,6 +3,8 @@
 
 import type {
   BuilderIntent,
+  WorkingBrief,
+  BriefKind,
   Comment,
   Decision,
   Grant,
@@ -20,7 +22,15 @@ export interface ThreadBundle {
   votes: Vote[];
   intents: BuilderIntent[];
   comments: Comment[];
+  brief?: WorkingBrief;
 }
+
+export type BriefAction =
+  | { kind: 'purpose'; text: string }
+  | { kind: 'item'; id?: string; itemKind: BriefKind; text: string; verification: string; sourceKeys: string[] }
+  | { kind: 'decide'; id: string; status: 'accepted' | 'dismissed'; rationale: string }
+  | { kind: 'review'; sourceKey: string }
+  | { kind: 'approve' };
 
 /** What the lead asks for. The backend validates it (role, ranks, rationale) and writes the records. */
 export type ResolveInput =
@@ -57,6 +67,7 @@ export interface Backend {
   castVote(input: { positionId: string; value: 1 | -1 | 0 }): Promise<void>;
   setBuilderIntent(input: { threadId: string; on: boolean }): Promise<void>;
   addComment(input: { positionId: string; body: string }): Promise<Comment>;
+  changeBrief(input: { threadId: string; expectedRevision: number; action: BriefAction }): Promise<WorkingBrief>;
   /** Lead only. Reject, promote to spec, turn into a grant draft, or defer to a later version. */
   resolveThread(input: ResolveInput): Promise<Thread>;
   /** Lead only. Edit a grant draft before it is published. */

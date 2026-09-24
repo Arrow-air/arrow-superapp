@@ -5,13 +5,16 @@ import { act, backend, handleOf, memberById, myRoleOn, state } from '../data/sto
 import { analyzeThread } from '../lib/analyze';
 import { positionTitle, signed } from '../lib/format';
 import type { Project } from '../lib/types';
+import WorkingBrief from './WorkingBrief.vue';
 import Markdown from './Markdown.vue';
 import ResolvePanel from './ResolvePanel.vue';
 import WeightBox from './WeightBox.vue';
 
 const props = defineProps<{ bundle: ThreadBundle; project: Project }>();
 const emit = defineEmits<{ review: []; grant: [id: string] }>();
+function jumpToBrief() { document.querySelector('.working-brief')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 const draft = ref('');
+const captureKey = ref('');
 const comments = reactive<Record<string, string>>({});
 const busy = ref(false);
 const analysis = computed(() => analyzeThread({ bundle: props.bundle, project: props.project, members: state.members, roles: state.roles }));
@@ -23,6 +26,7 @@ const builder = computed(() => props.bundle.intents.some(i => i.memberId === sta
 const ranked = computed(() => props.bundle.positions.map(p => ({ p, tally: analysis.value.tallies.find(t => t.positionId === p.id)! })).sort((a, b) => b.tally.weightedScore - a.tally.weightedScore));
 const chosenTitle = computed(() => {
   const resolution = props.bundle.thread.resolution;
+  if (resolution && resolution.kind !== 'reject' && props.bundle.brief) return props.bundle.brief.purpose;
   return resolution && resolution.kind !== 'reject'
     ? positionTitle(props.bundle.positions.find(p => p.id === resolution.positionId)?.body ?? '')
     : '';
@@ -35,6 +39,8 @@ async function write(fn: () => Promise<unknown>, done?: () => void) {
   busy.value = true;
   try { if (await act(fn)) done?.(); } finally { busy.value = false; }
 }
+function considered(key: string) { return props.bundle.brief?.reviewed.some(r => r.source.key === key); }
+function consider(key: string) { return write(() => backend.changeBrief({ threadId: props.bundle.thread.id, expectedRevision: props.bundle.brief?.revision ?? 0, action: { kind: 'review', sourceKey: key } })); }
 function vote(id: string, value: 1 | -1) { return write(() => backend.castVote({ positionId: id, value: myVote(id) === value ? 0 : value })); }
 function post() { return write(() => backend.createPosition({ threadId: props.bundle.thread.id, body: draft.value }), () => { draft.value = ''; }); }
 function comment(id: string) { return write(() => backend.addComment({ positionId: id, body: comments[id] }), () => { comments[id] = ''; }); }
@@ -45,7 +51,7 @@ function comment(id: string) { return write(() => backend.addComment({ positionI
     <div class="discussion-heading"><span class="eyebrow">{{ bundle.thread.system || 'PROJECT-WIDE' }} / {{ version?.name }}</span><span class="workspace-badge" :class="{ green: !open }">{{ open ? 'Exploring' : bundle.thread.resolution?.kind === 'grant' ? 'Grant drafted' : bundle.thread.resolution?.kind === 'spec' ? 'Adopted' : 'Not pursuing' }}</span></div>
     <h2 class="discussion-title">{{ bundle.thread.title }}</h2>
     <p class="discussion-byline">Opened by {{ name(bundle.thread.authorId) }} <span>· {{ bundle.positions.length }} approaches · {{ bundle.comments.length }} replies</span></p>
-    <Markdown :source="bundle.thread.body" />
+    <Markdown :source="bundle.thread.body" /><button v-if="isLead && canContribute" class="text-action consider-source" :disabled="busy || considered(`thread:${bundle.thread.id}`)" @click="consider(`thread:${bundle.thread.id}`)">{{ considered(`thread:${bundle.thread.id}`) ? '✓ Original question considered' : 'Mark original question considered' }}</button>
     <div v-if="bundle.thread.deferrals.length" class="context-note">Carried forward from {{ project.versions.find(v => v.id === bundle.thread.deferrals[bundle.thread.deferrals.length - 1]?.fromVersionId)?.name }}. Earlier contributions and votes are preserved.</div>
     <div v-if="bundle.thread.resolution" class="decision-note">
       <strong>{{ bundle.thread.resolution.kind === 'spec' ? 'Part of the design' : bundle.thread.resolution.kind === 'grant' ? 'Ready to develop into funded work' : 'Not pursuing this change' }}</strong>
@@ -54,20 +60,23 @@ function comment(id: string) { return write(() => backend.addComment({ positionI
       <button v-if="bundle.thread.resolution.kind === 'grant'" class="text-action" @click="emit('grant', bundle.thread.resolution.grantId)">Open the grant draft →</button>
       <button v-else class="text-action" @click="emit('review')">See the design review →</button>
     </div>
+    <button class="text-action brief-jump" @click="jumpToBrief">Working brief → <span>{{ bundle.brief?.items.filter(i => i.status === 'accepted' && i.kind === 'requirement').length ?? 0 }} accepted requirements · {{ bundle.brief?.items.filter(i => i.kind === 'question' && i.status === 'proposed').length ?? 0 }} open questions</span></button>
+    <div class="discussion-workbench"><div class="discussion-conversation">
     <div class="section-heading discussion-section"><h3>Approaches & discussion</h3><span>{{ ranked.length }}</span></div>
     <p v-if="!ranked.length" class="empty-note">No approaches yet. A short suggestion, test result, or useful question is a good start.</p>
     <details v-for="({ p, tally }, index) in ranked" :key="p.id" class="approach" :open="index === 0">
       <summary><span class="approach-index">{{ String(index + 1).padStart(2, '0') }}</span><span class="approach-summary"><strong>{{ positionTitle(p.body, 110) }}</strong><small>{{ name(p.authorId) }} · {{ tally.voters }} {{ tally.voters === 1 ? 'voter' : 'voters' }}<template v-if="tally.weightedRank === 1 && tally.voters"> · Leading by weighted support</template></small></span><span class="approach-toggle">＋</span></summary>
       <div class="approach-body">
-        <Markdown :source="p.body" />
+        <Markdown :source="p.body" /><button v-if="canContribute" class="text-action capture-source" @click="captureKey = `position:${p.id}`">＋ Capture in brief</button><button v-if="isLead && canContribute" class="text-action consider-source" :disabled="busy || considered(`position:${p.id}`)" @click="consider(`position:${p.id}`)">{{ considered(`position:${p.id}`) ? '✓ Considered' : 'Mark considered' }}</button>
         <div class="support-row"><div class="row"><button class="support-button" :class="{ selected: myVote(p.id) === 1 }" :aria-pressed="myVote(p.id) === 1" :disabled="!canContribute || busy" aria-label="Support this approach" @click="vote(p.id, 1)">↑ Support {{ tally.rawUp }}</button><button class="support-button" :class="{ opposed: myVote(p.id) === -1 }" :aria-pressed="myVote(p.id) === -1" :disabled="!canContribute || busy" aria-label="Oppose this approach" @click="vote(p.id, -1)">↓ {{ tally.rawDown }}</button></div><span class="small muted">{{ signed(tally.weightedScore) }} weighted</span></div>
-        <div v-for="c in bundle.comments.filter(c => c.positionId === p.id)" :key="c.id" class="workspace-comment"><span class="comment-avatar">{{ name(c.authorId).slice(0, 1) }}</span><div><strong>{{ name(c.authorId) }}</strong><Markdown :source="c.body" /></div></div>
+        <div v-for="c in bundle.comments.filter(c => c.positionId === p.id)" :key="c.id" class="workspace-comment"><span class="comment-avatar">{{ name(c.authorId).slice(0, 1) }}</span><div><strong>{{ name(c.authorId) }}</strong><Markdown :source="c.body" /><button v-if="canContribute" class="text-action capture-source" @click="captureKey = `comment:${c.id}`">＋ Capture in brief</button><button v-if="isLead && canContribute" class="text-action consider-source" :disabled="busy || considered(`comment:${c.id}`)" @click="consider(`comment:${c.id}`)">{{ considered(`comment:${c.id}`) ? '✓ Considered' : 'Mark considered' }}</button></div></div>
         <form v-if="canContribute" class="workspace-comment-form" @submit.prevent="comment(p.id)"><label :for="`reply-${p.id}`" class="sr-only">Reply to {{ positionTitle(p.body) }}</label><input :id="`reply-${p.id}`" v-model="comments[p.id]" type="text" placeholder="Add a question, constraint, or evidence…" required /><button class="btn btn-ghost" :disabled="busy || !comments[p.id]?.trim()">Reply</button></form>
       </div>
     </details>
     <form v-if="canContribute" class="new-approach" @submit.prevent="post"><label for="approach-draft"><strong>What would you change?</strong><span>You don’t need a complete specification to contribute.</span></label><textarea id="approach-draft" v-model="draft" placeholder="Suggest an approach. Explain the trade-off, or share something you’ve learned." required /><div class="spread"><button type="button" class="text-action" :disabled="busy" :aria-pressed="builder" @click="write(() => backend.setBuilderIntent({ threadId: bundle.thread.id, on: !builder }))">{{ builder ? '✓ I can help build this' : '+ I can help build this' }}</button><button class="btn" :disabled="busy || !draft.trim()">Add an approach →</button></div></form>
     <p v-else-if="!state.me" class="context-note">Choose a demo persona above to contribute.</p>
     <details class="weight-disclosure"><summary>How support is weighted<template v-if="myWeight"> · your vote counts {{ myWeight.total }}</template></summary><WeightBox v-if="myWeight" :breakdown="myWeight" /><p v-else class="small">Votes combine token holdings, relevant expertise, builder intent, and project role.</p><p class="small muted">Support informs the lead’s decision; it does not make it automatically.</p></details>
+    </div><WorkingBrief :bundle="bundle" :project="project" :capture-key="captureKey" @captured="captureKey = ''" /></div>
     <details v-if="isLead && open" class="lead-disclosure"><summary>Lead decision <span>Adopt, draft a grant, defer, or decline</span></summary><ResolvePanel :bundle="bundle" :analysis="analysis" :project="project" @done="emit('review')" /></details>
   </article>
 </template>

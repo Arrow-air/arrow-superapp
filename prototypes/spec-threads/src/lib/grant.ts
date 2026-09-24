@@ -95,7 +95,7 @@ export function grantMarkdown(args: {
   if (grant.contributorIds.length) lines.push(`**Also contributed:** ${grant.contributorIds.map(handle).join(', ')}`);
   lines.push('', grant.scope.trim());
   if (grant.constraints.length) {
-    lines.push('', '## Interfaces and constraints (from the discussion)', '', ...grant.constraints.map((c) => `- ${c}`));
+    lines.push('', grant.briefSnapshot ? '## Accepted requirements (editable grant copy)' : '## Interfaces and constraints (from the discussion)', '', ...grant.constraints.map((c) => `- ${c}`));
   }
   if (grant.overrideRationale) {
     lines.push('', '## Why the lead chose this over the top-voted position', '', grant.overrideRationale.trim());
@@ -106,10 +106,9 @@ export function grantMarkdown(args: {
     '',
     `- Grant amount: _TBD_`,
     `- Proposer award: **${pct}%** of the grant to ${grant.proposerIds.map(handle).join(', ')} for writing the spec`,
-    '',
-    '## Deliverables',
-    '',
-    '- [ ] _Fill in from the spec above_',
+    ...(grant.briefSnapshot ? [] : ['', '## Deliverables', '', '- [ ] _Fill in from the spec above_']),
   );
-  return lines.join('\n');
+  const markdown = lines.join('\n');
+  // Exported source links must still reach the workspace from a GitHub issue.
+  return typeof window === 'undefined' ? markdown : markdown.replaceAll('](#/p/', `](${window.location.origin}${window.location.pathname}#/p/`);
 }

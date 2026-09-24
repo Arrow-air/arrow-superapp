@@ -1,5 +1,6 @@
 // Real-browser coverage of the project workspace's contribution → decision → freeze flow.
 // Run against `npm run preview -- --port 4185`; browser state is isolated and discarded.
+const { approveBrief } = require('./brief-helper.cjs');
 const { chromium } = require('playwright-core');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -81,6 +82,10 @@ function check(name, condition) { assert.ok(condition, name); console.log('PASS 
     await row.locator('.resolve-form button[type=submit]').click();
     await row.waitFor({ state: 'detached' });
     check('declined work leaves the review queue', true);
+    await go('/p/spearhead?view=shape&thread=n-engine');
+    await page.waitForSelector('.working-brief');
+    await approveBrief(page);
+    await review();
     row = await openDecision('Gasoline engine', 'grant');
     await row.locator('.resolve-form button[type=submit]').click();
     await page.waitForSelector('.grant-card');
@@ -116,6 +121,12 @@ function check(name, condition) { assert.ok(condition, name); console.log('PASS 
     await page.waitForSelector('h2:has-text("PT2 is ready for the next chapter")');
     check('freeze keeps the completed PT2 review visible', await page.getByLabel('Review version').inputValue() === 'sh-pt2');
     check('next contributions now target PT3', ((await page.locator('.version-timeline').innerText()).replace(/\s+/g, ' ')).includes('PT3'));
+    await page.locator('.grant-card').click();
+    await page.waitForSelector('.brief-snapshot');
+    await page.locator('.brief-snapshot > summary').click();
+    await page.locator('.brief-snapshot a[href*="source=position%3As-kill"]').first().click();
+    await page.waitForSelector('.brief-source-card.source-selected[open]');
+    check('grant source links still reach frozen PT2 after PT3 opens', await page.getByLabel('Review version').inputValue() === 'sh-pt2');
     await page.getByLabel('Review version').selectOption('sh-pt3');
     await page.getByRole('button', { name: 'Shape PT3', exact: false }).click();
     await page.waitForSelector('.discussion-title:has-text("Payload bay")');

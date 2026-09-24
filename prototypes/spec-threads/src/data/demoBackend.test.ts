@@ -1,3 +1,4 @@
+import { approveEngineBrief } from './briefTestSupport';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { analyzeThread } from '../lib/analyze';
 import { NotSignedInError } from './backend';
@@ -111,6 +112,7 @@ describe('DemoBackend', () => {
     await b.actAs('m-omar');
     await expect(b.freezeVersion({ projectId: 'spearhead', versionId: 'sh-pt2' })).rejects.toThrow(/3 threads are still open/);
 
+    await approveEngineBrief(b);
     // 1. Engine PCB -> grant, from the weighted top position: no rationale needed.
     const engine = await b.resolveThread({ threadId: 'n-engine', kind: 'grant', positionId: 's-ecu' });
     expect(engine.status).toBe('resolved');
@@ -118,8 +120,8 @@ describe('DemoBackend', () => {
     const grants = await b.listGrants();
     expect(grants).toHaveLength(1);
     expect(grants[0]).toMatchObject({ threadId: 'n-engine', proposerIds: ['m-jun'], proposerShare: 0.25, status: 'draft' });
-    expect(grants[0].contributorIds.sort()).toEqual(['m-omar', 'm-rosa']);
-    expect(grants[0].constraints.some((c) => /12 kHz/.test(c))).toBe(true);
+    expect(grants[0].contributorIds.sort()).toEqual(['m-omar', 'm-rosa', 'm-sam']);
+    expect(grants[0].constraints.some((c) => /hardware engine-kill/.test(c))).toBe(true);
     await expect(b.castVote({ positionId: 's-ecu', value: 1 })).rejects.toThrow(/closed/);
     await expect(b.createPosition({ threadId: 'n-engine', body: 'late' })).rejects.toThrow(/closed/);
     await expect(b.resolveThread({ threadId: 'n-engine', kind: 'reject', note: 'A perfectly good reason written out.' })).rejects.toThrow(/already/);
@@ -159,6 +161,7 @@ describe('DemoBackend', () => {
 
   it('grant drafts are editable by the lead until published', async () => {
     await b.actAs('m-omar');
+    await approveEngineBrief(b);
     await b.resolveThread({ threadId: 'n-engine', kind: 'grant', positionId: 's-ecu', proposerShare: 0.3 });
     const g = (await b.listGrants())[0];
     expect(g.proposerShare).toBe(0.3);

@@ -2,6 +2,8 @@
 
 2026-09-23 · `project-workspace-v1` · based on `spec-threads-v2`
 
+**Follow-up:** `working-brief-v1` implements the source-linked brief proposed below. See [WORKING-BRIEF.md](WORKING-BRIEF.md) for current behavior; the original concept and its original limits are preserved here.
+
 ## The product, in one sentence
 
 Understand the aircraft, help shape its next version, and see those contributions become a design and work somebody can take on.
