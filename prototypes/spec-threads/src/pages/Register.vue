@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // The decision register: what is settled, per project and version. The newcomer's
 // "what's decided?" view from ideas/decision-register.md. Threads promoted to spec land here.
+import Markdown from '../components/Markdown.vue';
 import { computed, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
 import { backend, handleOf, projectById, state, versionOf } from '../data/store';
@@ -41,8 +42,7 @@ const groups = computed(() => {
     <div>
       <h1 style="border: 0; margin: 0; padding: 0">Decision register</h1>
       <p class="muted" style="margin: 6px 0 0; max-width: 720px">
-        What is settled. Each entry is a thread the lead promoted to a specification or requirement, with the position chosen,
-        the tallies at the time, and the lead's rationale if the choice went against the weighted vote.
+        Adopted design decisions, grouped by project and version. Work packages are tracked separately; a discussion can produce both.
       </p>
     </div>
   </div>
@@ -69,11 +69,11 @@ const groups = computed(() => {
             <td><span class="chip chip-version">{{ versionOf(d.projectId, d.versionId)?.name ?? '?' }}</span></td>
             <td><RouterLink :to="{ name: 'thread', params: { id: d.threadId } }">{{ d.question }}</RouterLink></td>
             <td>
-              <b>{{ d.chosen }}</b>
+              <b>{{ d.chosen }}</b><details v-if="d.outcomeSnapshot"><summary>Read adopted document</summary><Markdown :source="d.outcomeSnapshot.body" /></details>
               <div v-if="d.rationale" class="small muted" style="margin-top: 4px"><span class="label">lead's rationale</span> {{ d.rationale }}</div>
             </td>
             <td>
-              <span v-if="d.weightedRankAtDecision === 1" class="chip chip-open">weighted top</span>
+              <span v-if="d.outcomeSnapshot" class="chip chip-open">Reviewed synthesis</span><span v-else-if="d.weightedRankAtDecision === 1" class="chip chip-open">weighted top</span>
               <span v-else class="chip chip-warn">overrode (rank {{ d.weightedRankAtDecision }})</span>
             </td>
             <td class="mono small">@{{ handleOf(d.byMemberId) }}</td>

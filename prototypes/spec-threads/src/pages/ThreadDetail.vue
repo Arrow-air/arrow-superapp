@@ -48,7 +48,7 @@ const analysis = computed(() =>
 
 const isOpen = computed(() => bundle.value?.thread.status === 'open');
 const resolution = computed(() => bundle.value?.thread.resolution);
-const chosenId = computed(() => (resolution.value && resolution.value.kind !== 'reject' ? resolution.value.positionId : undefined));
+const chosenId = computed(() => (resolution.value && (resolution.value.kind === 'spec' || resolution.value.kind === 'grant') ? resolution.value.positionId : undefined));
 const myRole = computed(() => (project.value ? myRoleOn(project.value.id) : undefined));
 const iAmLead = computed(() => canResolve(myRole.value));
 const myWeight = computed(() => (state.me ? analysis.value?.weights.get(state.me.id) : undefined));
@@ -208,7 +208,7 @@ const voteHint = (dir: 'Upvote' | 'Downvote') =>
               <div class="label">{{ RESOLUTION_LABEL[resolution.kind] }} <DiscussPin v-if="resolution.kind === 'grant'" anchor="bounty" class="pin-inline" /></div>
               <div style="margin-top: 4px">
                 by @{{ handleOf(resolution.byMemberId) }}, {{ resolution.at.slice(0, 10) }}
-                <template v-if="resolution.kind !== 'reject'">
+                <template v-if="(resolution.kind === 'spec' || resolution.kind === 'grant')">
                   · weighted rank <b>{{ resolution.weightedRankAtResolution }}</b> · raw rank <b>{{ resolution.rawRankAtResolution }}</b>
                 </template>
               </div>
@@ -218,11 +218,12 @@ const voteHint = (dir: 'Upvote' | 'Downvote') =>
               <RouterLink v-if="resolution.kind === 'grant'" :to="{ name: 'grant', params: { id: resolution.grantId } }" class="btn">Open the grant draft</RouterLink>
             </div>
           </div>
+          <div v-if="resolution.kind === 'conclude'"><Markdown :source="resolution.snapshot.body" /><RouterLink :to="{ name: 'project', params: { id: bundle.thread.projectId }, query: { view: 'shape', thread: bundle.thread.id, version: bundle.thread.versionId, tab: 'draft' } }">Read the outcome and linked work →</RouterLink></div>
           <div v-if="resolution.kind === 'reject'" class="signal signal-neutral">
             <span class="label">Why</span>
             <div style="margin-top: 4px">{{ resolution.note }}</div>
           </div>
-          <div v-else-if="resolution.overrideRationale" class="signal signal-neutral">
+          <div v-else-if="(resolution.kind === 'spec' || resolution.kind === 'grant') && resolution.overrideRationale" class="signal signal-neutral">
             <span class="label">Lead's rationale for not picking the top weighted position</span>
             <div style="margin-top: 4px">{{ resolution.overrideRationale }}</div>
           </div>

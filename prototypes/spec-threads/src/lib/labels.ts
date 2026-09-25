@@ -4,6 +4,7 @@
 import type { ResolutionKind, Thread, VersionState } from './types';
 
 export const RESOLUTION_LABEL: Record<ResolutionKind, string> = {
+  conclude: 'concluded',
   reject: 'rejected',
   spec: 'promoted to spec',
   grant: 'turned into a grant',
@@ -11,6 +12,7 @@ export const RESOLUTION_LABEL: Record<ResolutionKind, string> = {
 };
 
 export const RESOLUTION_VERB: Record<ResolutionKind, string> = {
+  conclude: 'Record outcome',
   reject: 'Reject',
   spec: 'Promote to spec',
   grant: 'Turn into a grant',
@@ -18,6 +20,7 @@ export const RESOLUTION_VERB: Record<ResolutionKind, string> = {
 };
 
 export const RESOLUTION_CHIP: Record<ResolutionKind, string> = {
+  conclude: 'chip-spec',
   reject: 'chip-reject',
   spec: 'chip-spec',
   grant: 'chip-grant',

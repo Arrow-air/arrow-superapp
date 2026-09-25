@@ -53,9 +53,9 @@ const overrides = computed(() => chosen.value.filter((r) => r.a.leadFollowedWeig
 const totalVoters = computed(() => new Set(bundles.value.flatMap((b) => b.votes.map((v) => v.memberId))).size);
 const positionAuthors = computed(() => new Set(bundles.value.flatMap((b) => b.positions.map((s) => s.authorId))).size);
 
-const KINDS: ResolutionKind[] = ['reject', 'spec', 'grant', 'defer'];
+const KINDS: ResolutionKind[] = ['conclude', 'reject', 'spec', 'grant', 'defer'];
 const byKind = computed(() => {
-  const counts: Record<ResolutionKind, number> = { reject: 0, spec: 0, grant: 0, defer: 0 };
+  const counts: Record<ResolutionKind, number> = { conclude: 0, reject: 0, spec: 0, grant: 0, defer: 0 };
   for (const b of bundles.value) {
     if (b.thread.resolution) counts[b.thread.resolution.kind] += 1;
     counts.defer += b.thread.deferrals.length;
@@ -205,10 +205,10 @@ const weightTable = computed(() =>
       <p class="muted small">Where a lead chose against the weighted result, in their words. Raw material for open question Q2.</p>
       <div v-for="r in overrides" :key="r.bundle.thread.id" class="card" style="margin-top: 10px">
         <RouterLink :to="{ name: 'thread', params: { id: r.bundle.thread.id } }"><strong>{{ r.bundle.thread.title }}</strong></RouterLink>
-        <div v-if="r.bundle.thread.resolution && r.bundle.thread.resolution.kind !== 'reject'" class="small muted">
+        <div v-if="r.bundle.thread.resolution && (r.bundle.thread.resolution.kind === 'spec' || r.bundle.thread.resolution.kind === 'grant')" class="small muted">
           {{ RESOLUTION_LABEL[r.bundle.thread.resolution.kind] }} · picked weighted rank {{ r.bundle.thread.resolution.weightedRankAtResolution }}, raw rank {{ r.bundle.thread.resolution.rawRankAtResolution }}
         </div>
-        <p v-if="r.bundle.thread.resolution && r.bundle.thread.resolution.kind !== 'reject'" style="margin-bottom: 0">{{ r.bundle.thread.resolution.overrideRationale }}</p>
+        <p v-if="r.bundle.thread.resolution && (r.bundle.thread.resolution.kind === 'spec' || r.bundle.thread.resolution.kind === 'grant')" style="margin-bottom: 0">{{ r.bundle.thread.resolution.overrideRationale }}</p>
       </div>
     </section>
 

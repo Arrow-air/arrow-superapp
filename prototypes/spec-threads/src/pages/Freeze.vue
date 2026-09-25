@@ -82,8 +82,7 @@ async function freeze() {
       <div>
         <h1 style="border: 0; margin: 6px 0 0; padding: 0">Freeze {{ version.name }}</h1>
         <p class="muted" style="margin: 6px 0 0; max-width: 720px">
-          Every thread addressed to {{ version.name }} ends one of four ways: rejected with a line of why, promoted to a spec in the register,
-          turned into a grant draft, or deferred to {{ nextName ?? 'the next version' }}. Nothing stays half-open across a freeze.
+          Every discussion addressed to {{ version.name }} needs an outcome or a deferral. Review a draft, then decide independently whether to adopt a design change or commission work. Declined changes keep their reasoning; deferred discussions continue in {{ nextName ?? 'the next version' }}. Nothing stays half-open across a freeze.
         </p>
       </div>
     </div>
@@ -153,7 +152,7 @@ async function freeze() {
             <div class="row" style="gap: 6px">
               <span class="chip" :class="RESOLUTION_CHIP[t.resolution!.kind]">{{ RESOLUTION_LABEL[t.resolution!.kind] }}</span>
               <span v-if="t.system" class="chip chip-system">{{ t.system }}</span>
-              <span v-if="t.resolution!.kind !== 'reject' && t.resolution!.weightedRankAtResolution !== 1" class="chip chip-warn">lead overrode</span>
+              <span v-if="(t.resolution!.kind === 'spec' || t.resolution!.kind === 'grant') && t.resolution!.weightedRankAtResolution !== 1" class="chip chip-warn">lead overrode</span>
             </div>
             <div class="thread-title">{{ t.title }}</div>
             <div class="small muted">

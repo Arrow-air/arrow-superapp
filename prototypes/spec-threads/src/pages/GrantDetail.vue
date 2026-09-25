@@ -4,6 +4,7 @@ import { computed, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
 import Markdown from '../components/Markdown.vue';
 import { act, backend, handleOf, memberById, myRoleOn, projectById, state, versionOf } from '../data/store';
+import { outcomeMarkdown } from '../lib/outcome';
 import { briefMarkdown } from '../lib/brief';
 import { grantMarkdown } from '../lib/grant';
 import { percent } from '../lib/labels';
@@ -93,7 +94,7 @@ async function copy() {
 
 const issueUrl = computed(() => {
   if (!preview.value) return '';
-  const q = new URLSearchParams({ title: `Grant: ${preview.value.title}`, body: markdown.value });
+  const q = new URLSearchParams({ title: `${preview.value.workKind === 'bounty' ? 'Bounty' : 'Grant'}: ${preview.value.title}`, body: markdown.value });
   return `https://github.com/Arrow-air/grant-and-bounties/issues/new?${q.toString()}`;
 });
 </script>
@@ -115,9 +116,11 @@ const issueUrl = computed(() => {
     <h1 style="margin-bottom: 6px">{{ title }}</h1>
     <p class="small muted" style="margin-top: 0">
       From thread <RouterLink :to="embedded ? { name: 'project', params: { id: project.id }, query: { view: 'shape', version: grant.versionId, thread: grant.threadId } } : { name: 'thread', params: { id: grant.threadId } }">{{ grant.title }}</RouterLink> ·
-      promoted by @{{ handleOf(grant.byMemberId) }} · weighted rank {{ grant.weightedRankAtResolution }}, raw rank {{ grant.rawRankAtResolution }} at promotion
+      prepared by @{{ handleOf(grant.byMemberId) }} <template v-if="!grant.outcomeSnapshot">· weighted rank {{ grant.weightedRankAtResolution }}, raw rank {{ grant.rawRankAtResolution }} at promotion</template>
     </p>
 
+    <div v-if="grant.outcomeSnapshot" class="context-note"><strong>{{ grant.workKind === 'bounty' ? 'Bounty' : 'Grant' }} · {{ grant.workPurpose === 'research' ? 'Research / investigation' : 'Implementation' }}</strong><p>{{ grant.decisionIds?.length ? 'Linked to the adopted design decision. Work scope can be edited separately.' : 'This work does not imply an adopted design. Its results may inform a later decision.' }}</p><RouterLink :to="{ name: 'project', params: { id: project.id }, query: { view: 'shape', thread: grant.threadId, version: grant.versionId, tab: 'draft' } }">Read the recorded outcome →</RouterLink></div>
+    <details v-if="grant.outcomeSnapshot" class="brief-snapshot outcome-snapshot"><summary>Reviewed source document · r{{ grant.outcomeSnapshot.revision }}</summary><p>This record stays unchanged when the work scope is edited.</p><Markdown :source="outcomeMarkdown(grant.outcomeSnapshot, project.id)" /></details>
     <details v-if="grant.briefSnapshot" class="brief-snapshot">
       <summary>Approved source brief · r{{ grant.briefSnapshot.approval.revision }} · @{{ handleOf(grant.briefSnapshot.approval.byMemberId) }}</summary>
       <p>This snapshot is immutable. The editable grant below may diverge; compare it before publishing.</p>
@@ -128,7 +131,7 @@ const issueUrl = computed(() => {
         <div class="card stack">
           <div class="spread" style="align-items: center">
             <strong>{{ canEdit ? 'Edit the draft' : grant.status === 'draft' ? 'Draft (only the lead edits it)' : 'Published' }}</strong>
-            <span v-if="canEdit" class="small muted">{{ grant.briefSnapshot ? 'From an approved, source-linked working brief. Later edits do not change that snapshot.' : 'Legacy draft from one approach; it has no approved working brief.' }}</span>
+            <span v-if="canEdit" class="small muted">{{ grant.outcomeSnapshot ? 'A work package linked to a reviewed outcome, not a replacement for the design.' : grant.briefSnapshot ? 'From an approved, source-linked working brief. Later edits do not change that snapshot.' : 'Legacy draft from one approach; it has no approved working brief.' }}</span>
           </div>
           <label class="field-row">
             <span class="label">Title</span>
@@ -141,7 +144,7 @@ const issueUrl = computed(() => {
           <label class="field-row">
             <span class="label">Interfaces and constraints, one per line</span>
             <textarea v-model="constraints" style="min-height: 120px" :disabled="!canEdit" />
-            <div class="hint">{{ grant.briefSnapshot ? 'Accepted requirements from the reviewed brief—not automatically extracted suggestions.' : 'Legacy extraction from the chosen position and its comments.' }}</div>
+            <div class="hint">{{ grant.outcomeSnapshot ? 'Optional work-specific constraints. The recorded design remains linked above.' : grant.briefSnapshot ? 'Accepted requirements from the reviewed brief—not automatically extracted suggestions.' : 'Legacy extraction from the chosen position and its comments.' }}</div>
           </label>
           <label class="field-row" style="max-width: 360px">
             <span class="label">Proposer award</span>
@@ -157,7 +160,7 @@ const issueUrl = computed(() => {
           </div>
           <div v-if="canEdit" class="row">
             <button class="btn" :disabled="!dirty" @click="save">Save draft</button>
-            <button class="btn btn-ghost" @click="publish">Publish</button>
+            <button class="btn btn-ghost" @click="publish">Mark published in demo</button>
             <span v-if="saved" class="small" style="color: var(--status-success-text)">Saved.</span>
           </div>
         </div>
@@ -180,8 +183,8 @@ const issueUrl = computed(() => {
           <div style="margin-top: 8px"><Markdown :source="markdown" /></div>
         </div>
         <div class="card small">
-          <div class="label">Proposer award</div>
-          <p style="margin: 6px 0 0">
+          <div class="label">Proposer award · provisional</div>
+          <p v-if="grant.outcomeSnapshot" style="margin: 6px 0 0">No automatic allocation. The discussion authors are credited; the lead must review any reward allocation separately.</p><p v-else style="margin: 6px 0 0">
             <b>{{ percent(sharePercent / 100) }}</b> of whatever this grant is funded at goes to the people who wrote the idea. Writing the spec was the work.
             Whether the draft is good enough as written, or the proposer is paid to finish it, is open question Q30.
           </p>

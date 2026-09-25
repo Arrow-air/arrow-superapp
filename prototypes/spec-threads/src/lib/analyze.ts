@@ -50,7 +50,7 @@ export function analyzeThread(args: {
     weightFor: (id) => weights.get(id)?.total ?? project.weights.base,
   });
   const res = bundle.thread.resolution;
-  const chosen = res && res.kind !== 'reject' ? res : undefined;
+  const chosen = res && (res.kind === 'spec' || res.kind === 'grant') ? res : undefined;
   return {
     weights,
     tallies,

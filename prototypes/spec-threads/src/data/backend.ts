@@ -23,6 +23,7 @@ export interface ThreadBundle {
   intents: BuilderIntent[];
   comments: Comment[];
   brief?: WorkingBrief;
+  draft?: import('../lib/types').OutcomeDraft;
 }
 
 export type BriefAction =
@@ -68,6 +69,9 @@ export interface Backend {
   setBuilderIntent(input: { threadId: string; on: boolean }): Promise<void>;
   addComment(input: { positionId: string; body: string }): Promise<Comment>;
   changeBrief(input: { threadId: string; expectedRevision: number; action: BriefAction }): Promise<WorkingBrief>;
+  saveOutcome(input: { threadId: string; expectedRevision: number; body: string; openQuestions: string }): Promise<import('../lib/types').OutcomeDraft>;
+  concludeThread(input: { threadId: string; expectedRevision: number; expectedCorpus: string; adopt: boolean; work?: import('../lib/types').WorkInput }): Promise<Thread>;
+  createWork(input: { threadId: string; work: import('../lib/types').WorkInput }): Promise<Grant>;
   /** Lead only. Reject, promote to spec, turn into a grant draft, or defer to a later version. */
   resolveThread(input: ResolveInput): Promise<Thread>;
   /** Lead only. Edit a grant draft before it is published. */

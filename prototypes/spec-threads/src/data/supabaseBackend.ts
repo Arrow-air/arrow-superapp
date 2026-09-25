@@ -240,6 +240,9 @@ export class SupabaseBackend implements Backend {
     return toComment(row as Row);
   }
 
+  async saveOutcome(): Promise<import('../lib/types').OutcomeDraft> { throw new Error(NOT_V2); }
+  async concludeThread(): Promise<Thread> { throw new Error(NOT_V2); }
+  async createWork(): Promise<Grant> { throw new Error(NOT_V2); }
   async changeBrief(): Promise<import('../lib/types').WorkingBrief> { throw new Error(NOT_V2); }
 
   async resolveThread(_input: ResolveInput): Promise<Thread> {

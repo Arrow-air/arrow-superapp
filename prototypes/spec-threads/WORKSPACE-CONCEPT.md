@@ -1,5 +1,7 @@
 # Project workspace — first concept
 
+> Historical prototype. The current interaction is documented in [CONVERSATION-DRAFT.md](CONVERSATION-DRAFT.md).
+
 2026-09-23 · `project-workspace-v1` · based on `spec-threads-v2`
 
 **Follow-up:** `working-brief-v1` implements the source-linked brief proposed below. See [WORKING-BRIEF.md](WORKING-BRIEF.md) for current behavior; the original concept and its original limits are preserved here.

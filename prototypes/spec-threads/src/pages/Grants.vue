@@ -31,10 +31,9 @@ const rows = computed(() => grants.value.filter((g) => !project.value || g.proje
 <template>
   <div class="page-header spread">
     <div>
-      <h1 style="border: 0; margin: 0; padding: 0">Grants <DiscussPin anchor="bounty" class="pin-inline" /></h1>
+      <h1 style="border: 0; margin: 0; padding: 0">Grants & bounties <DiscussPin anchor="bounty" class="pin-inline" /></h1>
       <p class="muted" style="margin: 6px 0 0; max-width: 720px">
-        Drafted from threads at the freeze. The discussion wrote the spec; the draft carries it, the constraints people named,
-        and a proposer award for whoever wrote the idea. A human edits it before it is real. No tokens move here.
+        Work packages linked to reviewed discussion outcomes. Some implement a design; others investigate a question before a design can be adopted. No tokens move here.
       </p>
     </div>
   </div>
@@ -59,7 +58,7 @@ const rows = computed(() => grants.value.filter((g) => !project.value || g.proje
           <span v-if="g.overrideRationale" class="chip chip-warn">lead overrode</span>
         </div>
         <div class="thread-title">{{ g.title }}</div>
-        <div class="small muted">
+        <div v-if="g.outcomeSnapshot" class="small muted">{{ g.workKind }} · {{ g.workPurpose }} · {{ g.status }} · funding not set</div><div v-else class="small muted">
           proposer award <b>{{ percent(g.proposerShare) }}</b> to {{ g.proposerIds.map((id) => '@' + handleOf(id)).join(', ') }}
           · {{ g.constraints.length }} constraints · promoted by @{{ handleOf(g.byMemberId) }} {{ g.createdAt.slice(0, 10) }}
         </div>

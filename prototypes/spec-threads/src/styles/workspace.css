@@ -296,3 +296,43 @@ button:disabled { cursor: not-allowed; }
 .brief-decision input { width: 100%; box-sizing: border-box; }
 .consider-source { font-size: 10px; margin-left: 12px; }
 .consider-source:disabled { color: #6b8877; cursor: default; }
+
+/* Conversation → one full-width document. No item-curation sidebar. */
+.discussion-tabs { display: flex; gap: 28px; border-bottom: 1px solid #dce4ed; margin: 22px 0 26px; }
+.discussion-tabs button { padding: 14px 0; background: none; border: 0; border-bottom: 2px solid transparent; color: #64758c; font-size: 14px; font-weight: 550; }
+.discussion-tabs button.active { color: #2454b8; border-color: #2454b8; }
+.discussion-tabs button span { font-size: 11px; margin-left: 8px; color: #78899d; }
+.draft-summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid #dce4ed; background: #f6f8fb; border-radius: 6px; padding: 18px; margin: 22px 0; }
+.draft-summary strong { font-size: 13px; color: #425b76; }
+.draft-summary p { font-size: 12px; margin: 7px 0 0; color: #65778d; }
+.outcome-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+.project-workspace .outcome-heading h3 { font-size: 28px; font-weight: 550; margin: 10px 0; letter-spacing: -.035em; }
+.outcome-intro { font-size: 13px; color: #64758a; line-height: 1.8; max-width: 70ch; }
+.outcome-document { padding: 22px 0; max-width: 82ch; overflow-wrap: anywhere; }
+.outcome-document .md { font-size: 15px; line-height: 1.9; color: #344c63; }
+.outcome-document .md h2 { font-size: 20px; margin: 30px 0 14px; }
+.outcome-document .md li { margin: 14px 0; }
+.outcome-editor { margin: 22px 0; }
+.outcome-editor textarea[aria-label="Draft document"] { min-height: 430px; font: 14px/1.8 var(--font-sans); }
+.outcome-editor textarea[aria-label="Unresolved questions"] { min-height: 95px; font: 14px/1.8 var(--font-sans); }
+.outcome-sources { border-top: 1px solid #dce4ed; padding-top: 15px; margin: 22px 0; font-size: 12px; }
+.outcome-sources summary { cursor: pointer; color: #506a85; }
+.outcome-sources > details { padding: 16px; margin: 12px 0; border: 1px solid #dce4ed; border-radius: 5px; }
+.draft-feedback { border-top: 1px solid #dce4ed; margin: 30px 0; padding-top: 22px; }
+.draft-feedback textarea { min-height: 85px; font-family: var(--font-sans); }
+.outcome-review { border: 1px solid #d6e1ed; padding: 25px; margin: 30px 0 0; background: #f7f9fc; border-radius: 7px; }
+.outcome-review h4 { font-size: 19px; font-weight: 550; margin: 14px 0; color: #344c63; }
+.outcome-review p { font-size: 12px; line-height: 1.8; color: #64758a; }
+.outcome-choice { display: flex; gap: 12px; align-items: start; padding: 14px 0; font-size: 13px; cursor: pointer; }
+.outcome-choice input { width: 17px; height: 17px; margin: 2px 0 0; flex: 0 0 auto; }
+.outcome-choice small { display: block; margin-top: 6px; font-size: 12px; line-height: 1.7; color: #64758a; }
+.work-fields { border-top: 1px solid #dce4ed; border-bottom: 1px solid #dce4ed; padding: 20px 0; margin: 12px 0 20px; }
+.work-fields textarea { min-height: 110px; font: 14px/1.7 var(--font-sans); }
+.work-type-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.work-type-row select { width: 100%; }
+.review-ack { border-top: 1px solid #dce4ed; margin-top: 18px; padding: 20px 0; line-height: 1.7; }
+.outcome-result { display: flex; gap: 20px; flex-wrap: wrap; padding: 15px; background: #f0f7f1; color: #416f53; font-size: 13px; margin: 20px 0; border-radius: 5px; }
+.draft-empty { padding: 24px 0; font-size: 14px; line-height: 1.8; }
+.discussion-conversation .source-selected { outline: 2px solid #6d92d2; outline-offset: 6px; border-radius: 4px; scroll-margin-top: 30px; }
+@media (min-width: 1100px) { .change-workbench { grid-template-columns: 235px minmax(0, 1fr); } }
+@media (max-width: 760px) { .discussion-tabs { gap: 20px; } .discussion-tabs button { font-size: 12px; } .draft-summary { flex-wrap: wrap; gap: 12px; } .outcome-review { padding: 18px 14px; } .work-type-row { grid-template-columns: 1fr; gap: 12px; } .outcome-heading { gap: 8px; } .outcome-document .md { font-size: 14px; } }

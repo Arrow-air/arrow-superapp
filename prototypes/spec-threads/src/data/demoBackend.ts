@@ -7,6 +7,8 @@
 
 import { briefContent, briefIssues, briefMarkdown, corpusKey, discussionSources, emptyBrief, grantBriefIssues, snapshotBrief } from '../lib/brief';
 import type { BriefAction } from './backend';
+import { validateWork } from '../lib/outcome';
+import type { OutcomeDraft, OutcomeSnapshot, WorkInput } from '../lib/types';
 import type { WorkingBrief } from '../lib/types';
 import { analyzeThread, roleOf } from '../lib/analyze';
 import { deferThread, promoteToGrant, promoteToSpec, rejectThread } from '../lib/resolution';
@@ -88,6 +90,7 @@ export class DemoBackend implements Backend {
     const positionIds = new Set(positions.map((s) => s.id));
     return structuredClone({
       thread,
+      draft: this.state.drafts?.find(d => d.threadId === thread.id),
       brief: this.state.briefs.find(b => b.threadId === thread.id),
       positions,
       votes: this.state.votes.filter((v) => positionIds.has(v.positionId)),
@@ -302,6 +305,76 @@ export class DemoBackend implements Backend {
     this.state.briefs.push(brief);
     this.save();
     return structuredClone(brief);
+  }
+
+  async saveOutcome(input: { threadId: string; expectedRevision: number; body: string; openQuestions: string }): Promise<OutcomeDraft> {
+    const me = this.me(), thread = this.thread(input.threadId);
+    const version = versionById(this.project(thread.projectId), thread.versionId);
+    if (thread.status !== 'open' || !version || !['discussing', 'planned'].includes(version.state)) throw new Error('This discussion is closed to draft changes.');
+    const existing = this.state.drafts?.find(d => d.threadId === thread.id);
+    if ((existing?.revision ?? 0) !== input.expectedRevision) throw new Error('The draft changed. Reload to review the latest revision; your text has not been saved.');
+    if (existing && existing.authorId !== me.id) this.requireLead(thread.projectId, me);
+    if (!input.body.trim()) throw new Error('Write a draft outcome first.');
+    const at = new Date().toISOString(), revision = (existing?.revision ?? 0) + 1;
+    const content = { body: input.body.trim(), openQuestions: input.openQuestions.trim() };
+    const draft: OutcomeDraft = { ...content, threadId: thread.id, authorId: existing?.authorId ?? me.id, updatedBy: me.id, updatedAt: at, revision,
+      history: [...(existing?.history ?? []), { revision, byMemberId: me.id, at, content: structuredClone(content) }] };
+    this.state.drafts = [...(this.state.drafts ?? []).filter(d => d.threadId !== thread.id), draft];
+    this.save();
+    return structuredClone(draft);
+  }
+
+  private workFromOutcome(thread: Thread, snapshot: OutcomeSnapshot, work: WorkInput, me: Member, decisionId?: string): Grant {
+    validateWork(work);
+    if (snapshot.openQuestions.trim() && work.purpose !== 'research') throw new Error('Resolve open questions before commissioning implementation, or define research work to answer them.');
+    const at = new Date().toISOString();
+    const authors = [...new Set(snapshot.sources.map(s => s.authorId))];
+    return {
+      id: newId('g'), projectId: thread.projectId, versionId: snapshot.versionId, threadId: thread.id,
+      positionId: '', title: work.title.trim(), scope: `${work.scope.trim()}\n\n## Acceptance criteria\n\n${work.acceptance.trim()}`,
+      constraints: [], proposerIds: [thread.authorId], proposerShare: 0,
+      contributorIds: authors.filter(id => id !== thread.authorId),
+      weightedRankAtResolution: 0, rawRankAtResolution: 0,
+      byMemberId: me.id, createdAt: at, updatedAt: at, status: 'draft',
+      workKind: work.kind, workPurpose: work.purpose, decisionIds: decisionId ? [decisionId] : [], outcomeSnapshot: structuredClone(snapshot),
+    };
+  }
+
+  async concludeThread(input: { threadId: string; expectedRevision: number; expectedCorpus: string; adopt: boolean; work?: WorkInput }) {
+    const me = this.me(), thread = this.thread(input.threadId);
+    this.requireLead(thread.projectId, me);
+    const version = versionById(this.project(thread.projectId), thread.versionId);
+    if (thread.status !== 'open' || !version || !['discussing', 'planned'].includes(version.state)) throw new Error('This discussion is already closed.');
+    const bundle = this.bundle(thread), draft = bundle.draft;
+    if (!draft || draft.revision !== input.expectedRevision) throw new Error('Save and review the latest draft first.');
+    if (corpusKey(bundle) !== input.expectedCorpus) throw new Error('New discussion arrived. Read it before recording an outcome.');
+    if (input.adopt && draft.openQuestions.trim()) throw new Error('Resolve the open questions in the draft before adopting a design change. Research can proceed without adoption.');
+    const snapshot: OutcomeSnapshot = { body: draft.body, openQuestions: draft.openQuestions, revision: draft.revision, threadId: thread.id, versionId: thread.versionId,
+      byMemberId: me.id, at: new Date().toISOString(), sources: discussionSources(bundle) };
+    const decisionId = input.adopt ? newId('d') : undefined;
+    // Validate all requested outputs before committing any of them.
+    const grant = input.work ? this.workFromOutcome(thread, snapshot, input.work, me, decisionId) : undefined;
+    if (decisionId) this.state.decisions.push({
+      id: decisionId, projectId: thread.projectId, versionId: thread.versionId, threadId: thread.id, positionId: '',
+      question: thread.title, chosen: thread.title, rationale: 'Adopted from the reviewed discussion outcome.',
+      weightedRankAtDecision: 0, rawRankAtDecision: 0, byMemberId: me.id, at: snapshot.at, status: 'decided', outcomeSnapshot: structuredClone(snapshot),
+    });
+    if (grant) this.state.grants.push(grant);
+    thread.resolution = { kind: 'conclude', byMemberId: me.id, at: snapshot.at, snapshot, decisionId, grantIds: grant ? [grant.id] : [] };
+    thread.status = 'resolved';
+    this.save();
+    return structuredClone(thread);
+  }
+
+  async createWork(input: { threadId: string; work: WorkInput }) {
+    const me = this.me(), thread = this.thread(input.threadId);
+    this.requireLead(thread.projectId, me);
+    if (thread.resolution?.kind !== 'conclude') throw new Error('Record the discussion outcome before commissioning follow-on work.');
+    const grant = this.workFromOutcome(thread, thread.resolution.snapshot, input.work, me, thread.resolution.decisionId);
+    this.state.grants.push(grant);
+    thread.resolution.grantIds.push(grant.id);
+    this.save();
+    return structuredClone(grant);
   }
 
   async resolveThread(input: ResolveInput) {

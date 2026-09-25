@@ -40,6 +40,7 @@ export interface DemoState {
   decisions: Decision[];
   grants: Grant[];
   briefs: WorkingBrief[];
+  drafts?: import('../lib/types').OutcomeDraft[];
 }
 
 const t = (day: number, hour: number) => new Date(Date.UTC(2026, 8, day, hour)).toISOString();

@@ -1,0 +1,126 @@
+const { chromium } = require('playwright-core');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const BASE = process.env.BASE_URL || 'http://localhost:4187/';
+const SHOTS = '/tmp/arrow-conversation-review'; fs.mkdirSync(SHOTS, { recursive: true });
+let checks = 0;
+function check(name, condition) { assert.ok(condition, name); console.log('PASS '+name); checks++; }
+(async () => {
+ const browser = await chromium.launch({ channel: 'chrome', headless: true });
+ const context = await browser.newContext({ viewport: { width: 1440, height: 1050 } });
+ const page = await context.newPage(); const errors = [];
+ page.on('pageerror', e => errors.push(e.message));
+ const nav = page.getByRole('navigation', { name: 'Discussion and draft' });
+ const draftTab = async () => { await nav.getByRole('button', { name: /Draft outcome|Recorded outcome/ }).click(); await page.locator('.outcome-draft').waitFor({ state: 'visible' }); };
+ const conversation = async () => { await nav.getByRole('button', { name: /Discussion/ }).click(); };
+ const save = async (questions = '') => {
+   await page.getByRole('button', { name: 'Edit draft', exact: true }).click();
+   await page.getByLabel('Draft document', { exact: true }).fill('## Proposed design\n\nUse DroneCAN for engine telemetry and an independent hardware kill path.\n\n## Scope\n\nIllustrative bench design only; actual aircraft voltage qualification is outside this scope.\n\n[Independent path](#/p/spearhead?view=shape&thread=n-engine&version=sh-pt2&source=position%3As-kill)');
+   await page.getByLabel('Unresolved questions', { exact: true }).fill(questions);
+   await page.getByRole('button', { name: 'Save draft', exact: true }).click();
+   await page.getByText('Draft saved.', { exact: true }).waitFor();
+ };
+ const fillWork = async (purpose = 'implementation') => {
+   await page.getByLabel('Work format', { exact: true }).selectOption('bounty');
+   await page.getByLabel('Work purpose', { exact: true }).selectOption(purpose);
+   await page.getByLabel('Work title', { exact: true }).fill('Engine PCB bench prototype');
+   await page.getByLabel('Work scope', { exact: true }).fill('Produce schematic and interface documentation for the bench prototype.');
+   await page.getByLabel('Work acceptance criteria', { exact: true }).fill('Demonstrate independent shutdown with FC offline and record telemetry on the bench.');
+ };
+ try {
+   await page.goto(BASE+'#/p/spearhead?view=shape&thread=n-engine'); await page.locator('.discussion-tabs').waitFor();
+   check('conversation is the default view', await page.locator('.discussion-conversation').isVisible());
+   check('no brief item queue or capture actions remain', await page.getByText('Capture in brief').count() === 0 && await page.locator('.working-brief').count() === 0);
+   check('all approaches are readable in the one conversation', await page.locator('.approach[open]').count() === 3);
+   await page.screenshot({ path: SHOTS+'/discussion-desktop.png', fullPage: true });
+   await draftTab();
+   check('full-width document includes both contributors', (await page.locator('.outcome-document').innerText()).includes('DroneCAN') && (await page.locator('.outcome-document').innerText()).includes('hardware engine-kill'));
+   const box = await page.locator('.outcome-document').boundingBox(); check('document gets usable desktop width', box.width > 540);
+   await page.screenshot({ path: SHOTS+'/draft-desktop.png', fullPage: true });
+   await page.getByLabel('Demo persona').selectOption('m-ade');
+   await page.getByRole('button', { name: 'Edit draft', exact: true }).waitFor();
+   await save();
+   check('a contributor can prepare a single document', (await page.locator('.outcome-heading').innerText()).includes('r1'));
+   check('contributor has no lead approval controls', await page.getByRole('checkbox', { name: 'Adopt into the design' }).count() === 0);
+   await page.getByLabel('Demo persona').selectOption('m-jun');
+   await page.waitForFunction(() => document.querySelector('.outcome-draft').textContent.includes('Everyone can discuss it below.'));
+   check('other contributors review rather than create parallel items', await page.getByRole('button', { name: 'Edit draft', exact: true }).count() === 0);
+   await page.getByLabel('Feedback on draft', { exact: true }).fill('Please preserve the independent RC path when the FC resets.');
+   await page.getByRole('button', { name: 'Post to conversation' }).click();
+   await page.locator('.discussion-conversation').waitFor({ state: 'visible' });
+   check('draft feedback returns to the same conversation', (await page.locator('.discussion-conversation').innerText()).includes('Feedback on draft r1'));
+   await page.getByLabel('Demo persona').selectOption('m-omar'); await draftTab();
+   await page.getByRole('checkbox', { name: 'Adopt into the design' }).waitFor();
+   await page.getByRole('checkbox', { name: 'Adopt into the design' }).check();
+   await page.getByRole('checkbox', { name: 'Commission work' }).check(); await fillWork();
+   await page.getByRole('checkbox', { name: /I’ve reviewed/ }).check();
+   await conversation();
+   const reply = page.locator('.approach').first().locator('.workspace-comment-form');
+   await reply.locator('input').fill('New report: check the connector pinout before final layout.'); await reply.getByRole('button', { name: 'Reply', exact: true }).click();
+   await page.getByText('New report: check the connector pinout before final layout.', { exact: true }).waitFor();
+   await draftTab(); check('new discussion clears the review acknowledgement', !(await page.getByRole('checkbox', { name: /I’ve reviewed/ }).isChecked()));
+   check('cannot approve without renewed review', await page.getByRole('button', { name: 'Approve and record outcome' }).isDisabled());
+   await page.getByRole('checkbox', { name: /I’ve reviewed/ }).check();
+   await page.getByRole('button', { name: 'Approve and record outcome' }).click();
+   await page.getByText('What we concluded', { exact: true }).waitFor();
+   check('design and work are independent outputs of one review', (await page.locator('.outcome-result').innerText()).includes('Adopted into the design') && (await page.locator('.outcome-result').innerText()).includes('1 work draft'));
+   check('recorded document is read-only', await page.getByRole('button', { name: 'Edit draft', exact: true }).count() === 0);
+   await page.screenshot({ path: SHOTS+'/recorded-outcome.png', fullPage: true });
+   await page.getByRole('button', { name: 'Open work draft 1' }).click(); await page.locator('.workspace-grant').waitFor();
+   check('work remains a bounty draft linked to design', (await page.locator('.workspace-grant .context-note').innerText()).includes('Bounty') && (await page.locator('.workspace-grant .context-note').innerText()).includes('Linked'));
+   check('work includes explicit acceptance criteria', (await page.locator('.workspace-grant textarea').first().inputValue()).includes('Acceptance criteria'));
+   check('export preserves review and source links without invented rank', (await page.locator('.bounty-md').innerText()).includes('Reviewed discussion outcome') && !(await page.locator('.bounty-md').innerText()).includes('rank 0'));
+   await page.locator('.outcome-snapshot > summary').click();
+   await page.locator('.workspace-grant textarea').first().fill('Edited work scope.\n\n## Acceptance criteria\nBench test report.');
+   await page.getByRole('button', { name: 'Save draft', exact: true }).click(); await page.getByText('Saved.', { exact: true }).waitFor();
+   check('work edits do not overwrite reviewed design', (await page.locator('.outcome-snapshot').innerText()).includes('independent hardware kill path'));
+   await page.getByRole('link', { name: 'Read the recorded outcome' }).click(); await page.getByText('What we concluded', { exact: true }).waitFor();
+   await page.getByText('Commission follow-on work', { exact: true }).click(); await fillWork();
+   await page.getByLabel('Work title', { exact: true }).fill('Firmware integration');
+   await page.getByRole('button', { name: 'Create work draft', exact: true }).click(); await page.locator('.workspace-grant').waitFor();
+   check('another work package can follow the same design', (await page.locator('.workspace-grant h1').first().innerText()) === 'Firmware integration');
+   await page.getByRole('link', { name: 'Read the recorded outcome' }).click(); await page.getByText('2 work drafts', { exact: true }).waitFor();
+   await page.locator('.outcome-document a').click();
+   await page.locator('.source-selected').waitFor();
+   check('source links open the original contribution', (await page.locator('.source-selected').innerText()).includes('RC link'));
+   await page.reload(); await page.locator('.source-selected').waitFor(); check('source link survives reload', (await page.locator('.source-selected').innerText()).includes('RC link'));
+   // Resolve remaining PT2 threads by plain conclusion and deferral, then freeze.
+   await page.goto(BASE+'#/p/spearhead?view=shape&thread=n-avionics'); await draftTab();
+   await page.getByRole('button', { name: 'Start a draft' }).click(); await page.getByLabel('Draft document', { exact: true }).fill('No change needed for this version. Retain the current carrier architecture.');
+   await page.getByRole('button', { name: 'Save draft', exact: true }).click(); await page.getByText('Draft saved.', { exact: true }).waitFor();
+   await page.getByRole('checkbox', { name: /I’ve reviewed/ }).check(); await page.getByRole('button', { name: 'Record conclusion', exact: true }).click();
+   await page.getByText('Conclusion recorded · no design change', { exact: true }).waitFor();
+   check('plain conclusion requires no spec or work', (await page.locator('.outcome-result').innerText()).includes('0 work drafts'));
+   await page.getByRole('button', { name: 'Design review', exact: true }).click(); await page.locator('.review-queue').first().waitFor();
+   const remaining = page.locator('.review-change').filter({ has: page.getByRole('button', { name: 'Make a decision' }) }).first();
+   await remaining.getByRole('button', { name: 'Make a decision' }).click(); await page.getByRole('button', { name: 'Defer discussion', exact: true }).click();
+   await page.locator('.resolve-form').getByRole('button', { name: 'Defer discussion' }).click();
+   await page.waitForFunction(() => !document.querySelector('.review-change .btn'));
+   check('design review retains plain conclusions separately', (await page.locator('.review-queue').first().innerText()).includes('Conclusions without a design change'));
+   page.once('dialog', d => d.accept()); await page.getByRole('button', { name: 'Freeze PT2 design' }).click();
+   await page.getByText('PT2 is ready for the next chapter.', { exact: true }).waitFor();
+   check('freeze accepts the new outcome model', await page.getByRole('combobox', { name: 'Review version' }).inputValue() === 'sh-pt2');
+   await page.goto(BASE+'#/p/spearhead?view=shape&thread=n-engine&version=sh-pt2&tab=draft');
+   await page.getByText('What we concluded', { exact: true }).waitFor();
+   await page.locator('.outcome-document a').click(); await page.locator('.source-selected').waitFor();
+   check('source links retain the frozen version', page.url().includes('sh-pt2') && (await page.locator('.source-selected').innerText()).includes('RC link'));
+   for (const width of [1440, 1024, 768, 390]) {
+     await page.setViewportSize({ width, height: 1000 }); await draftTab();
+     check('no horizontal overflow at '+width, await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+     if (width === 390) await page.screenshot({ path: SHOTS+'/draft-mobile.png', fullPage: true });
+   }
+   // Fresh browser: research without adoption, with a genuinely unresolved question.
+   await context.clearCookies(); await page.evaluate(() => localStorage.clear());
+   await page.goto(BASE+'#/p/spearhead?view=shape&thread=n-engine&tab=draft'); await page.reload(); await page.locator('.outcome-document').waitFor();
+   await save('Measure the actual input-voltage envelope.');
+   await page.getByRole('checkbox', { name: 'Adopt into the design' }).check(); await page.getByRole('checkbox', { name: /I’ve reviewed/ }).check();
+   check('unresolved questions block design adoption', await page.getByRole('button', { name: 'Approve and record outcome' }).isDisabled());
+   await page.getByRole('checkbox', { name: 'Adopt into the design' }).uncheck(); await page.getByRole('checkbox', { name: 'Commission work' }).check(); await fillWork('research');
+   await page.getByRole('button', { name: 'Approve and record outcome' }).click(); await page.getByText('What we concluded', { exact: true }).waitFor();
+   check('research can proceed while design is undecided', (await page.locator('.outcome-result').innerText()).includes('no design change') && (await page.locator('.outcome-draft .context-note').innerText()).includes('input-voltage'));
+   await page.screenshot({ path: SHOTS+'/research-mobile.png', fullPage: true });
+   check('no browser runtime errors', errors.length === 0);
+   console.log(`${checks} conversation checks passed. Screenshots: ${SHOTS}`);
+ } catch (e) { await page.screenshot({ path: SHOTS+'/failure.png', fullPage: true }); console.error('Browser errors:', errors); throw e; }
+ finally { await browser.close(); }
+})();

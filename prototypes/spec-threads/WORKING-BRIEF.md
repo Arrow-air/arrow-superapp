@@ -1,5 +1,7 @@
 # Working brief — discussion → specification → grant
 
+> Historical prototype. The current interaction is documented in [CONVERSATION-DRAFT.md](CONVERSATION-DRAFT.md).
+
 2026-09-23 · `working-brief-v1` · follow-up to `project-workspace-v1`
 
 ## The product hypothesis

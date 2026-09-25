@@ -1,10 +1,7 @@
-// Domain types for the spec-thread experiment, v2.
-//
-// A Project has Versions. One is being built, one is being discussed. A Thread is a question
-// addressed to a version ("what does the engine PCB need for PT2?"). People reply with
-// Positions. Votes on positions are weighted. At the version freeze the lead resolves every
-// open thread one of four ways: reject, promote to spec (a Decision in the register), turn
-// into a Grant draft, or defer to the next version. See ROADMAP.md, "Next iteration".
+// Domain types for the browser-local coordination prototype.
+// One conversation → one draft document → a reviewed conclusion.
+// Design adoption and work commissioning are independent outputs. Legacy single-position
+// resolutions and item-based briefs remain readable for existing demo data.
 
 export type Role = 'lead' | 'core' | 'member';
 
@@ -106,7 +103,7 @@ export interface Comment {
   createdAt: string;
 }
 
-export type ResolutionKind = 'reject' | 'spec' | 'grant' | 'defer';
+export type ResolutionKind = 'reject' | 'spec' | 'grant' | 'defer' | 'conclude';
 
 interface ResolutionBase {
   byMemberId: string;
@@ -125,6 +122,7 @@ export interface ChosenPosition {
 }
 
 export type Resolution =
+  | (ResolutionBase & { kind: 'conclude'; snapshot: OutcomeSnapshot; decisionId?: string; grantIds: string[] })
   | (ResolutionBase & { kind: 'reject'; note: string })
   | (ResolutionBase & { kind: 'spec'; decisionId: string } & ChosenPosition)
   | (ResolutionBase & { kind: 'grant'; grantId: string } & ChosenPosition);
@@ -156,6 +154,7 @@ export interface Decision {
   at: string;
   status: 'decided' | 'superseded';
   briefSnapshot?: BriefSnapshot;
+  outcomeSnapshot?: OutcomeSnapshot;
 }
 
 /**
@@ -163,6 +162,9 @@ export interface Decision {
  * discussion; a human edits it before it is real. Carries the proposer award.
  */
 export interface Grant {
+  workKind?: 'grant' | 'bounty';
+  workPurpose?: 'implementation' | 'research';
+  decisionIds?: string[];
   id: string;
   projectId: string;
   versionId: string;
@@ -188,6 +190,7 @@ export interface Grant {
   status: 'draft' | 'published';
   /** Immutable reviewed starting point; later grant edits do not change this record. */
   briefSnapshot?: BriefSnapshot;
+  outcomeSnapshot?: OutcomeSnapshot;
 }
 
 /** Tunable per project. Every number here is a hypothesis; the readout page exists to test them. */
@@ -275,4 +278,33 @@ export interface WorkingBrief extends BriefContent {
 export interface BriefSnapshot extends BriefContent {
   threadId: string;
   approval: BriefApproval;
+}
+
+/** One editable synthesis per discussion; feedback belongs in the conversation. */
+export interface OutcomeContent {
+  body: string;
+  openQuestions: string;
+}
+export interface OutcomeDraft extends OutcomeContent {
+  threadId: string;
+  revision: number;
+  authorId: string;
+  updatedBy: string;
+  updatedAt: string;
+  history: { revision: number; byMemberId: string; at: string; content: OutcomeContent }[];
+}
+export interface OutcomeSnapshot extends OutcomeContent {
+  threadId: string;
+  versionId: string;
+  revision: number;
+  byMemberId: string;
+  at: string;
+  sources: BriefSource[];
+}
+export interface WorkInput {
+  kind: 'grant' | 'bounty';
+  purpose: 'implementation' | 'research';
+  title: string;
+  scope: string;
+  acceptance: string;
 }

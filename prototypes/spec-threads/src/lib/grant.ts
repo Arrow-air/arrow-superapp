@@ -5,6 +5,7 @@
 // is paid to finish it. This version is a deterministic template; an agent-written draft is
 // a later button, once there is a real corpus to feed it.
 
+import { outcomeMarkdown } from './outcome';
 import { positionTitle } from './format';
 import type { Comment, Grant, Member, Position, Project, Thread, Version } from './types';
 
@@ -85,12 +86,12 @@ export function grantMarkdown(args: {
   const handle = (id: string) => '@' + (members.get(id)?.handle ?? 'unknown');
   const pct = Math.round(grant.proposerShare * 100);
   const lines = [
-    `# Grant: ${grant.title}`,
+    `# ${grant.workKind === 'bounty' ? 'Bounty' : 'Grant'}: ${grant.title}`,
     '',
     `**Project:** ${project.name}${version ? ` · ${version.name}` : ''}  `,
     `**Proposed by:** ${grant.proposerIds.map(handle).join(', ')}  `,
     `**Promoted by:** ${handle(grant.byMemberId)} (project lead)  `,
-    `**Community signal at promotion:** weighted rank ${grant.weightedRankAtResolution}, raw rank ${grant.rawRankAtResolution}`,
+    grant.outcomeSnapshot ? `**Purpose:** ${grant.workPurpose} · ${grant.decisionIds?.length ? 'linked to an adopted design decision' : 'no design adoption implied'}` : `**Community signal at promotion:** weighted rank ${grant.weightedRankAtResolution}, raw rank ${grant.rawRankAtResolution}`,
   ];
   if (grant.contributorIds.length) lines.push(`**Also contributed:** ${grant.contributorIds.map(handle).join(', ')}`);
   lines.push('', grant.scope.trim());
@@ -105,9 +106,10 @@ export function grantMarkdown(args: {
     '## Rewards',
     '',
     `- Grant amount: _TBD_`,
-    `- Proposer award: **${pct}%** of the grant to ${grant.proposerIds.map(handle).join(', ')} for writing the spec`,
-    ...(grant.briefSnapshot ? [] : ['', '## Deliverables', '', '- [ ] _Fill in from the spec above_']),
+    grant.outcomeSnapshot ? `- Proposer award: ${pct ? `**${pct}%** (lead-edited allocation)` : '_Not allocated_'}` : `- Proposer award: **${pct}%** of the grant to ${grant.proposerIds.map(handle).join(', ')} for writing the spec`,
+    ...(grant.briefSnapshot || grant.outcomeSnapshot ? [] : ['', '## Deliverables', '', '- [ ] _Fill in from the spec above_']),
   );
+  if (grant.outcomeSnapshot) lines.push('', '## Reviewed discussion outcome (source snapshot)', '', outcomeMarkdown(grant.outcomeSnapshot, project.id));
   const markdown = lines.join('\n');
   // Exported source links must still reach the workspace from a GitHub issue.
   return typeof window === 'undefined' ? markdown : markdown.replaceAll('](#/p/', `](${window.location.origin}${window.location.pathname}#/p/`);
