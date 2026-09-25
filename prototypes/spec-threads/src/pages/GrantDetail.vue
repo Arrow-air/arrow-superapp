@@ -3,6 +3,9 @@
 import { computed, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
 import Markdown from '../components/Markdown.vue';
+import WorkTracker from '../components/WorkTracker.vue';
+import { useUnsaved } from '../composables/useUnsaved';
+import { trackingOf, workStages } from '../lib/projectRecords';
 import { act, backend, handleOf, memberById, myRoleOn, projectById, state, versionOf } from '../data/store';
 import { outcomeMarkdown } from '../lib/outcome';
 import { briefMarkdown } from '../lib/brief';
@@ -20,13 +23,16 @@ const constraints = ref('');
 const sharePercent = ref(25);
 const dirty = ref(false);
 const saved = ref(false);
+const scopeRevision = ref(0);
 const copied = ref(false);
 let hydrating = false;
+useUnsaved(dirty);
 
 function load(g: Grant | null) {
   grant.value = g;
   if (!g) return;
   hydrating = true;
+  scopeRevision.value = trackingOf(g).revision;
   title.value = g.title;
   scope.value = g.scope;
   constraints.value = g.constraints.join('\n');
@@ -39,7 +45,8 @@ watch(
   [() => props.id, () => state.version],
   async () => {
     try {
-      load(await backend.getGrant(props.id));
+      const next = await backend.getGrant(props.id);
+      if (!dirty.value || grant.value?.id !== props.id) load(next); else if (next) grant.value = next;
     } catch (e) {
       state.error = e instanceof Error ? e.message : String(e);
     } finally {
@@ -67,15 +74,17 @@ async function save() {
   const ok = await act(() =>
     backend.updateGrant({
       id: grant.value!.id,
+      expectedRevision: scopeRevision.value,
       title: title.value,
       scope: scope.value,
       constraints: constraints.value.split('\n'),
       proposerShare: sharePercent.value / 100,
     }),
   );
-  if (ok) { saved.value = true; dirty.value = false; }
+  if (ok) { dirty.value = false; load(await backend.getGrant(props.id)); saved.value = true; }
 }
 
+async function discardScope() { if (!dirty.value || confirm('Discard unsaved scope changes?')) { dirty.value = false; load(await backend.getGrant(props.id)); } }
 async function publish() {
   if (!grant.value) return;
   if (dirty.value && !(await act(() => backend.updateGrant({ id: grant.value!.id, title: title.value, scope: scope.value, constraints: constraints.value.split('\n'), proposerShare: sharePercent.value / 100 })))) return;
@@ -111,7 +120,7 @@ const issueUrl = computed(() => {
     <div class="row" style="margin: 10px 0 8px">
       <span class="chip chip-project">{{ project.name }}</span>
       <span class="chip chip-version">{{ version?.name ?? '?' }}</span>
-      <span class="chip" :class="grant.status === 'draft' ? 'chip-warn' : 'chip-open'">{{ grant.status }}</span>
+      <span class="chip" :class="grant.status === 'draft' ? 'chip-warn' : 'chip-open'">{{ workStages[trackingOf(grant).stage] }}</span>
     </div>
     <h1 style="margin-bottom: 6px">{{ title }}</h1>
     <p class="small muted" style="margin-top: 0">
@@ -119,20 +128,22 @@ const issueUrl = computed(() => {
       prepared by @{{ handleOf(grant.byMemberId) }} <template v-if="!grant.outcomeSnapshot">· weighted rank {{ grant.weightedRankAtResolution }}, raw rank {{ grant.rawRankAtResolution }} at promotion</template>
     </p>
 
-    <div v-if="grant.outcomeSnapshot" class="context-note"><strong>{{ grant.workKind === 'bounty' ? 'Bounty' : 'Grant' }} · {{ grant.workPurpose === 'research' ? 'Research / investigation' : 'Implementation' }}</strong><p>{{ grant.decisionIds?.length ? 'Linked to the adopted design decision. Work scope can be edited separately.' : 'This work does not imply an adopted design. Its results may inform a later decision.' }}</p><RouterLink :to="{ name: 'project', params: { id: project.id }, query: { view: 'shape', thread: grant.threadId, version: grant.versionId, tab: 'draft' } }">Read the recorded outcome →</RouterLink></div>
+    <WorkTracker :key="grant.id" :grant="grant" :scope-dirty="dirty" />
+    <div v-if="grant.outcomeSnapshot" class="context-note"><strong>{{ grant.workKind === 'bounty' ? 'Bounty' : 'Grant' }} · {{ grant.workPurpose === 'research' ? 'Research / investigation' : 'Implementation' }}</strong><p>{{ grant.decisionIds?.length ? 'Linked to adopted design decisions. The reviewed source stays preserved.' : 'This work does not imply an adopted design. Its results may inform a later decision.' }}</p><RouterLink :to="{ name: 'project', params: { id: project.id }, query: { view: 'shape', thread: grant.threadId, version: grant.versionId, tab: 'draft' } }">Read the recorded outcome →</RouterLink></div>
     <details v-if="grant.outcomeSnapshot" class="brief-snapshot outcome-snapshot"><summary>Reviewed source document · r{{ grant.outcomeSnapshot.revision }}</summary><p>This record stays unchanged when the work scope is edited.</p><Markdown :source="outcomeMarkdown(grant.outcomeSnapshot, project.id)" /></details>
     <details v-if="grant.briefSnapshot" class="brief-snapshot">
       <summary>Approved source brief · r{{ grant.briefSnapshot.approval.revision }} · @{{ handleOf(grant.briefSnapshot.approval.byMemberId) }}</summary>
       <p>This snapshot is immutable. The editable grant below may diverge; compare it before publishing.</p>
       <Markdown :source="briefMarkdown(grant.briefSnapshot, project.id)" />
     </details>
-    <div class="layout-2" style="margin-top: 20px">
+    <div class="work-scope-layout" style="margin-top: 20px">
       <div class="stack">
         <div class="card stack">
           <div class="spread" style="align-items: center">
-            <strong>{{ canEdit ? 'Edit the draft' : grant.status === 'draft' ? 'Draft (only the lead edits it)' : 'Published' }}</strong>
+            <strong>{{ canEdit ? 'Scope & deliverables' : grant.status === 'draft' ? 'Draft scope (only the lead edits it)' : 'Agreed scope & deliverables' }}</strong>
             <span v-if="canEdit" class="small muted">{{ grant.outcomeSnapshot ? 'A work package linked to a reviewed outcome, not a replacement for the design.' : grant.briefSnapshot ? 'From an approved, source-linked working brief. Later edits do not change that snapshot.' : 'Legacy draft from one approach; it has no approved working brief.' }}</span>
           </div>
+          <template v-if="canEdit">
           <label class="field-row">
             <span class="label">Title</span>
             <input v-model="title" type="text" :disabled="!canEdit" />
@@ -160,12 +171,15 @@ const issueUrl = computed(() => {
           </div>
           <div v-if="canEdit" class="row">
             <button class="btn" :disabled="!dirty" @click="save">Save draft</button>
-            <button class="btn btn-ghost" @click="publish">Mark published in demo</button>
+            <button class="btn btn-ghost" @click="discardScope">Discard / reload scope</button><span class="small muted">Open and track delivery in Manage work above.</span>
             <span v-if="saved" class="small" style="color: var(--status-success-text)">Saved.</span>
           </div>
+          </template>
+          <template v-else><Markdown :source="grant.scope" /><div v-if="grant.constraints.length"><h3>Interfaces & constraints</h3><ul><li v-for="c in grant.constraints" :key="c">{{ c }}</li></ul></div><p class="small muted">Discussion contributors: {{ [...new Set([...grant.proposerIds,...grant.contributorIds])].map(id=>'@'+handleOf(id)).join(', ') }}</p></template>
         </div>
 
-        <div class="card stack">
+        <details class="card stack work-export">
+          <summary>Export work package</summary>
           <div class="spread" style="align-items: center">
             <div class="label">Markdown for grant-and-bounties</div>
             <div class="row">
@@ -174,10 +188,10 @@ const issueUrl = computed(() => {
             </div>
           </div>
           <div class="bounty-md">{{ markdown }}</div>
-        </div>
+        </details>
       </div>
 
-      <aside class="side stack">
+      <aside class="stack work-export-preview">
         <div class="card">
           <div class="label">Rendered</div>
           <div style="margin-top: 8px"><Markdown :source="markdown" /></div>

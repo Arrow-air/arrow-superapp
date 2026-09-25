@@ -11,7 +11,8 @@
     "test": "vitest run",
     "start": "serve -s dist -l ${PORT:-3000}",
     "e2e": "node e2e/conversation.cjs",
-    "e2e:conversation": "node e2e/conversation.cjs"
+    "e2e:conversation": "node e2e/conversation.cjs",
+    "e2e:records": "node e2e/records.cjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.0",

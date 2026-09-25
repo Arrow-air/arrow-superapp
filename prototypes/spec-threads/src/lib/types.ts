@@ -57,6 +57,8 @@ export interface Project {
 export type ThreadStatus = 'open' | 'resolved';
 
 export interface Thread {
+  sourceDecisionId?: string;
+  sourceGrantId?: string;
   id: string;
   projectId: string;
   /** The version this thread is addressed to. Changes when deferred. */
@@ -137,6 +139,8 @@ export interface Deferral {
 
 /** An entry in the project's decision register. A thread promoted to a spec or requirement. */
 export interface Decision {
+  supersedesIds?: string[];
+  supersessionNote?: string;
   id: string;
   projectId: string;
   versionId: string;
@@ -162,6 +166,7 @@ export interface Decision {
  * discussion; a human edits it before it is real. Carries the proposer award.
  */
 export interface Grant {
+  tracking?: WorkTracking;
   workKind?: 'grant' | 'bounty';
   workPurpose?: 'implementation' | 'research';
   decisionIds?: string[];
@@ -307,4 +312,35 @@ export interface WorkInput {
   title: string;
   scope: string;
   acceptance: string;
+}
+
+
+export type WorkStage = 'draft' | 'open' | 'in_progress' | 'in_review' | 'completed' | 'cancelled';
+export type FundingStatus = 'unfunded' | 'proposed' | 'funded' | 'paid';
+export interface WorkMilestone { id: string; title: string; acceptance: string; evidence: string; completed: boolean }
+export interface WorkProgress {
+  stage: WorkStage;
+  ownerId: string;
+  dueDate: string;
+  funding: FundingStatus;
+  budget: string;
+  acceptance: string;
+  evidence: string;
+  milestones: WorkMilestone[];
+  decisionIds: string[];
+}
+export interface WorkTracking extends WorkProgress {
+  revision: number;
+  history: { at: string; byMemberId: string; note: string; content: WorkProgress }[];
+}
+export interface SpecificationContent { body: string; decisionIds: string[] }
+export interface SpecificationSection extends SpecificationContent {
+  id: string;
+  projectId: string;
+  versionId: string;
+  system: string;
+  revision: number;
+  updatedBy: string;
+  updatedAt: string;
+  history: { revision: number; at: string; byMemberId: string; note: string; content: SpecificationContent }[];
 }

@@ -78,6 +78,11 @@ function unwrap(res: { data: unknown; error: { message: string } | null }): any 
 
 export class SupabaseBackend implements Backend {
   readonly kind = 'supabase' as const;
+  async listSpecifications(): Promise<import('../lib/types').SpecificationSection[]> { throw new Error(NOT_V2); }
+  async saveSpecification(_input: Parameters<Backend['saveSpecification']>[0]): Promise<import('../lib/types').SpecificationSection> { throw new Error(NOT_V2); }
+  async supersedeDecisions(_input: Parameters<Backend['supersedeDecisions']>[0]): Promise<Decision> { throw new Error(NOT_V2); }
+  async updateWork(_input: Parameters<Backend['updateWork']>[0]): Promise<Grant> { throw new Error(NOT_V2); }
+  async startFollowUp(_input: Parameters<Backend['startFollowUp']>[0]): Promise<Thread> { throw new Error(NOT_V2); }
   private db: SupabaseClient;
 
   constructor(url: string, key: string) {

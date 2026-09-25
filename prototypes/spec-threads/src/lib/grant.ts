@@ -1,3 +1,4 @@
+import { trackingOf, workStages } from './projectRecords';
 // Grant drafts. When the lead turns a thread into a grant or bounty, the draft is pre-filled
 // from the thread: the question, the chosen position as the spec, and every concrete
 // constraint anyone wrote down (voltages, currents, masses, interfaces). A human edits it
@@ -93,6 +94,10 @@ export function grantMarkdown(args: {
     `**Promoted by:** ${handle(grant.byMemberId)} (project lead)  `,
     grant.outcomeSnapshot ? `**Purpose:** ${grant.workPurpose} · ${grant.decisionIds?.length ? 'linked to an adopted design decision' : 'no design adoption implied'}` : `**Community signal at promotion:** weighted rank ${grant.weightedRankAtResolution}, raw rank ${grant.rawRankAtResolution}`,
   ];
+  if (grant.tracking) {
+    const w = trackingOf(grant);
+    lines.push(`**Work status:** ${workStages[w.stage]}  `, `**Owner:** ${w.ownerId ? handle(w.ownerId) : 'Unassigned'}  `, `**Due:** ${w.dueDate || 'Not set'}  `, `**Funding:** ${w.funding} (record only; no payment executed)`);
+  }
   if (grant.contributorIds.length) lines.push(`**Also contributed:** ${grant.contributorIds.map(handle).join(', ')}`);
   lines.push('', grant.scope.trim());
   if (grant.constraints.length) {
@@ -105,10 +110,12 @@ export function grantMarkdown(args: {
     '',
     '## Rewards',
     '',
-    `- Grant amount: _TBD_`,
+    `- Grant amount: ${grant.tracking?.budget || '_TBD_'}`,
     grant.outcomeSnapshot ? `- Proposer award: ${pct ? `**${pct}%** (lead-edited allocation)` : '_Not allocated_'}` : `- Proposer award: **${pct}%** of the grant to ${grant.proposerIds.map(handle).join(', ')} for writing the spec`,
     ...(grant.briefSnapshot || grant.outcomeSnapshot ? [] : ['', '## Deliverables', '', '- [ ] _Fill in from the spec above_']),
   );
+  if (grant.tracking?.milestones.length) lines.push('', '## Milestones', '', ...grant.tracking.milestones.map(m=>`- [${m.completed ? 'x' : ' '}] ${m.title} — ${m.acceptance}${m.evidence ? `\n  Evidence: ${m.evidence}` : ''}`));
+  if (grant.tracking?.evidence) lines.push('', '## Result evidence', '', grant.tracking.evidence);
   if (grant.outcomeSnapshot) lines.push('', '## Reviewed discussion outcome (source snapshot)', '', outcomeMarkdown(grant.outcomeSnapshot, project.id));
   const markdown = lines.join('\n');
   // Exported source links must still reach the workspace from a GitHub issue.

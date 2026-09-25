@@ -4,6 +4,7 @@ import { computed, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
 import DiscussPin from '../components/DiscussPin.vue';
 import { backend, handleOf, projectById, state, versionOf } from '../data/store';
+import { trackingOf, workStages } from '../lib/projectRecords';
 import { percent } from '../lib/labels';
 import type { Grant } from '../lib/types';
 
@@ -50,15 +51,15 @@ const rows = computed(() => grants.value.filter((g) => !project.value || g.proje
   <p v-else-if="rows.length === 0" class="muted">No grants yet. They appear when a lead turns a thread into a grant.</p>
   <ul v-else class="thread-list">
     <li v-for="g in rows" :key="g.id" class="thread-item">
-      <RouterLink :to="{ name: 'grant', params: { id: g.id } }">
+      <RouterLink :to="{ name: 'project', params: { id: g.projectId }, query:{view:'work', version:g.versionId, grant:g.id} }">
         <div class="row" style="gap: 6px">
           <span class="chip chip-project">{{ projectById.get(g.projectId)?.name ?? g.projectId }}</span>
           <span class="chip chip-version">{{ versionOf(g.projectId, g.versionId)?.name ?? '?' }}</span>
-          <span class="chip" :class="g.status === 'draft' ? 'chip-warn' : 'chip-open'">{{ g.status }}</span>
+          <span class="chip" :class="g.status === 'draft' ? 'chip-warn' : 'chip-open'">{{ workStages[trackingOf(g).stage] }}</span>
           <span v-if="g.overrideRationale" class="chip chip-warn">lead overrode</span>
         </div>
         <div class="thread-title">{{ g.title }}</div>
-        <div v-if="g.outcomeSnapshot" class="small muted">{{ g.workKind }} · {{ g.workPurpose }} · {{ g.status }} · funding not set</div><div v-else class="small muted">
+        <div v-if="g.outcomeSnapshot" class="small muted">{{ g.workKind }} · {{ g.workPurpose }} · {{ workStages[trackingOf(g).stage] }} · {{ trackingOf(g).funding }} · {{ trackingOf(g).ownerId ? '@'+handleOf(trackingOf(g).ownerId) : 'Unassigned' }}</div><div v-else class="small muted">
           proposer award <b>{{ percent(g.proposerShare) }}</b> to {{ g.proposerIds.map((id) => '@' + handleOf(id)).join(', ') }}
           · {{ g.constraints.length }} constraints · promoted by @{{ handleOf(g.byMemberId) }} {{ g.createdAt.slice(0, 10) }}
         </div>

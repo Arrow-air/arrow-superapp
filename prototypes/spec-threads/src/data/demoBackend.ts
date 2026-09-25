@@ -1,3 +1,5 @@
+import { currentDecisions, designDecisions, effectiveSections, progressOf, trackingOf, transitions, validEvidence } from '../lib/projectRecords';
+import type { SpecificationSection, WorkTracking } from '../lib/types';
 // Demo backend: everything lives in this browser's localStorage, seeded from seed.ts.
 // No server, no accounts. A persona switcher stands in for sign-in so one person can
 // play the lead, the expert, and the crowd to see how the weighting and the freeze behave.
@@ -336,6 +338,7 @@ export class DemoBackend implements Backend {
       contributorIds: authors.filter(id => id !== thread.authorId),
       weightedRankAtResolution: 0, rawRankAtResolution: 0,
       byMemberId: me.id, createdAt: at, updatedAt: at, status: 'draft',
+      tracking: { revision: 0, stage: 'draft', ownerId: '', dueDate: '', funding: 'unfunded', budget: '', acceptance: work.acceptance.trim(), evidence: '', milestones: [], decisionIds: decisionId ? [decisionId] : [], history: [] },
       workKind: work.kind, workPurpose: work.purpose, decisionIds: decisionId ? [decisionId] : [], outcomeSnapshot: structuredClone(snapshot),
     };
   }
@@ -369,10 +372,19 @@ export class DemoBackend implements Backend {
   async createWork(input: { threadId: string; work: WorkInput }) {
     const me = this.me(), thread = this.thread(input.threadId);
     this.requireLead(thread.projectId, me);
-    if (thread.resolution?.kind !== 'conclude') throw new Error('Record the discussion outcome before commissioning follow-on work.');
-    const grant = this.workFromOutcome(thread, thread.resolution.snapshot, input.work, me, thread.resolution.decisionId);
+    const resolution = thread.resolution;
+    if (!resolution || !['conclude','spec'].includes(resolution.kind)) throw new Error('Record the discussion outcome before commissioning follow-on work.');
+    let snapshot: OutcomeSnapshot, decisionId: string | undefined;
+    if (resolution.kind === 'conclude') { snapshot = resolution.snapshot; decisionId = resolution.decisionId; }
+    else if (resolution.kind === 'spec') {
+      const decision = this.state.decisions.find(d=>d.id===resolution.decisionId)!;
+      const bundle = this.bundle(thread);
+      snapshot = decision.outcomeSnapshot ?? { threadId:thread.id, versionId:thread.versionId, revision:0, byMemberId:resolution.byMemberId, at:resolution.at, openQuestions:'', sources:discussionSources(bundle), body:decision.briefSnapshot ? briefMarkdown(decision.briefSnapshot, thread.projectId) : bundle.positions.find(p=>p.id===decision.positionId)?.body ?? decision.chosen };
+      decisionId = decision.id;
+    } else throw new Error('Unsupported work source.');
+    const grant = this.workFromOutcome(thread, snapshot, input.work, me, decisionId);
     this.state.grants.push(grant);
-    thread.resolution.grantIds.push(grant.id);
+    if (resolution.kind === 'conclude') resolution.grantIds.push(grant.id);
     this.save();
     return structuredClone(grant);
   }
@@ -457,11 +469,14 @@ export class DemoBackend implements Backend {
     return structuredClone(thread);
   }
 
-  async updateGrant(input: { id: string } & Partial<Pick<Grant, 'title' | 'scope' | 'constraints' | 'proposerShare' | 'proposerIds'>>) {
+  async updateGrant(input: { id: string; expectedRevision?: number } & Partial<Pick<Grant, 'title' | 'scope' | 'constraints' | 'proposerShare' | 'proposerIds'>>) {
     const me = this.me();
-    const grant = this.state.grants.find((g) => g.id === input.id);
-    if (!grant) throw new Error('No such grant.');
+    const stored = this.state.grants.find((g) => g.id === input.id);
+    if (!stored) throw new Error('No such grant.');
+    const grant = structuredClone(stored);
+    grant.tracking ??= trackingOf(grant);
     this.requireLead(grant.projectId, me);
+    if (input.expectedRevision !== undefined && input.expectedRevision !== trackingOf(grant).revision) throw new Error('This work package changed. Reload before saving scope.');
     if (grant.status !== 'draft') throw new Error('This grant is published. Edit it where it was published.');
     if (input.title !== undefined) {
       const title = input.title.trim();
@@ -481,19 +496,22 @@ export class DemoBackend implements Backend {
       grant.proposerIds = ids;
     }
     grant.updatedAt = new Date().toISOString();
+    if (grant.tracking) {
+      const acceptance = grant.scope.split('## Acceptance criteria\n')[1]?.trim();
+      if (acceptance !== undefined) grant.tracking.acceptance = acceptance;
+      grant.tracking.revision += 1;
+      grant.tracking.history.push({ at: grant.updatedAt, byMemberId: me.id, note: 'Updated draft scope or attribution.', content: progressOf(grant.tracking) });
+    }
+    this.state.grants = this.state.grants.map(g=>g.id===grant.id ? grant : g);
     this.save();
     return structuredClone(grant);
   }
 
   async publishGrant(grantId: string) {
-    const me = this.me();
-    const grant = this.state.grants.find((g) => g.id === grantId);
+    const grant = await this.getGrant(grantId);
     if (!grant) throw new Error('No such grant.');
-    this.requireLead(grant.projectId, me);
-    grant.status = 'published';
-    grant.updatedAt = new Date().toISOString();
-    this.save();
-    return structuredClone(grant);
+    const old = trackingOf(grant);
+    return this.updateWork({ id: grantId, expectedRevision: old.revision, content: { ...progressOf(old), stage: 'open' }, note: 'Opened for contributors in the demo.' });
   }
 
   async freezeVersion(input: { projectId: string; versionId: string }) {
@@ -508,9 +526,102 @@ export class DemoBackend implements Backend {
           : `${check.open.length} ${check.open.length === 1 ? 'thread is' : 'threads are'} still open on ${check.version.name}. Resolve or defer every one first.`,
       );
     }
+    const baselineSections = effectiveSections(project, input.versionId, this.state.specifications ?? []);
+    const currentIds = new Set(currentDecisions(project, input.versionId, this.state.decisions).map(d=>d.id));
+    if (baselineSections.some(s=>s.decisionIds.some(id=>!currentIds.has(id)))) throw new Error('Reconcile specification sections with replaced decisions before freezing.');
+    const inherited = effectiveSections(project, input.versionId, this.state.specifications ?? []).filter(s => s.versionId !== input.versionId);
+    this.state.specifications = [...(this.state.specifications ?? []), ...inherited.map(s => ({ ...structuredClone(s), id: newId('spec'), versionId: input.versionId }))];
     project.versions = freezeVersions({ project, versionId: input.versionId, byMemberId: me.id });
     this.save();
     return structuredClone(project);
+  }
+
+  async listSpecifications() { return structuredClone(this.state.specifications ?? []); }
+
+  async saveSpecification(input: Parameters<Backend['saveSpecification']>[0]) {
+    const me = this.me(), project = this.project(input.projectId);
+    this.requireLead(project.id, me);
+    const version = versionById(project, input.versionId);
+    if (!version || !['discussing', 'planned'].includes(version.state)) throw new Error('This design baseline is locked. Start a follow-up discussion for the next version.');
+    if (![...project.systems, 'project-wide'].includes(input.system)) throw new Error('Unknown subsystem.');
+    const old = this.state.specifications?.find(s => s.projectId === project.id && s.versionId === version.id && s.system === input.system);
+    if ((old?.revision ?? 0) !== input.expectedRevision) throw new Error('The specification changed. Reload before saving.');
+    if (!input.body.trim() || !input.note.trim()) throw new Error('Write the specification and a revision note.');
+    const current = currentDecisions(project, version.id, this.state.decisions);
+    const ids = [...new Set(input.decisionIds)];
+    if (!ids.length || ids.some(id => !current.some(d => d.id === id))) throw new Error('Link current adopted decisions from this design baseline.');
+    const content = { body: input.body.trim(), decisionIds: ids }, at = new Date().toISOString();
+    const next: SpecificationSection = { id: old?.id ?? newId('spec'), projectId: project.id, versionId: version.id, system: input.system, revision: (old?.revision ?? 0) + 1, updatedBy: me.id, updatedAt: at, ...content,
+      history: [...(old?.history ?? []), { revision: (old?.revision ?? 0) + 1, at, byMemberId: me.id, note: input.note.trim(), content: structuredClone(content) }] };
+    this.state.specifications = [...(this.state.specifications ?? []).filter(s => s.id !== next.id), next];
+    this.save(); return structuredClone(next);
+  }
+
+  async supersedeDecisions(input: Parameters<Backend['supersedeDecisions']>[0]) {
+    const me = this.me(), decision = this.state.decisions.find(d => d.id === input.decisionId);
+    if (!decision) throw new Error('No such decision.');
+    this.requireLead(decision.projectId, me);
+    const project = this.project(decision.projectId), version = versionById(project, decision.versionId)!;
+    if (!['discussing', 'planned'].includes(version.state)) throw new Error('This design baseline is locked.');
+    if (decision.supersedesIds?.length) throw new Error('Replacement history is already recorded. Adopt a new decision to change it.');
+    const current = currentDecisions(project, version.id, this.state.decisions);
+    const ids = [...new Set(input.supersedesIds)];
+    if (!current.some(d => d.id === decision.id) || !ids.length || !input.note.trim()) throw new Error('Choose current decisions and explain their replacement.');
+    if (ids.some(id => id === decision.id || !current.some(d => d.id === id))) throw new Error('Only other current decisions in this baseline may be replaced.');
+    // Never rewrite old documents or old baselines. The new decision owns this relation.
+    decision.supersedesIds = ids; decision.supersessionNote = input.note.trim();
+    this.save(); return structuredClone(decision);
+  }
+
+  async updateWork(input: Parameters<Backend['updateWork']>[0]) {
+    const me = this.me(), grant = this.state.grants.find(g => g.id === input.id);
+    if (!grant) throw new Error('No such work package.');
+    const old = trackingOf(grant), next = JSON.parse(JSON.stringify(input.content)) as typeof input.content;
+    if (old.revision !== input.expectedRevision) throw new Error('This work package changed. Reload before saving.');
+    const lead = roleOf(this.state.roles, grant.projectId, me.id) === 'lead';
+    if (!lead && old.ownerId !== me.id) throw new Error('Only the lead or assigned owner can update this work.');
+    if (!input.note.trim()) throw new Error('Add an update note.');
+    if (!Object.prototype.hasOwnProperty.call(transitions, next.stage) || !['unfunded', 'proposed', 'funded', 'paid'].includes(next.funding)) throw new Error('Choose a valid work and funding status.');
+    if (next.stage !== old.stage && !transitions[old.stage].includes(next.stage)) throw new Error('That work status transition is not allowed.');
+    if (!lead) {
+      const stable = (x: typeof next) => ({ ownerId: x.ownerId, dueDate: x.dueDate, funding: x.funding, budget: x.budget, acceptance: x.acceptance, decisionIds: x.decisionIds, milestones: x.milestones.map(m => ({ id: m.id, title: m.title, acceptance: m.acceptance, completed: m.completed })) });
+      if (JSON.stringify(stable(next)) !== JSON.stringify(stable(progressOf(old))) || (next.stage !== old.stage && !['in_progress', 'in_review'].includes(next.stage))) throw new Error('Only the lead changes scope, assignments, funding, or accepts completion.');
+    }
+    if (next.ownerId && !this.state.members.some(m => m.id === next.ownerId)) throw new Error('Unknown work owner.');
+    if (next.dueDate && (!/^\d{4}-\d{2}-\d{2}$/.test(next.dueDate) || Number.isNaN(Date.parse(next.dueDate)))) throw new Error('Use a valid due date.');
+    if (next.stage !== 'draft' && next.stage !== 'cancelled' && (!grant.scope.trim() || !next.acceptance.trim())) throw new Error('Define scope and acceptance criteria before opening work.');
+    if (['in_progress', 'in_review', 'completed'].includes(next.stage) && !next.ownerId) throw new Error('Assign an owner before starting work.');
+    if (['in_review', 'completed'].includes(next.stage) && !validEvidence(next.evidence)) throw new Error('Attach result evidence before review or completion.');
+    if (new Set(next.milestones.map(m => m.id)).size !== next.milestones.length || next.milestones.some(m => !m.id || !m.title.trim() || !m.acceptance.trim() || (m.completed && !validEvidence(m.evidence)))) throw new Error('Milestones need unique IDs, titles, acceptance criteria, and evidence for completion.');
+    if (next.stage === 'completed' && next.milestones.some(m => !m.completed)) throw new Error('Accept every milestone before completing the work.');
+    const versions = designDecisions(this.project(grant.projectId), grant.versionId, this.state.decisions);
+    next.decisionIds = [...new Set(next.decisionIds)];
+    if (next.decisionIds.some(id => !versions.some(d => d.id === id))) throw new Error('Link decisions from this work package’s design baseline.');
+    if (old.stage === 'completed' || old.stage === 'cancelled') {
+      const immutable = (x: typeof next) => { const { funding, budget, ...rest } = x; return rest; };
+      if (JSON.stringify(immutable(next)) !== JSON.stringify(immutable(progressOf(old)))) throw new Error('Closed work keeps its accepted record. Create follow-on work for changes.');
+    }
+    const at = new Date().toISOString();
+    const tracking: WorkTracking = { ...next, revision: old.revision + 1, history: [...old.history, { at, byMemberId: me.id, note: input.note.trim(), content: structuredClone(next) }] };
+    if (grant.tracking?.acceptance !== next.acceptance) grant.scope = grant.scope.split('## Acceptance criteria\n')[0].trimEnd() + '\n\n## Acceptance criteria\n\n' + next.acceptance.trim();
+    grant.tracking = tracking; grant.decisionIds = [...next.decisionIds]; grant.status = next.stage === 'draft' ? 'draft' : 'published'; grant.updatedAt = at;
+    this.save(); return structuredClone(grant);
+  }
+
+  async startFollowUp(input: Parameters<Backend['startFollowUp']>[0]) {
+    this.me();
+    const d = input.decisionId ? this.state.decisions.find(d => d.id === input.decisionId) : undefined;
+    const g = input.grantId ? this.state.grants.find(g => g.id === input.grantId) : undefined;
+    if ((!d && !g) || (input.decisionId && !d) || (input.grantId && !g) || (d && g && d.projectId !== g.projectId)) throw new Error('Choose a valid source decision or work package.');
+    if (!input.body.trim()) throw new Error('Describe the finding or question.');
+    const source = d ?? g!, project = this.project(source.projectId);
+    const sourceOrder = versionById(project, source.versionId)!.order;
+    const version = project.versions.filter(v => v.order >= sourceOrder && ['discussing', 'planned'].includes(v.state)).sort((a,b) => a.order - b.order)[0];
+    if (!version) throw new Error('No upcoming version is open for a follow-up.');
+    const original = this.thread(source.threadId);
+    const thread = await this.createThread({ projectId: project.id, versionId: version.id, title: input.title, body: input.body, tags: original.tags, system: original.system });
+    const saved = this.thread(thread.id); saved.sourceDecisionId = d?.id; saved.sourceGrantId = g?.id;
+    this.save(); return structuredClone(saved);
   }
 
   async updateProfile(input: Partial<Pick<Member, 'tokenBalance' | 'expertise' | 'location' | 'bio'>>) {

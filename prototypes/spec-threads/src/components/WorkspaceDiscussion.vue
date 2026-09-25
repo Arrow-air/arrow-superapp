@@ -14,6 +14,11 @@ import WeightBox from './WeightBox.vue';
 const props = defineProps<{ bundle: ThreadBundle; project: Project }>();
 const emit = defineEmits<{ review: []; grant: [id: string] }>();
 const route = useRoute(), router = useRouter();
+const originVersion = ref('');
+watch(() => [props.bundle.thread.sourceDecisionId,props.bundle.thread.sourceGrantId], async ([d,g]) => {
+  try { originVersion.value = g ? (await backend.getGrant(g))?.versionId ?? '' : d ? (await backend.listDecisions()).find(x=>x.id===d)?.versionId ?? '' : ''; }
+  catch(e) {state.error=String(e);}
+},{immediate:true});
 const tab = computed(() => route.query.tab === 'draft' && !route.query.source ? 'draft' : 'discussion');
 function switchTab(value: string) { return router.replace({ query: { ...route.query, tab: value === 'draft' ? 'draft' : undefined, source: undefined } }); }
 watch(() => route.query.source, async key => {
@@ -59,6 +64,7 @@ function comment(id: string) { return write(() => backend.addComment({ positionI
 </script>
 
 <template>
+  <p v-if="bundle.thread.sourceDecisionId || bundle.thread.sourceGrantId" class="context-note">Follow-up to <RouterLink :to="{name:'project',params:{id:project.id},query:{view:bundle.thread.sourceGrantId?'work':'design',version:originVersion||bundle.thread.versionId,grant:bundle.thread.sourceGrantId,decision:bundle.thread.sourceDecisionId}}">{{ bundle.thread.sourceGrantId ? 'a work result' : 'an adopted decision' }}</RouterLink>. This conversation does not change the original record until reviewed.</p>
   <article class="discussion-panel" aria-label="Change discussion">
     <div class="discussion-heading"><span class="eyebrow">{{ bundle.thread.system || 'PROJECT-WIDE' }} / {{ version?.name }}</span><span class="workspace-badge" :class="{ green: !open }">{{ open ? 'Exploring' : bundle.thread.resolution?.kind === 'conclude' ? 'Outcome recorded' : bundle.thread.resolution?.kind === 'grant' ? 'Grant drafted' : bundle.thread.resolution?.kind === 'spec' ? 'Adopted' : 'Not pursuing' }}</span></div>
     <h2 class="discussion-title">{{ bundle.thread.title }}</h2>

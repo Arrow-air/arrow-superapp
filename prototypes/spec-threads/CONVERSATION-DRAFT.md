@@ -1,5 +1,7 @@
 # One conversation, then a draft
 
+**2026-09-25 update:** [Design & Work](DESIGN-WORK.md) adds downstream project views, specifications, decision replacement and delivery tracking. Both :4186 and :4187 now serve that newer build. This document records the previous iteration.
+
 2026-09-24 · `conversation-draft-v1` · supersedes the working-brief interaction experiment.
 
 ## Product decision

@@ -7,3 +7,5 @@ import './styles/app.css';
 import './styles/workspace.css';
 
 createApp(App).use(router).mount('#app');
+
+import './styles/records.css';

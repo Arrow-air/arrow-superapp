@@ -42,6 +42,11 @@ export type ResolveInput =
 
 export interface Backend {
   readonly kind: 'demo' | 'supabase';
+  listSpecifications(): Promise<import('../lib/types').SpecificationSection[]>;
+  saveSpecification(input: { projectId: string; versionId: string; system: string; expectedRevision: number; body: string; decisionIds: string[]; note: string }): Promise<import('../lib/types').SpecificationSection>;
+  supersedeDecisions(input: { decisionId: string; supersedesIds: string[]; note: string }): Promise<Decision>;
+  updateWork(input: { id: string; expectedRevision: number; content: import('../lib/types').WorkProgress; note: string }): Promise<Grant>;
+  startFollowUp(input: { decisionId?: string; grantId?: string; title: string; body: string }): Promise<Thread>;
 
   /** The signed-in member, or null. */
   currentMember(): Promise<Member | null>;
@@ -75,7 +80,7 @@ export interface Backend {
   /** Lead only. Reject, promote to spec, turn into a grant draft, or defer to a later version. */
   resolveThread(input: ResolveInput): Promise<Thread>;
   /** Lead only. Edit a grant draft before it is published. */
-  updateGrant(input: { id: string } & Partial<Pick<Grant, 'title' | 'scope' | 'constraints' | 'proposerShare' | 'proposerIds'>>): Promise<Grant>;
+  updateGrant(input: { id: string; expectedRevision?: number } & Partial<Pick<Grant, 'title' | 'scope' | 'constraints' | 'proposerShare' | 'proposerIds'>>): Promise<Grant>;
   publishGrant(grantId: string): Promise<Grant>;
   /** Lead only. Requires every thread on the version to be resolved or deferred. */
   freezeVersion(input: { projectId: string; versionId: string }): Promise<Project>;
