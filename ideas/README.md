@@ -29,3 +29,4 @@ One file per idea, using the template in the root README. Status is the first li
 | `sleety-app-shell.md` | prototyping | Gavin |
 | `discussions-store.md` | exploring | Thomas, Gavin |
 | `next-version-contributions.md` | adopted | Gavin, Alperen, Thomas |
+| `agent-per-person.md` | seed | Thomas |

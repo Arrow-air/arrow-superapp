@@ -36,3 +36,4 @@ Numbered so ideas and notes can point at them. Add, don't renumber. Mark answere
 | Q30 | Loose discussion → fundable grant: who writes the final text? The lead's agent from the thread, the idea's author for a small fee, or the thread by construction? | Thomas, Alperen, 2026-09-23 | `ideas/spec-thread-to-bounty.md` |
 | Q31 | Retro tiers: how are ideas that shaped a decision but were not adopted rewarded, and is a per-system split of the bucket the right frame? | Gavin, Thomas, 2026-09-23 | `ideas/retro-rewards-reddit-coordinape.md` |
 | Q32 | Dogfooding the tools on Spearhead mid-build: how much distraction is acceptable, and who calls it? | Gavin, 2026-09-23 | `meetings/2026-09-23/notes.md` |
+| Q33 | If everyone works through their own agent and custom UI, what is the shared layer (schema, store, write rules), and which moments must stay shared and identical for everyone? | Thomas, 2026-09-26 | `ideas/agent-per-person.md` |
