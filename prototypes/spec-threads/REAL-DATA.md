@@ -83,3 +83,13 @@ labels, version/system filters, design history, honest coverage gaps, old
 fictional deep links, keyboard activation, responsive layouts, and retention of
 saved sandbox state. Run browser checks in isolated contexts, never the user's
 tab. Screenshots: `/tmp/spearhead-real-review/`.
+
+## Delivered preview (2026-09-26)
+
+- Both 4186 and 4187 serve `dist-real`; previous `dist-systems` is retained.
+- Listener PIDs: 78338 (4186), 78341 (4187); staging 76597 (4192).
+- Logs: `/tmp/arrow-real-preview-<port>.log`.
+- 124 unit tests, typecheck/build, 50 real-data browser checks, and 46 legacy
+  briefing checks pass. Both LAN origins additionally verified by fetching their
+  actual HTML/assets and navigating agreement → open charging question in Chrome.
+- No remote push, production deployment, or changes to original project sources.
