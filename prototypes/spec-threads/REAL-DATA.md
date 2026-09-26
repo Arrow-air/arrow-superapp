@@ -326,3 +326,20 @@ No application changes, rebuild, or repeated tests are needed. Counts remain
 field still does not independently verify September hardware; retain the
 preview's historical-baseline qualification. V2.1 archive verification is
 pending receipt; the completed preview is unaffected.
+
+### V2.1 final canonical archive verified — complete
+
+The final v2.1 archive supersedes every earlier packet archive. SHA-256:
+`7b754b250d7ac879887be6facabeb9fcba0a31a3783319f238175ffa35e729bc`.
+Compared files directly from the ZIP without extracting or executing content:
+
+- JSON is byte-identical to the reviewed v2.1 standalone JSON above.
+- All 9 supporting files are byte-identical to the reviewed v2 support files.
+- Markdown SHA-256:
+  `a62409319758b07ce8171c59f3a47936df790a9966db077fa612262ec2248cc8`.
+  Its diff contains only the corresponding corrected D-register citations,
+  expanded decision text, and repository-coverage explanation.
+- All existing audit qualifications remain applicable. No new project facts
+  or application changes; the validated preview and counts remain unchanged.
+- **Packet delivery and reconciliation are complete; nothing remains pending.**
+  Documentation-only closure requires no rebuild or repeated browser tests.
