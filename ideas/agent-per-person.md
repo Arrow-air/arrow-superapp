@@ -13,6 +13,15 @@ The long-term shape isn't one web app everyone logs into. Each person works with
 ## Rule that makes it safe: read freely, write deliberately
 Agents can read everything, summarize, filter, route, draft. Anything that changes shared state with weight behind it (a vote, a decision, an allocation, a claim) is signed by the human. This is the Q25 answer from the 09-22 call turned into a protocol rule.
 
+## Nobody designs their own view (Thomas, 2026-09-26)
+Most people won't be good at prompting a custom UI and won't want to. So the personal view is not authored by the person:
+- **Designed pieces, arranged per person.** Arrow designs a small set of good components (decision card, task card, part view, payout line, catch-up digest). The agent picks and orders them. It never invents layouts.
+- **Inferred, not configured.** What to show comes from data the system already has: role on each project, disciplines, what you've touched, what's waiting on you, what changed since you last looked.
+- **Correct, don't design.** The only controls are small nudges: pin, hide, "less of this", "why am I seeing this?".
+- **Same card everywhere.** A decision looks identical in everyone's view, which also eases the shared-context problem below.
+
+The model is a good home feed, not a dashboard builder. Power users can go further with their own agent. Nobody has to.
+
 ## Tensions
 - **Common knowledge.** Coordination needs people to know that others saw the same thing. If everyone sees a different view, nobody is sure what the group knows. Some moments have to be shared and identical: the decision record, the tally at close, the meeting.
 - **Filter bubbles.** Your agent decides what you don't see. The objection it hides is the one that mattered.
