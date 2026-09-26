@@ -51,6 +51,6 @@ Browser-local prototype, not a shared project management service. No AI synthesi
 
 ## Preview
 
-Both existing LAN addresses, :4186 and :4187, serve `dist-records` after verification. :4188 is the staging/check preview. Previous `dist-conversation` and `dist-brief` artifacts are retained. No remote push, merge, production deployment, or browser storage reset.
+As of 2026-09-26, both existing LAN addresses, :4186 and :4187, serve `dist-samples` with the [connected sample dataset](SAMPLE-DATA.md). `dist-records` is retained as the prior build. :4188 is the staging/check preview. Previous `dist-conversation` and `dist-brief` artifacts are retained. No remote push, merge, production deployment, or browser storage reset.
 
-Start at `http://10.3.10.123:4186/#/p/spearhead?view=design` or `?view=work`. Existing contributions/outcomes appear from that browser's saved state. An empty Work view is intentional until work is commissioned; New work package can use the existing adopted wingspan decision without reopening its discussion.
+Start at `http://10.3.10.123:4186/#/p/spearhead?view=design` or `?view=work`. Existing contributions/outcomes appear from that browser's saved state. Fresh and existing demos automatically gain connected sample work, decisions and specifications; existing edits are preserved. New work package can also use the existing adopted wingspan decision without reopening its discussion.

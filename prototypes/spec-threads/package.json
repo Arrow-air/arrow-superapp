@@ -10,9 +10,10 @@
     "typecheck": "vue-tsc --noEmit",
     "test": "vitest run",
     "start": "serve -s dist -l ${PORT:-3000}",
-    "e2e": "node e2e/conversation.cjs",
+    "e2e": "node e2e/conversation.cjs && node e2e/records.cjs && node e2e/samples.cjs",
     "e2e:conversation": "node e2e/conversation.cjs",
-    "e2e:records": "node e2e/records.cjs"
+    "e2e:records": "node e2e/records.cjs",
+    "e2e:samples": "node e2e/samples.cjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.0",

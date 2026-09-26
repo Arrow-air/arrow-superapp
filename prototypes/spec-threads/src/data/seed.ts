@@ -28,6 +28,7 @@ import type {
 } from '../lib/types';
 
 export interface DemoState {
+  samplePacks?: string[];
   specifications?: import('../lib/types').SpecificationSection[];
   actingAs: string | null;
   projects: Project[];

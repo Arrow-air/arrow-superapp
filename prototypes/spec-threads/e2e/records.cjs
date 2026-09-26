@@ -5,6 +5,7 @@ const SHOTS='/tmp/arrow-records-review';fs.mkdirSync(SHOTS,{recursive:true});
 let checks=0;function check(name,yes){assert.ok(yes,name);console.log('PASS '+name);checks++;}
 (async()=>{
  const browser=await chromium.launch({channel:'chrome',headless:true});const context=await browser.newContext({viewport:{width:1440,height:1050}}),page=await context.newPage();page.setDefaultTimeout(12000);const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+ await require('./minimal-fixture.cjs').minimalFixture(page, BASE);
  const go=async(q)=>{await page.goto(BASE+'#/p/spearhead?'+q)};
  const button=(name)=>page.getByRole('button',{name,exact:true});
  const data=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('arrow-spec-threads-demo-v2')));

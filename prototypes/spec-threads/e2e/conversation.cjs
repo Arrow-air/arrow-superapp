@@ -8,7 +8,7 @@ function check(name, condition) { assert.ok(condition, name); console.log('PASS 
 (async () => {
  const browser = await chromium.launch({ channel: 'chrome', headless: true });
  const context = await browser.newContext({ viewport: { width: 1440, height: 1050 } });
- const page = await context.newPage(); const errors = [];
+ const page = await context.newPage(); await require('./minimal-fixture.cjs').minimalFixture(page, BASE); const errors = [];
  page.on('pageerror', e => errors.push(e.message));
  const nav = page.getByRole('navigation', { name: 'Discussion and draft' });
  const draftTab = async () => { await nav.getByRole('button', { name: /Draft outcome|Recorded outcome/ }).click(); await page.locator('.outcome-draft').waitFor({ state: 'visible' }); };

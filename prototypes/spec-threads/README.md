@@ -2,7 +2,7 @@
 
 ## Current iteration — Design & Work
 
-See [DESIGN-WORK.md](DESIGN-WORK.md) for the project-level specification, decision history, grants/bounties lifecycle, evidence and follow-up flow. Local previews on ports 4186 and 4187 serve this iteration; the older prototype descriptions below are retained as history.
+See [DESIGN-WORK.md](DESIGN-WORK.md) for the project-level specification, decision history, grants/bounties lifecycle, evidence and follow-up flow. The [sample dataset](SAMPLE-DATA.md) adds connected history and work at every stage without resetting browser edits. Local previews on ports 4186 and 4187 serve this iteration; the older prototype descriptions below are retained as history.
 
 
 **This branch:** `project-workspace-v1`, an interaction and visual redesign of prototype 2. Start with [WORKSPACE-CONCEPT.md](WORKSPACE-CONCEPT.md) for the product model, a walkthrough, and explicit limitations. The current entry point is Spearhead: **Aircraft → Shape the next version → Design review**, in one workspace.

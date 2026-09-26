@@ -16,7 +16,7 @@ function makeBackend(): Backend {
     }
     return new SupabaseBackend(url, key);
   }
-  return new DemoBackend();
+  return new DemoBackend(undefined, { sampleData: true });
 }
 
 export const backend: Backend = makeBackend();

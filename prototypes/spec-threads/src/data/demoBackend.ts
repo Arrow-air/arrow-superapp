@@ -1,3 +1,4 @@
+import { installDeliverySamples } from './sampleDelivery';
 import { currentDecisions, designDecisions, effectiveSections, progressOf, trackingOf, transitions, validEvidence } from '../lib/projectRecords';
 import type { SpecificationSection, WorkTracking } from '../lib/types';
 // Demo backend: everything lives in this browser's localStorage, seeded from seed.ts.
@@ -43,20 +44,29 @@ export class DemoBackend implements Backend {
   readonly kind = 'demo' as const;
   private storage: StorageLike;
   private state: DemoState;
+  private sampleData: boolean;
 
-  constructor(storage?: StorageLike) {
+  constructor(storage?: StorageLike, options: { sampleData?: boolean } = {}) {
+    this.sampleData = options.sampleData ?? false;
     this.storage = storage ?? (typeof localStorage !== 'undefined' ? localStorage : memoryStorage());
     this.state = this.load();
   }
 
   private load(): DemoState {
+    let saved: DemoState | undefined;
     try {
       const raw = this.storage.getItem(KEY);
-      if (raw) { const saved = JSON.parse(raw) as DemoState; saved.briefs ??= []; return saved; }
+      if (raw) { saved = JSON.parse(raw) as DemoState; saved.briefs ??= []; }
     } catch {
       // Corrupt or unreadable storage: fall through to a fresh seed.
     }
-    return seedState();
+    // A failed migration write must not be mistaken for corrupt existing data.
+    return this.enrich(saved ?? seedState());
+  }
+
+  private enrich(state: DemoState): DemoState {
+    if (this.sampleData && installDeliverySamples(state)) this.storage.setItem(KEY, JSON.stringify(state));
+    return state;
   }
 
   private save() {
@@ -639,7 +649,7 @@ export class DemoBackend implements Backend {
 
   async reset() {
     this.storage.removeItem(KEY);
-    this.state = seedState();
+    this.state = this.enrich(seedState());
     this.save();
   }
 }
