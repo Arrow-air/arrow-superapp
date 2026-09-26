@@ -1,0 +1,48 @@
+/** Imported facts are not application approvals, grants, votes, or impersonated messages. */
+export interface ProjectSource {
+  id: string;
+  title: string;
+  url: string;
+  date: string;
+  kind: 'meeting' | 'repository' | 'discord';
+  note?: string;
+}
+export type SourcedKind = 'design' | 'work' | 'question' | 'result';
+export type EvidenceStatus = 'documented' | 'agreed' | 'reported' | 'in_progress' | 'planned' | 'proposal' | 'open' | 'completed' | 'historical';
+export interface SourcedRecord {
+  id: string;
+  kind: SourcedKind;
+  title: string;
+  summary: string;
+  body: string;
+  systems: string[];
+  versions: string[];
+  status: EvidenceStatus;
+  statusNote: string;
+  date: string;
+  /** Reported contributor, not a synthetic assignment or project permission. */
+  owner?: string;
+  next?: string;
+  attention?: boolean;
+  sourceIds: string[];
+  relatedIds: string[];
+}
+export interface SourcedProject {
+  name: string;
+  asOf: string;
+  summary: string;
+  versions: { id: string; name: string; summary: string }[];
+  systems: { id: string; name: string; focusId?: string }[];
+  sources: ProjectSource[];
+  records: SourcedRecord[];
+  coverage: string[];
+}
+export const evidenceLabels: Record<EvidenceStatus, string> = {
+  documented: 'Documented design', agreed: 'Agreed on call', reported: 'Reported direction', in_progress: 'Reported in progress',
+  planned: 'Planned work', proposal: 'Proposal', open: 'Open question',
+  completed: 'Reported complete', historical: 'Historical reference',
+};
+export const kindLabels: Record<SourcedKind, string> = { design: 'Design', work: 'Work', question: 'Discussion', result: 'Result' };
+export function recordsFor(project: SourcedProject, version = '', system = '') {
+  return project.records.filter(r => (!version || r.versions.includes(version)) && (!system || r.systems.includes(system)));
+}

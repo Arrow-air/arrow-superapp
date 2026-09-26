@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
+import { isRealProjectData } from './data/projectDataMode';
 
 // Hash history so the built app works from any static host or sub-path with no rewrite rules.
 export const router = createRouter({
@@ -27,3 +28,5 @@ export const router = createRouter({
     return { top: 0 };
   },
 });
+
+router.beforeEach(to => isRealProjectData && to.path !== '/p/spearhead' ? { path: '/p/spearhead', query: to.query, replace: true } : true);

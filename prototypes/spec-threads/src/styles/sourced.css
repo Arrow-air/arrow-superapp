@@ -1,0 +1,39 @@
+.sourced-banner { background:#edf4f1;color:#486557;flex-wrap:wrap; }
+.sourced-banner strong { color:#315743; }
+.sourced-banner a { color:#315743;white-space:nowrap; }
+.sourced-workspace .version-timeline { flex-wrap:wrap; }
+.sourced-workspace .briefing-heading { max-width:840px; }
+.sourced-workspace .briefing-heading h2 { line-height:1.25; }
+.sourced-record-row { gap:7px; }
+.sourced-record-row strong { line-height:1.45; }
+.sourced-row-meta { display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px!important; }
+.sourced-row-meta>span[aria-hidden] { margin-left:auto; }
+.evidence-tag { display:inline-flex;padding:4px 7px;border-radius:4px;background:#eff2f5;color:#536378;font-size:11px;line-height:1.4; }
+.evidence-tag[data-status="proposal"],.evidence-tag[data-status="open"] { background:#fff3db;color:#805810; }
+.evidence-tag[data-status="in_progress"],.evidence-tag[data-status="planned"] { background:#edf3fd;color:#285eae; }
+.evidence-tag[data-status="agreed"],.evidence-tag[data-status="documented"],.evidence-tag[data-status="completed"] { background:#eaf4ee;color:#39745c; }
+.sourced-date { margin-left:12px;font-size:12px;color:#66778a; }
+.sourced-detail-grid { display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start; }
+.sourced-detail-grid>div { min-width:0; }
+.sourced-detail .detail-next { margin-top:0; }
+.sourced-detail .briefing-heading { margin-top:22px; }
+.sourced-detail .md { font-size:15px;line-height:1.8;overflow-wrap:anywhere; }
+.sourced-evidence p,.sourced-source-grid p,.sourced-coverage p { font-size:13px;line-height:1.7;color:#617287; }
+.sourced-source-link { display:flex;flex-direction:column;gap:7px;border-top:1px solid #e5eaf0;padding:16px 0;text-decoration:none; }
+.sourced-source-link strong { font-size:13px;line-height:1.6;font-weight:550; }
+.sourced-source-link>span:last-child:not(.eyebrow) { font-size:12px;line-height:1.6;color:#617287; }
+.sourced-contributor { border-top:1px solid #e5eaf0;padding-top:18px;margin-bottom:0;font-size:13px;color:#526579; }
+.sourced-related { margin-top:22px; }
+.sourced-list-filters { display:flex;align-items:center;gap:12px;margin:18px 0;flex-wrap:wrap; }
+.sourced-list-filters input,.sourced-list-filters select { border:1px solid #d5dfe8;background:white;border-radius:5px;padding:10px 12px;font-size:13px;max-width:100%; }
+.sourced-list-filters label:first-child { flex:1;max-width:420px;min-width:180px; }
+.sourced-list-filters input { width:100%;box-sizing:border-box; }
+.sourced-filter-banner { display:flex;justify-content:space-between;gap:16px;align-items:center;background:#edf2fb;border-radius:6px;padding:12px 16px;margin-top:20px;font-size:13px; }
+.sourced-source-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:24px; }
+.sourced-source-grid h3 { margin-top:10px;font-size:16px;line-height:1.6; }
+.sourced-sources li { margin:12px 0;line-height:1.7;font-size:14px;color:#526579; }
+.sourced-coverage { padding:22px 0;border-top:1px solid #dce3eb;margin-top:28px; }
+.sourced-coverage h3 { font-size:15px; }
+.sourced-missing { margin-top:24px; }
+@media(max-width:1150px) { .sourced-detail-grid { grid-template-columns:minmax(0,1fr); }.sourced-evidence { max-width:none; } }
+@media(max-width:700px) { .sourced-workspace .workspace-tabs { flex-wrap:wrap;gap:16px; }.sourced-workspace .version-picker { margin:0 0 10px;width:100%; }.sourced-workspace .version-picker select { max-width:100%;width:100%; }.sourced-source-grid { grid-template-columns:1fr; }.sourced-workspace .project-heading { align-items:flex-start;gap:12px;flex-direction:column; }.sourced-workspace .version-timeline .timeline-line { display:none; }.sourced-workspace .version-timeline { gap:10px;flex-direction:column;align-items:flex-start; }.sourced-workspace .sourced-date { display:block;margin:10px 0 0; }.sourced-list-filters>label { width:100%;max-width:100%!important; }.sourced-list-filters select { width:100%; }.sourced-workspace .briefing-heading h2 { font-size:25px; }.sourced-source-link { overflow-wrap:anywhere; } }

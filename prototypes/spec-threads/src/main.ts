@@ -11,3 +11,4 @@ createApp(App).use(router).mount('#app');
 import './styles/records.css';
 
 import "./styles/briefing.css";
+import './styles/sourced.css';

@@ -4,6 +4,7 @@ import { computed, reactive } from 'vue';
 import type { Member, Project, ProjectRole, Version } from '../lib/types';
 import type { Backend } from './backend';
 import { DemoBackend } from './demoBackend';
+import { isRealProjectData } from './projectDataMode';
 import { SupabaseBackend } from './supabaseBackend';
 
 function makeBackend(): Backend {
@@ -16,7 +17,7 @@ function makeBackend(): Backend {
     }
     return new SupabaseBackend(url, key);
   }
-  return new DemoBackend(undefined, { sampleData: true });
+  return new DemoBackend(undefined, { sampleData: !isRealProjectData });
 }
 
 export const backend: Backend = makeBackend();
