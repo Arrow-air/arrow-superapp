@@ -8,7 +8,7 @@ export interface ProjectSource {
   note?: string;
 }
 export type SourcedKind = 'design' | 'work' | 'question' | 'result';
-export type EvidenceStatus = 'documented' | 'agreed' | 'reported' | 'in_progress' | 'planned' | 'proposal' | 'open' | 'completed' | 'historical';
+export type EvidenceStatus = 'documented' | 'analysis' | 'agreed' | 'reported' | 'in_progress' | 'planned' | 'proposal' | 'open' | 'completed' | 'historical';
 export interface SourcedRecord {
   id: string;
   kind: SourcedKind;
@@ -38,7 +38,7 @@ export interface SourcedProject {
   coverage: string[];
 }
 export const evidenceLabels: Record<EvidenceStatus, string> = {
-  documented: 'Documented design', agreed: 'Agreed on call', reported: 'Reported direction', in_progress: 'Reported in progress',
+  documented: 'Documented design', analysis: 'Documented analysis', agreed: 'Agreed on call', reported: 'Reported direction', in_progress: 'Reported in progress',
   planned: 'Planned work', proposal: 'Proposal', open: 'Open question',
   completed: 'Reported complete', historical: 'Historical reference',
 };

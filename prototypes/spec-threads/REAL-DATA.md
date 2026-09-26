@@ -177,3 +177,66 @@ first-hover/result/stale-baseline interactions. Mobile conflict screenshot
 visually inspected. Listeners and build paths unchanged; old assets retained;
 pre-update entry point saved `/tmp/spearhead-before-md-index.html`.
 Evidence zip is still pending; no claim of full packet completion.
+
+## Final archive reconciliation — complete (2026-09-26)
+
+Archive SHA-256
+`07f379d70bf503afc5e04ec2adef92222564de6cae0e9e4efc594f73d21823fd`.
+The ZIP's canonical JSON and Markdown are text-identical to the standalone
+attachments (not changed content). Its August/September wiki copies also match
+the previously used copies. Supporting files were unpacked to
+`/tmp/spearhead-final-evidence` for review, not committed as private archives.
+
+Final curated snapshot: **55 records / 23 dated sources**. The last pass adds:
+
+- Preliminary airframe geometry, linked to the unresolved tail-airfoil values
+  and the missing later as-built handoff. Design targets are not flown dimensions.
+- ADB v1.1 computational campaign and the preliminary stability/CG study,
+  independently read from pinned primary repository files. A distinct
+  **Documented analysis** status keeps these out of physical test claims.
+- An open conflict between the stability note and older stability_summary.md;
+  both files were read. No unrecorded supersession, safe CG, or flight clearance
+  is inferred.
+- The June 29 single-servo bench *report*, with explicit secondary-source
+  limits. The raw call is not in the provided earlier transcript archive;
+  supplied wiki/digest agreement does not count as independent raw verification.
+- August 7 reproducibility concerns and promised CAD delivery, directly
+  spot-checked in the original transcript at 207–211 and 467–471. Old preliminary
+  CAD already exists; the promise does not mean the repo contains no geometry.
+
+### Disposition / scope
+
+- Current PT1/PT1.5/PT2 design, work, open questions and results are integrated
+  without duplicating the packet's repeated decision/work/risk descriptions.
+- Exact hardware, flight dates, venue, schedule, ownership and completion are
+  asserted only to the strength of their sources; older data stays dated.
+- Detailed shipment history, general GitHub workflow decisions, third-party
+  pitches, rejected material suggestions, and unrelated predecessor STORK
+  flights are not presented as new current Spearhead deliverables.
+- April/May historical material and source-side local notes serve as orientation,
+  not invented current tasks or public personal profiles. Personal/off-topic
+  material is excluded. No private Atlas data was used.
+- Funding/vote claims are not turned into application governance events. The cap
+  and document estimate remain caveated; no missing Snapshot URL is fabricated.
+- Repository CI/test counts from PR bodies are not presented as independently
+  executed project tests. App verification counts below apply only to this UI.
+- No packet files remain pending. Remaining coverage gaps and unresolved project
+  questions are visible evidence limits, not unfinished import work.
+
+### Final validation / delivery
+
+Typecheck/build, **127 unit tests**, and **61 real-data Chrome checks** passed,
+including the analysis/result distinction, source conflict navigation, limited
+bench reporting, and stale planned CAD. The regression suite still verifies
+sandbox preservation, keyboard navigation, old deep links and 1440/768/390/320px.
+Final delivery remains :4186 and :4187 → `dist-real`, plus old staging4192.
+New staging4193 remains `dist-real-next`. Existing preview listeners were not
+restarted; new assets copied before the entry-point swap, old hashed assets kept.
+The pre-final entry point is `/tmp/spearhead-before-final-packet-index.html`.
+Full pre-packet build remains `dist-real-before-vector-json`.
+Both saved LAN origins were additionally verified for actual HTML/assets,
+first-hover/result links, old baseline freshness, tail/pusher conflict links,
+and transition → ADB → stability → conflicting-output navigation. Analysis/open
+labels and secondary bench evidence were verified on both origins, with no JS
+errors. Desktop stability and mobile bench screenshots are under
+`/tmp/spearhead-real-review/final-*`; desktop result visually inspected.

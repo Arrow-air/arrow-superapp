@@ -19,6 +19,13 @@ describe('real Spearhead snapshot', () => {
     expect(spearhead.records.find(r => r.id === 'longshot-funding')).toMatchObject({kind:'question', status:'open'});
     expect(spearhead.records.find(r => r.id === 'as-built-note')?.status).not.toBe('completed');
   });
+  it('distinguishes computational studies and secondary bench reporting from validated flight results', () => {
+    for (const id of ['aerodynamic-database','preliminary-stability']) {
+      expect(spearhead.records.find(r => r.id === id)).toMatchObject({kind:'result', status:'analysis'});
+    }
+    expect(spearhead.records.find(r => r.id === 'stability-output-conflict')?.status).toBe('open');
+    expect(spearhead.records.find(r => r.id === 'can-pwm-bench-report')?.statusNote).toContain('not independently checked');
+  });
   it('has unique records and resolvable evidence and context links', () => {
     const ids = new Set(spearhead.records.map(r => r.id));
     expect(ids.size).toBe(spearhead.records.length);
