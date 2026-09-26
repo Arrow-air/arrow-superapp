@@ -39,3 +39,19 @@
 .sourced-missing { margin-top:24px; }
 @media(max-width:1150px) { .sourced-detail-grid { grid-template-columns:minmax(0,1fr); }.sourced-evidence { max-width:none; } }
 @media(max-width:700px) { .sourced-workspace .workspace-tabs { flex-wrap:wrap;gap:16px; }.sourced-workspace .version-picker { margin:0 0 10px;width:100%; }.sourced-workspace .version-picker select { max-width:100%;width:100%; }.sourced-source-grid { grid-template-columns:1fr; }.sourced-workspace .project-heading { align-items:flex-start;gap:12px;flex-direction:column; }.sourced-workspace .version-timeline .timeline-line { display:none; }.sourced-workspace .version-timeline { gap:10px;flex-direction:column;align-items:flex-start; }.sourced-workspace .sourced-date { display:block;margin:10px 0 0; }.sourced-list-filters>label { width:100%;max-width:100%!important; }.sourced-list-filters select { width:100%; }.sourced-workspace .briefing-heading h2 { font-size:25px; }.sourced-source-link { overflow-wrap:anywhere; } }
+.repo-review-panel { margin-top:24px; }
+.repo-review-panel p,.repo-follow-item p { font-size:13px;line-height:1.7;color:#526579; }
+.repo-review-counts { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0; }
+.repo-review-counts>span { display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid #e3e8ee;border-radius:6px;font-size:12px;color:#526579; }
+.repo-review-counts b { font-size:24px;color:#26394d; }
+.repo-follow-item { border-top:1px solid #e3e8ee;padding:14px 0; }
+.repo-follow-item summary { cursor:pointer;font-size:13px;line-height:1.65; }
+.repo-follow-item summary strong { margin-right:10px; }
+.repo-follow-item summary:focus-visible { outline:2px solid #285eae;outline-offset:5px; }
+.repo-follow-item [data-repo-category="reconcile"] { background:#fff3db;color:#805810; }
+.repo-review-links { display:flex;gap:14px;flex-wrap:wrap;font-size:12px; }
+.repo-review-context { display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-top:16px; }
+.repo-review-context button { text-align:left;white-space:normal; }
+.repo-detail-review { margin:20px 0;border-top:1px solid #e3e8ee;padding-top:20px; }
+.repo-detail-review summary strong { display:block;margin-bottom:6px; }
+@media(max-width:700px) { .repo-review-counts { grid-template-columns:repeat(2,minmax(0,1fr)); } }

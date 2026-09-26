@@ -240,3 +240,54 @@ and transition → ADB → stability → conflicting-output navigation. Analysis
 labels and secondary bench evidence were verified on both origins, with no JS
 errors. Desktop stability and mobile bench screenshots are under
 `/tmp/spearhead-real-review/final-*`; desktop result visually inspected.
+
+## V2 repository-follow-through review (2026-09-26)
+
+V2 JSON received, SHA-256
+`5a28f91fddb973583ae31a30faa39ca993d3c36a8db8fa3378991c86cd814419`.
+It retains schema `arrow.spearhead.packet.v1` and changes only `generated`,
+`decisions[].github_record`, and `decision_record_gaps`. Identify it by content/hash,
+not the unchanged schema name. V2 archive/Markdown not yet received in this pass.
+
+- The 55 project records / 23 sources remain intact. A separate 16-item
+  **Repository follow-through** review appears under Sources and alongside
+  related record details. These are grouped call items (including work plans
+  and logistics), not 16 newly approved decisions.
+- Reviewed coverage: 1 recorded, 2 partly recorded, 8 no record found, 5 needing
+  reconciliation. Original Vector categories remain in `packetStatus`, with
+  corrected/scope-qualified interpretation in each `detail`. The five are not
+  presented as five proven contradictions or compliance failures.
+- Main-repo docs/issues/PRs count as repository coverage. All wiki sources now
+  have `kind: wiki` and render **Call summary · Vector**. Primary call links
+  render **Original transcript**. This source type is separate from evidence
+  status: call agreements stay agreed-on-call; proposals stay proposals.
+- Independent API checks: HEAD remains e19da048 (July21); all 28 issue/PR items
+  have last updates no later than July21; `has_discussions=false` on Sep26.
+  This current flag does **not** prove Discussions was never enabled. No repo
+  setting, issue, PR, documentation, or external approval was changed.
+- §5 of the master says PT2 **may** fly gasoline. September’s electric-first
+  direction is also hedged. Both exclude a PT2 starter-generator. Reconcile
+  version scope and newer interfaces rather than inventing a hard contradiction.
+- 12S/QS8-S is a historical PT1 baseline; 14S/AS150U is a planned PT2 choice.
+  It needs a PT2 record, not erasure of the old PT1 record.
+- Master §4.1 already explicitly describes a PT1 pack without BMS. E-REQ-02 is
+  about independent HV/LV kills, so the new no-BMS fallback alone does not prove
+  a kill-switch violation. E-REQ-13 requires Pixhawk-standard FC/transition
+  logic; exact Pix32 hardware/compliance cannot be inferred from transcription.
+- D1–D5 are documented, but D3 is only partially closed. Correct ID mapping and
+  unverified September as-built applicability remain visible.
+- Negative findings are bounded to Vector's survey and the reviewed material,
+  not claims that no record exists anywhere. Logistics without a design record
+  is not automatically an engineering defect or newly assigned task.
+
+Validation: typecheck/build, **130 unit tests**, **20 repository-review Chrome
+checks + 61 existing real-data checks** passed. Tests cover source classification,
+16-item provenance/links, qualified coverage labels, keyboard expansion, unchanged
+call/proposal statuses, D3 partial closure, BMS/voltage scope, current-vs-historical
+Discussions state, layout1440/768/390/320px and no JS errors. Existing suite still
+checks saved sandbox preservation. Mobile detail screenshot visually inspected.
+Deployment uses the same dist-real asset-first / entry-point-last swap; previous
+entry point `/tmp/spearhead-before-v2-index.html`, old hashed assets retained.
+Both saved URLs (:4186 and :4187) passed the 20 new repository-review checks on
+the delivered build. Actual LAN HTML/assets and the prior first-hover → flight
+report / stale-baseline interactions were checked again; no runtime errors.

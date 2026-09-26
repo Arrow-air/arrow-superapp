@@ -4,7 +4,7 @@ export interface ProjectSource {
   title: string;
   url: string;
   date: string;
-  kind: 'meeting' | 'repository' | 'discord';
+  kind: 'meeting' | 'repository' | 'wiki' | 'discord';
   note?: string;
 }
 export type SourcedKind = 'design' | 'work' | 'question' | 'result';
@@ -43,6 +43,9 @@ export const evidenceLabels: Record<EvidenceStatus, string> = {
   completed: 'Reported complete', historical: 'Historical reference',
 };
 export const kindLabels: Record<SourcedKind, string> = { design: 'Design', work: 'Work', question: 'Discussion', result: 'Result' };
+export const sourceLabels: Record<ProjectSource['kind'], string> = {
+  meeting: 'Original transcript', repository: 'Repository document', wiki: 'Call summary · Vector', discord: 'Discord message',
+};
 export function recordsFor(project: SourcedProject, version = '', system = '') {
   return project.records.filter(r => (!version || r.versions.includes(version)) && (!system || r.systems.includes(system)));
 }
