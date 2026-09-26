@@ -66,8 +66,9 @@ function check(name, condition) { assert.ok(condition, name); console.log('PASS 
    check('design and work are independent outputs of one review', (await page.locator('.outcome-result').innerText()).includes('Adopted into the design') && (await page.locator('.outcome-result').innerText()).includes('1 work package'));
    check('recorded document is read-only', await page.getByRole('button', { name: 'Edit draft', exact: true }).count() === 0);
    await page.screenshot({ path: SHOTS+'/recorded-outcome.png', fullPage: true });
-   await page.getByRole('button', { name: 'Open work package 1' }).click(); await page.locator('.workspace-grant').waitFor();
+   await page.getByRole('button', { name: 'Open work package 1' }).click(); await page.locator('.workspace-grant').waitFor(); await page.getByText('Why this work exists',{exact:true}).click();
    check('work remains a bounty draft linked to design', (await page.locator('.workspace-grant .context-note').innerText()).includes('Bounty') && (await page.locator('.workspace-grant .context-note').innerText()).includes('Linked'));
+   await page.getByRole('button',{name:'Edit scope',exact:true}).click();
    check('work includes explicit acceptance criteria', (await page.getByLabel('Scope (markdown)', { exact: true }).inputValue()).includes('Acceptance criteria'));
    await page.getByText('Export work package', { exact: true }).click();
    check('export preserves review and source links without invented rank', (await page.locator('.bounty-md').innerText()).includes('Reviewed discussion outcome') && !(await page.locator('.bounty-md').innerText()).includes('rank 0'));
@@ -78,7 +79,7 @@ function check(name, condition) { assert.ok(condition, name); console.log('PASS 
    await page.getByRole('link', { name: 'Read the recorded outcome' }).click(); await page.getByText('What we concluded', { exact: true }).waitFor();
    await page.getByText('Commission follow-on work', { exact: true }).click(); await fillWork();
    await page.getByLabel('Work title', { exact: true }).fill('Firmware integration');
-   await page.getByRole('button', { name: 'Create work draft', exact: true }).click(); await page.locator('.workspace-grant').waitFor();
+   await page.getByRole('button', { name: 'Create work draft', exact: true }).click(); await page.locator('.workspace-grant').waitFor(); await page.getByText('Why this work exists',{exact:true}).click();
    check('another work package can follow the same design', (await page.locator('.workspace-grant h1').first().innerText()) === 'Firmware integration');
    await page.getByRole('link', { name: 'Read the recorded outcome' }).click(); await page.getByText('2 work packages', { exact: true }).waitFor();
    await page.locator('.outcome-document a').click();
@@ -100,7 +101,7 @@ function check(name, condition) { assert.ok(condition, name); console.log('PASS 
    check('design review retains plain conclusions separately', (await page.locator('.review-queue').first().innerText()).includes('Conclusions without a design change'));
    page.once('dialog', d => d.accept()); await page.getByRole('button', { name: 'Freeze PT2 design' }).click();
    await page.getByText('PT2 is ready for the next chapter.', { exact: true }).waitFor();
-   check('freeze accepts the new outcome model', await page.getByRole('combobox', { name: 'Review version' }).inputValue() === 'sh-pt2');
+   check('freeze accepts the new outcome model', await page.getByRole('combobox', { name: 'Project version' }).inputValue() === 'sh-pt2');
    await page.goto(BASE+'#/p/spearhead?view=shape&thread=n-engine&version=sh-pt2&tab=draft');
    await page.getByText('What we concluded', { exact: true }).waitFor();
    await page.locator('.outcome-document a').click(); await page.locator('.source-selected').waitFor();

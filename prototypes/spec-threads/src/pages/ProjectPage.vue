@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import AircraftMap from '../components/AircraftMap.vue';
+import ProjectOverview from '../components/ProjectOverview.vue';
 import WorkspaceDiscussion from '../components/WorkspaceDiscussion.vue';
 import ResolvePanel from '../components/ResolvePanel.vue';
 import GrantDetail from './GrantDetail.vue';
@@ -10,8 +10,8 @@ import ProjectWork from '../components/ProjectWork.vue';
 import type { ThreadBundle } from '../data/backend';
 import { act, backend, memberById, myRoleOn, projectById, state } from '../data/store';
 import { analyzeThread } from '../lib/analyze';
-import { parseTags, positionTitle } from '../lib/format';
-import type { Decision, Grant } from '../lib/types';
+import { parseTags } from '../lib/format';
+import type { Decision, Grant, SpecificationSection } from '../lib/types';
 import { currentDecisions, trackingOf, workStages } from '../lib/projectRecords';
 import { buildingVersion, discussingVersion, freezeCheck } from '../lib/versions';
 
@@ -21,6 +21,7 @@ const router = useRouter();
 const bundles = ref<ThreadBundle[]>([]);
 const decisions = ref<Decision[]>([]);
 const grants = ref<Grant[]>([]);
+const sections = ref<SpecificationSection[]>([]);
 const loading = ref(true);
 const loadError = ref('');
 const search = ref('');
@@ -34,8 +35,8 @@ const resolving = ref('');
 const project = computed(() => projectById.value.get(props.id));
 const building = computed(() => project.value && buildingVersion(project.value));
 const discussing = computed(() => project.value && discussingVersion(project.value));
-const selectedVersion = computed(() => project.value?.versions.find(v => ['shape', 'review', 'design', 'work'].includes(String(route.query.view)) && v.id === route.query.version) ?? discussing.value ?? project.value?.versions[project.value.versions.length - 1]);
-const view = computed(() => ['shape', 'review', 'design', 'work'].includes(String(route.query.view)) ? String(route.query.view) : 'aircraft');
+const selectedVersion = computed(() => project.value?.versions.find(v => v.id === route.query.version) ?? discussing.value ?? project.value?.versions[project.value.versions.length - 1]);
+const view = computed(() => ['shape', 'review', 'design', 'work'].includes(String(route.query.view)) ? String(route.query.view) : 'overview');
 const filter = computed(() => String(route.query.system ?? ''));
 const isLead = computed(() => myRoleOn(props.id) === 'lead');
 const lead = computed(() => memberById.value.get(state.roles.find(r => r.projectId === props.id && r.role === 'lead')?.memberId ?? '')?.displayName.split(' (')[0] ?? 'Project lead');
@@ -46,8 +47,6 @@ const work = computed(() => grants.value.filter(g => g.versionId === selectedVer
 const review = computed(() => project.value && selectedVersion.value ? freezeCheck(project.value, selectedVersion.value.id, bundles.value.map(b => b.thread)) : null);
 const checked = computed(() => (review.value?.resolved.length ?? 0) + (review.value?.deferredAway.length ?? 0));
 const total = computed(() => checked.value + (review.value?.open.length ?? 0));
-const participants = computed(() => new Set(here.value.flatMap(b => [b.thread.authorId, ...b.positions.map(p => p.authorId), ...b.comments.map(c => c.authorId), ...b.votes.map(v => v.memberId)])));
-const featured = computed(() => open.value.find(b => state.me?.expertise.some(t => b.thread.tags.includes(t))) ?? open.value[0]);
 const rows = computed(() => here.value.filter(b => (!filter.value || b.thread.system === filter.value) && `${b.thread.title} ${b.thread.body} ${b.thread.tags.join(' ')}`.toLowerCase().includes(search.value.toLowerCase())).sort((a, b) => Number(b.thread.status === 'open') - Number(a.thread.status === 'open')));
 const selected = computed(() => rows.value.find(b => b.thread.id === route.query.thread) ?? (route.query.thread ? null : rows.value[0]));
 const selectedGrant = computed(() => work.value.find(g => g.id === route.query.grant));
@@ -55,23 +54,23 @@ const summary = computed(() => props.id === 'spearhead' ? 'An open fixed-wing VT
 const analysis = (bundle: ThreadBundle) => analyzeThread({ bundle, project: project.value!, members: state.members, roles: state.roles });
 const shortTitle = (b: ThreadBundle) => b.thread.title.split(':')[0];
 const stage = (b: ThreadBundle) => b.thread.status === 'resolved' ? b.thread.resolution?.kind === 'conclude' ? b.thread.resolution.decisionId ? 'Design adopted' : 'Conclusion recorded' : b.thread.resolution?.kind === 'spec' ? 'Adopted' : b.thread.resolution?.kind === 'grant' ? 'Grant drafted' : 'Not pursuing' : !b.positions.length ? 'Needs a first approach' : b.positions.length > 1 ? `${b.positions.length} approaches to compare` : 'An approach taking shape';
-const formatDate = (date?: string) => date ? new Date(`${date}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Not scheduled';
 watch([() => props.id, () => state.version], async (_, __, onCleanup) => {
   let cancelled = false;
   onCleanup(() => { cancelled = true; });
   try {
-    const [b, d, g] = await Promise.all([backend.listBundles(), backend.listDecisions(), backend.listGrants()]);
+    const [b, d, g, s] = await Promise.all([backend.listBundles(), backend.listDecisions(), backend.listGrants(), backend.listSpecifications()]);
     if (cancelled) return;
     bundles.value = b.filter(x => x.thread.projectId === props.id);
     decisions.value = d.filter(x => x.projectId === props.id);
     grants.value = g.filter(x => x.projectId === props.id);
+    sections.value = s.filter(x => x.projectId === props.id);
     loadError.value = '';
   } catch (e) { if (!cancelled) loadError.value = e instanceof Error ? e.message : String(e); }
   finally { if (!cancelled) loading.value = false; }
 }, { immediate: true });
 function navigate(nextView: string, extra: Record<string, string | undefined> = {}) {
   composing.value = false;
-  return router.push({ name: 'project', params: { id: props.id }, query: { view: nextView === 'aircraft' ? undefined : nextView, version: selectedVersion.value?.id, ...extra } });
+  return router.push({ name: 'project', params: { id: props.id }, query: { view: ['aircraft','overview'].includes(nextView) ? undefined : nextView, version: selectedVersion.value?.id, ...extra } });
 }
 function explore(s = '') { search.value = ''; return navigate('shape', { system: s || undefined }); }
 function openThread(b: ThreadBundle) { search.value = ''; return navigate('shape', { thread: b.thread.id, version: b.thread.versionId }); }
@@ -101,17 +100,12 @@ async function freeze() {
   <div v-if="!project" class="workspace-empty"><h1>Project not found</h1><a href="#/p/spearhead">Open Spearhead →</a></div>
   <div v-else class="project-workspace">
     <div class="workspace-breadcrumb">PROJECTS <span>/</span> {{ project.name.toUpperCase() }} <span class="workspace-breadcrumb-end">OPEN DEVELOPMENT</span></div>
-    <header class="project-heading"><div><div class="row"><h1>{{ project.name }}</h1><span class="workspace-badge green"><span class="status-dot"></span> In development</span></div><p>{{ summary }}</p></div><button v-if="state.me && discussing" class="btn new-change-button" @click="navigate('shape', { version: discussing.id }).then(compose)">＋ Suggest a change</button></header>
+    <header class="project-heading"><div><div class="row"><h1>{{ project.name }}</h1><span class="workspace-badge green"><span class="status-dot"></span> In development</span></div><p>{{ summary }}</p></div><button v-if="state.me && discussing && ['overview','shape'].includes(view)" class="btn new-change-button" @click="navigate('shape', { version: discussing.id }).then(compose)">＋ Suggest a change</button></header>
     <div class="version-timeline"><span><i class="timeline-dot build"></i><b>{{ building?.name ?? 'First build' }}</b> {{ building ? 'in the workshop' : 'ahead of us' }}</span><span class="timeline-line"></span><span><i class="timeline-dot next"></i><b>{{ discussing?.name ?? 'Design complete' }}</b> {{ discussing ? 'taking shape together' : '' }}</span><span class="timeline-lead">Project lead <b>{{ lead }}</b></span></div>
-    <nav class="workspace-tabs" aria-label="Project views"><button :class="{ active: view === 'aircraft' }" :aria-current="view === 'aircraft' ? 'page' : undefined" @click="navigate('aircraft')">Aircraft</button><button :class="{ active: view === 'shape' }" :aria-current="view === 'shape' ? 'page' : undefined" @click="navigate('shape')">Discussions <span>{{ open.length }}</span></button><button :class="{ active: view === 'design' || view === 'review' }" :aria-current="['design','review'].includes(view) ? 'page' : undefined" @click="navigate('design')">Design</button><button :class="{active:view==='work'}" :aria-current="view==='work' ? 'page' : undefined" @click="navigate('work')">Work <span>{{ work.length }}</span></button><label class="version-picker"><span class="sr-only">Review version</span><select aria-label="Review version" :value="selectedVersion?.id" @change="changeVersion"><option v-for="v in project.versions" :key="v.id" :value="v.id">{{ v.name }} · {{ v.state }}</option></select></label></nav>
+    <nav class="workspace-tabs" aria-label="Project views"><button :class="{ active: view === 'overview' }" :aria-current="view === 'overview' ? 'page' : undefined" @click="navigate('overview')">Overview</button><button :class="{ active: view === 'shape' }" :aria-current="view === 'shape' ? 'page' : undefined" @click="navigate('shape')">Discussions <span>{{ open.length }}</span></button><button :class="{ active: view === 'design' || view === 'review' }" :aria-current="['design','review'].includes(view) ? 'page' : undefined" @click="navigate('design')">Design</button><button :class="{active:view==='work'}" :aria-current="view==='work' ? 'page' : undefined" @click="navigate('work')">Work <span>{{ work.length }}</span></button><label class="version-picker"><span class="sr-only">Project version</span><select aria-label="Project version" :value="selectedVersion?.id" @change="changeVersion"><option v-for="v in project.versions" :key="v.id" :value="v.id">{{ v.name }} · {{ v.state }}</option></select></label></nav>
     <p v-if="loading" class="empty-note">Loading the project…</p>
     <div v-else-if="loadError" role="alert" class="context-note">Could not load this workspace: {{ loadError }}</div>
-    <template v-else-if="view === 'aircraft'">
-      <div class="overview-hero"><AircraftMap :project-id="id" :systems="project.systems" @select="explore" /><section class="next-brief"><span class="eyebrow">THE NEXT CHAPTER / {{ selectedVersion?.name }}</span><h2>{{ selectedVersion?.state === 'frozen' ? 'A design ready for what’s next.' : 'The next aircraft starts here.' }}</h2><p v-if="building">The team is building {{ building.name }}. Your ideas shape {{ selectedVersion?.name }} — with room to question, compare, and get the details right.</p><p v-else>There’s room to help define what this aircraft should become. Start with a question or an approach.</p><div class="brief-stats"><div><b>{{ open.length }}</b><span>open questions</span></div><div><b>{{ adopted.length }}</b><span>design decisions</span></div><div><b>{{ participants.size }}</b><span>contributors</span></div></div><button class="btn" @click="navigate(selectedVersion?.state === 'frozen' ? 'review' : 'shape')">{{ selectedVersion?.state === 'frozen' ? 'Explore the design' : 'Find your way in' }} <span>→</span></button><div class="brief-footnote">{{ selectedVersion?.state === 'frozen' ? 'Design frozen' : 'Design review target' }} <b>{{ formatDate(selectedVersion?.state === 'frozen' ? selectedVersion.frozenAt?.slice(0, 10) : selectedVersion?.freezeTarget) }}</b></div></section></div>
-      <div class="section-heading"><div><span class="eyebrow">WHERE YOU CAN HELP</span><h2>Small questions. Meaningful changes.</h2></div><button class="text-action" @click="explore()">Explore all changes →</button></div>
-      <div class="system-grid"><button v-for="s in project.systems" :key="s" class="system-card" @click="explore(s)"><span class="system-card-top"><span class="system-symbol">{{ { propulsion: '↗', avionics: '⌘', airframe: '◇', power: 'ϟ', payload: '⊞', software: '⌁', attachments: '⊞' }[s] ?? '◇' }}</span><span>↗</span></span><strong>{{ s }}</strong><span v-if="here.some(b => b.thread.system === s)">{{ here.filter(b => b.thread.system === s && b.thread.status === 'open').length }} open · {{ here.filter(b => b.thread.system === s && b.thread.status === 'resolved').length }} resolved</span><span v-else>Room for a new idea</span></button></div>
-      <div class="overview-bottom"><section class="start-here"><span class="eyebrow">{{ featured && state.me?.expertise.some(t => featured.thread.tags.includes(t)) ? 'MATCHES YOUR EXPERTISE' : 'A PLACE TO START' }}</span><h3>{{ featured ? shortTitle(featured) : 'What should we explore first?' }}</h3><p>{{ featured ? `${featured.positions.length} approaches are on the table. Bring a constraint, an alternative, or something you’ve learned from building.` : 'The discussion is open. A good question is a contribution, even before you have the answer.' }}</p><button v-if="featured" class="text-action" @click="openThread(featured)">Join the discussion →</button><button v-else-if="state.me && discussing" class="text-action" @click="navigate('shape', { version: discussing.id }).then(compose)">Start a discussion →</button><p v-else class="small muted">{{ discussing ? 'Choose a demo persona to contribute.' : 'No version is currently open for contributions.' }}</p></section><section class="design-glimpse"><span class="eyebrow">TAKING SHAPE / {{ selectedVersion?.name }}</span><template v-if="adopted.length"><h3>{{ adopted[0].chosen }}</h3><p>Adopted into the design, with the discussion and the reasoning still attached.</p><button class="text-action" @click="navigate('design')">See the current design →</button></template><template v-else><h3>No decisions made yet.</h3><p>This is where the ideas we choose become the next aircraft.</p><button class="text-action" @click="navigate('review')">See the design review →</button></template></section></div>
-    </template>
+    <template v-else-if="view === 'overview' && selectedVersion"><ProjectOverview :project="project" :version="selectedVersion" :bundles="bundles" :decisions="decisions" :grants="grants" :sections="sections" @navigate="navigate" /></template>
     <template v-else-if="view === 'design' && selectedVersion"><ProjectDesign :key="selectedVersion.id" :project="project" :version="selectedVersion" :decisions="decisions" :grants="grants" :bundles="bundles" @navigate="navigate" /></template>
     <template v-else-if="view === 'work' && selectedVersion"><ProjectWork :key="selectedVersion.id" :project="project" :version="selectedVersion" :grants="grants" :bundles="bundles" @navigate="navigate" /></template>
     <template v-else-if="view === 'shape'">

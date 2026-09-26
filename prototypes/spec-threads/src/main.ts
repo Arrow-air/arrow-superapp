@@ -9,3 +9,5 @@ import './styles/workspace.css';
 createApp(App).use(router).mount('#app');
 
 import './styles/records.css';
+
+import "./styles/briefing.css";
