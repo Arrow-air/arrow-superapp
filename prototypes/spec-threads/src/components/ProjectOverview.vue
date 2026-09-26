@@ -26,6 +26,45 @@ const goSystem=(system?:string)=>emit('navigate','overview',{system});
 const openQuestions=computed(()=>brief.value.threads.filter(b=>b.thread.status==='open'));
 const sourceGrant=(d:Decision)=>{const id=props.bundles.find(b=>b.thread.id===d.threadId)?.thread.sourceGrantId;return props.grants.find(g=>g.id===id);};
 const stateOf=(s:typeof brief.value.systems[number])=>s.stale||s.pending.length?'Specification needs updating':s.work.some(g=>trackingOf(g).stage==='in_review')?'Results ready for review':s.work.some(g=>trackingOf(g).stage==='in_progress')?'Work underway':s.conversations.some(b=>b.thread.status==='open')?'Questions being explored':s.section?'Design documented':'Ready for a first contribution';
+// A single concrete item explains the state; the subsystem view retains the full story.
+const systemCards = computed(() => brief.value.systems.map(s => {
+  const active = s.work.filter(isActiveWork);
+  const questions = s.conversations.filter(b => b.thread.status === 'open');
+  const review = active.find(g => trackingOf(g).stage === 'in_review');
+  const underway = active.find(g => trackingOf(g).stage === 'in_progress');
+  const open = active.find(g => trackingOf(g).stage === 'open');
+  let tone = 'quiet', status = 'Getting started', label = 'Start here';
+  let title = 'Shape the first design', detail = 'Bring a question or propose an approach.';
+  if (s.stale || s.pending.length) {
+    tone = 'attention'; status = 'Spec update needed'; label = 'To incorporate';
+    title = s.pending[0]?.chosen ?? 'Reconcile the current specification';
+    if (s.stale) label = 'To reconcile';
+    detail = s.stale ? 'A source decision changed. Review the specification.' : 'An adopted decision is ready to add to the specification.';
+  } else if (review) {
+    tone = 'attention'; status = 'Ready for review'; label = 'Awaiting acceptance';
+    title = review.title; detail = `${owner(review)} submitted results · ${leadName.value} to review`;
+  } else if (underway) {
+    tone = 'active'; status = 'In progress'; label = 'Underway';
+    title = underway.title; detail = next(underway);
+  } else if (open) {
+    tone = 'active'; status = 'Open work'; label = 'Up next';
+    title = open.title; detail = next(open);
+  } else if (questions.length) {
+    tone = 'exploring'; status = 'Exploring'; label = 'Open question';
+    title = questions[0]!.thread.title; detail = 'Compare approaches in the discussion.';
+  } else if (active.length) {
+    status = 'Preparing work'; label = 'Taking shape';
+    title = active[0]!.title; detail = next(active[0]!);
+  } else if (s.section) {
+    tone = 'documented'; status = 'Design documented'; label = 'Current design';
+    title = s.design[0]?.chosen ?? 'Read the current specification';
+    detail = 'Follow the agreed design and the decisions behind it.';
+  } else if (s.design.length) {
+    status = 'Decision adopted'; label = 'Current direction'; title = s.design[0]!.chosen;
+    detail = 'Read the reasoning behind the adopted approach.';
+  }
+  return { ...s, active, questions, tone, status, label, title, detail };
+}));
 </script>
 <template>
 <section class="project-overview records-view">
@@ -42,8 +81,17 @@ const stateOf=(s:typeof brief.value.systems[number])=>s.stale||s.pending.length?
       </section>
       <section class="briefing-panel"><div class="section-heading"><h3>Moving forward</h3><button class="text-action" @click="emit('navigate','work')">Active work →</button></div><button v-for="g in moving.slice(0,3)" :key="g.id" class="briefing-item" @click="goWork(g)"><strong>{{ g.title }}</strong><span>{{ owner(g) }} · {{ trackingOf(g).milestones.length ? `${trackingOf(g).milestones.filter(m=>m.completed).length} of ${trackingOf(g).milestones.length} milestones accepted` : 'In progress' }}</span></button><p v-if="!moving.length" class="empty-note">No work is in progress for this version.</p><div class="briefing-footer"><b>{{ openQuestions.length }} open {{ openQuestions.length===1?'question':'questions' }}</b><p>Not every conversation needs a design change or a grant.</p><button class="text-action" @click="emit('navigate','shape')">Join the discussion →</button></div></section>
     </div>
-    <div class="section-heading"><div><h3>Follow a part of the aircraft</h3><p>Current design, work, and the decisions connecting them.</p></div></div>
-    <div class="subsystem-stories"><button v-for="s in brief.systems" :key="s.system" class="story-card" @click="goSystem(s.system)"><span class="eyebrow">{{ s.system }}</span><h3>{{ stateOf(s) }}</h3><p>{{ s.section ? 'Specification available' : s.design.length ? 'Decisions adopted · no specification yet' : 'No agreed design yet' }}</p><span>{{ s.work.filter(isActiveWork).length }} active work · {{ s.conversations.filter(b=>b.thread.status==='open').length }} open questions <b aria-hidden="true">→</b></span></button></div>
+    <section class="systems-section" aria-labelledby="systems-heading">
+      <div class="systems-heading"><div><h3 id="systems-heading">Aircraft systems</h3><p>The current focus in each part of the aircraft.</p></div><span class="systems-hint">Select a system to follow the whole story <span aria-hidden="true">↗</span></span></div>
+      <div class="subsystem-stories">
+        <button v-for="s in systemCards" :key="s.system" class="story-card" :data-tone="s.tone" @click="goSystem(s.system)">
+          <span class="story-card-heading"><span class="story-system-name">{{ s.system }}</span><span class="story-open" aria-hidden="true">↗</span></span>
+          <span class="story-status"><span aria-hidden="true"></span>{{ s.status }}</span>
+          <span class="story-focus"><span class="story-focus-label">{{ s.label }}</span><strong>{{ s.title }}</strong><span class="story-detail">{{ s.detail }}</span></span>
+          <span class="story-card-footer"><span class="story-metrics"><span v-if="s.active.length"><b>{{ s.active.length }}</b> {{ s.active.length===1?'work item':'work items' }}</span><span v-if="s.questions.length"><b>{{ s.questions.length }}</b> {{ s.questions.length===1?'question':'questions' }}</span><span v-if="!s.active.length&&!s.questions.length">{{ s.section ? 'No active work' : 'Open for contributions' }}</span></span><span class="story-design" v-if="s.section" aria-label="Specification available" title="Specification available"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.5h6l4 4v11H5zM11 2.5v4h4M7.5 10h5m-5 3h5" /></svg>Spec</span></span>
+        </button>
+      </div>
+    </section>
     <section class="briefing-panel opportunity-panel"><div class="section-heading"><div><h3>Where you can help</h3><p>Open work without an assigned contributor.</p></div><button class="text-action" @click="emit('navigate','work',{queue:'open'})">All opportunities →</button></div><button v-for="g in opportunities.slice(0,3)" :key="g.id" class="briefing-item" @click="goWork(g)"><strong>{{ g.title }}</strong><span>{{ trackingOf(g).budget || 'Budget to agree' }} · {{ trackingOf(g).funding }} · {{ g.workKind??'grant' }}</span></button><p v-if="!opportunities.length" class="empty-note">No unassigned opportunities right now. The discussions are open for ideas.</p></section>
     <details class="record-followup aircraft-explorer"><summary>Explore the aircraft visually</summary><AircraftMap :project-id="project.id" :systems="project.systems" @select="goSystem" /></details>
   </template>
