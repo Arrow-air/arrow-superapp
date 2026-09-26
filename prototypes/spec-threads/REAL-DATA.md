@@ -291,3 +291,21 @@ entry point `/tmp/spearhead-before-v2-index.html`, old hashed assets retained.
 Both saved URLs (:4186 and :4187) passed the 20 new repository-review checks on
 the delivered build. Actual LAN HTML/assets and the prior first-hover → flight
 report / stale-baseline interactions were checked again; no runtime errors.
+
+### V2 final archive verified — complete
+
+The final v2 archive supersedes v1 as the canonical packet. Archive SHA-256:
+`9736e5d141e4b51934cdf535effd982d2dc9592c58b9bba3f0ad257a32974a49`.
+Unpacked for comparison at `/tmp/spearhead-v2-final-evidence`.
+
+- Canonical JSON is **byte-identical** to the already audited/imported v2 JSON.
+- All **9 supporting files are byte-identical** to the reviewed v1 support files.
+- Canonical Markdown SHA-256:
+  `c92e4e0d0eb5b8b84bccdc1e73b37e31e9fd3130916e0f0bb79b4c0d524df219`.
+  Its only change is the appended decision-record-gaps section, repeating the
+  same 16 JSON classifications and explanations already reviewed above.
+- The scope/wording qualifications in our review remain applicable; the final
+  archive does not correct those source-side overstatements or add new facts.
+- **Nothing remains pending from Vector.** This closure needs no app-data change,
+  rebuild, or repeated browser tests: the delivered v2 build is unchanged from
+  the validated 130-unit / 81-browser-check build.
