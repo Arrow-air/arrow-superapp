@@ -309,3 +309,20 @@ Unpacked for comparison at `/tmp/spearhead-v2-final-evidence`.
 - **Nothing remains pending from Vector.** This closure needs no app-data change,
   rebuild, or repeated browser tests: the delivered v2 build is unchanged from
   the validated 130-unit / 81-browser-check build.
+
+### V2.1 JSON reconciliation
+
+Received the superseding v2.1 JSON, SHA-256
+`f12f23864273a26a5937d3c2b14fb8126b3a3286136538c89940027800017f73`.
+Compared recursively with the canonical v2 JSON. Changes are limited to the
+generation label, two PT1 component D-number citations, and decision 14's
+date/text/repository explanation. It now correctly cites SPH-E-002 Rev 4:
+D1 GPS, D2 HV-kill deviation, D3 RC/telemetry (partial), D4 controller, D5 battery.
+
+These corrections already exist in the curated dataset and repository review,
+including the source link to SPH-E-002 and D3's open long-term telemetry choice.
+No application changes, rebuild, or repeated tests are needed. Counts remain
+55 records / 23 sources and 16 review items (1/2/8/5). The packet's `as_built`
+field still does not independently verify September hardware; retain the
+preview's historical-baseline qualification. V2.1 archive verification is
+pending receipt; the completed preview is unaffected.
