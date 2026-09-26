@@ -29,7 +29,7 @@ The profile solves the cold start: on day one, layers 1 and 2 drive the personal
 
 **Agent fill.** The question set is published as a schema on the API. Your own agent drafts answers from what it already knows about you; you see the draft and approve it before anything is written. Each answer records whether you typed it or approved an agent draft. People without an agent just answer the questions.
 
-**Question modules (first cut)**: what you have built; what you want to learn; disciplines (taxonomy v1.0) split into can-do and want-to-do; tools and shop access (printer, CNC, bench, soldering, a field to fly, a Quiver); location and how far you would travel; hours per week and timezone; how you like to work (async, calls, pairing, solo); what you want out of it (pay, learning, the mission, a job, a business); what you never want to be asked to do.
+**Question modules (first cut)**: tell us about something impressive you've built and the problems you had to overcome along the way (Thomas; the best single question, because it asks for a story with specifics, which is hard to fake and easy to follow up on); what else you have built; what you want to learn; disciplines (taxonomy v1.0) split into can-do and want-to-do; tools and shop access (printer, CNC, bench, soldering, a field to fly, a Quiver); location and how far you would travel; hours per week and timezone; how you like to work (async, calls, pairing, solo); what you want out of it (pay, learning, the mission, a job, a business); what you never want to be asked to do.
 
 **Guardrails**
 - Agent-written bios all sound the same and all sound impressive. So a bio carries no weight by itself; weight comes from layers 2 and 3.
