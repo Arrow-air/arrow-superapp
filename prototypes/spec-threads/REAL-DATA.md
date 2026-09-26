@@ -146,3 +146,34 @@ paths are unchanged. Prior build: `dist-real-before-vector-json`; old hashed
 assets retained for open tabs. Supplement staging: :4193 → `dist-real-next`,
 PID 82043, `/tmp/arrow-vector-preview-4193.log`. Screenshots include
 `/tmp/spearhead-real-review/vector-baseline-4186.png` and `-4187.png`.
+
+## Vector Markdown reconciliation (2026-09-26)
+
+Readable packet received; SHA-256
+`82ce32fab121e9ad2c88d968e5a390b0fe2c73330a43ef0410464a3d84bbd5df`.
+The narrative repeats the JSON but makes four source conflicts explicit.
+Snapshot now **48 records / 17 sources**:
+
+- Added open tail-airfoil conflict. Independently fetched the pinned GitHub
+  files: preliminary-design `information-note.md:95` says NACA 0015; its
+  `assets/config.py:75` and `src/tools/initial_sizing/config.py:75` both say
+  NACA 0018. Sep 10 discussion of 0018→0021 is a proposal, not resolution.
+  Source dates for these old files are labeled repository snapshot dates.
+- Added open pusher-capability conflict and linked it from the prop-selection
+  task. Sep 10 original transcript line 611 says insufficient for transition;
+  Sep 21 lines 583–593 give a more optimistic assessment after calculations.
+  Neither establishes demonstrated transition performance.
+- Existing controller-model question remains unresolved. Existing first-hover
+  result retains Sep 10 as evidence date; approximate Aug 31 is attributed to
+  Vector's dashboard notes, not to a call or a verified flight date.
+- Tail GPS-placement question links to the airfoil conflict. Sources/coverage
+  explains all four caveats. No design choice was made by this import.
+
+Typecheck/build and 126 unit tests passed. Targeted Chrome checks passed on
+staging4193 and both saved origins4186/4187: each connected conflict, both source
+values, open statuses, stale source labels, coverage copy, 1440/390/320px, and no
+runtime errors. Saved origins additionally rechecked for HTML/assets and prior
+first-hover/result/stale-baseline interactions. Mobile conflict screenshot
+visually inspected. Listeners and build paths unchanged; old assets retained;
+pre-update entry point saved `/tmp/spearhead-before-md-index.html`.
+Evidence zip is still pending; no claim of full packet completion.
