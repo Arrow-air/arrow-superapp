@@ -13,6 +13,8 @@
 .evidence-tag[data-status="in_progress"],.evidence-tag[data-status="planned"] { background:#edf3fd;color:#285eae; }
 .evidence-tag[data-status="agreed"],.evidence-tag[data-status="documented"],.evidence-tag[data-status="completed"] { background:#eaf4ee;color:#39745c; }
 .sourced-date { margin-left:12px;font-size:12px;color:#66778a; }
+.stale-evidence { background:#fff3db;color:#805810; }
+.sourced-detail .stale-evidence { margin-left:8px; }
 .sourced-detail-grid { display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start; }
 .sourced-detail-grid>div { min-width:0; }
 .sourced-detail .detail-next { margin-top:0; }

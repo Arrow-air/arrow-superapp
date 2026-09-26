@@ -1,10 +1,24 @@
 import { describe, expect, it } from 'vitest';
 import { spearhead } from './spearheadReal';
-import { recordsFor } from '../lib/sourcedProject';
+import { isStaleEvidence, recordsFor } from '../lib/sourcedProject';
 import { DemoBackend } from './demoBackend';
 import { seedState } from './seed';
 
 describe('real Spearhead snapshot', () => {
+  it('flags evidence strictly older than 30 days relative to the snapshot', () => {
+    expect(isStaleEvidence('2026-08-27', '2026-09-26')).toBe(false);
+    expect(isStaleEvidence('2026-08-26', '2026-09-26')).toBe(true);
+    expect(isStaleEvidence('2026-09-25', '2026-09-26')).toBe(false);
+    expect(isStaleEvidence('2026-06-26', '2026-09-26')).toBe(true);
+  });
+  it('keeps packet uncertainties out of adopted hardware and finished work', () => {
+    expect(spearhead.records.find(r => r.id === 'pt2-controller-model')).toMatchObject({kind:'question', status:'open'});
+    expect(spearhead.records.find(r => r.id === 'november-build')).toMatchObject({kind:'question', status:'proposal'});
+    expect(spearhead.records.find(r => r.id === 'first-hover')).toMatchObject({date:'2026-09-10', status:'completed'});
+    expect(spearhead.records.find(r => r.id === 'first-hover')?.body).toContain('not the flight date');
+    expect(spearhead.records.find(r => r.id === 'longshot-funding')).toMatchObject({kind:'question', status:'open'});
+    expect(spearhead.records.find(r => r.id === 'as-built-note')?.status).not.toBe('completed');
+  });
   it('has unique records and resolvable evidence and context links', () => {
     const ids = new Set(spearhead.records.map(r => r.id));
     expect(ids.size).toBe(spearhead.records.length);

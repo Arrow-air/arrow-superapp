@@ -46,3 +46,7 @@ export const kindLabels: Record<SourcedKind, string> = { design: 'Design', work:
 export function recordsFor(project: SourcedProject, version = '', system = '') {
   return project.records.filter(r => (!version || r.versions.includes(version)) && (!system || r.systems.includes(system)));
 }
+/** Freshness is relative to this frozen snapshot, not the reader's wall clock. */
+export function isStaleEvidence(date: string, asOf: string): boolean {
+  return (Date.parse(`${asOf}T00:00:00Z`) - Date.parse(`${date}T00:00:00Z`)) / 86_400_000 > 30;
+}
