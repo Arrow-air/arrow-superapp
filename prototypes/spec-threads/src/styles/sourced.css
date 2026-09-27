@@ -55,3 +55,9 @@
 .repo-detail-review { margin:20px 0;border-top:1px solid #e3e8ee;padding-top:20px; }
 .repo-detail-review summary strong { display:block;margin-bottom:6px; }
 @media(max-width:700px) { .repo-review-counts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+/* Standalone navigation actions need a usable target on touch screens. */
+@media (max-width:700px) {
+  .sourced-workspace button.text-action,
+  .sourced-workspace a.text-action { min-height:44px; display:inline-flex; align-items:center; }
+}

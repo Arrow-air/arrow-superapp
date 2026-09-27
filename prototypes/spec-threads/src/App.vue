@@ -3,7 +3,8 @@ import { computed, onMounted } from 'vue';
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router';
 import DiscussDrawer from './components/DiscussDrawer.vue';
 import SpearheadWorkspace from './components/SpearheadWorkspace.vue';
-import { isRealProjectData, exampleWorkspaceUrl, realWorkspaceUrl } from './data/projectDataMode';
+import { isRealProjectData, realWorkspaceUrl } from './data/projectDataMode';
+import { spearhead } from './data/spearheadReal';
 import { act, backend, isDemo, refresh, state } from './data/store';
 
 const realBuildAvailable = import.meta.env.VITE_PROJECT_DATA === 'spearhead';
@@ -40,21 +41,19 @@ async function resetDemo() {
   </header>
   <div class="workspace-shell">
     <aside class="workspace-rail">
-      <div class="rail-heading">Your projects <span>{{ String(visibleProjects.length).padStart(2, '0') }}</span></div>
+      <div class="rail-heading">Projects <span>{{ String(visibleProjects.length).padStart(2, '0') }}</span></div>
       <nav class="project-navigation" aria-label="Projects">
         <RouterLink v-for="p in visibleProjects" :key="p.id" :to="`/p/${p.id}`" :class="{ active: activeProject === p.id && route.name === 'project' }"><span class="project-glyph">{{ p.name.slice(0, 1) }}</span><span>{{ p.name }}</span><span class="project-arrow">↗</span></RouterLink>
       </nav>
-      <div class="rail-note"><span class="eyebrow">BUILD IN THE OPEN</span><p>Better aircraft.<br />Built together.</p><span>The next version starts with a good question.</span></div>
-      <nav v-if="isRealProjectData" class="rail-tools" aria-label="Workspace resources"><RouterLink to="/p/spearhead?view=sources">Sources & coverage ↗</RouterLink><a :href="exampleWorkspaceUrl">Fictional sandbox ↗</a></nav>
+      <nav v-if="isRealProjectData" class="rail-tools" aria-label="Workspace resources"><RouterLink to="/p/spearhead?view=sources">Sources & coverage ↗</RouterLink></nav>
       <nav v-else class="rail-tools" aria-label="Workspace resources"><RouterLink to="/how">How this works ↗</RouterLink><RouterLink to="/readout">Experiment readout ↗</RouterLink><details><summary>Browse all records</summary><RouterLink to="/projects">Projects</RouterLink><RouterLink to="/threads">Threads</RouterLink><RouterLink to="/register">Register</RouterLink><RouterLink to="/grants">Grants</RouterLink></details></nav>
-      <div class="rail-bottom"><span class="status-dot"></span> An open development space</div>
     </aside>
     <div class="workspace-main">
-      <div v-if="isRealProjectData" class="workspace-demo sourced-banner"><span><strong>Real Spearhead data</strong> · Snapshot as of Sep 26, 2026. Read-only; not live-synced.</span><RouterLink to="/p/spearhead?view=sources">View sources</RouterLink></div>
+      <div v-if="isRealProjectData" class="workspace-demo sourced-banner"><span><strong>Spearhead snapshot</strong> · Updated {{ spearhead.asOf }}. Read-only; not live-synced.</span><RouterLink to="/p/spearhead?view=sources">View sources</RouterLink></div>
       <div v-else-if="isDemo" class="workspace-demo"><span><strong>Concept preview</strong><span class="demo-description"> · Example people & engineering. Changes stay in your browser.</span><span class="mobile-demo-description"> · Illustrative, browser-only demo.</span></span><a v-if="realBuildAvailable" :href="realWorkspaceUrl" class="link-btn">Real Spearhead view</a><button class="link-btn" @click="resetDemo">Reset demo data</button></div>
       <div v-if="state.error" class="error-banner" role="alert"><span>{{ state.error }}</span><button class="link-btn" @click="state.error = ''">Dismiss</button></div>
       <main id="main-content" tabindex="-1" class="page" :class="{ 'workspace-page': route.name === 'project' }"><SpearheadWorkspace v-if="isRealProjectData" /><RouterView v-else-if="state.ready" :key="route.path" /><p v-else class="muted">Opening workspace…</p></main>
-      <footer class="workspace-footer"><span>ARROW / OPEN AIRCRAFT DEVELOPMENT</span><a href="https://github.com/Arrow-air/arrow-superapp" target="_blank" rel="noopener">Source & thinking ↗</a></footer>
+      <footer class="workspace-footer"><span>ARROW / OPEN AIRCRAFT DEVELOPMENT</span><a href="https://github.com/Arrow-air/arrow-superapp" target="_blank" rel="noopener">App repository ↗</a></footer>
     </div>
   </div>
   <DiscussDrawer v-if="!isRealProjectData" />

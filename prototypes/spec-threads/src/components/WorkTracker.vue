@@ -34,7 +34,11 @@ async function save() {
   if (ok && result) { loaded.value = trackingOf(result); form.value = progressOf(loaded.value); note.value = ''; saved.value = true; }
 }
 function discard() { if(!dirty.value || confirm('Discard unsaved work changes?')) { loaded.value=trackingOf(props.grant);form.value=progressOf(loaded.value);note.value='';saved.value=false; } }
-function addMilestone() { form.value.milestones.push({id:crypto.randomUUID(), title:'', acceptance:'', evidence:'', completed:false}); }
+function addMilestone() {
+  // getRandomValues also works on the HTTP LAN preview; randomUUID requires HTTPS.
+  const id = Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join('');
+  form.value.milestones.push({id, title:'', acceptance:'', evidence:'', completed:false});
+}
 function openDecision(id:string) { router.push({ name:'project', params:{id:props.grant.projectId}, query:{view:'design',version:props.grant.versionId,decision:id} }); }
 </script>
 <template>

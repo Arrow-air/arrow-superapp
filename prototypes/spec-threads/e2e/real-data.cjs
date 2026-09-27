@@ -8,7 +8,7 @@ const go=async(q='')=>{await page.goto(BASE+'#/p/spearhead'+(q?'?'+q:''));await 
 const tab=label=>page.getByRole('navigation',{name:'Project views'}).getByRole('button',{name:label,exact:true});
 try{
 await go();
-check('default is real project data with no fabricated personas',await page.getByText('Real Spearhead data',{exact:true}).isVisible()&&await page.getByLabel('Demo persona').count()===0);
+check('default is real project data with no fabricated personas',await page.getByText('Spearhead snapshot',{exact:true}).isVisible()&&await page.getByLabel('Demo persona').count()===0);
 check('no fictional work or people leak into the real overview',!/(Omar|Lena|Jun \(|keyed connector assembly guide|Glove-on harness)/.test(await page.locator('main').innerText()));
 check('snapshot and non-live status are visible',(await page.locator('.sourced-banner').innerText()).includes('not live-synced'));
 check('six source-backed system cards',await page.locator('.story-card').count()===6);
@@ -44,7 +44,7 @@ await page.getByRole('button',{name:/Preliminary stability study: CG sensitivity
 await page.getByRole('button',{name:/Which stability output should later work build on/}).click();check('conflicting stability outputs remain open and source-linked',await page.locator('.briefing-heading [data-status="open"]').isVisible()&&await page.locator('.sourced-source-link').count()===2);
 await go('view=work&record=can-pwm-bench-report');check('limited bench demonstration discloses secondary evidence',(await page.locator('.sourced-detail').innerText()).includes('not independently read')&&(await page.locator('.sourced-detail').innerText()).includes('not a standalone bench-test report'));
 await go('view=work&record=cad-publication');check('old promised CAD is stale planned work, not a completed delivery',await page.locator('.briefing-heading [data-status="planned"]').isVisible()&&await page.locator('.briefing-heading .stale-evidence').isVisible());
-await go('view=work&grant=sample-delivery-keyed-review');check('old fictional deep links never silently display real records',await page.getByRole('heading',{name:'This link belongs to a different dataset.'}).isVisible());
+await go('view=work&grant=sample-delivery-keyed-review');check('old fictional deep links never silently display real records',await page.getByRole('heading',{name:'Record unavailable'}).isVisible());
 for(const width of [1440,768,390,320]){
  await page.setViewportSize({width,height:1000});
  for(const q of ['','system=avionics','view=work','view=design','view=shape&record=electric-first','view=sources']){

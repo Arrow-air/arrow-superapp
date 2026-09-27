@@ -25,7 +25,7 @@ export const spearhead: SourcedProject = {
   ],
   coverage: [
     'Repository follow-through is tracked separately from what was agreed on calls. Vector-authored wiki summaries are labeled Call summary, not repository design records. Missing or conflicting documentation does not itself establish noncompliance.',
-    'Vector’s complete three-file packet has been reconciled. The archive’s canonical JSON and Markdown match the standalone copies. This remains a curated project view, not an exhaustive archive or a live status check.',
+    'This is a curated project view, not an exhaustive archive or a live status check.',
     'Documented analysis is distinct from physical testing. ADB v1.1 and the preliminary stability study do not validate a flight envelope; conflicting older stability output remains linked and unresolved.',
     'Known source conflicts remain unresolved: the tail-airfoil note says NACA 0015 while configuration files say 0018; the spare KDE pusher was judged insufficient on September 10 but capable in a later September 21 assessment. Neither is silently resolved here.',
     'Pix32 is an unverified transcript model name. The approximate August 31 first-flight date comes from Vector’s dashboard notes, not a call; the imported result uses the September 10 evidence date instead.',
@@ -39,7 +39,7 @@ export const spearhead: SourcedProject = {
     'A dated call agreement is labeled Agreed on call, not promoted to a released specification. Tentative ideas stay proposals. No votes, balances, payments, or freeze dates are fabricated.',
     'The imported records are curated summaries. Source links preserve the original context; speech-recognition errors and unresolved interfaces are not silently turned into specifications.',
     'Coverage is partial, especially payload and later phases. An empty section means no matching evidence was imported, not that the project has no work.',
-    'This is a read-only snapshot. It does not synchronize with Discord or GitHub, and it leaves the earlier fictional sandbox and its local edits untouched.',
+    'This is a read-only snapshot. It does not synchronize with Discord or GitHub.',
   ],
   sources: [
     { id: 'repo-adb', title: 'ADB v1.1 · preliminary aerodynamic database', date: '2026-07-21', kind: 'repository', url: repo + 'information-note/phase-1/Aerodynamics/0002-Preliminary-Design-Aerodynamic-Database/information-note.md', note: 'Pinned repository snapshot date. Computational campaign and delivered tables; not flight validation. Control-surface additions remain future work in this note.' },
