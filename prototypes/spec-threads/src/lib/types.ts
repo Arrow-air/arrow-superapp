@@ -57,6 +57,8 @@ export interface Project {
 export type ThreadStatus = 'open' | 'resolved';
 
 export interface Thread {
+  sourceRecordId?: string;
+  sourceThreadId?: string;
   sourceDecisionId?: string;
   sourceGrantId?: string;
   id: string;
@@ -77,6 +79,8 @@ export interface Thread {
 }
 
 export interface Position {
+  editedAt?:string;
+  editHistory?:ContributionEdit[];
   id: string;
   threadId: string;
   authorId: string;
@@ -98,6 +102,8 @@ export interface BuilderIntent {
 }
 
 export interface Comment {
+  editedAt?:string;
+  editHistory?:ContributionEdit[];
   id: string;
   positionId: string;
   authorId: string;
@@ -319,6 +325,8 @@ export type WorkStage = 'draft' | 'open' | 'in_progress' | 'in_review' | 'comple
 export type FundingStatus = 'unfunded' | 'proposed' | 'funded' | 'paid';
 export interface WorkMilestone { id: string; title: string; acceptance: string; evidence: string; completed: boolean }
 export interface WorkProgress {
+  blockers?:string;
+  dependencies?:string[];
   stage: WorkStage;
   ownerId: string;
   dueDate: string;
@@ -344,3 +352,6 @@ export interface SpecificationSection extends SpecificationContent {
   updatedAt: string;
   history: { revision: number; at: string; byMemberId: string; note: string; content: SpecificationContent }[];
 }
+
+/** Authored edits remain visible independently from the reviewed outcome snapshot. */
+export interface ContributionEdit { body:string; at:string; by:string }

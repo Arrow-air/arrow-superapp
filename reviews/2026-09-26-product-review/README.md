@@ -190,3 +190,8 @@ Measure those outcomes, not record counts or an invented project-completion perc
 - Both existing listeners still serve `prototypes/spec-threads/dist-real`; staging 4193 serves `dist-real-next`. The tested build was copied with assets first and the entrypoint last; earlier hashed assets remain for open tabs. Previous entrypoint: `/tmp/arrow-before-product-review-index.html`.
 - Recovery: from `prototypes/spec-threads`, build with `VITE_PROJECT_DATA=spearhead npm run build -- --outDir dist-real`; preview with `node node_modules/vite/bin/vite.js preview --host 0.0.0.0 --port <port> --strictPort --outDir dist-real`. Existing listener logs remain `/tmp/arrow-real-preview-<port>.log`.
 - Only the small changes listed above are implemented. Navigation-context bugs and the larger product backlog remain proposed work. No remote push, public deployment, backend activation, or project-data approval occurred.
+
+
+## Approved implementation follow-through
+
+Thomas approved the suggested sequence later on September 26. The implemented local pilot, verification and explicit remaining deployment gates are documented in [PRODUCT-WORKSPACE.md](../../prototypes/spec-threads/PRODUCT-WORKSPACE.md). The “proposed” and “only small changes” statements above describe this original review, not the subsequent implementation.

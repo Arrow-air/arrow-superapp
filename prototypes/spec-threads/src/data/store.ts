@@ -4,10 +4,12 @@ import { computed, reactive } from 'vue';
 import type { Member, Project, ProjectRole, Version } from '../lib/types';
 import type { Backend } from './backend';
 import { DemoBackend } from './demoBackend';
-import { isRealProjectData } from './projectDataMode';
+import { SharedBackend } from './sharedBackend';
+import { isRealProjectData, isSharedProject } from './projectDataMode';
 import { SupabaseBackend } from './supabaseBackend';
 
 function makeBackend(): Backend {
+  if(isSharedProject) return new SharedBackend();
   const kind = import.meta.env.VITE_BACKEND ?? 'demo';
   if (kind === 'supabase') {
     const url = import.meta.env.VITE_SUPABASE_URL;
@@ -51,6 +53,7 @@ export function myRoleOn(projectId: string) {
 }
 
 export async function refresh() {
+  if(backend instanceof SharedBackend)backend.invalidate();
   try {
     const [me, members, roles, projects] = await Promise.all([
       backend.currentMember(),

@@ -141,7 +141,7 @@ const weightTable = computed(() =>
               <td class="mono small">{{ g.proposerIds.map((id) => '@' + handleOf(id)).join(', ') }}</td>
               <td class="num">{{ percent(g.proposerShare) }}</td>
               <td class="num">{{ g.constraints.length }}</td>
-              <td><span v-if="g.weightedRankAtResolution === 1" class="chip chip-open">followed weighted</span><span v-else class="chip chip-warn">overrode</span></td>
+              <td><span v-if="g.outcomeSnapshot || !g.weightedRankAtResolution" class="muted">Not applicable</span><span v-else-if="g.weightedRankAtResolution === 1" class="chip chip-open">followed weighted</span><span v-else class="chip chip-warn">overrode</span></td>
             </tr>
           </tbody>
         </table>

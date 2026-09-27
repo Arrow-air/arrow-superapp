@@ -1,5 +1,7 @@
 # Arrow Superapp
 
+**Current implementation:** [Arrow shared workspace — local pilot](prototypes/spec-threads/PRODUCT-WORKSPACE.md). Historical prototype plans below are retained as context; the shared local pilot now has real accounts and persistent team records.
+
 Working notes and prototypes for how Arrow could coordinate, decide, and fund work as one continuous loop.
 
 **Thesis so far:** building is cheap once scoped. Deciding what to build, and rewarding the people who figure that out, is the bottleneck. Arrow's state lives in GitHub, Discord, calls, and people's heads. We want one place to see what's happening, decide at every layer, and route $ARROW to real signal.

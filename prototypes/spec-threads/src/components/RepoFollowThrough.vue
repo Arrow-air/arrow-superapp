@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { repoReviewLabels, type RepoReviewItem } from '../data/spearheadRepoReview';
-import { spearhead } from '../data/spearheadReal';
+import { projectEvidence as spearhead } from '../data/evidenceState';
 defineProps<{ items: RepoReviewItem[]; showContext?: boolean }>();
 defineEmits<{ open: [recordId: string] }>();
 const titleFor = (id: string) => spearhead.records.find(r => r.id === id)?.title ?? id;

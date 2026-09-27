@@ -6,6 +6,8 @@ import { act, backend, handleOf, memberById, myRoleOn, state } from '../data/sto
 import { analyzeThread } from '../lib/analyze';
 import { positionTitle, signed } from '../lib/format';
 import type { Project } from '../lib/types';
+import {isSharedProject} from '../data/projectDataMode';
+import {SharedBackend} from '../data/sharedBackend';
 import OutcomeDraft from './OutcomeDraft.vue';
 import Markdown from './Markdown.vue';
 import ResolvePanel from './ResolvePanel.vue';
@@ -35,6 +37,12 @@ watch(() => route.query.source, async key => {
 const draft = ref('');
 const comments = reactive<Record<string, string>>({});
 const busy = ref(false);
+const editingContribution=ref<{kind:'position'|'comment';id:string;expectedBody:string;body:string}|null>(null);
+const draftKey=()=>`arrow-workspace-draft:${state.me?.id??'guest'}:${props.bundle.thread.id}`;
+if(isSharedProject){try{const saved=JSON.parse(localStorage.getItem(draftKey())??'null');if(saved){draft.value=saved.draft??'';Object.assign(comments,saved.comments??{});}}catch{}}
+watch([draft,comments],()=>{if(isSharedProject)try{if(draft.value||Object.values(comments).some(Boolean))localStorage.setItem(draftKey(),JSON.stringify({draft:draft.value,comments}));else localStorage.removeItem(draftKey());}catch{}},{deep:true});
+async function saveContribution(){if(!editingContribution.value||!(backend instanceof SharedBackend))return;await write(()=> (backend as SharedBackend).rpc('editContribution',editingContribution.value),()=>{editingContribution.value=null;});}
+
 const analysis = computed(() => analyzeThread({ bundle: props.bundle, project: props.project, members: state.members, roles: state.roles }));
 const open = computed(() => props.bundle.thread.status === 'open');
 const version = computed(() => props.project.versions.find(v => v.id === props.bundle.thread.versionId));
@@ -80,21 +88,25 @@ function comment(id: string) { return write(() => backend.addComment({ positionI
       <button v-if="bundle.thread.resolution.kind === 'grant'" class="text-action" @click="emit('grant', bundle.thread.resolution.grantId)">Open the grant draft →</button>
       <button v-else class="text-action" @click="emit('review')">See the design review →</button>
     </div>
-    <div v-if="open" class="draft-summary"><div><strong>{{ bundle.draft ? 'A draft is ready to discuss.' : bundle.brief ? 'An illustrative starting draft is available.' : 'Conversation first. A draft when it helps.' }}</strong><p>{{ bundle.draft ? 'Review the synthesis, then bring feedback back here.' : 'No separate requirement cards to maintain.' }}</p></div><button class="text-action" @click="switchTab('draft')">{{ bundle.draft || bundle.brief ? 'Read draft' : 'Prepare a draft' }} →</button></div>
+    <div v-if="open" class="draft-summary"><div><strong>{{ bundle.draft ? 'A draft is ready to discuss.' : bundle.brief ? 'An illustrative starting draft is available.' : 'Conversation first. A draft when it helps.' }}</strong><p>{{ bundle.draft ? 'Review the synthesis, then bring feedback back here.' : (isSharedProject?'Summarize agreement and unresolved questions before review.':'No separate requirement cards to maintain.') }}</p></div><button class="text-action" @click="switchTab('draft')">{{ bundle.draft || bundle.brief ? 'Read draft' : 'Prepare a draft' }} →</button></div>
     <div class="section-heading discussion-section"><h3>Contributions & replies</h3><span>{{ contributions.length }}</span></div>
     <p v-if="!contributions.length" class="empty-note">No contributions yet. A short suggestion, test result, or useful question is a good start.</p>
     <details v-for="({ p, tally }, index) in contributions" :key="p.id" class="approach" :data-source="`position:${p.id}`" :open="true">
-      <summary><span class="approach-index">{{ String(index + 1).padStart(2, '0') }}</span><span class="approach-summary"><strong>{{ positionTitle(p.body, 110) }}</strong><small>{{ name(p.authorId) }} · {{ tally.voters }} {{ tally.voters === 1 ? 'voter' : 'voters' }}<template v-if="tally.weightedRank === 1 && tally.voters"> · Leading by weighted support</template></small></span><span class="approach-toggle">＋</span></summary>
+      <summary><span class="approach-index">{{ String(index + 1).padStart(2, '0') }}</span><span class="approach-summary"><strong>{{ positionTitle(p.body, 110) }}</strong><small>{{ name(p.authorId) }} · {{ tally.voters }} {{ tally.voters === 1 ? 'voter' : 'voters' }}<template v-if="!isSharedProject && tally.weightedRank === 1 && tally.voters"> · Leading by weighted support</template></small></span><span class="approach-toggle">＋</span></summary>
       <div class="approach-body">
+        <p class="small muted">{{new Date(p.createdAt).toLocaleString()}}<span v-if="p.editedAt"> · edited {{new Date(p.editedAt).toLocaleString()}}</span></p>
         <Markdown :source="p.body" />
-        <div class="support-row"><div class="row"><button class="support-button" :class="{ selected: myVote(p.id) === 1 }" :aria-pressed="myVote(p.id) === 1" :disabled="!canContribute || busy" aria-label="Support this approach" @click="vote(p.id, 1)">↑ Support {{ tally.rawUp }}</button><button class="support-button" :class="{ opposed: myVote(p.id) === -1 }" :aria-pressed="myVote(p.id) === -1" :disabled="!canContribute || busy" aria-label="Oppose this approach" @click="vote(p.id, -1)">↓ {{ tally.rawDown }}</button></div><span class="small muted">{{ signed(tally.weightedScore) }} weighted</span></div>
-        <div v-for="c in bundle.comments.filter(c => c.positionId === p.id)" :key="c.id" class="workspace-comment" :data-source="`comment:${c.id}`"><span class="comment-avatar">{{ name(c.authorId).slice(0, 1) }}</span><div><strong>{{ name(c.authorId) }}</strong><Markdown :source="c.body" /></div></div>
+        <button v-if="isSharedProject && canContribute && p.authorId===state.me?.id" class="text-action" @click="editingContribution={kind:'position',id:p.id,expectedBody:p.body,body:p.body}">Edit contribution</button>
+        <details v-if="p.editHistory?.length"><summary>Edit history · {{p.editHistory.length}}</summary><article v-for="edit in p.editHistory"><small>{{new Date(edit.at).toLocaleString()}}</small><Markdown :source="edit.body" /></article></details>
+        <div class="support-row"><div class="row"><button class="support-button" :class="{ selected: myVote(p.id) === 1 }" :aria-pressed="myVote(p.id) === 1" :disabled="!canContribute || busy" aria-label="Support this approach" @click="vote(p.id, 1)">↑ Support {{ tally.rawUp }}</button><button class="support-button" :class="{ opposed: myVote(p.id) === -1 }" :aria-pressed="myVote(p.id) === -1" :disabled="!canContribute || busy" aria-label="Oppose this approach" @click="vote(p.id, -1)">↓ {{ tally.rawDown }}</button></div><span class="small muted">{{ signed(tally.weightedScore) }} {{isSharedProject?'net support':'weighted'}}</span></div>
+        <div v-for="c in bundle.comments.filter(c => c.positionId === p.id)" :key="c.id" class="workspace-comment" :data-source="`comment:${c.id}`"><span class="comment-avatar">{{ name(c.authorId).slice(0, 1) }}</span><div><strong>{{ name(c.authorId) }}</strong><small> · {{new Date(c.createdAt).toLocaleString()}}{{c.editedAt?' · edited':''}}</small><Markdown :source="c.body" /><button v-if="isSharedProject && canContribute && c.authorId===state.me?.id" class="text-action" @click="editingContribution={kind:'comment',id:c.id,expectedBody:c.body,body:c.body}">Edit reply</button></div></div>
         <form v-if="canContribute" class="workspace-comment-form" @submit.prevent="comment(p.id)"><label :for="`reply-${p.id}`" class="sr-only">Reply to {{ positionTitle(p.body) }}</label><input :id="`reply-${p.id}`" v-model="comments[p.id]" type="text" placeholder="Add a question, constraint, or evidence…" required /><button class="btn btn-ghost" :disabled="busy || !comments[p.id]?.trim()">Reply</button></form>
       </div>
     </details>
+    <form v-if="editingContribution" class="briefing-panel" @submit.prevent="saveContribution"><label class="field-row">Edit contribution<textarea v-model="editingContribution.body" required /></label><button class="btn" :disabled="busy">Save edit</button><button type="button" class="btn btn-ghost" @click="editingContribution=null">Cancel</button></form>
     <form v-if="canContribute" class="new-approach" @submit.prevent="post"><label for="approach-draft"><strong>Add to the conversation</strong><span>You don’t need a complete specification to contribute.</span></label><textarea id="approach-draft" v-model="draft" placeholder="Suggest an approach. Explain the trade-off, or share something you’ve learned." required /><div class="spread"><button type="button" class="text-action" :disabled="busy" :aria-pressed="builder" @click="write(() => backend.setBuilderIntent({ threadId: bundle.thread.id, on: !builder }))">{{ builder ? '✓ I can help build this' : '+ I can help build this' }}</button><button class="btn" :disabled="busy || !draft.trim()">Post contribution →</button></div></form>
-    <p v-else-if="!state.me" class="context-note">Choose a demo persona above to contribute.</p>
-    <details class="weight-disclosure"><summary>How support is weighted<template v-if="myWeight"> · your vote counts {{ myWeight.total }}</template></summary><WeightBox v-if="myWeight" :breakdown="myWeight" /><p v-else class="small">Votes combine token holdings, relevant expertise, builder intent, and project role.</p><p class="small muted">Support informs the lead’s decision; it does not make it automatically.</p></details>
+    <p v-else-if="!state.me" class="context-note">{{isSharedProject?'Sign in to contribute.':'Choose a demo persona above to contribute.'}}</p>
+    <p v-if="isSharedProject" class="small muted">Draft text is saved on this device until posted. Support is one account, one signal; the project lead records decisions with a rationale.</p><details v-if="!isSharedProject" class="weight-disclosure"><summary>How support is weighted<template v-if="myWeight"> · your vote counts {{ myWeight.total }}</template></summary><WeightBox v-if="myWeight" :breakdown="myWeight" /><p v-else class="small">Votes combine token holdings, relevant expertise, builder intent, and project role.</p><p class="small muted">Support informs the lead’s decision; it does not make it automatically.</p></details>
     <details v-if="isLead && open" class="lead-disclosure"><summary>Other ways to finish <span>Defer or decline</span></summary><ResolvePanel :bundle="bundle" :analysis="analysis" :project="project" @done="emit('review')" /></details>
     </div>
     <div v-show="tab === 'draft'"><OutcomeDraft :bundle="bundle" :project="project" @conversation="switchTab('discussion')" @grant="emit('grant', $event)" /></div>

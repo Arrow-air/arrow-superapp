@@ -30,7 +30,7 @@ export const spearhead: SourcedProject = {
     'Known source conflicts remain unresolved: the tail-airfoil note says NACA 0015 while configuration files say 0018; the spare KDE pusher was judged insufficient on September 10 but capable in a later September 21 assessment. Neither is silently resolved here.',
     'Pix32 is an unverified transcript model name. The approximate August 31 first-flight date comes from Vector’s dashboard notes, not a call; the imported result uses the September 10 evidence date instead.',
     'Vector’s September 26 packet has been reconciled with the original September 10/15 transcripts and dated wiki notes. Uncertain model names remain open questions; the first-hover date is not established.',
-    'Evidence older than 30 days at the snapshot date is flagged Stale evidence. This means revalidate before treating it as current; it does not erase a historical result or revoke a documented decision.',
+    'Evidence older than 30 days at the snapshot date is marked with its age. This means revalidate before treating it as current; it does not erase a historical result or revoke a documented decision.',
     'No board artifacts, structural test reports, or standalone bench-test reports are included in the packet. A call reporting a test is not the test report itself.',
     'The November US build is tentative. Thomas’s ranch was mentioned as a possible test venue, not a confirmed location.',
     'Funding is not imported as a budget: AIP-007’s reported $35,000 is a monthly spending cap, and the electrical document’s approximately $5,185 is an estimate. Neither establishes allocation, expenditure, or payment.',

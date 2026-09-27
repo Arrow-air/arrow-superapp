@@ -3,6 +3,7 @@
 import { computed, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
 import Markdown from '../components/Markdown.vue';
+import {isSharedProject} from '../data/projectDataMode';
 import WorkTracker from '../components/WorkTracker.vue';
 import { useUnsaved } from '../composables/useUnsaved';
 import { trackingOf, workStages } from '../lib/projectRecords';
@@ -150,7 +151,7 @@ const issueUrl = computed(() => {
             <textarea v-model="constraints" style="min-height: 120px" :disabled="!canEdit" />
             <div class="hint">{{ grant.outcomeSnapshot ? 'Optional work-specific constraints. The recorded design remains linked above.' : grant.briefSnapshot ? 'Accepted requirements from the reviewed brief—not automatically extracted suggestions.' : 'Legacy extraction from the chosen position and its comments.' }}</div>
           </label>
-          <label class="field-row" style="max-width: 360px">
+          <label v-if="!isSharedProject" class="field-row" style="max-width: 360px">
             <span class="label">Proposer award</span>
             <span class="row" style="flex-wrap: nowrap">
               <input v-model.number="sharePercent" type="number" min="0" max="100" step="5" style="width: 90px" :disabled="!canEdit" aria-label="Proposer share, percent" />
@@ -201,7 +202,7 @@ const issueUrl = computed(() => {
           <div style="margin-top: 8px"><Markdown :source="markdown" /></div>
         </div>
         <div class="card small">
-          <div class="label">Proposer award · provisional</div>
+          <div class="label">Reward allocation</div>
           <p v-if="grant.outcomeSnapshot" style="margin: 6px 0 0">No automatic allocation. The discussion authors are credited; the lead must review any reward allocation separately.</p><p v-else style="margin: 6px 0 0">
             <b>{{ percent(sharePercent / 100) }}</b> of whatever this grant is funded at goes to the people who wrote the idea. Writing the spec was the work.
             Whether the draft is good enough as written, or the proposer is paid to finish it, is open question Q30.

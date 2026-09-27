@@ -521,7 +521,7 @@ export class DemoBackend implements Backend {
     const grant = await this.getGrant(grantId);
     if (!grant) throw new Error('No such grant.');
     const old = trackingOf(grant);
-    return this.updateWork({ id: grantId, expectedRevision: old.revision, content: { ...progressOf(old), stage: 'open' }, note: 'Opened for contributors in the demo.' });
+    return this.updateWork({ id: grantId, expectedRevision: old.revision, content: { ...progressOf(old), stage: 'open' }, note: 'Opened for contributors.' });
   }
 
   async freezeVersion(input: { projectId: string; versionId: string }) {

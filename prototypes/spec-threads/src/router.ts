@@ -1,10 +1,12 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import { isRealProjectData } from './data/projectDataMode';
+import { isRealProjectData, isSharedProject } from './data/projectDataMode';
 
 // Hash history so the built app works from any static host or sub-path with no rewrite rules.
 export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
+    { path:'/sign-in', name:'sign-in', component:()=>import('./pages/SignIn.vue') },
+    { path:'/join', name:'join', component:()=>import('./pages/SignIn.vue') },
     { path: '/', redirect: '/p/spearhead' },
     { path: '/projects', name: 'projects', component: () => import('./pages/Projects.vue') },
     { path: '/p/:id', name: 'project', component: () => import('./pages/ProjectPage.vue'), props: true },
@@ -29,4 +31,4 @@ export const router = createRouter({
   },
 });
 
-router.beforeEach(to => isRealProjectData && to.path !== '/p/spearhead' ? { path: '/p/spearhead', query: to.query, replace: true } : true);
+router.beforeEach(to => isSharedProject && ['/how','/readout','/register','/grants','/threads','/projects'].includes(to.path) ? {path:'/p/spearhead',query:{view:to.path==='/grants'?'work':to.path==='/threads'?'shape':'inbox',workspace:'team'},replace:true} : isRealProjectData && !isSharedProject && to.path !== '/p/spearhead' ? { path: '/p/spearhead', query: to.query, replace: true } : true);

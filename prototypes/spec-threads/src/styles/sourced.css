@@ -61,3 +61,43 @@
   .sourced-workspace button.text-action,
   .sourced-workspace a.text-action { min-height:44px; display:inline-flex; align-items:center; }
 }
+/* Working navigation: links behave as links; cards remain compact and readable. */
+.sourced-record-row { text-decoration:none;color:inherit;cursor:pointer;padding-block:16px; }
+.sourced-record-row:hover { background:#f4f7fc; }
+.sourced-record-row:focus-visible { outline:2px solid #2454d8;outline-offset:3px; }
+.sourced-workspace .briefing-item strong { font-size:15px; }
+.sourced-workspace .eyebrow { font-size:10px; }
+.project-search { display:block;max-width:440px;margin:18px 0; }
+.project-search input { width:100%;padding:11px 14px;border:1px solid #c5d0dc;border-radius:6px;background:white;font-size:14px; }
+.coverage-disclosure { padding:16px 20px;margin-bottom:20px; }
+.coverage-disclosure summary { cursor:pointer;font-weight:600;font-size:14px; }
+.source-access { font-size:12px!important; }
+.sourced-list-filters label { font-size:12px;color:#435770; }
+.repo-review-counts button { display:flex;flex-direction:column;gap:6px;padding:14px;background:white;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;color:#435770;text-align:left; }
+.repo-review-counts button[aria-pressed="true"] { border-color:#2454d8;background:#edf2ff; }
+.sourced-workspace .work-queues { flex-wrap:wrap; }
+@media(max-width:700px) {
+  .sourced-workspace .story-card { min-height:0;padding:16px;gap:10px; }
+  .sourced-workspace .story-detail { display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden; }
+  .sourced-workspace .story-card-footer { margin-top:10px; }
+  .sourced-workspace .briefing-panel { padding:17px; }
+  .sourced-workspace .briefing-item { padding-block:14px; }
+  .sourced-workspace .briefing-item>span:not(.eyebrow):not(.sourced-row-meta) { font-size:13px; }
+  .sourced-workspace .sourced-row-meta,.sourced-workspace .evidence-tag { font-size:12px!important; }
+}
+.record-actions { display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px; }
+.auth-card { max-width:500px;margin:40px auto; }
+.auth-card h1 { font-size:28px; }
+.live-workspace .field-row,.record-attachments .field-row,.auth-card .field-row { display:flex;flex-direction:column;gap:8px;margin:16px 0; }
+.inbox-entry,.record-attachments article { border-bottom:1px solid #dae2ec;padding:14px 0;font-size:14px; }
+.inbox-entry p { margin:6px 0;color:#526579;font-size:12px; }
+.record-attachments { margin:20px 0; }
+.live-workspace .briefing-panel + .briefing-panel { margin-top:14px; }
+
+/* Shared forms use the same controls as the evidence filters. */
+.sourced-workspace .briefing-panel > .field-row,.sourced-workspace .briefing-panel form > .field-row,.auth-card .field-row {display:flex;flex-direction:column;gap:7px;margin:16px 0;min-width:0;font-size:14px}
+.sourced-workspace .field-row > input:not([type=checkbox]),.sourced-workspace .field-row > select,.sourced-workspace .field-row > textarea,.auth-card input {box-sizing:border-box;width:100%;max-width:100%;min-height:44px;border:1px solid #cad6e4;background:#fff;border-radius:5px;padding:10px 12px;color:#25374b;font:inherit}
+.sourced-workspace .field-row > textarea {min-height:110px;resize:vertical}
+.sourced-workspace .field-row > :disabled {background:#f5f7fa;color:#65758a}
+.inbox-entry.unread-change {border-left:3px solid #2454d8;padding-left:12px}
+@media(max-width:600px){.record-summary {overflow-wrap:anywhere}.record-attachments small {overflow-wrap:anywhere}}

@@ -10,6 +10,8 @@ export interface ProjectSource {
 export type SourcedKind = 'design' | 'work' | 'question' | 'result';
 export type EvidenceStatus = 'documented' | 'analysis' | 'agreed' | 'reported' | 'in_progress' | 'planned' | 'proposal' | 'open' | 'completed' | 'historical';
 export interface SourcedRecord {
+  eventDate?:string;
+  lastVerifiedAt?:string;
   id: string;
   kind: SourcedKind;
   title: string;

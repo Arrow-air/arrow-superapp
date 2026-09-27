@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {isSharedProject} from '../data/projectDataMode';
 import { ref, watch } from 'vue';
 import { act, backend, isDemo, projectById, state } from '../data/store';
 import { parseTags, tokens } from '../lib/format';
@@ -11,8 +12,9 @@ const bio = ref('');
 const saved = ref(false);
 
 watch(
-  () => state.me,
-  (me) => {
+  () => state.me?.id,
+  () => {
+    const me=state.me;
     tokenBalance.value = me?.tokenBalance ?? 0;
     expertise.value = (me?.expertise ?? []).join(', ');
     location.value = me?.location ?? '';
@@ -25,7 +27,7 @@ async function save() {
   saved.value = false;
   const ok = await act(() =>
     backend.updateProfile({
-      tokenBalance: Number(tokenBalance.value),
+      ...(!isSharedProject ? {tokenBalance:Number(tokenBalance.value)} : {}),
       expertise: parseTags(expertise.value),
       location: location.value,
       bio: bio.value,
@@ -52,7 +54,7 @@ const myRoles = () =>
         </div>
       </div>
 
-      <label class="field-row">
+      <label v-if="!isSharedProject" class="field-row">
         <span class="label">$ARROW balance</span>
         <input v-model.number="tokenBalance" type="number" min="0" step="1" />
         <div class="hint">
@@ -82,7 +84,8 @@ const myRoles = () =>
 
     <aside class="card small">
       <div class="label">Why we ask</div>
-      <p style="margin: 6px 0 0">
+      <p v-if="isSharedProject" style="margin:6px 0 0">Your profile helps teammates find relevant experience. Project roles are assigned by a lead. Support is one account, one signal; profile fields do not change it.</p>
+      <p v-else style="margin: 6px 0 0">
         Tokens, expertise, and project role change how much your vote counts. Your role is set per project by an admin, not by you.
       </p>
       <p v-if="isDemo" style="margin-bottom: 0">In demo mode you are editing a fictional persona. Try raising the balance and watching a thread re-rank.</p>

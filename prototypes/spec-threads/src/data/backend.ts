@@ -41,7 +41,7 @@ export type ResolveInput =
   | { threadId: string; kind: 'defer'; toVersionId: string; note?: string };
 
 export interface Backend {
-  readonly kind: 'demo' | 'supabase';
+  readonly kind: 'demo' | 'supabase' | 'shared';
   listSpecifications(): Promise<import('../lib/types').SpecificationSection[]>;
   saveSpecification(input: { projectId: string; versionId: string; system: string; expectedRevision: number; body: string; decisionIds: string[]; note: string }): Promise<import('../lib/types').SpecificationSection>;
   supersedeDecisions(input: { decisionId: string; supersedesIds: string[]; note: string }): Promise<Decision>;

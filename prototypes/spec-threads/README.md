@@ -1,3 +1,9 @@
+# Current: shared product workspace
+
+See [PRODUCT-WORKSPACE.md](PRODUCT-WORKSPACE.md) for the approved local pilot, architecture, account setup, operations, verification and remaining production gates. The following documents describe historical prototype iterations; the old backend pause is superseded locally by Thomas’s 2026-09-26 build approval. Hosted Arrow infrastructure remains untouched.
+
+---
+
 # Project workspace concept
 
 ## Current iteration — Project briefing & connected work
