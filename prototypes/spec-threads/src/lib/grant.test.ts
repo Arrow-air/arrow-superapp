@@ -62,10 +62,11 @@ describe('grantMarkdown', () => {
     const md = grantMarkdown({ grant, project, version: project.versions[0], members });
     expect(md).toContain('# Grant: Engine PCB');
     expect(md).toContain('**Project:** Spearhead · PT2');
-    expect(md).toContain('**Proposed by:** @jun');
-    expect(md).toContain('**Also contributed:** @rosa');
+    expect(md).toContain('**Idea from:** Jun');
+    expect(md).toContain('**Drafted by:** Omar (project lead)');
+    expect(md).toContain('**Also contributed:** Rosa');
     expect(md).toContain('- 12 V at 3 A');
-    expect(md).toContain('Proposer award: **25%** of the grant to @jun');
+    expect(md).toContain('Proposer award: **25%** to Jun for the idea');
     expect(md).toContain('Why the lead chose this over the top-voted position');
     expect(md).toContain('Connector supply.');
   });

@@ -11,6 +11,7 @@ const work = z
     title: short,
     scope: text,
     acceptance: text,
+    amount: z.number().int().nonnegative().max(1e9).optional(),
   })
   .strict();
 const milestone = z
@@ -38,6 +39,7 @@ const progress = z
     dueDate: z.string().max(10),
     funding: z.enum(["unfunded", "proposed", "funded", "paid"]),
     budget: short,
+    amount: z.number().int().nonnegative().max(1e9).optional(),
     acceptance: text,
     evidence: text,
     milestones: z.array(milestone).max(100),
@@ -103,6 +105,7 @@ export const inputs: Record<string, z.ZodType> = {
       expectedRevision: revision,
       expectedCorpus: text,
       adopt: z.boolean(),
+      decision: short.optional(),
       work: work.optional(),
     })
     .strict(),
@@ -178,7 +181,36 @@ export const inputs: Record<string, z.ZodType> = {
     }),
   ]),
   startFromEvidence: z
-    .object({ recordId: id, title: short.optional(), body: text.optional() })
+    .object({
+      recordId: id,
+      title: short.optional(),
+      body: z.string().trim().min(1).max(100000),
+    })
+    .strict(),
+  setMemberStanding: z
+    .object({
+      projectId: id,
+      memberId: id,
+      role: z.enum(["lead", "core", "member"]).optional(),
+      verifiedExpertise: z.array(short).max(30).optional(),
+    })
+    .strict(),
+  setVersionPlan: z
+    .object({
+      projectId: id,
+      versionId: id,
+      freezeTarget: z
+        .union([z.literal(""), z.string().regex(/^\d{4}-\d{2}-\d{2}$/)])
+        .optional(),
+      retroPool: z
+        .object({
+          amount: z.number().int().nonnegative().max(1e9),
+          systemShares: z.record(short, z.number().min(0).max(1)).optional(),
+        })
+        .strict()
+        .nullable()
+        .optional(),
+    })
     .strict(),
   editContribution: z
     .object({

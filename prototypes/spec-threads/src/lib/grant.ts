@@ -84,14 +84,14 @@ export function grantMarkdown(args: {
   members: Map<string, Member>;
 }): string {
   const { grant, project, version, members } = args;
-  const handle = (id: string) => '@' + (members.get(id)?.handle ?? 'unknown');
+  const handle = (id: string) => members.get(id)?.displayName.split(' (')[0] ?? 'Former member';
   const pct = Math.round(grant.proposerShare * 100);
   const lines = [
     `# ${grant.workKind === 'bounty' ? 'Bounty' : 'Grant'}: ${grant.title}`,
     '',
     `**Project:** ${project.name}${version ? ` · ${version.name}` : ''}  `,
-    `**Proposed by:** ${grant.proposerIds.map(handle).join(', ')}  `,
-    `**Promoted by:** ${handle(grant.byMemberId)} (project lead)  `,
+    `**Idea from:** ${grant.proposerNote ?? grant.proposerIds.map(handle).join(', ')}  `,
+    `**Drafted by:** ${handle(grant.byMemberId)} (project lead)  `,
     grant.outcomeSnapshot ? `**Purpose:** ${grant.workPurpose} · ${grant.decisionIds?.length ? 'linked to an adopted design decision' : 'no design adoption implied'}` : `**Community signal at promotion:** weighted rank ${grant.weightedRankAtResolution}, raw rank ${grant.rawRankAtResolution}`,
   ];
   if (grant.tracking) {
@@ -110,8 +110,8 @@ export function grantMarkdown(args: {
     '',
     '## Rewards',
     '',
-    `- Grant amount: ${grant.tracking?.budget || '_TBD_'}`,
-    grant.outcomeSnapshot ? `- Proposer award: ${pct ? `**${pct}%** (lead-edited allocation)` : '_Not allocated_'}` : `- Proposer award: **${pct}%** of the grant to ${grant.proposerIds.map(handle).join(', ')} for writing the spec`,
+    `- Reward: ${grant.tracking?.amount ? `${grant.tracking.amount.toLocaleString('en-US')} ARROW` : grant.tracking?.budget || '_TBD_'}`,
+    pct ? `- Proposer award: **${pct}%**${grant.tracking?.amount ? ` (${Math.floor(grant.tracking.amount * grant.proposerShare).toLocaleString('en-US')} ARROW)` : ''} to ${grant.proposerNote ? `${grant.proposerNote.split(' · ')[0]} for raising it` : `${grant.proposerIds.map(handle).join(', ')} for the idea`}` : '- Proposer award: _Not allocated_',
     ...(grant.briefSnapshot || grant.outcomeSnapshot ? [] : ['', '## Deliverables', '', '- [ ] _Fill in from the spec above_']),
   );
   if (grant.tracking?.milestones.length) lines.push('', '## Milestones', '', ...grant.tracking.milestones.map(m=>`- [${m.completed ? 'x' : ' '}] ${m.title} — ${m.acceptance}${m.evidence ? `\n  Evidence: ${m.evidence}` : ''}`));

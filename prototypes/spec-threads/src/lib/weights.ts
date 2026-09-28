@@ -18,6 +18,21 @@ import type {
   WeightConfig,
 } from './types';
 
+/**
+ * The shared workspace until wallets are linked: no token term (a self-reported balance is not
+ * evidence), lead-verified expertise, public builder intent, and a per-project role multiplier.
+ */
+export const SHARED_WEIGHTS: WeightConfig = {
+  base: 1,
+  tokenFactor: 0,
+  tokenScale: 1000,
+  tokenCap: 0,
+  expertiseBonus: 1,
+  builderBonus: 1,
+  roleMultiplier: { lead: 2, core: 1.5, member: 1 },
+  matchSystem: true,
+};
+
 export const DEFAULT_WEIGHTS: WeightConfig = {
   base: 1,
   tokenFactor: 1,
@@ -36,9 +51,11 @@ export function tokenTerm(balance: number, cfg: WeightConfig): number {
   return round2(Math.min(cfg.tokenCap, raw));
 }
 
-export function matchedTags(member: Member, thread: Thread): string[] {
-  const have = new Set(member.expertise.map((t) => t.trim().toLowerCase()));
-  return thread.tags.map((t) => t.trim().toLowerCase()).filter((t) => have.has(t));
+export function matchedTags(member: Member, thread: Thread, cfg?: Pick<WeightConfig, 'matchSystem'>): string[] {
+  // A lead-verified list, when a project keeps one, replaces self-described tags entirely.
+  const have = new Set((member.verifiedExpertise ?? member.expertise).map((t) => t.trim().toLowerCase()));
+  const tags = [...thread.tags, ...(cfg?.matchSystem && thread.system ? [thread.system] : [])];
+  return [...new Set(tags.map((t) => t.trim().toLowerCase()))].filter((t) => have.has(t));
 }
 
 export function voteWeight(args: {
@@ -49,7 +66,7 @@ export function voteWeight(args: {
   cfg: WeightConfig;
 }): WeightBreakdown {
   const { member, thread, role, isBuilder, cfg } = args;
-  const matched = matchedTags(member, thread);
+  const matched = matchedTags(member, thread, cfg);
   const base = cfg.base;
   const token = tokenTerm(member.tokenBalance, cfg);
   const expertise = matched.length > 0 ? cfg.expertiseBonus : 0;

@@ -17,7 +17,7 @@ const db = new pg.Pool({ connectionString: config.databaseUrl });
 const admin = createClient(config.supabaseUrl, config.serviceKey, {
   auth: { persistSession: false },
 });
-const BASE = "http://127.0.0.1:4197";
+const BASE = process.env.ACCEPTANCE_BASE ?? "http://127.0.0.1:4197";
 let checks = 0;
 function check(name: string, value: unknown) {
   assert.ok(value, name);
@@ -114,11 +114,31 @@ async function rpc(
     expectedRevision: revision ?? (await snapshot(user)).revision,
   });
 }
-check(
-  "anonymous sees evidence but not team state",
-  (await call(null, "/evidence")).status === 200 &&
-    (await call(null, "/state")).status === 401,
-);
+{
+  const anon = await call(null, "/state");
+  check(
+    "anonymous reads the project but is not a member",
+    (await call(null, "/evidence")).status === 200 &&
+      anon.status === 200 &&
+      anon.data.me === null &&
+      Array.isArray(anon.data.threads) &&
+      (await call(null, "/events")).status === 200,
+  );
+  check(
+    "anonymous cannot write",
+    (await call(null, "/rpc", { method: "createThread", input: {}, expectedRevision: 0 })).status === 401,
+  );
+  check(
+    "handles come from names, not email addresses",
+    anon.data.members.every((m: any) => !/-[0-9a-f]{6}$/.test(m.handle)),
+  );
+  check(
+    "shared weighting uses role and verified expertise, not tokens",
+    anon.data.projects[0].weights.roleMultiplier.lead === 2 &&
+      anon.data.projects[0].weights.tokenCap === 0 &&
+      anon.data.projects[0].weights.matchSystem === true,
+  );
+}
 check(
   "forged JWT is rejected",
   (await call({ token: "forged" }, "/state")).status === 401,
@@ -138,8 +158,14 @@ check(
   (await rpc(member, "updateProfile", { tokenBalance: 100000, role: "lead" }))
     .status === 400,
 );
+check(
+  "a discussion cannot start empty",
+  (await rpc(member, "startFromEvidence", { recordId: "charging-bms" }))
+    .status === 400,
+);
 const start = await rpc(member, "startFromEvidence", {
   recordId: "charging-bms",
+  body: "What charging behaviour do we need to verify on the bench?",
 });
 assert.equal(start.status, 200, JSON.stringify(start.data));
 const thread = start.data.result;
@@ -147,12 +173,24 @@ check(
   "source-linked discussion records actual app author",
   thread.authorId === member.id &&
     thread.sourceRecordId === "charging-bms" &&
-    thread.body.includes("not authored or approved"),
+    thread.body.startsWith("**Background") &&
+    (await snapshot()).positions.some(
+      (p: any) =>
+        p.threadId === thread.id &&
+        p.authorId === member.id &&
+        p.body.startsWith("What charging behaviour"),
+    ),
 );
 check(
-  "repeated source discussion start is idempotent",
-  (await rpc(member, "startFromEvidence", { recordId: "charging-bms" })).data
-    .result.id === thread.id,
+  "starting the same record again joins the open discussion",
+  (
+    await rpc(member, "startFromEvidence", {
+      recordId: "charging-bms",
+      body: "Adding: record the pack configuration.",
+    })
+  ).data.result.id === thread.id &&
+    (await snapshot()).positions.filter((p: any) => p.threadId === thread.id)
+      .length === 2,
 );
 await call(member, "/watches", { target: thread.id, on: true });
 const stale = (await snapshot()).revision;
@@ -188,6 +226,18 @@ check(
     })
   ).status === 403,
 );
+{
+  const own = (await snapshot()).positions.find(
+    (p: any) => p.threadId === thread.id && p.authorId === member.id,
+  );
+  check(
+    "nobody can support their own contribution, but others can",
+    (await rpc(member, "castVote", { positionId: own.id, value: 1 })).status ===
+      400 &&
+      (await rpc(lead, "castVote", { positionId: own.id, value: 1 })).status ===
+        200,
+  );
+}
 const draft = await rpc(lead, "saveOutcome", {
   threadId: thread.id,
   expectedRevision: 0,
@@ -215,9 +265,11 @@ const resolution = {
   expectedRevision: 1,
   expectedCorpus: corpusKey(bundle(s)),
   adopt: true,
+  decision: "Characterize charging on the bench first",
   work: {
     kind: "bounty",
     purpose: "implementation",
+    amount: 4000,
     title: "Document a bench charging procedure",
     scope:
       "Write and review the procedure with configuration and measurement fields.",
@@ -236,8 +288,47 @@ check(
   "decision and work created atomically from reviewed outcome",
   !!closed.data.result.resolution.decisionId &&
     !!g &&
-    g.outcomeSnapshot.sources.length === 3,
+    g.outcomeSnapshot.sources.length === 5,
 );
+check(
+  "decision reads as its answer and work carries the reward and proposer award",
+  (await snapshot()).decisions.find(
+    (d: any) => d.id === closed.data.result.resolution.decisionId,
+  ).chosen === "Characterize charging on the bench first" &&
+    g.tracking.amount === 4000 &&
+    g.proposerShare === 0.25 &&
+    g.proposerIds[0] === member.id,
+);
+check(
+  "only the lead plans the freeze and verifies expertise",
+  (await rpc(member, "setVersionPlan", { projectId: "spearhead", versionId: "PT2", freezeTarget: "2026-11-15" })).status >= 400 &&
+    (await rpc(member, "setMemberStanding", { projectId: "spearhead", memberId: member.id, role: "lead" })).status >= 400,
+);
+{
+  const plan = await rpc(lead, "setVersionPlan", {
+    projectId: "spearhead",
+    versionId: "PT2",
+    freezeTarget: "2026-11-15",
+    retroPool: { amount: 10000, systemShares: { power: 0.3 } },
+  });
+  const standing = await rpc(lead, "setMemberStanding", {
+    projectId: "spearhead",
+    memberId: member.id,
+    role: "core",
+    verifiedExpertise: ["power"],
+  });
+  const after = await snapshot();
+  const pt2 = after.projects[0].versions.find((v: any) => v.id === "PT2");
+  check(
+    "lead sets the freeze date, retro pool, role and verified expertise",
+    plan.status === 200 &&
+      standing.status === 200 &&
+      pt2.freezeTarget === "2026-11-15" &&
+      pt2.retroPool.amount === 10000 &&
+      after.roles.find((r: any) => r.memberId === member.id).role === "core" &&
+      after.members.find((m: any) => m.id === member.id).verifiedExpertise[0] === "power",
+  );
+}
 let progress = { ...g.tracking, stage: "open", ownerId: member.id };
 delete progress.history;
 delete progress.revision;

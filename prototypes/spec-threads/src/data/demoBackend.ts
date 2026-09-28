@@ -19,6 +19,9 @@ import type { Comment, Grant, Member, Position, Project, Thread } from '../lib/t
 import { discussingVersion, freezeCheck, freezeVersions, versionById } from '../lib/versions';
 import { NotSignedInError, type Backend, type ResolveInput, type ThreadBundle } from './backend';
 import { seedState, type DemoState } from './seed';
+import { allocateRetro, scoredContributions, PROJECT_WIDE } from '../lib/retro';
+import { DEFAULT_PROPOSER_SHARE } from '../lib/grant';
+import type { Role } from '../lib/types';
 
 const KEY = 'arrow-spec-threads-demo-v2';
 
@@ -36,6 +39,8 @@ function memoryStorage(): StorageLike {
     removeItem: (k) => void m.delete(k),
   };
 }
+
+const firstLine = (text: string) => text.split('\n').map(l => l.replace(/^#{1,6}\s+|^[-*>]\s+|[*_`]/g, '').trim()).find(Boolean) ?? '';
 
 const newId = (prefix: string) =>
   `${prefix}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
@@ -214,6 +219,8 @@ export class DemoBackend implements Backend {
     if (!position) throw new Error('No such position.');
     const thread = this.state.threads.find((n) => n.id === position.threadId);
     if (thread?.status !== 'open') throw new Error('Voting is closed on this thread.');
+    // Support is how the retro pool is split, so nobody can support their own contribution.
+    if (position.authorId === me.id && input.value !== 0) throw new Error('You can’t support or oppose your own contribution.');
     this.state.votes = this.state.votes.filter((v) => !(v.positionId === input.positionId && v.memberId === me.id));
     if (input.value !== 0) {
       this.state.votes.push({ positionId: input.positionId, memberId: me.id, value: input.value, castAt: new Date().toISOString() });
@@ -322,7 +329,7 @@ export class DemoBackend implements Backend {
   async saveOutcome(input: { threadId: string; expectedRevision: number; body: string; openQuestions: string }): Promise<OutcomeDraft> {
     const me = this.me(), thread = this.thread(input.threadId);
     const version = versionById(this.project(thread.projectId), thread.versionId);
-    if (thread.status !== 'open' || !version || !['discussing', 'planned'].includes(version.state)) throw new Error('This discussion is closed to draft changes.');
+    if (thread.status !== 'open' || !version || !['discussing', 'planned', 'building'].includes(version.state)) throw new Error('This discussion is closed to draft changes.');
     const existing = this.state.drafts?.find(d => d.threadId === thread.id);
     if ((existing?.revision ?? 0) !== input.expectedRevision) throw new Error('The draft changed. Reload to review the latest revision; your text has not been saved.');
     if (existing && existing.authorId !== me.id) this.requireLead(thread.projectId, me);
@@ -338,26 +345,28 @@ export class DemoBackend implements Backend {
 
   private workFromOutcome(thread: Thread, snapshot: OutcomeSnapshot, work: WorkInput, me: Member, decisionId?: string): Grant {
     validateWork(work);
+    if (work.amount !== undefined && (!Number.isFinite(work.amount) || work.amount < 0)) throw new Error('Reward must be zero or more $ARROW.');
     if (snapshot.openQuestions.trim() && work.purpose !== 'research') throw new Error('Resolve open questions before commissioning implementation, or define research work to answer them.');
     const at = new Date().toISOString();
     const authors = [...new Set(snapshot.sources.map(s => s.authorId))];
     return {
       id: newId('g'), projectId: thread.projectId, versionId: snapshot.versionId, threadId: thread.id,
       positionId: '', title: work.title.trim(), scope: `${work.scope.trim()}\n\n## Acceptance criteria\n\n${work.acceptance.trim()}`,
-      constraints: [], proposerIds: [thread.authorId], proposerShare: 0,
+      // The proposer award from the 2026-09-23 call: whoever raised the idea gets a slice of the work it becomes.
+      constraints: [], proposerIds: [thread.authorId], proposerShare: DEFAULT_PROPOSER_SHARE,
       contributorIds: authors.filter(id => id !== thread.authorId),
       weightedRankAtResolution: 0, rawRankAtResolution: 0,
       byMemberId: me.id, createdAt: at, updatedAt: at, status: 'draft',
-      tracking: { revision: 0, stage: 'draft', ownerId: '', dueDate: '', funding: 'unfunded', budget: '', acceptance: work.acceptance.trim(), evidence: '', milestones: [], decisionIds: decisionId ? [decisionId] : [], history: [] },
+      tracking: { revision: 0, stage: 'draft', ownerId: '', dueDate: '', funding: 'unfunded', budget: '', ...(work.amount ? { amount: Math.floor(work.amount) } : {}), acceptance: work.acceptance.trim(), evidence: '', milestones: [], decisionIds: decisionId ? [decisionId] : [], history: [] },
       workKind: work.kind, workPurpose: work.purpose, decisionIds: decisionId ? [decisionId] : [], outcomeSnapshot: structuredClone(snapshot),
     };
   }
 
-  async concludeThread(input: { threadId: string; expectedRevision: number; expectedCorpus: string; adopt: boolean; work?: WorkInput }) {
+  async concludeThread(input: { threadId: string; expectedRevision: number; expectedCorpus: string; adopt: boolean; decision?: string; work?: WorkInput }) {
     const me = this.me(), thread = this.thread(input.threadId);
     this.requireLead(thread.projectId, me);
     const version = versionById(this.project(thread.projectId), thread.versionId);
-    if (thread.status !== 'open' || !version || !['discussing', 'planned'].includes(version.state)) throw new Error('This discussion is already closed.');
+    if (thread.status !== 'open' || !version || !['discussing', 'planned', 'building'].includes(version.state)) throw new Error('This discussion is already closed.');
     const bundle = this.bundle(thread), draft = bundle.draft;
     if (!draft || draft.revision !== input.expectedRevision) throw new Error('Save and review the latest draft first.');
     if (corpusKey(bundle) !== input.expectedCorpus) throw new Error('New discussion arrived. Read it before recording an outcome.');
@@ -367,9 +376,11 @@ export class DemoBackend implements Backend {
     const decisionId = input.adopt ? newId('d') : undefined;
     // Validate all requested outputs before committing any of them.
     const grant = input.work ? this.workFromOutcome(thread, snapshot, input.work, me, decisionId) : undefined;
+    // A decision is recorded as its answer, not its question: "Separate regulator per servo", not "How should…?".
+    const answer = (input.decision?.trim() || firstLine(draft.body) || thread.title).slice(0, 240);
     if (decisionId) this.state.decisions.push({
       id: decisionId, projectId: thread.projectId, versionId: thread.versionId, threadId: thread.id, positionId: '',
-      question: thread.title, chosen: thread.title, rationale: 'Adopted from the reviewed discussion outcome.',
+      question: thread.title, chosen: answer, rationale: 'Adopted from the reviewed discussion outcome.',
       weightedRankAtDecision: 0, rawRankAtDecision: 0, byMemberId: me.id, at: snapshot.at, status: 'decided', outcomeSnapshot: structuredClone(snapshot),
     });
     if (grant) this.state.grants.push(grant);
@@ -541,7 +552,10 @@ export class DemoBackend implements Backend {
     if (baselineSections.some(s=>s.decisionIds.some(id=>!currentIds.has(id)))) throw new Error('Reconcile specification sections with replaced decisions before freezing.');
     const inherited = effectiveSections(project, input.versionId, this.state.specifications ?? []).filter(s => s.versionId !== input.versionId);
     this.state.specifications = [...(this.state.specifications ?? []), ...inherited.map(s => ({ ...structuredClone(s), id: newId('spec'), versionId: input.versionId }))];
-    project.versions = freezeVersions({ project, versionId: input.versionId, byMemberId: me.id });
+    const pool = check.version.retroPool;
+    // The retro allocation is fixed at the moment of the freeze so later votes cannot change it.
+    const allocation = pool ? { ...allocateRetro(pool, scoredContributions({ project, versionId: input.versionId, bundles: this.state.threads.map(t => this.bundle(t)), members: this.state.members, roles: this.state.roles })), at: new Date().toISOString(), byMemberId: me.id } : undefined;
+    project.versions = freezeVersions({ project, versionId: input.versionId, byMemberId: me.id }).map(v => v.id === input.versionId && allocation ? { ...v, retroAllocation: allocation } : v);
     this.save();
     return structuredClone(project);
   }
@@ -594,10 +608,12 @@ export class DemoBackend implements Backend {
     if (!Object.prototype.hasOwnProperty.call(transitions, next.stage) || !['unfunded', 'proposed', 'funded', 'paid'].includes(next.funding)) throw new Error('Choose a valid work and funding status.');
     if (next.stage !== old.stage && !transitions[old.stage].includes(next.stage)) throw new Error('That work status transition is not allowed.');
     if (!lead) {
-      const stable = (x: typeof next) => ({ ownerId: x.ownerId, dueDate: x.dueDate, funding: x.funding, budget: x.budget, acceptance: x.acceptance, decisionIds: x.decisionIds, milestones: x.milestones.map(m => ({ id: m.id, title: m.title, acceptance: m.acceptance, completed: m.completed })) });
+      const stable = (x: typeof next) => ({ ownerId: x.ownerId, dueDate: x.dueDate, funding: x.funding, budget: x.budget, amount: x.amount ?? 0, acceptance: x.acceptance, decisionIds: x.decisionIds, milestones: x.milestones.map(m => ({ id: m.id, title: m.title, acceptance: m.acceptance, completed: m.completed })) });
       if (JSON.stringify(stable(next)) !== JSON.stringify(stable(progressOf(old))) || (next.stage !== old.stage && !['in_progress', 'in_review'].includes(next.stage))) throw new Error('Only the lead changes scope, assignments, funding, or accepts completion.');
     }
     if (next.ownerId && !this.state.members.some(m => m.id === next.ownerId)) throw new Error('Unknown work owner.');
+    if (next.amount !== undefined && (!Number.isFinite(next.amount) || next.amount < 0)) throw new Error('Reward must be zero or more $ARROW.');
+    if (next.amount !== undefined) next.amount = Math.floor(next.amount);
     if (next.dueDate && (!/^\d{4}-\d{2}-\d{2}$/.test(next.dueDate) || Number.isNaN(Date.parse(next.dueDate)))) throw new Error('Use a valid due date.');
     if (next.stage !== 'draft' && next.stage !== 'cancelled' && (!grant.scope.trim() || !next.acceptance.trim())) throw new Error('Define scope and acceptance criteria before opening work.');
     if (['in_progress', 'in_review', 'completed'].includes(next.stage) && !next.ownerId) throw new Error('Assign an owner before starting work.');
@@ -608,7 +624,7 @@ export class DemoBackend implements Backend {
     next.decisionIds = [...new Set(next.decisionIds)];
     if (next.decisionIds.some(id => !versions.some(d => d.id === id))) throw new Error('Link decisions from this work package’s design baseline.');
     if (old.stage === 'completed' || old.stage === 'cancelled') {
-      const immutable = (x: typeof next) => { const { funding, budget, ...rest } = x; return rest; };
+      const immutable = (x: typeof next) => { const { funding, budget, amount, ...rest } = x; return rest; };
       if (JSON.stringify(immutable(next)) !== JSON.stringify(immutable(progressOf(old)))) throw new Error('Closed work keeps its accepted record. Create follow-on work for changes.');
     }
     const at = new Date().toISOString();
@@ -632,6 +648,47 @@ export class DemoBackend implements Backend {
     const thread = await this.createThread({ projectId: project.id, versionId: version.id, title: input.title, body: input.body, tags: original.tags, system: original.system });
     const saved = this.thread(thread.id); saved.sourceDecisionId = d?.id; saved.sourceGrantId = g?.id;
     this.save(); return structuredClone(saved);
+  }
+
+  /** Lead only. Set someone's project role and the expertise the lead has confirmed. */
+  async setMemberStanding(input: { projectId: string; memberId: string; role?: Role; verifiedExpertise?: string[] }) {
+    const me = this.me(), project = this.project(input.projectId);
+    this.requireLead(project.id, me);
+    const member = this.state.members.find(m => m.id === input.memberId);
+    if (!member) throw new Error('No such member.');
+    if (input.role !== undefined) {
+      if (!['lead', 'core', 'member'].includes(input.role)) throw new Error('Choose a valid role.');
+      const leads = this.state.roles.filter(r => r.projectId === project.id && r.role === 'lead');
+      if (input.role !== 'lead' && leads.length === 1 && leads[0].memberId === member.id) throw new Error('A project keeps at least one lead. Make someone else lead first.');
+      const role = this.state.roles.find(r => r.projectId === project.id && r.memberId === member.id);
+      if (role) role.role = input.role; else this.state.roles.push({ projectId: project.id, memberId: member.id, role: input.role });
+    }
+    if (input.verifiedExpertise !== undefined) member.verifiedExpertise = [...new Set(input.verifiedExpertise.map(t => t.trim().toLowerCase()).filter(Boolean))].slice(0, 30);
+    this.save();
+    return structuredClone(member);
+  }
+
+  /** Lead only. The freeze target date and the retro pool for a version that is still open. */
+  async setVersionPlan(input: { projectId: string; versionId: string; freezeTarget?: string; retroPool?: { amount: number; systemShares?: Record<string, number> } | null }) {
+    const me = this.me(), project = this.project(input.projectId);
+    this.requireLead(project.id, me);
+    const version = versionById(project, input.versionId);
+    if (!version || !['discussing', 'planned'].includes(version.state)) throw new Error('Only a version that is still open can be planned.');
+    if (input.freezeTarget !== undefined) {
+      if (input.freezeTarget && (!/^\d{4}-\d{2}-\d{2}$/.test(input.freezeTarget) || Number.isNaN(Date.parse(input.freezeTarget)))) throw new Error('Use a valid freeze date.');
+      version.freezeTarget = input.freezeTarget || undefined;
+    }
+    if (input.retroPool === null) delete version.retroPool;
+    else if (input.retroPool) {
+      const { amount, systemShares = {} } = input.retroPool;
+      if (!Number.isFinite(amount) || amount < 0) throw new Error('The retro pool must be zero or more $ARROW.');
+      const shares = Object.fromEntries(Object.entries(systemShares).filter(([, v]) => v > 0));
+      if (Object.keys(shares).some(k => ![...project.systems, PROJECT_WIDE].includes(k))) throw new Error('Unknown system in the pool split.');
+      if (Object.values(shares).some(v => !Number.isFinite(v) || v < 0) || Object.values(shares).reduce((a, b) => a + b, 0) > 1.0001) throw new Error('System shares must add up to 100% or less.');
+      version.retroPool = { amount: Math.floor(amount), ...(Object.keys(shares).length ? { systemShares: shares } : {}), setBy: me.id, setAt: new Date().toISOString() };
+    }
+    this.save();
+    return structuredClone(project);
   }
 
   async updateProfile(input: Partial<Pick<Member, 'tokenBalance' | 'expertise' | 'location' | 'bio'>>) {

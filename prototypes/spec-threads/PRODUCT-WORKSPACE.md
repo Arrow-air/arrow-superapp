@@ -1,5 +1,63 @@
 # Arrow workspace — local pilot
 
+## Demo-ready iteration — 2026-09-27 (`demo-ready-v1`)
+
+Thomas asked for the workspace to be ready to walk Alperen and Gavin through before connecting Discord. A review on 2026-09-27 found the 09-26 build had drifted from the 09-23 brief: weighted support was switched off, rewards were a free-text field, team activity never reached the overview or spec, and signed-out visitors could not read team discussions. This iteration brings the brief back and rebuilds the shared-mode interface around PT2.
+
+**Front page is PT2.** The shared build has its own shell (`src/workspace/`): Overview, Discussions, Spec, Work, People, Sources, plus a freeze review and an inbox. The old sidebar, banner and three levels of tabs are gone in shared mode. The sandbox and the read-only LAN previews keep their existing interface.
+- **Overview:** what is happening, the PT2 open questions (live discussions first, then call questions nobody has picked up), the freeze date and readiness, the retro pool, what was recently decided, work underway, and PT2 by system.
+- **Spec:** reads as the PT2 spec. For each system it shows the team's decisions (recorded as the answer, not the question), direction from calls and the repository that the team hasn't confirmed yet, the questions still open, and the earlier baseline for reference.
+- **Readable by anyone.** `GET /api/state` and `/api/events` are public; writes still need an invited member account. Files still require sign-in.
+- **Closing the loop.** Starting from a call question links it to the discussion. Once the discussion is settled, the original record shows "Decided: …" and drops out of the open lists.
+
+**Weighted support is back** (DECISIONS 2026-09-17). Weight = (1 + expertise the lead verified for the discussion's system + 1 if you offered to help build it) × role (lead 2, core 1.5, contributor 1).
+- Tokens count for nothing until wallets are linked: a typed-in balance is not evidence.
+- The lead sets roles and verified expertise on the People page (`setMemberStanding`).
+- Self-described skills stay on the profile but do not change weight.
+
+**Keeping the rewards honest:**
+- Nobody can support their own contribution.
+- The text someone opens a discussion with is contribution #1, so it can earn support.
+- Work that grows out of a call question credits whoever raised it on the call (e.g. "Erick, 2026-09-25"), not whoever clicked "Discuss this". That proposer award is held until the person has an account.
+
+**Freeze plan and retro rewards** (DECISIONS 2026-09-23):
+- The lead sets the PT2 freeze date and a retro pool, optionally pre-split by system (`setVersionPlan`).
+- The freeze review lists every open discussion with settle / defer / decline actions, previews the retro split by weighted net support (including ideas that weren't adopted), and records the allocation snapshot at the freeze (`src/lib/retro.ts`).
+- Work drafted from a discussion carries a reward in $ARROW. 25% goes to whoever raised the idea as the proposer award.
+- People pages show contributions, weighted support received, retro share, proposer awards and accepted work.
+- Call questions nobody picked up before a freeze carry into the next version.
+- The frozen spec is marked locked, and inherited decisions appear separately in the next version's spec.
+- Everyone is notified of the freeze, and the overview announces it with the split.
+- Nothing is paid from the app.
+
+**Fixes:**
+- A PT1 question now starts a PT1 discussion.
+- "Discuss this" asks for an opening contribution instead of saving an empty thread. Starting a record that is already being discussed joins that discussion.
+- The dead Design review button now opens the freeze review.
+- The inbox has one unread count, with a badge on the tab and "Mark all read".
+- Names appear everywhere, including the GitHub export ("Idea from" / "Drafted by"). Account handles are derived from names, never email addresses.
+- Acceptance criteria are no longer shown twice.
+- The reason a disabled settle button can't be pressed is shown next to it.
+- An unknown project URL shows "not found".
+- Work has one-click actions (open for claims, submit for review, accept, request changes); claiming moves work to in progress.
+- Inbox items say who did what.
+- Spec lines show their one-line content and whether they were agreed or only proposed.
+- People lists who the call notes credit but who has no account yet.
+- Visitors get a "How to help" strip.
+- No more 401 console noise when signed out.
+
+**Existing workspaces migrate on start:** flat one-signal weights become shared weights, handles are renamed, and "Next version" becomes PT3. A snapshot and a `migration` event are written first.
+
+**Verified:**
+- Typecheck, **157 unit tests**.
+- **42 API acceptance checks** (`server/acceptance-run.ts`; `ACCEPTANCE_BASE` overrides the target).
+- **29 shared browser checks** in `e2e/demo-workspace.cjs`, which replaces `shared-workspace.cjs`: two accounts, desktop and mobile, from reading signed out through the freeze and its aftermath.
+- The existing six suites: **248 browser checks**.
+
+**Still open for the demo:** the real workspace has one member and one discussion. Everything on the team side is empty until people use it. Discord bridging is the next step.
+
+## Pilot build — 2026-09-26
+
 **Current implementation, 2026-09-26.** Thomas approved the product-review build sequence. This supersedes the earlier pause on backend work **for this isolated local workspace**, not for Arrow's existing hosted demo. Branch: `product-workspace-v1`. The historical prototype files below remain reference material.
 
 ## Product model

@@ -20,3 +20,6 @@ dist-real-before-vector-json
 .runtime/
 dist-shared/
 server-dist/
+dist-staging/
+server-dist-staging/
+dist-e2e/

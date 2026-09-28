@@ -11,7 +11,7 @@ await build({
 });
 for (const script of [
   ".runtime/acceptance-test.mjs",
-  "e2e/shared-workspace.cjs",
+  "e2e/demo-workspace.cjs",
 ]) {
   const result = spawnSync(process.execPath, [script], { stdio: "inherit" });
   if (result.status) process.exit(result.status);

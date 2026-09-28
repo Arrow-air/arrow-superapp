@@ -70,8 +70,8 @@ async function download(f: any) {
   <section v-if="state.me" class="briefing-panel record-attachments">
     <h3>Files & revisions</h3>
     <p class="small muted">
-      Attachments are evidence submissions, not accepted results. Each upload
-      preserves its own file and revision note.
+      CAD, test logs, photos, or documents. Each upload keeps its own file and a
+      note saying which revision or configuration it is.
     </p>
     <article v-for="f in files" :key="f.id">
       <button class="text-action" @click="download(f)">

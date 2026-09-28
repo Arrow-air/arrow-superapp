@@ -50,10 +50,17 @@ export class SharedBackend implements Backend {
     this.cached = undefined;
   }
   async snapshot() {
-    return (this.cached ??= api<SharedSnapshot>("/state").catch((e) => {
-      this.cached = undefined;
-      throw e;
-    }));
+    return (this.cached ??= api<SharedSnapshot>("/state")
+      .catch(async (e) => {
+        // The project is public. An expired session falls back to reading signed out.
+        if (e.status !== 401) throw e;
+        await (await authClient()).auth.signOut({ scope: "local" });
+        return api<SharedSnapshot>("/state");
+      })
+      .catch((e) => {
+        this.cached = undefined;
+        throw e;
+      }));
   }
   async rpc(method: string, input: unknown) {
     const s = await this.snapshot();
@@ -198,6 +205,10 @@ export class SharedBackend implements Backend {
   updateWork: (
     ...a: Parameters<Backend["updateWork"]>
   ) => ReturnType<Backend["updateWork"]> = (v) => this.rpc("updateWork", v);
+  setMemberStanding = (v: Parameters<NonNullable<Backend["setMemberStanding"]>>[0]) =>
+    this.rpc("setMemberStanding", v);
+  setVersionPlan = (v: Parameters<NonNullable<Backend["setVersionPlan"]>>[0]) =>
+    this.rpc("setVersionPlan", v);
   startFollowUp: (
     ...a: Parameters<Backend["startFollowUp"]>
   ) => ReturnType<Backend["startFollowUp"]> = (v) =>

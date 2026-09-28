@@ -48,6 +48,12 @@ export function handleOf(memberId: string): string {
   return memberById.value.get(memberId)?.handle ?? 'unknown';
 }
 
+/** How people appear in the interface: their name, never an account handle. */
+export function nameOf(memberId: string | undefined): string {
+  if (!memberId) return 'Unassigned';
+  return memberById.value.get(memberId)?.displayName.split(' (')[0] ?? 'Former member';
+}
+
 export function myRoleOn(projectId: string) {
   return state.me ? state.roles.find((r) => r.projectId === projectId && r.memberId === state.me!.id)?.role : undefined;
 }

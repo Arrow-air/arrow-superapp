@@ -7,11 +7,12 @@ import {isSharedProject} from '../data/projectDataMode';
 import WorkTracker from '../components/WorkTracker.vue';
 import { useUnsaved } from '../composables/useUnsaved';
 import { trackingOf, workStages } from '../lib/projectRecords';
-import { act, backend, handleOf, memberById, myRoleOn, projectById, state, versionOf } from '../data/store';
+import { act, backend, handleOf, nameOf, memberById, myRoleOn, projectById, state, versionOf } from '../data/store';
 import { outcomeMarkdown } from '../lib/outcome';
 import { briefMarkdown } from '../lib/brief';
 import { grantMarkdown } from '../lib/grant';
 import { percent } from '../lib/labels';
+import { proposerAward } from '../lib/retro';
 import type { Grant } from '../lib/types';
 
 const props = defineProps<{ id: string; embedded?: boolean }>();
@@ -60,6 +61,10 @@ watch(
 watch([title, scope, constraints, sharePercent], () => { if (!hydrating) { dirty.value = true; saved.value = false; } }, { flush: 'sync' });
 
 const project = computed(() => (grant.value ? projectById.value.get(grant.value.projectId) : undefined));
+const reward = computed(() => (grant.value ? trackingOf(grant.value).amount : undefined));
+const award = computed(() => (grant.value ? proposerAward(reward.value, grant.value.proposerShare) : 0));
+const scopeOnly = computed(() => grant.value?.scope.split('## Acceptance criteria\n')[0].trim() ?? '');
+const fmtArrow = (n: number) => `${n.toLocaleString('en-US')} ARROW`;
 const version = computed(() => (grant.value ? versionOf(grant.value.projectId, grant.value.versionId) : undefined));
 const canEdit = computed(() => !!grant.value && grant.value.status === 'draft' && myRoleOn(grant.value.projectId) === 'lead');
 
@@ -126,8 +131,12 @@ const issueUrl = computed(() => {
     </div>
     <h1 style="margin-bottom: 6px">{{ title }}</h1>
     <p class="small muted" style="margin-top: 0">
-      Source discussion <RouterLink :to="embedded ? { name: 'project', params: { id: project.id }, query: { view: 'shape', version: grant.versionId, thread: grant.threadId } } : { name: 'thread', params: { id: grant.threadId } }">Read the original conversation →</RouterLink> ·
-      prepared by @{{ handleOf(grant.byMemberId) }} <template v-if="!grant.outcomeSnapshot">· weighted rank {{ grant.weightedRankAtResolution }}, raw rank {{ grant.rawRankAtResolution }} at promotion</template>
+      Idea from {{ grant.proposerNote ? grant.proposerNote.replace(' · ', ', raised ') : grant.proposerIds.map(nameOf).join(', ') }} · drafted by {{ nameOf(grant.byMemberId) }} · <RouterLink :to="embedded ? { name: 'project', params: { id: project.id }, query: { view: isSharedProject ? 'discussions' : 'shape', version: isSharedProject ? undefined : grant.versionId, thread: grant.threadId } } : { name: 'thread', params: { id: grant.threadId } }">Read the discussion →</RouterLink>
+      <template v-if="!grant.outcomeSnapshot"> · weighted rank {{ grant.weightedRankAtResolution }}, raw rank {{ grant.rawRankAtResolution }} at promotion</template>
+    </p>
+    <p v-if="isSharedProject" class="grant-reward">
+      <template v-if="reward"><b>{{ fmtArrow(reward) }}</b> reward<template v-if="award"> · {{ fmtArrow(award) }} ({{ percent(grant.proposerShare) }}) to {{ grant.proposerNote ? grant.proposerNote.split(' · ')[0] + ' for raising it (held until they join)' : grant.proposerIds.map(nameOf).join(', ') + ' for the idea' }} · {{ fmtArrow(reward - award) }} to whoever delivers it</template></template>
+      <template v-else>No reward set yet<template v-if="myRoleOn(grant.projectId) === 'lead'">. Set one under Manage work below</template>.</template>
     </p>
 
     <WorkTracker :key="grant.id" :grant="grant" :scope-dirty="dirty">
@@ -151,14 +160,14 @@ const issueUrl = computed(() => {
             <textarea v-model="constraints" style="min-height: 120px" :disabled="!canEdit" />
             <div class="hint">{{ grant.outcomeSnapshot ? 'Optional work-specific constraints. The recorded design remains linked above.' : grant.briefSnapshot ? 'Accepted requirements from the reviewed brief—not automatically extracted suggestions.' : 'Legacy extraction from the chosen position and its comments.' }}</div>
           </label>
-          <label v-if="!isSharedProject" class="field-row" style="max-width: 360px">
+          <label class="field-row" style="max-width: 360px">
             <span class="label">Proposer award</span>
             <span class="row" style="flex-wrap: nowrap">
               <input v-model.number="sharePercent" type="number" min="0" max="100" step="5" style="width: 90px" :disabled="!canEdit" aria-label="Proposer share, percent" />
-              <span class="small">% of the grant to {{ grant.proposerIds.map((id) => '@' + handleOf(id)).join(', ') }}</span>
+              <span class="small">% of the grant to {{ grant.proposerIds.map((id) => nameOf(id)).join(', ') }}</span>
             </span>
           </label>
-          <div v-if="grant.contributorIds.length" class="small muted">Also contributed: {{ grant.contributorIds.map((id) => '@' + handleOf(id)).join(', ') }}</div>
+          <div v-if="grant.contributorIds.length" class="small muted">Also contributed: {{ grant.contributorIds.map((id) => nameOf(id)).join(', ') }}</div>
           <div v-if="grant.overrideRationale" class="signal signal-neutral">
             <span class="label">Lead's rationale for not picking the top weighted position</span>
             <div style="margin-top: 4px">{{ grant.overrideRationale }}</div>
@@ -169,14 +178,14 @@ const issueUrl = computed(() => {
 
           </div>
           </template>
-          <template v-else><Markdown :source="grant.scope" /><div v-if="grant.constraints.length"><h3>Interfaces & constraints</h3><ul><li v-for="c in grant.constraints" :key="c">{{ c }}</li></ul></div><p class="small muted">Discussion contributors: {{ [...new Set([...grant.proposerIds,...grant.contributorIds])].map(id=>'@'+handleOf(id)).join(', ') }}</p></template>
+          <template v-else><Markdown :source="scopeOnly" /><div v-if="grant.constraints.length"><h3>Interfaces & constraints</h3><ul><li v-for="c in grant.constraints" :key="c">{{ c }}</li></ul></div><p v-if="grant.contributorIds.length" class="small muted">Also shaped by: {{ grant.contributorIds.map(id=>nameOf(id)).join(', ') }}</p></template>
         </div>
 
     </WorkTracker>
     <details v-if="grant.outcomeSnapshot" class="record-followup"><summary>Why this work exists</summary><div class="context-note"><strong>{{ grant.workKind === 'bounty' ? 'Bounty' : 'Grant' }} · {{ grant.workPurpose === 'research' ? 'Research / investigation' : 'Implementation' }}</strong><p>{{ grant.decisionIds?.length ? 'Linked to adopted design decisions. The reviewed source stays preserved.' : 'This work does not imply an adopted design. Its results may inform a later decision.' }}</p><RouterLink :to="{ name: 'project', params: { id: project.id }, query: { view: 'shape', thread: grant.threadId, version: grant.versionId, tab: 'draft' } }">Read the recorded outcome →</RouterLink></div></details>
-    <details v-if="grant.outcomeSnapshot" class="brief-snapshot outcome-snapshot"><summary>Reviewed source document · r{{ grant.outcomeSnapshot.revision }}</summary><p>This record stays unchanged when the work scope is edited.</p><Markdown :source="outcomeMarkdown(grant.outcomeSnapshot, project.id)" /></details>
+    <details v-if="grant.outcomeSnapshot" class="brief-snapshot outcome-snapshot"><summary>The discussion summary it came from</summary><p>Kept as it was when the work was drafted.</p><Markdown :source="outcomeMarkdown(grant.outcomeSnapshot, project.id)" /></details>
     <details v-if="grant.briefSnapshot" class="brief-snapshot">
-      <summary>Approved source brief · r{{ grant.briefSnapshot.approval.revision }} · @{{ handleOf(grant.briefSnapshot.approval.byMemberId) }}</summary>
+      <summary>Approved source brief · r{{ grant.briefSnapshot.approval.revision }} · {{ nameOf(grant.briefSnapshot.approval.byMemberId) }}</summary>
       <p>This snapshot is immutable. The editable grant below may diverge; compare it before publishing.</p>
       <Markdown :source="briefMarkdown(grant.briefSnapshot, project.id)" />
     </details>
@@ -184,9 +193,9 @@ const issueUrl = computed(() => {
       <div class="stack">
 
         <details class="card stack work-export">
-          <summary>Export work package</summary>
+          <summary>{{ isSharedProject ? 'Post to GitHub' : 'Export work package' }}</summary>
           <div class="spread" style="align-items: center">
-            <div class="label">Markdown for grant-and-bounties</div>
+            <div class="label">{{ isSharedProject ? 'For Arrow-air/grant-and-bounties' : 'Markdown for grant-and-bounties' }}</div>
             <div class="row">
               <button class="btn btn-ghost" @click="copy">{{ copied ? 'Copied' : 'Copy markdown' }}</button>
               <a class="btn" :href="issueUrl" target="_blank" rel="noopener">Open as GitHub issue</a>

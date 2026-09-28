@@ -12,3 +12,4 @@ import './styles/records.css';
 
 import "./styles/briefing.css";
 import './styles/sourced.css';
+import './styles/project.css';

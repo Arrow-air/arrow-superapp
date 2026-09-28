@@ -2,7 +2,7 @@
 import { computed, nextTick, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import type { BriefAction, ThreadBundle } from '../data/backend';
-import { act, backend, handleOf, myRoleOn, state } from '../data/store';
+import { act, backend, handleOf, nameOf, myRoleOn, state } from '../data/store';
 import { briefApproved, briefIssues, discussionSources, grantBriefIssues, unreviewedSources } from '../lib/brief';
 import type { BriefItem, BriefKind, BriefSource, Project } from '../lib/types';
 import { positionTitle } from '../lib/format';
@@ -57,7 +57,7 @@ async function saveItem() {
 }
 function showSource(source: BriefSource) { return router.replace({ query: { ...route.query, source: source.key } }); }
 function reviewed(source: BriefSource) { return !!brief.value?.reviewed.some(r => r.source.key === source.key && r.source.body === source.body); }
-const label = (s: BriefSource) => `${s.kind === 'thread' ? 'Original question' : s.kind === 'comment' ? 'Reply' : 'Approach'} · @${handleOf(s.authorId)}`;
+const label = (s: BriefSource) => `${s.kind === 'thread' ? 'Original question' : s.kind === 'comment' ? 'Reply' : 'Approach'} · ${nameOf(s.authorId)}`;
 const status = (i: BriefItem) => i.status === 'dismissed' ? 'Not included' : i.status === 'proposed' ? (i.kind === 'question' ? 'Open question' : 'Proposed') : i.kind === 'question' ? 'Answered' : i.kind === 'evidence' ? 'Included report' : 'Accepted';
 </script>
 <template>
@@ -78,7 +78,7 @@ const status = (i: BriefItem) => i.status === 'dismissed' ? 'Not included' : i.s
         <p v-if="item.verification" class="brief-check"><strong>Acceptance check</strong> {{ item.verification }}</p>
         <p v-if="item.rationale" class="brief-rationale"><strong>{{ item.kind === 'question' ? 'Answer' : 'Lead rationale' }}</strong> {{ item.rationale }}</p>
         <div class="brief-sources"><button v-for="source in item.sources" :key="source.key" class="text-action" @click="showSource(source)">↗ {{ label(source) }}</button></div>
-        <p class="brief-attribution">Written by @{{ handleOf(item.authorId) }}<template v-if="item.updatedBy !== item.authorId"> · edited by @{{ handleOf(item.updatedBy) }}</template><template v-if="item.decidedBy"> · reviewed by @{{ handleOf(item.decidedBy) }}</template></p>
+        <p class="brief-attribution">Written by {{ nameOf(item.authorId) }}<template v-if="item.updatedBy !== item.authorId"> · edited by {{ nameOf(item.updatedBy) }}</template><template v-if="item.decidedBy"> · reviewed by {{ nameOf(item.decidedBy) }}</template></p>
         <div v-if="isLead && editable && item.status === 'proposed'" class="brief-decision">
           <input v-model="rationale[item.id]" :aria-label="`Review note for ${item.text}`" :placeholder="item.kind === 'question' ? 'Answer, or explain why this is out of scope…' : 'Review note (required to leave an item out)…'" />
           <div class="row"><button class="btn btn-ghost" :disabled="busy || ((item.kind === 'question' || item.kind === 'exclusion') && !rationale[item.id]?.trim()) || (item.kind === 'deliverable' && !item.verification)" @click="write({ kind: 'decide', id: item.id, status: 'accepted', rationale: rationale[item.id] ?? '' })">{{ item.kind === 'question' ? 'Record answer' : item.kind === 'evidence' ? 'Include report' : 'Accept' }}</button><button class="text-action" :disabled="busy || !rationale[item.id]?.trim()" @click="write({ kind: 'decide', id: item.id, status: 'dismissed', rationale: rationale[item.id] ?? '' })">Leave out with reason</button></div>
@@ -102,11 +102,11 @@ const status = (i: BriefItem) => i.status === 'dismissed' ? 'Not included' : i.s
       <strong>{{ approved ? 'Reviewed specification' : 'Before this becomes a specification' }}</strong>
       <ul v-if="issues.length"><li v-for="issue in issues" :key="issue">{{ issue }}</li></ul>
       <p v-else-if="!approved">The recorded items and sources have been reviewed. The lead can approve this revision.</p>
-      <p v-if="approved">Approved by @{{ handleOf(brief.approval!.byMemberId) }}. A grant keeps this exact revision and its sources.</p>
+      <p v-if="approved">Approved by {{ nameOf(brief.approval!.byMemberId) }}. A grant keeps this exact revision and its sources.</p>
       <p v-if="approved && grantIssues.length" class="small">{{ grantIssues.join(' ') }}</p>
       <button v-if="isLead && editable && !approved" class="btn" :disabled="busy || !!issues.length" @click="write({ kind: 'approve' })">Approve this brief</button>
       <p class="brief-attribution">New proposals or discussion require a new review. Approval records a design decision—not engineering certification.</p>
     </div>
-    <details v-if="brief?.history.length" class="brief-history"><summary>Revision history · {{ brief.history.length }}</summary><details v-for="entry in [...brief.history].reverse()" :key="entry.revision"><summary>r{{ entry.revision }} · {{ entry.action }} · @{{ handleOf(entry.byMemberId) }}</summary><p>{{ entry.content.purpose }}</p><ul><li v-for="item in entry.content.items" :key="item.id">{{ item.status }} · {{ item.text }}<template v-if="item.rationale"> — {{ item.rationale }}</template></li></ul></details></details>
+    <details v-if="brief?.history.length" class="brief-history"><summary>Revision history · {{ brief.history.length }}</summary><details v-for="entry in [...brief.history].reverse()" :key="entry.revision"><summary>r{{ entry.revision }} · {{ entry.action }} · {{ nameOf(entry.byMemberId) }}</summary><p>{{ entry.content.purpose }}</p><ul><li v-for="item in entry.content.items" :key="item.id">{{ item.status }} · {{ item.text }}<template v-if="item.rationale"> — {{ item.rationale }}</template></li></ul></details></details>
   </section>
 </template>

@@ -12,8 +12,13 @@ export interface Member {
   avatarUrl?: string;
   /** $ARROW balance, whole tokens. Self-reported or admin-set in this prototype. */
   tokenBalance: number;
-  /** Free-form expertise tags: "pcb", "propulsion", "firmware", ... */
+  /** Free-form expertise tags: "pcb", "propulsion", "firmware", ... Self-described. */
   expertise: string[];
+  /**
+   * Expertise a project lead has confirmed. When present, only these count toward vote weight,
+   * so a self-described tag cannot raise anyone's weight. Absent in the sandbox personas.
+   */
+  verifiedExpertise?: string[];
   location?: string;
   bio?: string;
 }
@@ -43,6 +48,28 @@ export interface Version {
   freezeTarget?: string;
   frozenAt?: string;
   frozenBy?: string;
+  /** $ARROW set aside to reward this version's discussion, allocated at the freeze. */
+  retroPool?: RetroPool;
+  /** The allocation recorded when the version froze. Display only: no tokens move. */
+  retroAllocation?: RetroAllocation;
+}
+
+export interface RetroPool {
+  amount: number;
+  /** Optional pre-split by aircraft system (fractions of the pool; "project-wide" allowed). */
+  systemShares?: Record<string, number>;
+  setBy: string;
+  setAt: string;
+}
+export interface RetroItem { positionId: string; threadId: string; score: number; amount: number }
+export interface RetroLine { memberId: string; amount: number; items: RetroItem[] }
+export interface RetroAllocation {
+  amount: number;
+  lines: RetroLine[];
+  /** Pool left over because no contribution in its share earned positive support. */
+  unallocated: number;
+  at?: string;
+  byMemberId?: string;
 }
 
 export interface Project {
@@ -188,6 +215,11 @@ export interface Grant {
   constraints: string[];
   /** Who wrote the idea. Gets proposerShare of the grant. */
   proposerIds: string[];
+  /**
+   * Who raised the idea when that person is not (yet) a member, e.g. "Erick, Sep 25 call".
+   * Their proposer award is held until the lead assigns it to an account.
+   */
+  proposerNote?: string;
   /** Fraction of the grant paid to the proposers. Default 0.25. No tokens move in this prototype. */
   proposerShare: number;
   /** Members who commented on the chosen position, for attribution. */
@@ -217,6 +249,8 @@ export interface WeightConfig {
   builderBonus: number;
   /** Multiplies the sum of the terms above. */
   roleMultiplier: Record<Role, number>;
+  /** Treat a thread's aircraft system as one of its tags when matching expertise. */
+  matchSystem?: boolean;
 }
 
 export interface WeightBreakdown {
@@ -318,6 +352,8 @@ export interface WorkInput {
   title: string;
   scope: string;
   acceptance: string;
+  /** Proposed reward in $ARROW. A record only; nothing is paid from the app. */
+  amount?: number;
 }
 
 
@@ -332,6 +368,8 @@ export interface WorkProgress {
   dueDate: string;
   funding: FundingStatus;
   budget: string;
+  /** Reward in $ARROW. The proposer award is proposerShare of this. */
+  amount?: number;
   acceptance: string;
   evidence: string;
   milestones: WorkMilestone[];

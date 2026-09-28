@@ -1,6 +1,6 @@
 # Arrow Superapp
 
-**Current implementation:** [Arrow shared workspace — local pilot](prototypes/spec-threads/PRODUCT-WORKSPACE.md). Historical prototype plans below are retained as context; the shared local pilot now has real accounts and persistent team records.
+**Current implementation:** [Arrow shared workspace — local pilot](prototypes/spec-threads/PRODUCT-WORKSPACE.md), demo-ready iteration on branch `demo-ready-v1` (PT2-first overview and spec, weighted support, freeze plan and retro split). Historical prototype plans below are retained as context; the shared local pilot now has real accounts and persistent team records.
 
 Working notes and prototypes for how Arrow could coordinate, decide, and fund work as one continuous loop.
 

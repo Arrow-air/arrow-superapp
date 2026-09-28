@@ -75,7 +75,11 @@ export interface Backend {
   addComment(input: { positionId: string; body: string }): Promise<Comment>;
   changeBrief(input: { threadId: string; expectedRevision: number; action: BriefAction }): Promise<WorkingBrief>;
   saveOutcome(input: { threadId: string; expectedRevision: number; body: string; openQuestions: string }): Promise<import('../lib/types').OutcomeDraft>;
-  concludeThread(input: { threadId: string; expectedRevision: number; expectedCorpus: string; adopt: boolean; work?: import('../lib/types').WorkInput }): Promise<Thread>;
+  concludeThread(input: { threadId: string; expectedRevision: number; expectedCorpus: string; adopt: boolean; decision?: string; work?: import('../lib/types').WorkInput }): Promise<Thread>;
+  /** Lead only. Project role and lead-confirmed expertise. Shared and demo backends. */
+  setMemberStanding?(input: { projectId: string; memberId: string; role?: import('../lib/types').Role; verifiedExpertise?: string[] }): Promise<Member>;
+  /** Lead only. Freeze target and retro pool for an open version. */
+  setVersionPlan?(input: { projectId: string; versionId: string; freezeTarget?: string; retroPool?: { amount: number; systemShares?: Record<string, number> } | null }): Promise<Project>;
   createWork(input: { threadId: string; work: import('../lib/types').WorkInput }): Promise<Grant>;
   /** Lead only. Reject, promote to spec, turn into a grant draft, or defer to a later version. */
   resolveThread(input: ResolveInput): Promise<Thread>;

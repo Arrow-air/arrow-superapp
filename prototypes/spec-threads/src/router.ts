@@ -31,4 +31,13 @@ export const router = createRouter({
   },
 });
 
-router.beforeEach(to => isSharedProject && ['/how','/readout','/register','/grants','/threads','/projects'].includes(to.path) ? {path:'/p/spearhead',query:{view:to.path==='/grants'?'work':to.path==='/threads'?'shape':'inbox',workspace:'team'},replace:true} : isRealProjectData && !isSharedProject && to.path !== '/p/spearhead' ? { path: '/p/spearhead', query: to.query, replace: true } : true);
+// The shared workspace has one project page; older sandbox routes land on the matching view.
+const sharedViews: Record<string, string | undefined> = { '/how': undefined, '/readout': 'freeze', '/register': 'spec', '/grants': 'work', '/threads': 'discussions', '/projects': undefined, '/threads/new': 'discussions' };
+router.beforeEach(to => {
+  if (isSharedProject && to.path in sharedViews) return { path: '/p/spearhead', query: { view: sharedViews[to.path] }, replace: true };
+  if (isSharedProject && to.name === 'freeze') return { path: '/p/spearhead', query: { view: 'freeze' }, replace: true };
+  if (isSharedProject && to.name === 'thread') return { path: '/p/spearhead', query: { view: 'discussions', thread: String(to.params.id) }, replace: true };
+  if (isSharedProject && to.name === 'grant') return { path: '/p/spearhead', query: { view: 'work', grant: String(to.params.id) }, replace: true };
+  if (isRealProjectData && !isSharedProject && to.path !== '/p/spearhead') return { path: '/p/spearhead', query: to.query, replace: true };
+  return true;
+});

@@ -12,7 +12,9 @@ import {
   digest,
   workspaceId,
   memberFor,
+  migrateState,
   sourceThread,
+  creditCallProposers,
 } from "./state";
 import {
   inputs,
@@ -46,6 +48,38 @@ await pool.query(
   "insert into arrow_workspace.evidence(workspace_id,revision,digest,data) values($1,1,$2,$3) on conflict do nothing",
   [workspaceId, digest(JSON.stringify(spearhead)), JSON.stringify(spearhead)],
 );
+{
+  // Upgrade an existing workspace in place, keeping a snapshot and an audit event.
+  const c = await pool.connect();
+  try {
+    await c.query("begin");
+    const { rows } = await c.query(
+      "select data,revision from arrow_workspace.workspaces where id=$1 for update",
+      [workspaceId],
+    );
+    const data = structuredClone(rows[0].data);
+    if (migrateState(data)) {
+      await c.query(
+        "insert into arrow_workspace.snapshots(workspace_id,revision,data) values($1,$2,$3) on conflict do nothing",
+        [workspaceId, rows[0].revision, JSON.stringify(rows[0].data)],
+      );
+      await c.query(
+        "update arrow_workspace.workspaces set data=$2,revision=revision+1,updated_at=now() where id=$1",
+        [workspaceId, JSON.stringify(data)],
+      );
+      await c.query(
+        "insert into arrow_workspace.events(workspace_id,actor_id,action,entity_id,title,data) values($1,null,'migration',null,$2,'{}')",
+        [workspaceId, "Workspace updated to weighted support"],
+      );
+    }
+    await c.query("commit");
+  } catch (e) {
+    await c.query("rollback");
+    throw e;
+  } finally {
+    c.release();
+  }
+}
 class HttpError extends Error {
   constructor(
     public status: number,
@@ -163,6 +197,10 @@ async function event(
   }
   const thread = s.threads.find((t) => t.id === entityId);
   if (thread) recipients.add(thread.authorId);
+  // Everyone hears when a version freezes and the retro split is recorded.
+  if (action === "freezeVersion" || action === "setVersionPlan")
+    s.roles.forEach((r) => recipients.add(r.memberId));
+  if (action === "setMemberStanding" && entityId) recipients.add(entityId);
   const text = JSON.stringify(data);
   s.members.forEach((m) => {
     if (text.includes("@" + m.handle)) recipients.add(m.id);
@@ -343,6 +381,7 @@ async function rpc(req: http.IncomingMessage) {
       const next = {
         ...tracking,
         ownerId: user.id,
+        stage: "in_progress" as const,
         revision: tracking.revision + 1,
       };
       next.history = [
@@ -351,7 +390,7 @@ async function rpc(req: http.IncomingMessage) {
           at: new Date().toISOString(),
           byMemberId: user.id,
           note: "Assignment accepted: " + value.note,
-          content: { ...tracking, ownerId: user.id },
+          content: { ...tracking, ownerId: user.id, stage: "in_progress" as const },
         },
       ];
       g!.tracking = next;
@@ -362,14 +401,26 @@ async function rpc(req: http.IncomingMessage) {
       result = await fn.call(d.backend, value);
       s = d.read();
       if (input.method === "createThread") entity = result.id;
+      if (input.method === "concludeThread" || input.method === "createWork") {
+        const evidence = await c.query(
+          "select data from arrow_workspace.evidence where workspace_id=$1",
+          [workspaceId],
+        );
+        creditCallProposers(s, evidence.rows[0].data);
+      }
       if (value?.positionId)
         entity = s.positions.find((p) => p.id === value.positionId)?.threadId;
     }
     if (JSON.stringify(s) === JSON.stringify(old.data))
       return { result, revision: old.revision };
+    if (input.method === "setMemberStanding") entity = value.memberId;
+    if (input.method === "setVersionPlan" || input.method === "freezeVersion")
+      entity = value.versionId;
     const title =
       s.threads.find((t) => t.id === entity)?.title ??
       s.grants.find((g) => g.id === entity)?.title ??
+      s.members.find((m) => m.id === entity)?.displayName ??
+      s.projects[0].versions.find((v) => v.id === entity)?.name ??
       input.method;
     await commit(
       c,
@@ -413,7 +464,12 @@ async function acceptInvite(req: http.IncomingMessage) {
       const old = await locked(c);
       const next = structuredClone(old.data);
       next.members.push(
-        memberFor(data.user!.id, invite.email, invite.display_name),
+        memberFor(
+          data.user!.id,
+          invite.email,
+          invite.display_name,
+          next.members.map((m) => m.handle),
+        ),
       );
       next.roles.push({
         projectId: workspaceId,
@@ -546,16 +602,29 @@ const server = http.createServer(async (req, res) => {
       send(res, 200, await rpc(req));
       return;
     }
-    if (path.startsWith("/api/")) {
-      const m = await member(req);
-      if (path === "/api/state") {
-        send(res, 200, {
-          ...m.data,
-          revision: m.revision,
-          me: m.data.members.find((x) => x.id === m.user.id),
-        });
+    if (path === "/api/state" || path === "/api/events") {
+      // The project is readable by anyone; writing needs a member account.
+      let viewer: string | null = null;
+      if (req.headers.authorization) viewer = (await identity(req)).id;
+      if (path === "/api/events") {
+        const { rows } = await pool.query(
+          "select id,actor_id,action,entity_id,title,at from arrow_workspace.events where workspace_id=$1 order by id desc limit 100",
+          [workspaceId],
+        );
+        send(res, 200, rows);
         return;
       }
+      const s = await state();
+      const me = viewer
+        ? (s.data.roles.some((r) => r.memberId === viewer) &&
+            s.data.members.find((x) => x.id === viewer)) ||
+          null
+        : null;
+      send(res, 200, { ...s.data, revision: s.revision, me });
+      return;
+    }
+    if (path.startsWith("/api/")) {
+      const m = await member(req);
       if (path === "/api/invites" && req.method === "POST") {
         requireTrue(
           m.role.role === "lead",
@@ -671,14 +740,6 @@ const server = http.createServer(async (req, res) => {
         });
         return;
       }
-      if (path === "/api/events") {
-        const { rows } = await pool.query(
-          "select id,actor_id,action,entity_id,title,at from arrow_workspace.events where workspace_id=$1 order by id desc limit 100",
-          [workspaceId],
-        );
-        send(res, 200, rows);
-        return;
-      }
       if (path === "/api/watches") {
         if (req.method === "POST") {
           const v = z
@@ -711,20 +772,32 @@ const server = http.createServer(async (req, res) => {
       if (path === "/api/notifications") {
         if (req.method === "POST") {
           const v = z
-            .object({ id: z.number().int().positive() })
-            .strict()
+            .union([
+              z.object({ id: z.number().int().positive() }).strict(),
+              z.object({ all: z.literal(true) }).strict(),
+            ])
             .parse(await body(req));
-          await pool.query(
-            "update arrow_workspace.notifications set read_at=now() where id=$1 and member_id=$2",
-            [v.id, m.user.id],
-          );
+          if ("all" in v) {
+            await pool.query(
+              "update arrow_workspace.notifications set read_at=now() where member_id=$1 and workspace_id=$2 and read_at is null",
+              [m.user.id, workspaceId],
+            );
+            await pool.query(
+              "insert into arrow_workspace.read_cursors values($1,$2,(select coalesce(max(id),0) from arrow_workspace.events where workspace_id=$1)) on conflict(workspace_id,member_id) do update set seen_event=greatest(arrow_workspace.read_cursors.seen_event,excluded.seen_event)",
+              [workspaceId, m.user.id],
+            );
+          } else
+            await pool.query(
+              "update arrow_workspace.notifications set read_at=now() where id=$1 and member_id=$2",
+              [v.id, m.user.id],
+            );
         }
         send(
           res,
           200,
           (
             await pool.query(
-              "select n.id,n.read_at,e.action,e.entity_id,e.title,e.at from arrow_workspace.notifications n join arrow_workspace.events e on n.event_id=e.id where n.member_id=$1 and n.workspace_id=$2 order by n.id desc limit 100",
+              "select n.id,n.read_at,e.action,e.entity_id,e.title,e.at,e.actor_id,e.data from arrow_workspace.notifications n join arrow_workspace.events e on n.event_id=e.id where n.member_id=$1 and n.workspace_id=$2 order by n.id desc limit 100",
               [m.user.id, workspaceId],
             )
           ).rows,
