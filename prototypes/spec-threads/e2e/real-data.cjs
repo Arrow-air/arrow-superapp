@@ -1,6 +1,6 @@
 const {chromium}=require('playwright-core');
 const assert=require('node:assert/strict'),fs=require('node:fs');
-const BASE=process.env.BASE_URL||'http://10.3.10.123:4192/';
+const BASE=process.env.BASE_URL||'http://127.0.0.1:4192/';
 const OUT='/tmp/spearhead-real-review';fs.mkdirSync(OUT,{recursive:true});let checks=0;
 const check=(name,value)=>{assert.ok(value,name);console.log('PASS '+name);checks++};
 (async()=>{const browser=await chromium.launch({channel:'chrome',headless:true});const page=await browser.newPage({viewport:{width:1440,height:1100}});page.setDefaultTimeout(10000);const errors=[];page.on('pageerror',e=>errors.push(e.message));

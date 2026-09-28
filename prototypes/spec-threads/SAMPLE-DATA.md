@@ -34,7 +34,7 @@ Samples go into the earliest discussing/planned Spearhead version; nothing is ad
 - 37 new browser checks cover the populated default, source traceability, all work stages, acceptance, mobile layout, edit persistence and upgrading an existing edited browser store.
 - 31 conversation + 53 Design/Work browser regressions pass against their intentionally minimal fixtures in isolated browser contexts. No user browser storage is reset by test setup.
 - Screenshots: `/tmp/arrow-samples-review/`; desktop and phone layouts visually inspected.
-- Both user addresses, **http://10.3.10.123:4186/** and **http://10.3.10.123:4187/**, serve `dist-samples`. Previous `dist-records` is preserved. Staging uses :4189.
+- Both user addresses, **http://127.0.0.1:4186/** and **http://127.0.0.1:4187/**, serve `dist-samples`. Previous `dist-records` is preserved. Staging uses :4189.
 - Build: `npm run build -- --outDir dist-samples`.
 - Preview: `node node_modules/vite/bin/vite.js preview --host 0.0.0.0 --port 4186 --strictPort --outDir dist-samples` (same for 4187).
 - Logs: `/tmp/arrow-samples-preview-4186.log`, `/tmp/arrow-samples-preview-4187.log`.

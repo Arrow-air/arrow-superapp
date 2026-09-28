@@ -60,8 +60,8 @@ VITE_PROJECT_DATA=spearhead npm run build -- --outDir dist-real
 node node_modules/vite/bin/vite.js preview --host 0.0.0.0 --port 4186 --strictPort --outDir dist-real
 ```
 
-- Real data: `http://10.3.10.123:4186/#/p/spearhead`
-- Legacy interactive sandbox: `http://10.3.10.123:4186/?dataset=examples#/p/spearhead`
+- Real data: `http://127.0.0.1:4186/#/p/spearhead`
+- Legacy interactive sandbox: `http://127.0.0.1:4186/?dataset=examples#/p/spearhead`
 - Same modes on port 4187. Staging port: 4192.
 - Existing `arrow-spec-threads-demo-v2` localStorage remains byte-for-byte
   untouched in real-data mode. No destructive migration or reset.
@@ -74,8 +74,8 @@ node node_modules/vite/bin/vite.js preview --host 0.0.0.0 --port 4186 --strictPo
 ```sh
 npm run typecheck
 npm run test
-BASE_URL=http://10.3.10.123:4192/ node e2e/real-data.cjs
-BASE_URL='http://10.3.10.123:4192/?dataset=examples' node e2e/briefing.cjs
+BASE_URL=http://127.0.0.1:4192/ node e2e/real-data.cjs
+BASE_URL='http://127.0.0.1:4192/?dataset=examples' node e2e/briefing.cjs
 ```
 
 The real-data suite covers source navigation, linked records, conservative status

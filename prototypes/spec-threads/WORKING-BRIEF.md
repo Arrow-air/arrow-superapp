@@ -33,7 +33,7 @@ A later agent can propose wording and source references through this same item m
 
 ## Try it
 
-Open the separate preview at `http://10.3.10.123:4186/#/p/spearhead?view=shape&thread=n-engine` (ranch network). The original preview at :4185 retains its original build.
+Open the separate preview at `http://127.0.0.1:4186/#/p/spearhead?view=shape&thread=n-engine` (ranch network). The original preview at :4185 retains its original build.
 
 1. Read the proposed brief alongside the engine discussion. Follow Rosa's source link; it should open her independent approach.
 2. Switch to Ade. Capture a question or requirement from an approach. Notice that Ade cannot accept it.

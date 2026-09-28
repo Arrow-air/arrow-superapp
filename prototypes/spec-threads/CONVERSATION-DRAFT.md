@@ -43,7 +43,7 @@ Recorded outcomes are immutable, close the discussion for that version, and pres
 
 ## Try it
 
-Separate local preview: **http://10.3.10.123:4187/#/p/spearhead?view=shape&thread=n-engine**
+Separate local preview: **http://127.0.0.1:4187/#/p/spearhead?view=shape&thread=n-engine**
 
 1. Read the conversation, then choose **Draft outcome**.
 2. Read Jun's telemetry and Rosa's independent shutdown idea in the same document. Follow a source back into the conversation.

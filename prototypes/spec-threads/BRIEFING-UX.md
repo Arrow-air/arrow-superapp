@@ -14,9 +14,9 @@ No schema migration or reset. The one-conversation → reviewed draft model, rol
 
 ## Try it
 
-- `http://10.3.10.123:4186/#/p/spearhead` — project briefing.
-- `http://10.3.10.123:4186/#/p/spearhead?system=avionics` — connected design/result/work story.
-- `http://10.3.10.123:4186/#/p/spearhead?view=work&queue=review` — pending reviews.
+- `http://127.0.0.1:4186/#/p/spearhead` — project briefing.
+- `http://127.0.0.1:4186/#/p/spearhead?system=avionics` — connected design/result/work story.
+- `http://127.0.0.1:4186/#/p/spearhead?view=work&queue=review` — pending reviews.
 
 The same routes work on port 4187. Existing saved routes and localStorage origin remain intact; refresh to load the new build.
 
