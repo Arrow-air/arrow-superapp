@@ -1,6 +1,6 @@
 # Arrow Superapp
 
-**Current implementation:** [Arrow shared workspace — local pilot](prototypes/spec-threads/PRODUCT-WORKSPACE.md), demo-ready iteration on branch `demo-ready-v1` (PT2-first overview and spec, weighted support, freeze plan and retro split). Historical prototype plans below are retained as context; the shared local pilot now has real accounts and persistent team records.
+**Try it:** [specs.arrowair.com](https://specs.arrowair.com) serves the example Spearhead workspace: fictional contributors, real call and repository records, running in your browser. Pick someone under “Explore as” to act as a lead or a contributor. How it works and how to run the shared version: [PRODUCT-WORKSPACE.md](prototypes/spec-threads/PRODUCT-WORKSPACE.md). Historical prototype plans below are retained as context; the shared local pilot now has real accounts and persistent team records.
 
 Working notes and prototypes for how Arrow could coordinate, decide, and fund work as one continuous loop.
 
@@ -55,4 +55,4 @@ Link to OPEN-QUESTIONS.md numbers.
 
 ## Next call
 
-No date set. Prototype 2 of the spec app, built from the 2026-09-23 brief, is on the `spec-threads-v2` branch (`prototypes/spec-threads/README.md`): version-targeted threads, the freeze screen, grant drafts with a proposer award, the decision register. Retro session award and the shared backend come next. Gavin and Alperen: file reactions as ideas or questions, or on the thread.
+No date set. The spec app is on `main` and deployed at [specs.arrowair.com](https://specs.arrowair.com) as an example workspace: PT2 discussions, weighted support, decisions that write the spec, work with rewards and proposer awards, and a freeze that splits a retro pool. Gavin and Alperen: try it as different people, then file reactions as ideas or questions.

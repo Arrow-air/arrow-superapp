@@ -1,4 +1,17 @@
-# Current: shared product workspace
+# Current: the Arrow workspace
+
+**Public example: https://specs.arrowair.com.** The default build is the example Spearhead workspace: fictional contributors and about two weeks of PT2 activity on the real call and repository records, running entirely in the visitor's browser. Pick someone under “Explore as” to act as the lead (settle discussions, accept work, freeze PT2) or as a contributor. Changes stay in that browser; “Reset the example” restores it.
+
+```bash
+npm install
+npm run dev              # the example workspace
+npm run example:build    # regenerate src/data/exampleState.json from server/exampleScenario.ts
+npm run build && npm run preview -- --port 4199
+npm run e2e:example      # 12 browser checks against that preview (BASE_URL overrides)
+```
+
+The same app also runs as a shared service with accounts and a database (`VITE_BACKEND=shared VITE_PROJECT_DATA=spearhead`); the older concept sandbox is at `?dataset=sandbox`.
+
 
 See [PRODUCT-WORKSPACE.md](PRODUCT-WORKSPACE.md) for the approved local pilot, architecture, account setup, operations, verification and remaining production gates. The following documents describe historical prototype iterations; the old backend pause is superseded locally by Thomas’s 2026-09-26 build approval. Hosted Arrow infrastructure remains untouched.
 
@@ -19,7 +32,7 @@ This concept has not been merged or deployed. The public URL below still serves 
 
 ## Prototype 2 foundation: threads → decisions → work
 
-**Live demo: https://specs.arrowair.com** (demo mode: data stays in your own browser, nothing is shared between visitors)
+**Earlier live demo** (prototype 2, demo mode; specs.arrowair.com now serves the example workspace above)
 
 **The question this tests:** if outside contributions are addressed to the *next* version of an aircraft, and the lead has to resolve every thread at a freeze, does the discussion write the specs and grants by itself? And does weighting still change anything compared with one person one vote?
 
