@@ -13,7 +13,7 @@ One file per idea, using the template in the root README. Status is the first li
 | `spec-thread-to-bounty.md` | prototyping | Thomas |
 | `profiles-and-reputation.md` | exploring | Thomas, Gavin |
 | `contributor-buckets.md` | seed | Gavin |
-| `cad-anchored-discussion.md` | seed | Thomas, Gavin |
+| `cad-anchored-discussion.md` | prototyping | Thomas, Gavin |
 | `dao-dashboard-and-leaderboard.md` | seed | Gavin |
 | `north-star-traceability.md` | seed | Gavin |
 | `own-governance-replacing-snapshot.md` | seed | Gavin |
@@ -30,3 +30,4 @@ One file per idea, using the template in the root README. Status is the first li
 | `discussions-store.md` | exploring | Thomas, Gavin |
 | `next-version-contributions.md` | adopted | Gavin, Alperen, Thomas |
 | `agent-per-person.md` | seed | Thomas |
+| `github-and-the-spec.md` | exploring | Thomas, Hex |
