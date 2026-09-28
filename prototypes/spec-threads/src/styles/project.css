@@ -277,3 +277,4 @@
   .pw-inbox-mobile { display: inline-flex; align-self: flex-start; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--pw-accent); text-decoration: none; }
   .pw-tab-inbox { display: none !important; }
 }
+.pw-banner { margin: 0 0 16px; padding: 10px 14px; border-radius: 8px; background: #fff4dd; border: 1px solid #f0c77b; color: #6b4300; font-size: 14px; font-weight: 500; }

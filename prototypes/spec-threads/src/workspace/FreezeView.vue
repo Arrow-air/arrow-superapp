@@ -98,7 +98,7 @@ const days = computed(() => (version.value?.freezeTarget ? daysUntil(version.val
         <section class="pw-card">
           <h3>Readiness</h3>
           <p class="pw-big">{{ check.resolved.length }} <small>of {{ check.resolved.length + check.open.length }} discussions settled</small></p>
-          <p class="pw-muted">{{ check.open.length ? `${check.open.length} still open.` : 'Every team discussion is settled.' }} <template v-if="check.deferredAway.length">{{ check.deferredAway.length }} deferred to a later version.</template><template v-if="unpicked.length"> {{ unpicked.length }} {{ unpicked.length === 1 ? 'question' : 'questions' }} from calls nobody picked up will carry into {{ later[0]?.name ?? 'the next version' }}.</template></p>
+          <p class="pw-muted">{{ check.open.length ? `${check.open.length} still open.` : 'Every team discussion is settled.' }} <template v-if="check.deferredAway.length">{{ check.deferredAway.length }} deferred to a later version. </template><template v-if="unpicked.length">{{ unpicked.length }} {{ unpicked.length === 1 ? 'question' : 'questions' }} from calls nobody picked up will carry into {{ later[0]?.name ?? 'the next version' }}.</template></p>
           <button v-if="isLead && check.resolved.length + check.open.length" class="pw-btn" :disabled="busy || !check.canFreeze" @click="freeze">Freeze {{ version.name }}</button><p v-else-if="isLead" class="pw-muted pw-small">Nothing to freeze until {{ version.name }} has discussions.</p>
           <p v-if="isLead && !check.canFreeze" class="pw-muted pw-small">Settle or defer the open discussions below to enable the freeze.</p>
         </section>

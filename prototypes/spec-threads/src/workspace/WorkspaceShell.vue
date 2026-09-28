@@ -45,6 +45,9 @@ watch(() => [state.me?.id, state.version], async () => {
   if (!state.me) { unread.value = 0; return; }
   try { unread.value = (await api<{ read_at: string | null }[]>('/notifications')).filter((n) => !n.read_at).length; } catch { unread.value = 0; }
 }, { immediate: true });
+// An example workspace announces itself so nobody mistakes its people or activity for Arrow's.
+const banner = ref('');
+fetch('/api/config').then((r) => r.json()).then((c) => { banner.value = c.banner ?? ''; }).catch(() => {});
 const fmt = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 watch([view, () => route.query.thread, () => route.query.record], () => {
   const label = view.value === 'overview' ? 'Overview' : tabs.value.find((t) => t.id === view.value)?.label ?? view.value.charAt(0).toUpperCase() + view.value.slice(1);
@@ -54,6 +57,7 @@ watch([view, () => route.query.thread, () => route.query.record], () => {
 
 <template>
   <div class="pw">
+    <p v-if="banner" class="pw-banner" role="note">{{ banner }}</p>
     <header class="pw-head">
       <div class="pw-head-main">
         <div class="pw-title-row">

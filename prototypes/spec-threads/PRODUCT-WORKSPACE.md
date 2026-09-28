@@ -56,6 +56,28 @@ Thomas asked for the workspace to be ready to walk Alperen and Gavin through bef
 
 **Still open for the demo:** the real workspace has one member and one discussion. Everything on the team side is empty until people use it. Discord bridging is the next step.
 
+### Example workspace (for demos)
+
+A second instance holds fictional contributors, so the whole flow can be shown before the real team uses the app. It has its own database (`arrow_workspace_demo`), service (`127.0.0.1:4200`) and private portal ("Arrow workspace (example)"). A banner on every page says the people and activity are fictional; the call and repository records are the real ones.
+- **Contents:** five made-up contributors (Mara Quinn, Ravi Menon, Dev Okafor, Lin Takeda, Sofia Reyes) and about two weeks of PT2 activity on the real Spearhead call questions. That includes:
+  - an open wing-skin debate where weighting changes which approach leads;
+  - a main-board summary waiting for the lead;
+  - adopted decisions;
+  - a submitted bounty waiting for acceptance, an open research grant, and accepted work;
+  - a deferred and a declined idea;
+  - a PT1 build question;
+  - a 25,000 ARROW PT2 pool with 20% reserved for power, freezing on Oct 18.
+- **Accounts:** the project lead signs in with their own account and is the lead there. The fictional accounts share one password, kept in `.runtime/demo-server.json`.
+- **Seeding:** everything runs through the same domain rules as the real service (`server/demo-seed.ts`), with a scripted clock.
+
+```sh
+node scripts/prepare-demo.mjs        # once: create the example database and config
+node scripts/service.mjs start --demo
+npm run demo:seed                    # reset to the seeded state, e.g. after freezing PT2 in a demo
+```
+
+The seed script refuses to run against any database other than `arrow_workspace_demo`.
+
 ## Pilot build — 2026-09-26
 
 **Current implementation, 2026-09-26.** Thomas approved the product-review build sequence. This supersedes the earlier pause on backend work **for this isolated local workspace**, not for Arrow's existing hosted demo. Branch: `product-workspace-v1`. The historical prototype files below remain reference material.

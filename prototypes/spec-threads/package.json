@@ -20,7 +20,8 @@
     "build:evidence": "VITE_PROJECT_DATA=spearhead VITE_BACKEND=demo vite build --outDir dist-real-next",
     "server:start": "node scripts/service.mjs start",
     "server:restart": "node scripts/service.mjs restart",
-    "backup": "node scripts/backup.mjs"
+    "backup": "node scripts/backup.mjs",
+    "demo:seed": "esbuild server/demo-seed.ts --bundle --platform=node --format=esm --packages=external --target=node22 --outfile=.runtime/demo-seed.mjs --log-level=warning && node .runtime/demo-seed.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.0",

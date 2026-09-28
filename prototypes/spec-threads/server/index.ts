@@ -568,7 +568,11 @@ const server = http.createServer(async (req, res) => {
       return;
     }
     if (path === "/api/config") {
-      send(res, 200, { anonKey: env.anonKey, workspace: workspaceId });
+      send(res, 200, {
+        anonKey: env.anonKey,
+        workspace: workspaceId,
+        ...(env.banner ? { banner: String(env.banner) } : {}),
+      });
       return;
     }
     if (path === "/api/health") {

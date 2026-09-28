@@ -9,8 +9,9 @@ import {
 import { resolve } from "node:path";
 const mode = process.argv[2] ?? "start",
   acceptance = process.argv.includes("--acceptance"),
-  port = acceptance ? 4197 : Number(process.env.PORT ?? 4196),
-  name = acceptance ? "acceptance-server" : "server",
+  demo = process.argv.includes("--demo"),
+  port = acceptance ? 4197 : demo ? 4200 : Number(process.env.PORT ?? 4196),
+  name = acceptance ? "acceptance-server" : demo ? "demo-server" : "server",
   config = resolve(".runtime/" + name + ".json"),
   pidfile = ".runtime/" + name + ".pid";
 mkdirSync(".runtime", { recursive: true, mode: 0o700 });
