@@ -67,7 +67,7 @@ export interface Backend {
   getGrant(grantId: string): Promise<Grant | null>;
 
   /** versionId defaults to the project's version in discussion. */
-  createThread(input: { projectId: string; versionId?: string; system?: string; title: string; body: string; tags: string[] }): Promise<Thread>;
+  createThread(input: { projectId: string; versionId?: string; system?: string; title: string; body: string; tags: string[]; anchor?: import('../lib/types').ModelAnchor }): Promise<Thread>;
   createPosition(input: { threadId: string; body: string }): Promise<Position>;
   /** value 0 clears the caller's vote. */
   castVote(input: { positionId: string; value: 1 | -1 | 0 }): Promise<void>;

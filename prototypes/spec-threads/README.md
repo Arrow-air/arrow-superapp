@@ -10,6 +10,8 @@ npm run build && npm run preview -- --port 4199
 npm run e2e:example      # 12 browser checks against that preview (BASE_URL overrides)
 ```
 
+**Aircraft tab.** The Spearhead model (318 solids from the Build123D reconstruction of the latest Fusion structures, see `public/models/spearhead/README.md`) with discussions attached to parts. Click a part to see what is being discussed about it or to start a discussion about the part, its component, or its subsystem; parts under open discussion are highlighted, and every discussion attached to a part links back to it.
+
 The same app also runs as a shared service with accounts and a database (`VITE_BACKEND=shared VITE_PROJECT_DATA=spearhead`); the older concept sandbox is at `?dataset=sandbox`.
 
 

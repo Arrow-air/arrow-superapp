@@ -21,7 +21,7 @@ const fromRecord = computed(() => props.item.bundle?.thread.sourceRecordId ? dat
 
 <template>
   <RouterLink :to="target" class="pw-q" :data-kind="item.kind">
-    <span class="pw-eyebrow"><template v-if="!hideSystem">{{ data ? systemName(data.evidence, item.system) : item.system }} · </template><template v-if="item.kind === 'record' && item.record && data">{{ item.record.kind === 'question' ? 'Question' : recordStatus[item.record.status] }} · {{ origin(data.evidence, item.record) }} · {{ item.record.versions.join(' / ') }}</template><template v-else-if="fromRecord && data">raised on the {{ origin(data.evidence, fromRecord) }}</template><template v-else>team discussion</template></span>
+    <span class="pw-eyebrow"><template v-if="!hideSystem">{{ data ? systemName(data.evidence, item.system) : item.system }} · </template><template v-if="item.kind === 'record' && item.record && data">{{ item.record.kind === 'question' ? 'Question' : recordStatus[item.record.status] }} · {{ origin(data.evidence, item.record) }} · {{ item.record.versions.join(' / ') }}</template><template v-else-if="fromRecord && data">raised on the {{ origin(data.evidence, fromRecord) }}</template><template v-else-if="item.bundle?.thread.anchor">on the model · {{ item.bundle.thread.anchor.label }}</template><template v-else>team discussion</template></span>
     <strong>{{ item.title }}</strong>
     <span v-if="item.bundle" class="pw-q-meta">
       {{ item.bundle.positions.length }} {{ item.bundle.positions.length === 1 ? 'contribution' : 'contributions' }} · {{ nameOf(item.bundle.thread.authorId) }} · active {{ shortDate(item.date) }}

@@ -1,8 +1,8 @@
 import { useRoute, useRouter, type LocationQueryRaw } from 'vue-router';
 import { computed } from 'vue';
 
-export type View = 'overview' | 'discussions' | 'spec' | 'work' | 'people' | 'sources' | 'inbox' | 'freeze' | 'search';
-export const views: View[] = ['overview', 'discussions', 'spec', 'work', 'people', 'sources', 'inbox', 'freeze', 'search'];
+export type View = 'overview' | 'model' | 'discussions' | 'spec' | 'work' | 'people' | 'sources' | 'inbox' | 'freeze' | 'search';
+export const views: View[] = ['overview', 'model', 'discussions', 'spec', 'work', 'people', 'sources', 'inbox', 'freeze', 'search'];
 // Older links keep working.
 const legacy: Record<string, View> = { shape: 'discussions', design: 'spec', review: 'freeze', register: 'spec', grants: 'work' };
 

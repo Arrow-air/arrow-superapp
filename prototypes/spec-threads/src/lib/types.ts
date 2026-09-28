@@ -83,11 +83,27 @@ export interface Project {
 
 export type ThreadStatus = 'open' | 'resolved';
 
+/** A part of the aircraft model a discussion is about, following the model's own hierarchy. */
+export interface ModelAnchor {
+  /** Model file and revision, so an anchor can say when the geometry has moved on. */
+  model: string;
+  /** Subsystem layer, e.g. "fuselage". */
+  group: string;
+  /** Component node, e.g. "fuselage:1+fuselage_body:1+bulkheads:1". */
+  component?: string;
+  /** Solid within the component, e.g. "sta2". */
+  part?: string;
+  /** Readable path, e.g. "Fuselage › Bulkheads › sta2". */
+  label: string;
+}
+
 export interface Thread {
   sourceRecordId?: string;
   sourceThreadId?: string;
   sourceDecisionId?: string;
   sourceGrantId?: string;
+  /** The part of the aircraft model this discussion is about. */
+  anchor?: ModelAnchor;
   id: string;
   projectId: string;
   /** The version this thread is addressed to. Changes when deferred. */

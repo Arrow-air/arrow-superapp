@@ -16,6 +16,8 @@ Thomas asked for the workspace to be ready to walk Alperen and Gavin through bef
 - Suggestions are never counted as open questions and never carry across a freeze.
 - Work reported on calls sits in a collapsed "not tracked here" section.
 
+**Discussion on the aircraft** (Q15, `discussion-at-the-work.md`): the Aircraft tab shows the Spearhead model with discussions anchored to parts, following the model's own subsystem › component › solid hierarchy (`ModelAnchor` on a thread, stored with the model revision). Parts under open discussion are highlighted; discussions show "About … · View in the model".
+
 **Weighted support is back** (DECISIONS 2026-09-17). Weight = (1 + expertise the lead verified for the discussion's system + 1 if you offered to help build it) × role (lead 2, core 1.5, contributor 1).
 - Tokens count for nothing until wallets are linked: a typed-in balance is not evidence.
 - The lead sets roles and verified expertise on the People page (`setMemberStanding`).

@@ -9,6 +9,7 @@ import { useProject, nameOf } from './useProject';
 import QuestionRow from './QuestionRow.vue';
 import { callSuggestions, discussingVersion, firstLine, lastActivity, openQuestions, recentOutcomes, systemName, type QuestionItem } from './derive';
 import { origin, shortDate } from './labels';
+import { anchorKey } from './model';
 
 const { q, patch, go, to, router } = useNav();
 const { data, isMember } = useProject();
@@ -53,6 +54,7 @@ function back() { if (window.history.state?.back) router.back(); else go('discus
   <div v-if="data">
     <template v-if="selected">
       <div class="pw-detail-bar"><button class="pw-back" @click="back">← Back</button><FollowRecord :target="selected.thread.id" /></div>
+      <p v-if="selected.thread.anchor" class="pw-anchor">About <b>{{ selected.thread.anchor.label }}</b> · <RouterLink :to="to('model', { focus: anchorKey(selected.thread.anchor) })">View in the model →</RouterLink></p>
       <p v-if="sourceRecord" class="pw-origin">Raised on the {{ origin(data.evidence, sourceRecord) }}. <RouterLink :to="to('discussions', { record: sourceRecord.id })">Original notes and sources →</RouterLink></p>
       <WorkspaceDiscussion :key="selected.thread.id" :bundle="selected" :project="data.project" @review="go('spec')" @grant="(id) => go('work', { grant: id })" />
       <RecordAttachments v-if="state.me" :entity-id="selected.thread.id" />

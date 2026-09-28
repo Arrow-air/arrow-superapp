@@ -7,7 +7,11 @@ import { corpusKey } from "../src/lib/brief";
 import { progressOf, trackingOf } from "../src/lib/projectRecords";
 import type { DemoBackend } from "../src/data/demoBackend";
 import type { DemoState } from "../src/data/seed";
-import type { Role, WorkInput, WorkProgress } from "../src/lib/types";
+import type { ModelAnchor, Role, WorkInput, WorkProgress } from "../src/lib/types";
+import { anchorLabel, MODEL_ID } from "../src/workspace/model";
+
+/** An anchor on the Spearhead model, labelled the way the app labels it. */
+const on = (group: string, component?: string, part?: string): ModelAnchor => ({ model: MODEL_ID, group, ...(component ? { component } : {}), ...(part ? { part } : {}), label: anchorLabel({ group, component, part }) });
 
 // Fictional people. Names and bios are made up; the banner says so on every page.
 export const people = [
@@ -70,6 +74,7 @@ export async function runExampleScenario(ids: Record<string, string>, lead?: { i
     events.push({ actor: ids[who], action: "startFromEvidence", entity: t.id, at: new RealDate(clock).toISOString(), data: { recordId, body } });
     return t.id;
   };
+  const anchor = (threadId: string, a: ModelAnchor) => { state.threads.find((t) => t.id === threadId)!.anchor = a; };
   const post = (who: string, threadId: string, body: string) => act(who, "createPosition", (b) => b.createPosition({ threadId, body }), { threadId, body }).then((p) => p.id);
   const reply = (who: string, positionId: string, body: string) => act(who, "addComment", (b) => b.addComment({ positionId, body }), { positionId, body }, () => state.positions.find((p) => p.id === positionId)?.threadId);
   const vote = (who: string, positionId: string) => act(who, "castVote", (b) => b.castVote({ positionId, value: 1 }), { positionId, value: 1 }, () => state.positions.find((p) => p.id === positionId)?.threadId);
@@ -159,14 +164,14 @@ export async function runExampleScenario(ids: Record<string, string>, lead?: { i
   at("2026-09-19T10:00:00Z");
   claim("mara", servoWork!);
 
-  // A V-tail proposal: declined with a reason.
+  // A conventional-tail proposal: declined with a reason. (Spearhead flies a V-tail with ruddervators.)
   at("2026-09-18T11:00:00Z");
-  const vtail = await act("sofia", "createThread", (b) => b.createThread({ projectId: workspaceId, system: "airframe", title: "Should PT2 switch to a V-tail?", body: "A V-tail saves a servo and a little drag, and it's simpler to transport.", tags: [] }), {}, (t) => t.id);
+  const vtail = await act("sofia", "createThread", (b) => b.createThread({ projectId: workspaceId, system: "airframe", title: "Should PT2 go back to a conventional tail?", body: "A separate elevator and rudder would make the mixing simpler and a damaged tail easier to fix in the field.", tags: [], anchor: on("tail") }), {}, (t) => t.id);
   at("2026-09-18T15:40:00Z");
-  const vtailNo = await post("dev", vtail.id, "It couples pitch and yaw in the mixer and changes the tail PCB and servo layout we're about to agree.");
+  const vtailNo = await post("dev", vtail.id, "It adds a third tail servo and weight, and the tail PCB, the two ruddervator servos and the regulator decision all assume the V-tail.");
   await vote("nadia", vtailNo); await vote("lin", vtailNo);
   at("2026-09-19T14:00:00Z");
-  await act("nadia", "resolveThread", (b) => b.resolveThread({ threadId: vtail.id, kind: "reject", note: "Out of scope for PT2: the tail PCB and servo layout assume a conventional tail." }), { threadId: vtail.id, kind: "reject" });
+  await act("nadia", "resolveThread", (b) => b.resolveThread({ threadId: vtail.id, kind: "reject", note: "Out of scope for PT2: the tail PCB, servos and regulators are built around the V-tail." }), { threadId: vtail.id, kind: "reject" });
 
   // Freeze plan and retro pool.
   at("2026-09-20T17:00:00Z");
@@ -175,6 +180,7 @@ export async function runExampleScenario(ids: Record<string, string>, lead?: { i
   // Wing skins: open, and weighting changes which approach leads.
   at("2026-09-20T15:00:00Z");
   const wing = start("dev", "wing-skin-choice", "Oracover for the PT2 wings. It's faster to build and repair, and PT2 is still a test aircraft; carbon skins cost us weeks on PT1.");
+  anchor(wing, on("main_wing", "root"));
   at("2026-09-21T11:00:00Z");
   const wingCarbon = await post("sofia", wing, "Carbon skins for anything that will fly from rough strips. Film tears on landing, and field repairs are messy.");
   at("2026-09-21T13:00:00Z");
@@ -224,9 +230,26 @@ export async function runExampleScenario(ids: Record<string, string>, lead?: { i
   // A PT1 build question stays with PT1.
   at("2026-09-24T18:00:00Z");
   const imbalance = start("lin", "motor-imbalance", "Log heading and wind for every hover. If the imbalance tracks the wind direction, it's tail loading, not motor variation.");
+  anchor(imbalance, on("motor_mounts_and_booms", "motor_mounts:1"));
   at("2026-09-25T09:00:00Z");
   const imbalanceDev = await post("dev", imbalance, "We already stiffened the arms. I'd also swap two motors front-to-back and see whether the imbalance follows the motor.");
   await vote("nadia", imbalanceDev); await vote("mara", opening(imbalance));
+
+  // Discussions that start from the model itself.
+  at("2026-09-25T15:00:00Z");
+  const mirror = await act("dev", "createThread", (b) => b.createThread({ projectId: workspaceId, system: "airframe", title: "Is the starboard outer wing really a mirror of port?", body: "The model mirrors the port outer wing because the starboard one was never modelled. Before anyone cuts PT2 molds from this, can someone confirm the starboard wing has no differences: servo pocket, pitot, wiring exit?", tags: [], anchor: on("inferred_starboard_outer_wing") }), {}, (t) => t.id);
+  at("2026-09-25T19:30:00Z");
+  const mirrorLin = await post("lin", mirror.id, "The pitot lives on the port wing only, so the starboard skin shouldn't have that cutout. The servo pocket should be identical.");
+  await vote("dev", mirrorLin); await vote("nadia", mirrorLin);
+  at("2026-09-26T09:10:00Z");
+  const sta2 = await act("mara", "createThread", (b) => b.createThread({ projectId: workspaceId, system: "airframe", title: "Bulkhead sta2 needs a pass-through for the pusher battery harness", body: "With the separate pusher battery in the fuel-tank space (agreed on the Sep 25 call), its harness has to cross sta2. There's no opening in this bulkhead in the model.", tags: [], anchor: on("fuselage", "fuselage:1+fuselage_body:1+bulkheads:1", "sta2") }), {}, (t) => t.id);
+  at("2026-09-26T13:40:00Z");
+  const sta2Dev = await post("dev", sta2.id, "A 20 mm grommeted hole low on the port side keeps it clear of the longerons. I can cut a test bulkhead.");
+  await vote("mara", sta2Dev); await vote("ravi", sta2Dev); await vote("nadia", sta2Dev);
+  await intent("dev", sta2.id);
+  at("2026-09-26T16:00:00Z");
+  const gear = await act("ravi", "createThread", (b) => b.createThread({ projectId: workspaceId, system: "airframe", title: "Are the recovered rear landing gear bodies the current design?", body: "These eleven bodies were hidden in the Fusion file and recovered for the review. Are they what's on PT1 today, or an older iteration we should drop from the PT2 baseline?", tags: [], anchor: on("restored_rear_landing_gear") }), {}, (t) => t.id);
+  void gear;
 
   // Mara submits the servo work; it now waits for the lead.
   at("2026-09-26T20:00:00Z");

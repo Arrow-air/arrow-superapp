@@ -175,7 +175,7 @@ export class DemoBackend implements Backend {
     return g ? structuredClone(g) : null;
   }
 
-  async createThread(input: { projectId: string; versionId?: string; system?: string; title: string; body: string; tags: string[] }) {
+  async createThread(input: { projectId: string; versionId?: string; system?: string; title: string; body: string; tags: string[]; anchor?: import('../lib/types').ModelAnchor }) {
     const me = this.me();
     const project = this.project(input.projectId);
     const version = input.versionId ? versionById(project, input.versionId) : discussingVersion(project);
@@ -200,6 +200,11 @@ export class DemoBackend implements Backend {
       createdAt: new Date().toISOString(),
       deferrals: [],
     };
+    if (input.anchor) {
+      const a = input.anchor;
+      if (!a.model?.trim() || !a.group?.trim() || !a.label?.trim()) throw new Error('A model anchor needs a model, a subsystem, and a label.');
+      thread.anchor = { model: a.model.trim(), group: a.group.trim(), ...(a.component ? { component: a.component.trim() } : {}), ...(a.part ? { part: a.part.trim() } : {}), label: a.label.trim().slice(0, 200) };
+    }
     this.state.threads.push(thread);
     this.save();
     return structuredClone(thread);

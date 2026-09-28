@@ -80,6 +80,16 @@ export const inputs: Record<string, z.ZodType> = {
       title: short,
       body: text,
       tags: z.array(short).max(30),
+      anchor: z
+        .object({
+          model: short,
+          group: short,
+          component: short.optional(),
+          part: short.optional(),
+          label: short,
+        })
+        .strict()
+        .optional(),
     })
     .strict(),
   createPosition: z.object({ threadId: id, body: text }).strict(),

@@ -19,6 +19,7 @@ const SourcesView = defineAsyncComponent(() => import('./SourcesView.vue'));
 const InboxView = defineAsyncComponent(() => import('./InboxView.vue'));
 const FreezeView = defineAsyncComponent(() => import('./FreezeView.vue'));
 const SearchView = defineAsyncComponent(() => import('./SearchView.vue'));
+const ModelView = defineAsyncComponent(() => import('./ModelView.vue'));
 
 const { view, q, go, route } = useNav();
 const { data } = useProject();
@@ -29,13 +30,14 @@ const activeWork = computed(() => data.value?.grants.filter((g) => activeStages.
 const freezeDays = computed(() => (pt2.value?.freezeTarget ? daysUntil(pt2.value.freezeTarget) : null));
 const tabs = computed<{ id: View; label: string; count?: number }[]>(() => [
   { id: 'overview', label: 'Overview' },
+  { id: 'model', label: 'Aircraft' },
   { id: 'discussions', label: 'Discussions', count: openCount.value || undefined },
   { id: 'spec', label: 'Spec' },
   { id: 'work', label: 'Work', count: activeWork.value || undefined },
   { id: 'people', label: 'People' },
   { id: 'sources', label: 'Sources' },
 ]);
-const current = computed(() => ({ overview: OverviewView, discussions: DiscussionsView, spec: SpecView, work: WorkView, people: PeopleView, sources: SourcesView, inbox: InboxView, freeze: FreezeView, search: SearchView })[view.value]);
+const current = computed(() => ({ overview: OverviewView, model: ModelView, discussions: DiscussionsView, spec: SpecView, work: WorkView, people: PeopleView, sources: SourcesView, inbox: InboxView, freeze: FreezeView, search: SearchView })[view.value]);
 const search = ref(q('q'));
 watch(() => route.query.q, (v) => { if (view.value === 'search') search.value = String(v ?? ''); });
 function submitSearch() { if (search.value.trim()) go('search', { q: search.value.trim() }); }
