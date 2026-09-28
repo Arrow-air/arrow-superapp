@@ -17,10 +17,9 @@ const versions = computed(() => (data.value ? [...data.value.project.versions].s
 const version = computed(() => versions.value.find((v) => v.id === q('version')) ?? (data.value ? discussingVersion(data.value.project) : undefined) ?? versions.value[0]);
 const spec = computed(() => (data.value && version.value ? specFor(data.value, version.value) : []));
 const focus = computed(() => q('system'));
-const shown = computed(() => spec.value.filter((s) => (!focus.value || s.system === focus.value) && (focus.value || s.system !== 'project-wide' || s.decisions.length || s.inherited.length || s.open.length || s.direction.length || s.section)));
+const shown = computed(() => spec.value.filter((s) => (!focus.value || s.system === focus.value) && (focus.value || s.system !== 'project-wide' || s.decisions.length || s.inherited.length || s.open.length || s.section)));
 const totals = computed(() => ({
   decided: spec.value.reduce((n, s) => n + s.decisions.length + s.inherited.length, 0),
-  direction: spec.value.reduce((n, s) => n + s.direction.length, 0),
   open: spec.value.reduce((n, s) => n + s.open.length, 0),
 }));
 const decision = computed(() => data.value?.decisions.find((d) => d.id === q('decision')));
@@ -70,17 +69,17 @@ function back() { if (window.history.state?.back) router.back(); else go('spec')
       <div class="pw-page-head">
         <div>
           <h2>{{ version.name }} spec</h2>
-          <p class="pw-muted">What {{ version.name }} is so far: decisions the team recorded here, direction from calls and the repository, and the questions still open. {{ version.state === 'discussing' ? `It locks at the ${version.name} freeze.` : version.state === 'frozen' ? `Frozen ${version.frozenAt ? shortDate(version.frozenAt) : ''}.` : '' }}</p>
+          <p class="pw-muted">What {{ version.name }} is so far: every decision a lead settled in a discussion here, and the discussions still open. Call notes and repository documents aren't in the spec until someone discusses them. {{ version.state === 'discussing' ? `It locks at the ${version.name} freeze.` : version.state === 'frozen' ? `Frozen ${version.frozenAt ? shortDate(version.frozenAt) : ''}.` : '' }}</p>
         </div>
         <RouterLink v-if="version.state === 'discussing'" class="pw-btn pw-btn-quiet" :to="to('freeze')">{{ isLead ? 'Freeze review' : 'Freeze status' }}</RouterLink>
       </div>
       <div class="pw-filters">
         <label><span class="sr-only">Version</span><select :value="version.id" aria-label="Version" @change="patch({ version: ($event.target as HTMLSelectElement).value, system: undefined })"><option v-for="v in versions" :key="v.id" :value="v.id">{{ v.name }}</option></select></label>
         <label><span class="sr-only">System</span><select :value="focus" aria-label="System" @change="patch({ system: ($event.target as HTMLSelectElement).value || undefined })"><option value="">All systems</option><option v-for="s in spec" :key="s.system" :value="s.system">{{ s.name }}</option></select></label>
-        <p class="pw-muted pw-small"><b>{{ totals.decided }}</b> decided · <b>{{ totals.direction }}</b> from calls & docs · <b>{{ totals.open }}</b> open</p>
+        <p class="pw-muted pw-small"><b>{{ totals.decided }}</b> decided · <b>{{ totals.open }}</b> open</p>
       </div>
-      <p v-if="version.state === 'frozen'" class="pw-callout">This spec is locked. Questions nobody picked up before the freeze moved to {{ versions.find(v => v.state === 'discussing')?.name ?? 'the next version' }}.</p>
-      <p class="pw-legend"><span class="pw-mark pw-mark-decided">Decided</span> settled here by the lead <span class="pw-mark pw-mark-agreed">Agreed / documented</span> on a call or in the repository, not yet confirmed here <span class="pw-mark pw-mark-direction">Proposed / reported</span> floated, not agreed <span class="pw-mark pw-mark-open">Open</span> still being worked out</p>
+      <p v-if="version.state === 'frozen'" class="pw-callout">This spec is locked. Its open discussions were settled or deferred at the freeze.</p>
+      <p class="pw-legend"><span class="pw-mark pw-mark-decided">Decided</span> settled by a lead in a discussion <span class="pw-mark pw-mark-open">Open</span> being discussed now <RouterLink class="pw-link" :to="to('discussions', { status: 'suggested' })">Suggestions from calls →</RouterLink></p>
 
       <section v-for="s in shown" :id="'spec-' + s.system" :key="s.system" class="pw-card pw-spec">
         <div class="pw-card-head">
@@ -98,9 +97,6 @@ function back() { if (window.history.state?.back) router.back(); else go('spec')
           <li v-for="d in s.decisions" :key="d.id" class="pw-spec-line" data-kind="decided">
             <RouterLink :to="to('spec', { decision: d.id })"><strong>{{ decisionTitle(d) }}</strong><span><b class="pw-line-status">Decided</b> · {{ d.question }} · {{ shortDate(d.at) }}</span></RouterLink>
           </li>
-          <li v-for="r in s.direction" :key="r.id" class="pw-spec-line" data-kind="direction" :data-status="r.status">
-            <RouterLink :to="to('spec', { record: r.id })"><strong>{{ r.title }}</strong><em>{{ r.summary }}</em><span><b class="pw-line-status">{{ recordStatus[r.status] }}</b> · {{ origin(data.evidence, r) }}</span></RouterLink>
-          </li>
           <li v-for="d in s.inherited" :key="d.id" class="pw-spec-line" data-kind="decided">
             <RouterLink :to="to('spec', { decision: d.id })"><strong>{{ decisionTitle(d) }}</strong><span>Carried from the {{ data.project.versions.find(v => v.id === d.versionId)?.name }} spec · {{ shortDate(d.at) }}</span></RouterLink>
           </li>
@@ -109,10 +105,7 @@ function back() { if (window.history.state?.back) router.back(); else go('spec')
           <p class="pw-eyebrow">Open</p>
           <QuestionRow v-for="item in s.open" :key="item.key" :item="item" hide-system />
         </div>
-        <p v-if="!s.decisions.length && !s.inherited.length && !s.direction.length && !s.open.length && !s.section" class="pw-muted">Nothing recorded for {{ s.name.toLowerCase() }} in {{ version.name }} yet.</p>
-        <details v-if="s.reference.length" class="pw-reference"><summary>Earlier baseline for reference · {{ s.reference.length }}</summary>
-          <RouterLink v-for="r in s.reference" :key="r.id" :to="to('spec', { record: r.id })" class="pw-item"><span class="pw-eyebrow">{{ recordStatus[r.status] }} · {{ origin(data.evidence, r) }}</span><strong>{{ r.title }}</strong></RouterLink>
-        </details>
+        <p v-if="!s.decisions.length && !s.inherited.length && !s.open.length && !s.section" class="pw-muted">Nothing decided or under discussion for {{ s.name.toLowerCase() }} yet.</p>
       </section>
       <p v-if="focus" class="pw-row"><RouterLink class="pw-link" :to="to('spec', { version: q('version') || undefined })">← All systems</RouterLink></p>
     </template>

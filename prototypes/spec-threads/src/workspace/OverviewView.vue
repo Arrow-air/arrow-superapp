@@ -7,7 +7,7 @@ import { freezeCheck } from '../lib/versions';
 import { useNav } from './nav';
 import { useProject, nameOf } from './useProject';
 import QuestionRow from './QuestionRow.vue';
-import { activeStages, arrow, buildingVersion, daysUntil, discussingVersion, openQuestions, recentOutcomes, reportedWork, specFor } from './derive';
+import { activeStages, arrow, buildingVersion, callSuggestions, daysUntil, discussingVersion, openQuestions, recentOutcomes, specFor } from './derive';
 import { recordStatus, shortDate, stageLabel } from './labels';
 
 const { to } = useNav();
@@ -20,7 +20,7 @@ const outcomes = computed(() => (data.value && pt2.value ? recentOutcomes(data.v
 const spec = computed(() => (data.value && pt2.value ? specFor(data.value, pt2.value) : []));
 const decidedCount = computed(() => spec.value.reduce((n, s) => n + s.decisions.length, 0));
 const teamWork = computed(() => (data.value ? data.value.grants.filter((g) => activeStages.includes(trackingOf(g).stage)).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)) : []));
-const reported = computed(() => (data.value ? reportedWork(data.value, ['in_progress']).filter((w) => w.link?.state !== 'answered') : []));
+const suggestions = computed(() => (data.value ? callSuggestions(data.value) : []));
 const freeze = computed(() => (data.value && pt2.value ? freezeCheck(data.value.project, pt2.value.id, data.value.bundles.map((b) => b.thread)) : null));
 const retro = computed(() => (data.value && pt2.value ? versionRetro({ project: data.value.project, versionId: pt2.value.id, bundles: data.value.bundles, members: data.value.members, roles: data.value.roles }) : null));
 const myRetro = computed(() => retro.value?.lines.find((l) => l.memberId === state.me?.id)?.amount ?? 0);
@@ -53,7 +53,7 @@ const leadName = computed(() => {
       <dl class="pw-stats">
         <RouterLink :to="to('discussions')"><dt>Open questions</dt><dd>{{ questions.length }}</dd></RouterLink>
         <RouterLink :to="to('spec')"><dt>Decided for {{ pt2.name }}</dt><dd>{{ decidedCount }}</dd></RouterLink>
-        <RouterLink :to="to('work')"><dt>Work underway</dt><dd>{{ teamWork.length + reported.length }}</dd></RouterLink>
+        <RouterLink :to="to('work')"><dt>Work underway</dt><dd>{{ teamWork.length }}</dd></RouterLink>
         <RouterLink :to="to('freeze')"><dt>{{ pt2.name }} retro pool</dt><dd>{{ pt2.retroPool ? arrow(pt2.retroPool.amount) : 'Not set' }}</dd></RouterLink>
       </dl>
     </section>
@@ -77,15 +77,16 @@ const leadName = computed(() => {
     <div class="pw-grid">
       <section class="pw-card pw-span">
         <div class="pw-card-head"><h3>Open questions for {{ pt2.name }}</h3><RouterLink class="pw-link" :to="to('discussions')">All discussions →</RouterLink></div>
-        <p v-if="!questions.length" class="pw-muted">Nothing open for {{ pt2.name }}. Start a discussion from the Discussions tab.</p>
+        <p v-if="!questions.length" class="pw-muted">No open discussions for {{ pt2.name }} yet. Start one from the Discussions tab, or bring in a suggestion from calls.</p>
         <QuestionRow v-for="item in questions.slice(0, 6)" :key="item.key" :item="item" />
         <RouterLink v-if="questions.length > 6" class="pw-link" :to="to('discussions')">{{ questions.length - 6 }} more open →</RouterLink>
       </section>
 
+      <div class="pw-side">
       <section class="pw-card pw-freeze-card">
         <div class="pw-card-head"><h3>{{ pt2.name }} freeze</h3><RouterLink class="pw-link" :to="to('freeze')">{{ isLead ? 'Freeze review →' : 'Details →' }}</RouterLink></div>
         <p class="pw-big">{{ pt2.freezeTarget ? shortDate(pt2.freezeTarget) : 'No date yet' }}<small v-if="days !== null"> {{ days > 0 ? `in ${days} days` : days === 0 ? 'today' : 'overdue' }}</small></p>
-        <p class="pw-muted">{{ freeze?.resolved.length ?? 0 }} of {{ (freeze?.resolved.length ?? 0) + (freeze?.open.length ?? 0) }} team discussions settled<template v-if="questions.filter(q => q.kind === 'record').length"> · {{ questions.filter(q => q.kind === 'record').length }} call questions not yet picked up</template></p>
+        <p class="pw-muted">{{ freeze?.resolved.length ?? 0 }} of {{ (freeze?.resolved.length ?? 0) + (freeze?.open.length ?? 0) }} team discussions settled</p>
         <div v-if="pt2.retroPool" class="pw-retro-mini">
           <p><b>{{ arrow(pt2.retroPool.amount) }}</b> goes to the {{ pt2.name }} discussion at the freeze, split by weighted support.</p>
           <p v-if="state.me && myRetro" class="pw-muted">Your share if it froze today: <b>{{ arrow(myRetro) }}</b></p>
@@ -93,12 +94,18 @@ const leadName = computed(() => {
         </div>
         <p v-else-if="isLead" class="pw-muted">Set a freeze date and a retro pool so contributors know when and how {{ pt2.name }} ideas are rewarded.</p>
       </section>
+      <section v-if="suggestions.length" class="pw-card pw-suggest">
+        <div class="pw-card-head"><h3>Suggested from calls</h3><RouterLink class="pw-link" :to="to('discussions', { status: 'suggested' })">All {{ suggestions.length }} →</RouterLink></div>
+        <p class="pw-muted pw-small">Raised on calls or in the repository, not in the app yet. They join {{ pt2.name }} when someone starts a discussion.</p>
+        <RouterLink v-for="item in suggestions.slice(0, 4)" :key="item.key" :to="to('discussions', { record: item.record!.id })" class="pw-item"><span class="pw-eyebrow">{{ item.record!.kind === 'question' ? 'Question' : 'Agreed or proposed' }} · {{ shortDate(item.date) }}</span><strong>{{ item.title }}</strong></RouterLink>
+      </section>
+      </div>
     </div>
 
     <div class="pw-grid pw-grid-even">
       <section class="pw-card">
         <div class="pw-card-head"><h3>Recently decided</h3><RouterLink class="pw-link" :to="to('spec')">{{ pt2.name }} spec →</RouterLink></div>
-        <p v-if="!outcomes.length" class="pw-muted">No {{ pt2.name }} decisions recorded in the app yet. Direction agreed on calls is in the Spec tab until the team confirms it here.</p>
+        <p v-if="!outcomes.length" class="pw-muted">Nothing settled for {{ pt2.name }} yet. Decisions appear here when a lead settles a discussion.</p>
         <RouterLink v-for="o in outcomes" :key="o.bundle.thread.id" :to="o.decision ? to('spec', { decision: o.decision.id }) : to('discussions', { thread: o.bundle.thread.id })" class="pw-item">
           <span class="pw-eyebrow">{{ o.adopted ? 'Adopted into the spec' : 'Concluded' }} · {{ shortDate(o.at) }}</span>
           <strong>{{ o.summary }}</strong>
@@ -112,12 +119,7 @@ const leadName = computed(() => {
           <strong>{{ g.title }}</strong>
           <span class="pw-muted pw-small">{{ trackingOf(g).ownerId ? nameOf(trackingOf(g).ownerId) : 'Unclaimed' }}<template v-if="trackingOf(g).dueDate"> · due {{ shortDate(trackingOf(g).dueDate) }}</template><template v-if="reward(g) && g.proposerShare"> · {{ arrow(proposerAward(reward(g), g.proposerShare)) }} proposer award{{ g.proposerIds.length ? ' to ' + g.proposerIds.map(nameOf).join(', ') : ', held for a lead to confirm' }}</template></span>
         </RouterLink>
-        <RouterLink v-for="w in reported.slice(0, 4)" :key="w.record.id" :to="to('work', { record: w.record.id })" class="pw-item">
-          <span class="pw-eyebrow">{{ recordStatus[w.record.status] }} · reported {{ shortDate(w.record.date) }}</span>
-          <strong>{{ w.record.title }}</strong>
-          <span class="pw-muted pw-small">{{ w.record.owner }}</span>
-        </RouterLink>
-        <p v-if="!teamWork.length && !reported.length" class="pw-muted">No work in progress.</p>
+        <p v-if="!teamWork.length" class="pw-muted">No work underway yet. Work comes from settled discussions.</p>
       </section>
     </div>
 
@@ -126,7 +128,7 @@ const leadName = computed(() => {
       <div class="pw-systems">
         <RouterLink v-for="s in spec.filter(s => s.system !== 'project-wide' || s.decisions.length || s.open.length)" :key="s.system" :to="to('spec', { system: s.system })" class="pw-system">
           <strong>{{ s.name }}</strong>
-          <span><b>{{ s.decisions.length }}</b> decided · <b>{{ s.direction.length }}</b> from calls & docs · <b :class="{ 'pw-warn': s.open.length }">{{ s.open.length }}</b> open</span>
+          <span><b>{{ s.decisions.length }}</b> decided · <b :class="{ 'pw-warn': s.open.length }">{{ s.open.length }}</b> open</span>
         </RouterLink>
       </div>
     </section>

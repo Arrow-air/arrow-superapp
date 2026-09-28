@@ -18,7 +18,6 @@ const check = computed(() => (data.value && version.value ? freezeCheck(data.val
 const openBundles = computed(() => (data.value && check.value ? data.value.bundles.filter((b) => check.value!.open.some((t) => t.id === b.thread.id)) : []));
 const settled = computed(() => (data.value && version.value ? recentOutcomes(data.value, version.value.id) : []));
 const declined = computed(() => (data.value && version.value ? data.value.bundles.filter((b) => b.thread.versionId === version.value!.id && b.thread.resolution?.kind === 'reject') : []));
-const unpicked = computed(() => (data.value && version.value ? openQuestions(data.value, version.value.id).filter((q) => q.kind === 'record') : []));
 const retroFor = (v: Version) => (data.value ? versionRetro({ project: data.value.project, versionId: v.id, bundles: data.value.bundles, members: data.value.members, roles: data.value.roles }) : null);
 const retro = computed(() => (version.value ? retroFor(version.value) : null));
 const positionLabel = (id: string) => {
@@ -98,7 +97,7 @@ const days = computed(() => (version.value?.freezeTarget ? daysUntil(version.val
         <section class="pw-card">
           <h3>Readiness</h3>
           <p class="pw-big">{{ check.resolved.length }} <small>of {{ check.resolved.length + check.open.length }} discussions settled</small></p>
-          <p class="pw-muted">{{ check.open.length ? `${check.open.length} still open.` : 'Every team discussion is settled.' }} <template v-if="check.deferredAway.length">{{ check.deferredAway.length }} deferred to a later version. </template><template v-if="unpicked.length">{{ unpicked.length }} {{ unpicked.length === 1 ? 'question' : 'questions' }} from calls nobody picked up will carry into {{ later[0]?.name ?? 'the next version' }}.</template></p>
+          <p class="pw-muted">{{ check.open.length ? `${check.open.length} still open.` : 'Every team discussion is settled.' }} <template v-if="check.deferredAway.length">{{ check.deferredAway.length }} deferred to a later version. </template></p>
           <button v-if="isLead && check.resolved.length + check.open.length" class="pw-btn" :disabled="busy || !check.canFreeze" @click="freeze">Freeze {{ version.name }}</button><p v-else-if="isLead" class="pw-muted pw-small">Nothing to freeze until {{ version.name }} has discussions.</p>
           <p v-if="isLead && !check.canFreeze" class="pw-muted pw-small">Settle or defer the open discussions below to enable the freeze.</p>
         </section>
@@ -145,12 +144,6 @@ const days = computed(() => (version.value?.freezeTarget ? daysUntil(version.val
         <RouterLink v-for="b in declined" :key="b.thread.id" :to="to('discussions', { thread: b.thread.id })" class="pw-item"><span class="pw-eyebrow">Declined</span><strong>{{ b.thread.title }}</strong><span class="pw-muted pw-small">{{ b.thread.resolution?.kind === 'reject' ? b.thread.resolution.note : '' }}</span></RouterLink>
         <p v-if="!settled.length && !declined.length" class="pw-muted">Nothing settled yet.</p>
       </section>
-
-      <details v-if="unpicked.length" class="pw-card">
-        <summary>Questions from calls nobody has picked up · {{ unpicked.length }}</summary>
-        <p class="pw-muted pw-small">Start a discussion to settle one at this freeze. The rest carry into {{ later[0]?.name ?? 'the next version' }}.</p>
-        <RouterLink v-for="q in unpicked" :key="q.key" :to="to('discussions', { record: q.record!.id })" class="pw-item"><span class="pw-eyebrow">{{ systemName(data.evidence, q.system) }}</span><strong>{{ q.title }}</strong></RouterLink>
-      </details>
     </template>
     <section v-else class="pw-empty"><h2>No version is in discussion</h2><p>Every version is building or frozen.</p></section>
 

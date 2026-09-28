@@ -76,8 +76,6 @@ export interface QuestionItem {
   summary: string;
   bundle?: ThreadBundle;
   record?: SourcedRecord;
-  /** A call question from a version that froze before anyone picked it up. */
-  carriedFrom?: string;
 }
 
 const recordIsQuestion = (r: SourcedRecord) => r.kind === 'question' && !['completed', 'historical'].includes(r.status);
@@ -89,15 +87,24 @@ export function openQuestions(d: ProjectData, versionId: string): QuestionItem[]
     .filter((b) => b.thread.status === 'open' && b.thread.versionId === versionId)
     .sort((a, b) => lastActivity(b).localeCompare(lastActivity(a)))
     .map((b) => ({ key: 'thread:' + b.thread.id, kind: 'thread' as const, title: b.thread.title, system: b.thread.system || PROJECT_WIDE, versionId, date: lastActivity(b), summary: '', bundle: b }));
-  const version = d.project.versions.find((v) => v.id === versionId);
-  const frozen = new Set(d.project.versions.filter((v) => v.state === 'frozen').map((v) => v.id));
-  // Questions nobody picked up before their version froze carry into the version now in discussion.
-  const carried = (r: SourcedRecord) => version?.state === 'discussing' && r.versions.length > 0 && r.versions.every((v) => frozen.has(v));
-  const records = d.evidence.records
-    .filter((r) => recordIsQuestion(r) && !links.has(r.id) && (version?.state !== 'frozen' && r.versions.includes(versionId) || carried(r)))
+  void links;
+  return threads;
+}
+
+/**
+ * Things said on calls or written in the repository that nobody has brought into the app yet.
+ * They are suggestions only: not part of the spec, the open questions, or any freeze until someone
+ * starts a discussion from one.
+ */
+export function callSuggestions(d: ProjectData): QuestionItem[] {
+  const links = recordLinks(d);
+  const live = new Set(d.project.versions.filter((v) => v.state === 'building' || v.state === 'discussing').map((v) => v.id));
+  const suggestible = (r: SourcedRecord) =>
+    (recordIsQuestion(r) || (r.kind === 'design' && ['agreed', 'proposal', 'reported'].includes(r.status))) && r.versions.some((v) => live.has(v)) && !links.has(r.id);
+  return d.evidence.records
+    .filter(suggestible)
     .sort((a, b) => b.date.localeCompare(a.date))
-    .map((r) => ({ key: 'record:' + r.id, kind: 'record' as const, title: r.title, system: r.systems[0] || PROJECT_WIDE, versionId, date: r.date, summary: r.summary, record: r, carriedFrom: carried(r) ? d.project.versions.find((v) => r.versions.includes(v.id))?.name : undefined }));
-  return [...threads, ...records];
+    .map((r) => ({ key: 'record:' + r.id, kind: 'record' as const, title: r.title, system: r.systems[0] || PROJECT_WIDE, versionId: r.versions.find((v) => live.has(v))!, date: r.date, summary: r.summary, record: r }));
 }
 
 export const decisionSystem = (d: Pick<ProjectData, 'bundles'>, decision: Decision) =>
@@ -129,32 +136,24 @@ export interface SpecSystem {
   /** Decisions from an earlier frozen version that still apply. */
   inherited: Decision[];
   section?: SpecificationSection;
-  /** Direction from calls and documents that the team has not yet turned into a decision. */
-  direction: SourcedRecord[];
+  /** Discussions in the app that are still open for this version and system. */
   open: QuestionItem[];
-  /** The version before, for reference while it is still the only baseline written down. */
-  reference: SourcedRecord[];
 }
 
+/** The spec is only what leads settled in the app, plus the section text they wrote from it. */
 export function specFor(d: ProjectData, version: Version): SpecSystem[] {
-  const links = recordLinks(d);
   const current = currentDecisions(d.project, version.id, d.decisions);
   const sections = effectiveSections(d.project, version.id, d.sections);
-  const open = openQuestions(d, version.id);
-  const earlier = [...d.project.versions].sort((a, b) => b.order - a.order).find((v) => v.order < version.order);
-  const decidedRecord = (r: SourcedRecord) => links.get(r.id)?.state === 'answered';
+  const open = version.state === 'frozen' ? [] : openQuestions(d, version.id);
   const systems = [...d.project.systems, PROJECT_WIDE];
   return systems.map((system) => {
-    const inSystem = (r: SourcedRecord) => (r.systems[0] || PROJECT_WIDE) === system;
     return {
       system,
       name: systemName(d.evidence, system),
       decisions: current.filter((x) => x.versionId === version.id && decisionSystem(d, x) === system).sort((a, b) => b.at.localeCompare(a.at)),
       inherited: current.filter((x) => x.versionId !== version.id && decisionSystem(d, x) === system).sort((a, b) => b.at.localeCompare(a.at)),
       section: sections.find((s) => s.system === system),
-      direction: d.evidence.records.filter((r) => r.kind === 'design' && r.status !== 'historical' && r.versions.includes(version.id) && inSystem(r) && !decidedRecord(r)).sort((a, b) => b.date.localeCompare(a.date)),
       open: open.filter((q) => q.system === system),
-      reference: earlier ? d.evidence.records.filter((r) => r.kind === 'design' && r.status === 'documented' && r.versions.includes(earlier.id) && !r.versions.includes(version.id) && inSystem(r)) : [],
     };
   });
 }

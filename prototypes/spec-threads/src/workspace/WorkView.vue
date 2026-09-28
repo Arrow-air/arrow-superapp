@@ -64,7 +64,7 @@ function back() { if (window.history.state?.back) router.back(); else go('work')
     <section v-else-if="q('grant')" class="pw-empty"><h2>Work not found</h2><p>The link may be out of date.</p><RouterLink class="pw-link" :to="to('work')">All work →</RouterLink></section>
     <template v-else>
       <div class="pw-page-head">
-        <div><h2>Work</h2><p class="pw-muted">Grants and bounties that came out of settled discussions, plus work the team reported on calls. Claim open work, record progress, and submit results for the lead to accept.</p></div>
+        <div><h2>Work</h2><p class="pw-muted">Grants and bounties funded from settled discussions. Claim open work, record progress, and submit results for a lead to accept.</p></div>
         <button v-if="isLead" class="pw-btn" @click="composing = !composing">New work</button>
       </div>
       <form v-if="composing && isLead" class="pw-card pw-form" @submit.prevent="create">
@@ -92,18 +92,19 @@ function back() { if (window.history.state?.back) router.back(); else go('work')
           </div>
         </RouterLink>
       </section>
-      <section class="pw-card">
-        <h3>Reported on calls <span class="pw-count">{{ reported.length }}</span></h3>
-        <p class="pw-muted pw-small">Work people described on calls or in the repository. Discuss it to turn it into tracked work.</p>
+      <p v-if="!groups.length && !done.length" class="pw-card pw-muted">No work yet. Work is drafted when a lead settles a discussion and funds it.</p>
+      <details v-if="done.length" class="pw-card pw-done">
+        <summary>Done · {{ done.length }}</summary>
+        <RouterLink v-for="g in done" :key="g.id" :to="to('work', { grant: g.id })" class="pw-work"><div><span class="pw-eyebrow">{{ stageLabel[trackingOf(g).stage] }}</span><strong>{{ g.title }}</strong><span class="pw-muted pw-small">{{ nameOf(trackingOf(g).ownerId) }}</span></div><div class="pw-work-side"><span v-if="trackingOf(g).amount" class="pw-reward">{{ arrow(trackingOf(g).amount!) }}</span><span class="pw-muted pw-small">{{ trackingOf(g).funding === 'paid' ? 'Paid' : 'Payment not recorded' }}</span></div></RouterLink>
+      </details>
+      <details v-if="reported.length || reportedDone.length" class="pw-card pw-reported">
+        <summary>Reported on calls, not tracked here · {{ reported.length + reportedDone.length }}</summary>
+        <p class="pw-muted pw-small">Work people described on calls or in the repository. It isn't part of this workspace's work or rewards until a discussion here funds it.</p>
         <RouterLink v-for="w in reported" :key="w.record.id" :to="to('work', { record: w.record.id })" class="pw-work">
           <div><span class="pw-eyebrow">{{ systemName(data.evidence, w.record.systems[0]) }} · reported {{ shortDate(w.record.date) }}</span><strong>{{ w.record.title }}</strong><span class="pw-muted pw-small">{{ w.record.owner }}<template v-if="w.link"> · being discussed</template></span></div>
           <div class="pw-work-side"><span class="pw-stage" :data-stage="w.record.status">{{ recordStatus[w.record.status] }}</span></div>
         </RouterLink>
-      </section>
-      <details v-if="done.length || reportedDone.length" class="pw-card pw-done">
-        <summary>Done · {{ done.length + reportedDone.length }}</summary>
-        <RouterLink v-for="g in done" :key="g.id" :to="to('work', { grant: g.id })" class="pw-work"><div><span class="pw-eyebrow">{{ stageLabel[trackingOf(g).stage] }}</span><strong>{{ g.title }}</strong><span class="pw-muted pw-small">{{ nameOf(trackingOf(g).ownerId) }}</span></div><div class="pw-work-side"><span v-if="trackingOf(g).amount" class="pw-reward">{{ arrow(trackingOf(g).amount!) }}</span><span class="pw-muted pw-small">{{ trackingOf(g).funding === 'paid' ? 'Paid' : 'Payment not recorded' }}</span></div></RouterLink>
-        <RouterLink v-for="r in reportedDone" :key="r.id" :to="to('work', { record: r.id })" class="pw-work"><div><span class="pw-eyebrow">Reported {{ shortDate(r.date) }}</span><strong>{{ r.title }}</strong><span class="pw-muted pw-small">{{ r.owner }}</span></div></RouterLink>
+        <RouterLink v-for="r in reportedDone" :key="r.id" :to="to('work', { record: r.id })" class="pw-work"><div><span class="pw-eyebrow">Reported done {{ shortDate(r.date) }}</span><strong>{{ r.title }}</strong><span class="pw-muted pw-small">{{ r.owner }}</span></div></RouterLink>
       </details>
     </template>
   </div>

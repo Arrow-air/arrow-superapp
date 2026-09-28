@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { namedOnCalls, openQuestions, specFor } from './derive';
+import { callSuggestions, namedOnCalls, openQuestions, specFor } from './derive';
 import type { ProjectData } from './derive';
 import type { SourcedRecord } from '../lib/sourcedProject';
 import { SHARED_WEIGHTS } from '../lib/weights';
@@ -13,17 +13,22 @@ function data(states: [string, 'building' | 'discussing' | 'frozen' | 'planned']
   };
 }
 
-describe('open questions across a freeze', () => {
-  it('lists call questions for the version in discussion', () => {
-    const d = data([['PT1', 'building'], ['PT2', 'discussing']], [record('a', ['PT2']), record('b', ['PT1'])]);
-    expect(openQuestions(d, 'PT2').map((q) => q.key)).toEqual(['record:a']);
-  });
-  it('carries unpicked questions from a frozen version into the next one, and not into the frozen spec', () => {
-    const d = data([['PT1', 'building'], ['PT2', 'frozen'], ['PT3', 'discussing']], [record('a', ['PT2']), record('b', ['PT1', 'PT2'])]);
-    const pt3 = openQuestions(d, 'PT3');
-    expect(pt3.map((q) => q.key)).toEqual(['record:a']);
-    expect(pt3[0].carriedFrom).toBe('PT2');
+describe('the app is the only way into the spec', () => {
+  it('lists only discussions in the app as open questions', () => {
+    const d = data([['PT1', 'building'], ['PT2', 'discussing']], [record('a', ['PT2'])]);
     expect(openQuestions(d, 'PT2')).toEqual([]);
+  });
+  it('offers undiscussed call questions and agreements as suggestions, never as spec or open items', () => {
+    const d = data([['PT1', 'building'], ['PT2', 'discussing']], [record('a', ['PT2']), record('b', ['PT1']), record('c', ['PT2'], { kind: 'design', status: 'agreed' }), record('d', ['PT2'], { kind: 'design', status: 'documented' })]);
+    expect(callSuggestions(d).map((q) => q.key).sort()).toEqual(['record:a', 'record:b', 'record:c']);
+    const power = specFor(d, d.project.versions[1]).find((s) => s.system === 'power')!;
+    expect(power.decisions).toEqual([]);
+    expect(power.open).toEqual([]);
+  });
+  it('drops suggestions for versions that are frozen instead of carrying them forward', () => {
+    const d = data([['PT1', 'building'], ['PT2', 'frozen'], ['PT3', 'discussing']], [record('a', ['PT2'])]);
+    expect(callSuggestions(d)).toEqual([]);
+    expect(openQuestions(d, 'PT3')).toEqual([]);
   });
   it('keeps inherited decisions apart from the version’s own', () => {
     const d = data([['PT2', 'frozen'], ['PT3', 'discussing']], []);

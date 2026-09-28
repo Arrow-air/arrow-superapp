@@ -10,6 +10,12 @@ Thomas asked for the workspace to be ready to walk Alperen and Gavin through bef
 - **Readable by anyone.** `GET /api/state` and `/api/events` are public; writes still need an invited member account. Files still require sign-in.
 - **Closing the loop.** Starting from a call question links it to the discussion. Once the discussion is settled, the original record shows "Decided: …" and drops out of the open lists.
 
+**The app is the only way into the spec** (Thomas, 2026-09-28):
+- The spec, open questions, freeze and work contain only what happens in the app. An item enters the spec only when a lead settles a discussion.
+- Call notes and repository documents are reference material. Undiscussed call questions and call agreements appear under **Suggested from calls** (Discussions tab and an Overview card), each with "Start a discussion".
+- Suggestions are never counted as open questions and never carry across a freeze.
+- Work reported on calls sits in a collapsed "not tracked here" section.
+
 **Weighted support is back** (DECISIONS 2026-09-17). Weight = (1 + expertise the lead verified for the discussion's system + 1 if you offered to help build it) × role (lead 2, core 1.5, contributor 1).
 - Tokens count for nothing until wallets are linked: a typed-in balance is not evidence.
 - The lead sets roles and verified expertise on the People page (`setMemberStanding`).

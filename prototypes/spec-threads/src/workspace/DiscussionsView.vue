@@ -7,14 +7,15 @@ import { act, backend, state } from '../data/store';
 import { useNav } from './nav';
 import { useProject, nameOf } from './useProject';
 import QuestionRow from './QuestionRow.vue';
-import { discussingVersion, firstLine, lastActivity, openQuestions, recentOutcomes, systemName, type QuestionItem } from './derive';
+import { callSuggestions, discussingVersion, firstLine, lastActivity, openQuestions, recentOutcomes, systemName, type QuestionItem } from './derive';
 import { origin, shortDate } from './labels';
 
 const { q, patch, go, to, router } = useNav();
 const { data, isMember } = useProject();
 const pt2 = computed(() => (data.value ? discussingVersion(data.value.project) : undefined));
 const versions = computed(() => (data.value ? [...data.value.project.versions].sort((a, b) => a.order - b.order) : []));
-const status = computed(() => (['settled', 'all'].includes(q('status')) ? q('status') : 'open'));
+const status = computed(() => (['settled', 'all', 'suggested'].includes(q('status')) ? q('status') : 'open'));
+const suggestions = computed(() => (data.value ? callSuggestions(data.value).filter((i) => matches(`${i.title} ${i.summary}`, i.system)) : []));
 // Accept a version by id or by name (PT3 links use the name).
 const versionId = computed(() => { const v = q('version'); return v === 'all' ? 'all' : versions.value.find((x) => x.id === v || x.name === v)?.id ?? pt2.value?.id ?? ''; });
 const system = computed(() => q('system'));
@@ -73,17 +74,23 @@ function back() { if (window.history.state?.back) router.back(); else go('discus
           <button :aria-pressed="status === 'open'" @click="patch({ status: undefined })">Open <span>{{ status === 'open' ? open.length : '' }}</span></button>
           <button :aria-pressed="status === 'settled'" @click="patch({ status: 'settled' })">Settled</button>
           <button :aria-pressed="status === 'all'" @click="patch({ status: 'all' })">All</button>
+          <button :aria-pressed="status === 'suggested'" @click="patch({ status: 'suggested' })">Suggested from calls <span>{{ suggestions.length }}</span></button>
         </div>
         <label><span class="sr-only">Version</span><select :value="versionId" aria-label="Version" @change="patch({ version: ($event.target as HTMLSelectElement).value === pt2?.id ? undefined : ($event.target as HTMLSelectElement).value })"><option v-for="v in versions" :key="v.id" :value="v.id">{{ v.name }}</option><option value="all">All versions</option></select></label>
         <label><span class="sr-only">System</span><select :value="system" aria-label="System" @change="patch({ system: ($event.target as HTMLSelectElement).value || undefined })"><option value="">All systems</option><option v-for="s in [...data.project.systems, 'project-wide']" :key="s" :value="s">{{ systemName(data.evidence, s) }}</option></select></label>
         <label class="pw-grow"><span class="sr-only">Find</span><input v-model="search" type="search" placeholder="Find a topic…" aria-label="Find a discussion" /></label>
       </div>
-      <section v-if="status !== 'settled'" class="pw-card">
+      <section v-if="status === 'suggested'" class="pw-card">
+        <p class="pw-muted pw-small">Questions and directions from call notes and the repository that nobody has brought into the app yet. They aren't in the spec or any freeze. Open one and start a discussion to bring it in.</p>
+        <p v-if="!suggestions.length" class="pw-muted">Nothing left to pick up.</p>
+        <QuestionRow v-for="item in suggestions" :key="item.key" :item="item" />
+      </section>
+      <section v-if="status === 'open' || status === 'all'" class="pw-card">
         <h3 v-if="status === 'all'">Open</h3>
-        <p v-if="!open.length" class="pw-muted">No open questions match.</p>
+        <p v-if="!open.length" class="pw-muted">No open discussions{{ search || system ? ' match' : '' }}. Start one, or pick up a <RouterLink :to="to('discussions', { status: 'suggested' })">suggestion from calls</RouterLink>.</p>
         <QuestionRow v-for="item in open" :key="item.key" :item="item" />
       </section>
-      <section v-if="status !== 'open'" class="pw-card">
+      <section v-if="status === 'settled' || status === 'all'" class="pw-card">
         <h3 v-if="status === 'all'">Settled</h3>
         <p v-if="!settled.length" class="pw-muted">Nothing settled yet{{ versionId !== 'all' ? ` for ${versions.find(v => v.id === versionId)?.name}` : '' }}.</p>
         <RouterLink v-for="o in settled" :key="o.bundle.thread.id" :to="to('discussions', { thread: o.bundle.thread.id })" class="pw-q">
