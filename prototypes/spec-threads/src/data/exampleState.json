@@ -1,0 +1,2012 @@
+{
+ "anchor": "2026-09-27",
+ "state": {
+  "actingAs": null,
+  "projects": [
+   {
+    "id": "spearhead",
+    "name": "Spearhead",
+    "systems": [
+     "airframe",
+     "propulsion",
+     "avionics",
+     "power",
+     "flight-controls",
+     "payload"
+    ],
+    "weights": {
+     "base": 1,
+     "tokenFactor": 0,
+     "tokenScale": 1000,
+     "tokenCap": 0,
+     "expertiseBonus": 1,
+     "builderBonus": 1,
+     "roleMultiplier": {
+      "lead": 2,
+      "core": 1.5,
+      "member": 1
+     },
+     "matchSystem": true
+    },
+    "versions": [
+     {
+      "id": "PT1",
+      "name": "PT1 / PT1.5",
+      "state": "building",
+      "order": 1
+     },
+     {
+      "id": "PT2",
+      "name": "PT2",
+      "state": "discussing",
+      "order": 2,
+      "freezeTarget": "2026-10-18",
+      "retroPool": {
+       "amount": 25000,
+       "systemShares": {
+        "power": 0.2
+       },
+       "setBy": "ex-nadia",
+       "setAt": "2026-09-20T17:00:00.000Z"
+      }
+     },
+     {
+      "id": "next",
+      "name": "PT3",
+      "state": "planned",
+      "order": 3
+     }
+    ]
+   }
+  ],
+  "members": [
+   {
+    "id": "ex-nadia",
+    "handle": "nadia-park",
+    "displayName": "Nadia Park",
+    "expertise": [
+     "systems engineering",
+     "flight test"
+    ],
+    "verifiedExpertise": [],
+    "tokenBalance": 0,
+    "location": "Denver, US",
+    "bio": "Fictional example project lead. Every earlier lead action in this example workspace is hers."
+   },
+   {
+    "id": "ex-mara",
+    "handle": "mara-quinn",
+    "displayName": "Mara Quinn",
+    "expertise": [
+     "power electronics",
+     "pcb"
+    ],
+    "verifiedExpertise": [
+     "power",
+     "avionics"
+    ],
+    "tokenBalance": 0,
+    "location": "Bristol, UK",
+    "bio": "Fictional example contributor. Power electronics engineer who designs small drone boards."
+   },
+   {
+    "id": "ex-ravi",
+    "handle": "ravi-menon",
+    "displayName": "Ravi Menon",
+    "expertise": [
+     "propulsion",
+     "powertrain"
+    ],
+    "verifiedExpertise": [
+     "propulsion"
+    ],
+    "tokenBalance": 0,
+    "location": "Pune, IN",
+    "bio": "Fictional example contributor. Propulsion and powertrain."
+   },
+   {
+    "id": "ex-dev",
+    "handle": "dev-okafor",
+    "displayName": "Dev Okafor",
+    "expertise": [
+     "composites",
+     "airframe"
+    ],
+    "verifiedExpertise": [
+     "airframe"
+    ],
+    "tokenBalance": 0,
+    "location": "Lagos, NG",
+    "bio": "Fictional example contributor. Composites builder with his own workshop."
+   },
+   {
+    "id": "ex-lin",
+    "handle": "lin-takeda",
+    "displayName": "Lin Takeda",
+    "expertise": [
+     "flight controls",
+     "simulation"
+    ],
+    "verifiedExpertise": [
+     "flight-controls"
+    ],
+    "tokenBalance": 0,
+    "location": "Osaka, JP",
+    "bio": "Fictional example contributor. Flight-control tuning and simulation."
+   },
+   {
+    "id": "ex-sofia",
+    "handle": "sofia-reyes",
+    "displayName": "Sofia Reyes",
+    "expertise": [
+     "operations",
+     "survey"
+    ],
+    "verifiedExpertise": [],
+    "tokenBalance": 0,
+    "location": "Alpine, TX",
+    "bio": "Fictional example contributor. Operator who runs a small survey business and wants to fly one."
+   }
+  ],
+  "roles": [
+   {
+    "projectId": "spearhead",
+    "memberId": "ex-nadia",
+    "role": "lead"
+   },
+   {
+    "projectId": "spearhead",
+    "memberId": "ex-mara",
+    "role": "core"
+   },
+   {
+    "projectId": "spearhead",
+    "memberId": "ex-ravi",
+    "role": "core"
+   },
+   {
+    "projectId": "spearhead",
+    "memberId": "ex-dev",
+    "role": "member"
+   },
+   {
+    "projectId": "spearhead",
+    "memberId": "ex-lin",
+    "role": "member"
+   },
+   {
+    "projectId": "spearhead",
+    "memberId": "ex-sofia",
+    "role": "member"
+   }
+  ],
+  "threads": [
+   {
+    "id": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+    "projectId": "spearhead",
+    "versionId": "PT2",
+    "system": "power",
+    "title": "How will the second battery be monitored and charged in place?",
+    "body": "**Background from 2026-09-25.** The proposed dual-battery layout still needs a BMS and charging-interface design.\n\n- [Vector’s September 25 project notes](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-25-2026)\n- [Spearhead technical call · September 25](https://discord.com/channels/853833144037277726/1478778896361980035/1553073519833649222)",
+    "tags": [],
+    "authorId": "ex-ravi",
+    "status": "resolved",
+    "createdAt": "2026-09-14T16:00:00.000Z",
+    "deferrals": [],
+    "sourceRecordId": "charging-bms",
+    "resolution": {
+     "kind": "conclude",
+     "byMemberId": "ex-nadia",
+     "at": "2026-09-15T17:00:00.000Z",
+     "snapshot": {
+      "body": "Characterize in-place charging on the bench before choosing a BMS.\n\nCharge both packs through the flight harness, log cell temperatures and balance behaviour, and pick the BMS from the results.",
+      "openQuestions": "",
+      "revision": 1,
+      "threadId": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+      "versionId": "PT2",
+      "byMemberId": "ex-nadia",
+      "at": "2026-09-15T17:00:00.000Z",
+      "sources": [
+       {
+        "key": "thread:b65a72d6-e5cc-40da-a248-d13a82130dff",
+        "kind": "thread",
+        "id": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+        "authorId": "ex-ravi",
+        "body": "**Background from 2026-09-25.** The proposed dual-battery layout still needs a BMS and charging-interface design.\n\n- [Vector’s September 25 project notes](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-25-2026)\n- [Spearhead technical call · September 25](https://discord.com/channels/853833144037277726/1478778896361980035/1553073519833649222)"
+       },
+       {
+        "key": "position:581536ad-8ad8-4381-aebf-2a49d9103fdf",
+        "kind": "position",
+        "id": "581536ad-8ad8-4381-aebf-2a49d9103fdf",
+        "positionId": "581536ad-8ad8-4381-aebf-2a49d9103fdf",
+        "authorId": "ex-ravi",
+        "body": "Characterize charging on the bench before choosing a BMS: charge both packs in place through the flight harness and log cell temperatures."
+       },
+       {
+        "key": "position:s-mu1ofx6or1w7b",
+        "kind": "position",
+        "id": "s-mu1ofx6or1w7b",
+        "positionId": "s-mu1ofx6or1w7b",
+        "authorId": "ex-sofia",
+        "body": "From an operator's side, charging inside the airframe matters more than a fancy BMS. If we never have to pull a pack in the field, that's a win."
+       }
+      ]
+     },
+     "decisionId": "d-mu2x3fk0d5b5r",
+     "grantIds": [
+      "g-mu2x3fk0g8sw7"
+     ]
+    }
+   },
+   {
+    "id": "78258209-dac4-4b25-96d4-c98aa8da377f",
+    "projectId": "spearhead",
+    "versionId": "PT2",
+    "system": "propulsion",
+    "title": "PT2 may start electric before moving to gasoline",
+    "body": "**Background from 2026-09-25.** Alperen expects an electric pusher in the first PT2 configuration; a later gasoline version remains possible. The notes name Alperen.\n\n- [Vector’s September 25 project notes](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-25-2026)\n- [Spearhead technical call · September 25](https://discord.com/channels/853833144037277726/1478778896361980035/1553073519833649222)",
+    "tags": [],
+    "authorId": "ex-ravi",
+    "status": "resolved",
+    "createdAt": "2026-09-16T13:00:00.000Z",
+    "deferrals": [],
+    "sourceRecordId": "electric-first",
+    "resolution": {
+     "kind": "conclude",
+     "byMemberId": "ex-nadia",
+     "at": "2026-09-20T16:00:00.000Z",
+     "snapshot": {
+      "body": "PT2 flies electric first; the gasoline configuration follows once transition is proven.\n\nThe power board is sized for the starter-generator so the later step is not a redesign.",
+      "openQuestions": "",
+      "revision": 1,
+      "threadId": "78258209-dac4-4b25-96d4-c98aa8da377f",
+      "versionId": "PT2",
+      "byMemberId": "ex-nadia",
+      "at": "2026-09-20T16:00:00.000Z",
+      "sources": [
+       {
+        "key": "thread:78258209-dac4-4b25-96d4-c98aa8da377f",
+        "kind": "thread",
+        "id": "78258209-dac4-4b25-96d4-c98aa8da377f",
+        "authorId": "ex-ravi",
+        "body": "**Background from 2026-09-25.** Alperen expects an electric pusher in the first PT2 configuration; a later gasoline version remains possible. The notes name Alperen.\n\n- [Vector’s September 25 project notes](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-25-2026)\n- [Spearhead technical call · September 25](https://discord.com/channels/853833144037277726/1478778896361980035/1553073519833649222)"
+       },
+       {
+        "key": "position:27f3d5b2-72bf-40e7-b6c3-5412b1445148",
+        "kind": "position",
+        "id": "27f3d5b2-72bf-40e7-b6c3-5412b1445148",
+        "positionId": "27f3d5b2-72bf-40e7-b6c3-5412b1445148",
+        "authorId": "ex-ravi",
+        "body": "Fly PT2 electric first and add the gasoline configuration once transition is proven. One new variable at a time."
+       },
+       {
+        "key": "position:s-mu4fe5xclrswg",
+        "kind": "position",
+        "id": "s-mu4fe5xclrswg",
+        "positionId": "s-mu4fe5xclrswg",
+        "authorId": "ex-mara",
+        "body": "Agree, but size the power board for the starter-generator now so the gasoline step isn't a redesign."
+       }
+      ]
+     },
+     "decisionId": "d-mua05j40a48qc",
+     "grantIds": []
+    }
+   },
+   {
+    "id": "243005f2-91a7-4f13-8645-6569de20874f",
+    "projectId": "spearhead",
+    "versionId": "PT2",
+    "system": "power",
+    "title": "How should the tail servo regulators fail independently?",
+    "body": "**Background from 2026-09-25.** Separate regulators per servo are the working approach; a shared redundant-output arrangement is still being considered. The notes name Erick (errrks.eth).\n\n- [Vector’s September 25 project notes](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-25-2026)\n- [Spearhead technical call · September 25](https://discord.com/channels/853833144037277726/1478778896361980035/1553073519833649222)",
+    "tags": [],
+    "authorId": "ex-mara",
+    "status": "resolved",
+    "createdAt": "2026-09-15T14:10:00.000Z",
+    "deferrals": [],
+    "sourceRecordId": "servo-redundancy",
+    "resolution": {
+     "kind": "conclude",
+     "byMemberId": "ex-nadia",
+     "at": "2026-09-18T16:00:00.000Z",
+     "snapshot": {
+      "body": "Separate fused regulator per tail servo, fed from the tail board.\n\nEach regulator is sized for one servo's stall current with margin. Check heat on the bench before the board layout is frozen.",
+      "openQuestions": "",
+      "revision": 1,
+      "threadId": "243005f2-91a7-4f13-8645-6569de20874f",
+      "versionId": "PT2",
+      "byMemberId": "ex-nadia",
+      "at": "2026-09-18T16:00:00.000Z",
+      "sources": [
+       {
+        "key": "thread:243005f2-91a7-4f13-8645-6569de20874f",
+        "kind": "thread",
+        "id": "243005f2-91a7-4f13-8645-6569de20874f",
+        "authorId": "ex-mara",
+        "body": "**Background from 2026-09-25.** Separate regulators per servo are the working approach; a shared redundant-output arrangement is still being considered. The notes name Erick (errrks.eth).\n\n- [Vector’s September 25 project notes](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-25-2026)\n- [Spearhead technical call · September 25](https://discord.com/channels/853833144037277726/1478778896361980035/1553073519833649222)"
+       },
+       {
+        "key": "position:81394e40-b5d3-4789-9284-1d0812b0b803",
+        "kind": "position",
+        "id": "81394e40-b5d3-4789-9284-1d0812b0b803",
+        "positionId": "81394e40-b5d3-4789-9284-1d0812b0b803",
+        "authorId": "ex-mara",
+        "body": "Separate regulator per servo. A shared redundant output still has a single failure point in the OR-ing and the connector; two small regulators cost less than a lost tail surface."
+       },
+       {
+        "key": "comment:c-mu3ve000p03c7",
+        "kind": "comment",
+        "id": "c-mu3ve000p03c7",
+        "positionId": "81394e40-b5d3-4789-9284-1d0812b0b803",
+        "authorId": "ex-lin",
+        "body": "From the flight-control side: losing one elevator half is flyable in our sim; losing both is not. That argues for Mara's split."
+       },
+       {
+        "key": "position:s-mu30b680er720",
+        "kind": "position",
+        "id": "s-mu30b680er720",
+        "positionId": "s-mu30b680er720",
+        "authorId": "ex-dev",
+        "body": "A shared regulator with ideal-diode OR-ing from both batteries keeps the tail board smaller. Per-servo regulators double the heat in a tight tail boom."
+       }
+      ]
+     },
+     "decisionId": "d-mu759ts0zfad5",
+     "grantIds": [
+      "g-mu759ts0ozs11"
+     ]
+    }
+   },
+   {
+    "id": "n-mu6uk0w0wej1a",
+    "projectId": "spearhead",
+    "versionId": "PT2",
+    "system": "airframe",
+    "title": "Should PT2 switch to a V-tail?",
+    "body": "A V-tail saves a servo and a little drag, and it's simpler to transport.",
+    "tags": [],
+    "authorId": "ex-sofia",
+    "status": "resolved",
+    "createdAt": "2026-09-18T11:00:00.000Z",
+    "deferrals": [],
+    "resolution": {
+     "kind": "reject",
+     "note": "Out of scope for PT2: the tail PCB and servo layout assume a conventional tail.",
+     "byMemberId": "ex-nadia",
+     "at": "2026-09-19T14:00:00.000Z"
+    }
+   },
+   {
+    "id": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+    "projectId": "spearhead",
+    "versionId": "PT2",
+    "system": "airframe",
+    "title": "Carbon skin or Oracover for the next wings?",
+    "body": "**Background from 2026-09-10.** The September 10 discussion leaves the construction method open while a supplier offer and testing are awaited.\n\n- [September 10 · first-flight review and PT2 planning](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-10-2026)\n- [September 10 · original Spearhead transcript](https://discord.com/channels/853833144037277726/1478778896361980035/1547638922119487508)",
+    "tags": [],
+    "authorId": "ex-dev",
+    "status": "open",
+    "createdAt": "2026-09-20T15:00:00.000Z",
+    "deferrals": [],
+    "sourceRecordId": "wing-skin-choice"
+   },
+   {
+    "id": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+    "projectId": "spearhead",
+    "versionId": "PT2",
+    "system": "airframe",
+    "title": "Resolve conflicting tail-airfoil references",
+    "body": "**Background from 2026-09-10.** The preliminary note says NACA 0015; its attached configuration and the sizing tool say NACA 0018.\n\n- [Preliminary design note · tail section](https://github.com/Arrow-air/project-spearhead/blob/e19da0485eec22891dc9027828713faa40bc6732/docs/information-note/phase-1/Aerodynamics/0001-Preliminary-Design/information-note.md#L95)\n- [Initial-sizing configuration · tail_airfoil](https://github.com/Arrow-air/project-spearhead/blob/e19da0485eec22891dc9027828713faa40bc6732/src/tools/initial_sizing/config.py#L75)\n- [September 10 · first-flight review and PT2 planning](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-10-2026)\n- [September 10 · original Spearhead transcript](https://discord.com/channels/853833144037277726/1478778896361980035/1547638922119487508)",
+    "tags": [],
+    "authorId": "ex-lin",
+    "status": "resolved",
+    "createdAt": "2026-09-22T14:00:00.000Z",
+    "deferrals": [],
+    "sourceRecordId": "tail-airfoil-conflict",
+    "resolution": {
+     "kind": "conclude",
+     "byMemberId": "ex-nadia",
+     "at": "2026-09-25T16:00:00.000Z",
+     "snapshot": {
+      "body": "Confirm the PT1 tail section from the build templates and a measurement, then correct the note.",
+      "openQuestions": "Which section does PT1 actually fly?",
+      "revision": 1,
+      "threadId": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+      "versionId": "PT2",
+      "byMemberId": "ex-nadia",
+      "at": "2026-09-25T16:00:00.000Z",
+      "sources": [
+       {
+        "key": "thread:f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+        "kind": "thread",
+        "id": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+        "authorId": "ex-lin",
+        "body": "**Background from 2026-09-10.** The preliminary note says NACA 0015; its attached configuration and the sizing tool say NACA 0018.\n\n- [Preliminary design note · tail section](https://github.com/Arrow-air/project-spearhead/blob/e19da0485eec22891dc9027828713faa40bc6732/docs/information-note/phase-1/Aerodynamics/0001-Preliminary-Design/information-note.md#L95)\n- [Initial-sizing configuration · tail_airfoil](https://github.com/Arrow-air/project-spearhead/blob/e19da0485eec22891dc9027828713faa40bc6732/src/tools/initial_sizing/config.py#L75)\n- [September 10 · first-flight review and PT2 planning](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-10-2026)\n- [September 10 · original Spearhead transcript](https://discord.com/channels/853833144037277726/1478778896361980035/1547638922119487508)"
+       },
+       {
+        "key": "position:2fbc1727-27fa-4d66-8321-797c5471af99",
+        "kind": "position",
+        "id": "2fbc1727-27fa-4d66-8321-797c5471af99",
+        "positionId": "2fbc1727-27fa-4d66-8321-797c5471af99",
+        "authorId": "ex-lin",
+        "body": "The tail note says NACA 0015 and the configuration files say 0018. We should confirm which one PT1 actually flies before PT2 inherits it."
+       },
+       {
+        "key": "position:s-mud2jao0hnsgy",
+        "kind": "position",
+        "id": "s-mud2jao0hnsgy",
+        "positionId": "s-mud2jao0hnsgy",
+        "authorId": "ex-dev",
+        "body": "I'm fairly sure PT1's tail was cut from the 0018 templates and the note is stale, but I'd measure it before trusting me."
+       }
+      ]
+     },
+     "grantIds": [
+      "g-muh5csg05q02g"
+     ]
+    }
+   },
+   {
+    "id": "n-mub0l9c089gka",
+    "projectId": "spearhead",
+    "versionId": "next",
+    "system": "payload",
+    "title": "Should PT2 carry a belly payload rail?",
+    "body": "Operators will want to hang a camera or a small sprayer. A standard rail now saves a redesign later.",
+    "tags": [],
+    "authorId": "ex-sofia",
+    "status": "open",
+    "createdAt": "2026-09-21T09:00:00.000Z",
+    "deferrals": [
+     {
+      "fromVersionId": "PT2",
+      "toVersionId": "next",
+      "byMemberId": "ex-nadia",
+      "at": "2026-09-24T15:00:00.000Z",
+      "note": "Needs payload mass and power requirements first; revisit for PT3."
+     }
+    ]
+   },
+   {
+    "id": "2eeda0ca-bfb3-4abc-9098-86c9d0ba893b",
+    "projectId": "spearhead",
+    "versionId": "PT2",
+    "system": "avionics",
+    "title": "Confirm the main-board interfaces for both propulsion options",
+    "body": "**Background from 2026-09-25.** PWM, temperature sensing, ignition power, and CAN were discussed; several details still need checking. The notes name Erick (errrks.eth).\n\n- [Vector’s September 25 project notes](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-25-2026)\n- [Spearhead technical call · September 25](https://discord.com/channels/853833144037277726/1478778896361980035/1553073519833649222)",
+    "tags": [],
+    "authorId": "ex-mara",
+    "status": "open",
+    "createdAt": "2026-09-23T14:00:00.000Z",
+    "deferrals": [],
+    "sourceRecordId": "main-peripherals"
+   },
+   {
+    "id": "13a9865b-2fd6-4aac-927c-58c905211900",
+    "projectId": "spearhead",
+    "versionId": "PT1",
+    "system": "airframe",
+    "title": "What explains the heading-dependent motor imbalance?",
+    "body": "**Background from 2026-09-21.** Stiffening reduced the spread, but wind loading on the tail remains a hypothesis to check against logs. The notes name Alperen.\n\n- [Vector’s September 21 flight-test notes](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-21-2026)\n- [Spearhead flight-test review · September 21](https://discord.com/channels/853833144037277726/1478778896361980035/1551645193319489667)",
+    "tags": [],
+    "authorId": "ex-lin",
+    "status": "open",
+    "createdAt": "2026-09-24T18:00:00.000Z",
+    "deferrals": [],
+    "sourceRecordId": "motor-imbalance"
+   }
+  ],
+  "positions": [
+   {
+    "id": "581536ad-8ad8-4381-aebf-2a49d9103fdf",
+    "threadId": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+    "authorId": "ex-ravi",
+    "body": "Characterize charging on the bench before choosing a BMS: charge both packs in place through the flight harness and log cell temperatures.",
+    "createdAt": "2026-09-14T16:00:00.000Z"
+   },
+   {
+    "id": "s-mu1ofx6or1w7b",
+    "threadId": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+    "authorId": "ex-sofia",
+    "body": "From an operator's side, charging inside the airframe matters more than a fancy BMS. If we never have to pull a pack in the field, that's a win.",
+    "createdAt": "2026-09-14T20:10:00.000Z"
+   },
+   {
+    "id": "27f3d5b2-72bf-40e7-b6c3-5412b1445148",
+    "threadId": "78258209-dac4-4b25-96d4-c98aa8da377f",
+    "authorId": "ex-ravi",
+    "body": "Fly PT2 electric first and add the gasoline configuration once transition is proven. One new variable at a time.",
+    "createdAt": "2026-09-16T13:00:00.000Z"
+   },
+   {
+    "id": "s-mu4fe5xclrswg",
+    "threadId": "78258209-dac4-4b25-96d4-c98aa8da377f",
+    "authorId": "ex-mara",
+    "body": "Agree, but size the power board for the starter-generator now so the gasoline step isn't a redesign.",
+    "createdAt": "2026-09-16T18:20:00.000Z"
+   },
+   {
+    "id": "81394e40-b5d3-4789-9284-1d0812b0b803",
+    "threadId": "243005f2-91a7-4f13-8645-6569de20874f",
+    "authorId": "ex-mara",
+    "body": "Separate regulator per servo. A shared redundant output still has a single failure point in the OR-ing and the connector; two small regulators cost less than a lost tail surface.",
+    "createdAt": "2026-09-15T14:10:00.000Z"
+   },
+   {
+    "id": "s-mu30b680er720",
+    "threadId": "243005f2-91a7-4f13-8645-6569de20874f",
+    "authorId": "ex-dev",
+    "body": "A shared regulator with ideal-diode OR-ing from both batteries keeps the tail board smaller. Per-servo regulators double the heat in a tight tail boom.",
+    "createdAt": "2026-09-15T18:30:00.000Z"
+   },
+   {
+    "id": "s-mu74k3uoy7hf0",
+    "threadId": "n-mu6uk0w0wej1a",
+    "authorId": "ex-dev",
+    "body": "It couples pitch and yaw in the mixer and changes the tail PCB and servo layout we're about to agree.",
+    "createdAt": "2026-09-18T15:40:00.000Z"
+   },
+   {
+    "id": "beba025c-2b97-42a7-bd95-abedf2f70905",
+    "threadId": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+    "authorId": "ex-dev",
+    "body": "Oracover for the PT2 wings. It's faster to build and repair, and PT2 is still a test aircraft; carbon skins cost us weeks on PT1.",
+    "createdAt": "2026-09-20T15:00:00.000Z"
+   },
+   {
+    "id": "s-mub4vkw039kwo",
+    "threadId": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+    "authorId": "ex-sofia",
+    "body": "Carbon skins for anything that will fly from rough strips. Film tears on landing, and field repairs are messy.",
+    "createdAt": "2026-09-21T11:00:00.000Z"
+   },
+   {
+    "id": "s-much3ow0law6e",
+    "threadId": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+    "authorId": "ex-ravi",
+    "body": "Oracover now over a carbon D-box leading edge; revisit full carbon for PT3 once the wing shape is final.",
+    "createdAt": "2026-09-22T09:30:00.000Z"
+   },
+   {
+    "id": "2fbc1727-27fa-4d66-8321-797c5471af99",
+    "threadId": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+    "authorId": "ex-lin",
+    "body": "The tail note says NACA 0015 and the configuration files say 0018. We should confirm which one PT1 actually flies before PT2 inherits it.",
+    "createdAt": "2026-09-22T14:00:00.000Z"
+   },
+   {
+    "id": "s-mud2jao0hnsgy",
+    "threadId": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+    "authorId": "ex-dev",
+    "body": "I'm fairly sure PT1's tail was cut from the 0018 templates and the note is stale, but I'd measure it before trusting me.",
+    "createdAt": "2026-09-22T19:30:00.000Z"
+   },
+   {
+    "id": "s-mubhqjk0etf80",
+    "threadId": "n-mub0l9c089gka",
+    "authorId": "ex-lin",
+    "body": "A rail is fine, but we have no payload mass or power budget yet. It's hard to design an interface without a customer.",
+    "createdAt": "2026-09-21T17:00:00.000Z"
+   },
+   {
+    "id": "14c73723-ebf4-4349-91c3-6323f6f679a4",
+    "threadId": "2eeda0ca-bfb3-4abc-9098-86c9d0ba893b",
+    "authorId": "ex-mara",
+    "body": "The main board needs six PWM servo outputs, a temperature input per motor, switched ignition power for the gasoline build, and two CAN buses.",
+    "createdAt": "2026-09-23T14:00:00.000Z"
+   },
+   {
+    "id": "s-mufe4k00qdjgj",
+    "threadId": "2eeda0ca-bfb3-4abc-9098-86c9d0ba893b",
+    "authorId": "ex-ravi",
+    "body": "Keep the ignition and fuel-pump outputs on the board even for the electric build, just unpopulated. Re-spinning the board for gasoline later costs more than the connector.",
+    "createdAt": "2026-09-24T10:30:00.000Z"
+   },
+   {
+    "id": "c401cd36-120d-4177-bc58-e5a08319c5b8",
+    "threadId": "13a9865b-2fd6-4aac-927c-58c905211900",
+    "authorId": "ex-lin",
+    "body": "Log heading and wind for every hover. If the imbalance tracks the wind direction, it's tail loading, not motor variation.",
+    "createdAt": "2026-09-24T18:00:00.000Z"
+   },
+   {
+    "id": "s-mugqco00p1pcc",
+    "threadId": "13a9865b-2fd6-4aac-927c-58c905211900",
+    "authorId": "ex-dev",
+    "body": "We already stiffened the arms. I'd also swap two motors front-to-back and see whether the imbalance follows the motor.",
+    "createdAt": "2026-09-25T09:00:00.000Z"
+   }
+  ],
+  "votes": [
+   {
+    "positionId": "581536ad-8ad8-4381-aebf-2a49d9103fdf",
+    "memberId": "ex-mara",
+    "value": 1,
+    "castAt": "2026-09-15T08:30:00.000Z"
+   },
+   {
+    "positionId": "581536ad-8ad8-4381-aebf-2a49d9103fdf",
+    "memberId": "ex-nadia",
+    "value": 1,
+    "castAt": "2026-09-15T08:30:00.000Z"
+   },
+   {
+    "positionId": "s-mu1ofx6or1w7b",
+    "memberId": "ex-dev",
+    "value": 1,
+    "castAt": "2026-09-15T08:30:00.000Z"
+   },
+   {
+    "positionId": "581536ad-8ad8-4381-aebf-2a49d9103fdf",
+    "memberId": "ex-lin",
+    "value": 1,
+    "castAt": "2026-09-15T08:30:00.000Z"
+   },
+   {
+    "positionId": "27f3d5b2-72bf-40e7-b6c3-5412b1445148",
+    "memberId": "ex-nadia",
+    "value": 1,
+    "castAt": "2026-09-17T10:00:00.000Z"
+   },
+   {
+    "positionId": "27f3d5b2-72bf-40e7-b6c3-5412b1445148",
+    "memberId": "ex-lin",
+    "value": 1,
+    "castAt": "2026-09-17T10:00:00.000Z"
+   },
+   {
+    "positionId": "27f3d5b2-72bf-40e7-b6c3-5412b1445148",
+    "memberId": "ex-sofia",
+    "value": 1,
+    "castAt": "2026-09-17T10:00:00.000Z"
+   },
+   {
+    "positionId": "s-mu4fe5xclrswg",
+    "memberId": "ex-dev",
+    "value": 1,
+    "castAt": "2026-09-17T10:00:00.000Z"
+   },
+   {
+    "positionId": "s-mu4fe5xclrswg",
+    "memberId": "ex-ravi",
+    "value": 1,
+    "castAt": "2026-09-17T10:00:00.000Z"
+   },
+   {
+    "positionId": "81394e40-b5d3-4789-9284-1d0812b0b803",
+    "memberId": "ex-lin",
+    "value": 1,
+    "castAt": "2026-09-16T09:00:00.000Z"
+   },
+   {
+    "positionId": "81394e40-b5d3-4789-9284-1d0812b0b803",
+    "memberId": "ex-ravi",
+    "value": 1,
+    "castAt": "2026-09-16T09:00:00.000Z"
+   },
+   {
+    "positionId": "s-mu30b680er720",
+    "memberId": "ex-sofia",
+    "value": 1,
+    "castAt": "2026-09-16T09:00:00.000Z"
+   },
+   {
+    "positionId": "81394e40-b5d3-4789-9284-1d0812b0b803",
+    "memberId": "ex-nadia",
+    "value": 1,
+    "castAt": "2026-09-16T09:00:00.000Z"
+   },
+   {
+    "positionId": "s-mu74k3uoy7hf0",
+    "memberId": "ex-nadia",
+    "value": 1,
+    "castAt": "2026-09-18T15:40:00.000Z"
+   },
+   {
+    "positionId": "s-mu74k3uoy7hf0",
+    "memberId": "ex-lin",
+    "value": 1,
+    "castAt": "2026-09-18T15:40:00.000Z"
+   },
+   {
+    "positionId": "s-mub4vkw039kwo",
+    "memberId": "ex-mara",
+    "value": 1,
+    "castAt": "2026-09-22T16:00:00.000Z"
+   },
+   {
+    "positionId": "s-mub4vkw039kwo",
+    "memberId": "ex-lin",
+    "value": 1,
+    "castAt": "2026-09-22T16:00:00.000Z"
+   },
+   {
+    "positionId": "s-mub4vkw039kwo",
+    "memberId": "ex-ravi",
+    "value": 1,
+    "castAt": "2026-09-22T16:00:00.000Z"
+   },
+   {
+    "positionId": "s-much3ow0law6e",
+    "memberId": "ex-nadia",
+    "value": 1,
+    "castAt": "2026-09-22T16:00:00.000Z"
+   },
+   {
+    "positionId": "s-much3ow0law6e",
+    "memberId": "ex-dev",
+    "value": 1,
+    "castAt": "2026-09-22T16:00:00.000Z"
+   },
+   {
+    "positionId": "2fbc1727-27fa-4d66-8321-797c5471af99",
+    "memberId": "ex-nadia",
+    "value": 1,
+    "castAt": "2026-09-22T19:30:00.000Z"
+   },
+   {
+    "positionId": "2fbc1727-27fa-4d66-8321-797c5471af99",
+    "memberId": "ex-mara",
+    "value": 1,
+    "castAt": "2026-09-22T19:30:00.000Z"
+   },
+   {
+    "positionId": "s-mud2jao0hnsgy",
+    "memberId": "ex-sofia",
+    "value": 1,
+    "castAt": "2026-09-22T19:30:00.000Z"
+   },
+   {
+    "positionId": "s-mubhqjk0etf80",
+    "memberId": "ex-nadia",
+    "value": 1,
+    "castAt": "2026-09-21T17:00:00.000Z"
+   },
+   {
+    "positionId": "s-mubhqjk0etf80",
+    "memberId": "ex-dev",
+    "value": 1,
+    "castAt": "2026-09-21T17:00:00.000Z"
+   },
+   {
+    "positionId": "14c73723-ebf4-4349-91c3-6323f6f679a4",
+    "memberId": "ex-nadia",
+    "value": 1,
+    "castAt": "2026-09-24T13:00:00.000Z"
+   },
+   {
+    "positionId": "14c73723-ebf4-4349-91c3-6323f6f679a4",
+    "memberId": "ex-lin",
+    "value": 1,
+    "castAt": "2026-09-24T13:00:00.000Z"
+   },
+   {
+    "positionId": "14c73723-ebf4-4349-91c3-6323f6f679a4",
+    "memberId": "ex-ravi",
+    "value": 1,
+    "castAt": "2026-09-24T13:00:00.000Z"
+   },
+   {
+    "positionId": "s-mufe4k00qdjgj",
+    "memberId": "ex-mara",
+    "value": 1,
+    "castAt": "2026-09-24T13:00:00.000Z"
+   },
+   {
+    "positionId": "s-mufe4k00qdjgj",
+    "memberId": "ex-dev",
+    "value": 1,
+    "castAt": "2026-09-24T13:00:00.000Z"
+   },
+   {
+    "positionId": "s-mugqco00p1pcc",
+    "memberId": "ex-nadia",
+    "value": 1,
+    "castAt": "2026-09-25T09:00:00.000Z"
+   },
+   {
+    "positionId": "c401cd36-120d-4177-bc58-e5a08319c5b8",
+    "memberId": "ex-mara",
+    "value": 1,
+    "castAt": "2026-09-25T09:00:00.000Z"
+   }
+  ],
+  "intents": [
+   {
+    "threadId": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+    "memberId": "ex-sofia"
+   },
+   {
+    "threadId": "243005f2-91a7-4f13-8645-6569de20874f",
+    "memberId": "ex-mara"
+   },
+   {
+    "threadId": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+    "memberId": "ex-dev"
+   }
+  ],
+  "comments": [
+   {
+    "id": "c-mu3ve000p03c7",
+    "positionId": "81394e40-b5d3-4789-9284-1d0812b0b803",
+    "authorId": "ex-lin",
+    "body": "From the flight-control side: losing one elevator half is flyable in our sim; losing both is not. That argues for Mara's split.",
+    "createdAt": "2026-09-16T09:00:00.000Z"
+   },
+   {
+    "id": "c-mub95wg0i1nba",
+    "positionId": "beba025c-2b97-42a7-bd95-abedf2f70905",
+    "authorId": "ex-lin",
+    "body": "Stiffness matters for flutter at transition speeds. Oracover over a carbon D-box should be fine, but we should check it.",
+    "createdAt": "2026-09-21T13:00:00.000Z"
+   },
+   {
+    "id": "c-mudxm4g0z8x0e",
+    "positionId": "s-much3ow0law6e",
+    "authorId": "ex-sofia",
+    "body": "I could live with this if the D-box goes all the way to the tip.",
+    "createdAt": "2026-09-23T10:00:00.000Z"
+   },
+   {
+    "id": "c-mufjhgg0h16xn",
+    "positionId": "14c73723-ebf4-4349-91c3-6323f6f679a4",
+    "authorId": "ex-lin",
+    "body": "Two CAN buses please: one for the ESCs, one for servos and sensors.",
+    "createdAt": "2026-09-24T13:00:00.000Z"
+   }
+  ],
+  "decisions": [
+   {
+    "id": "d-mu2x3fk0d5b5r",
+    "projectId": "spearhead",
+    "versionId": "PT2",
+    "threadId": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+    "positionId": "",
+    "question": "How will the second battery be monitored and charged in place?",
+    "chosen": "Characterize in-place charging on the bench before choosing a BMS",
+    "rationale": "Adopted from the reviewed discussion outcome.",
+    "weightedRankAtDecision": 0,
+    "rawRankAtDecision": 0,
+    "byMemberId": "ex-nadia",
+    "at": "2026-09-15T17:00:00.000Z",
+    "status": "decided",
+    "outcomeSnapshot": {
+     "body": "Characterize in-place charging on the bench before choosing a BMS.\n\nCharge both packs through the flight harness, log cell temperatures and balance behaviour, and pick the BMS from the results.",
+     "openQuestions": "",
+     "revision": 1,
+     "threadId": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+     "versionId": "PT2",
+     "byMemberId": "ex-nadia",
+     "at": "2026-09-15T17:00:00.000Z",
+     "sources": [
+      {
+       "key": "thread:b65a72d6-e5cc-40da-a248-d13a82130dff",
+       "kind": "thread",
+       "id": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+       "authorId": "ex-ravi",
+       "body": "**Background from 2026-09-25.** The proposed dual-battery layout still needs a BMS and charging-interface design.\n\n- [Vector’s September 25 project notes](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-25-2026)\n- [Spearhead technical call · September 25](https://discord.com/channels/853833144037277726/1478778896361980035/1553073519833649222)"
+      },
+      {
+       "key": "position:581536ad-8ad8-4381-aebf-2a49d9103fdf",
+       "kind": "position",
+       "id": "581536ad-8ad8-4381-aebf-2a49d9103fdf",
+       "positionId": "581536ad-8ad8-4381-aebf-2a49d9103fdf",
+       "authorId": "ex-ravi",
+       "body": "Characterize charging on the bench before choosing a BMS: charge both packs in place through the flight harness and log cell temperatures."
+      },
+      {
+       "key": "position:s-mu1ofx6or1w7b",
+       "kind": "position",
+       "id": "s-mu1ofx6or1w7b",
+       "positionId": "s-mu1ofx6or1w7b",
+       "authorId": "ex-sofia",
+       "body": "From an operator's side, charging inside the airframe matters more than a fancy BMS. If we never have to pull a pack in the field, that's a win."
+      }
+     ]
+    }
+   },
+   {
+    "id": "d-mua05j40a48qc",
+    "projectId": "spearhead",
+    "versionId": "PT2",
+    "threadId": "78258209-dac4-4b25-96d4-c98aa8da377f",
+    "positionId": "",
+    "question": "PT2 may start electric before moving to gasoline",
+    "chosen": "PT2 flies electric first; gasoline follows once transition is proven",
+    "rationale": "Adopted from the reviewed discussion outcome.",
+    "weightedRankAtDecision": 0,
+    "rawRankAtDecision": 0,
+    "byMemberId": "ex-nadia",
+    "at": "2026-09-20T16:00:00.000Z",
+    "status": "decided",
+    "outcomeSnapshot": {
+     "body": "PT2 flies electric first; the gasoline configuration follows once transition is proven.\n\nThe power board is sized for the starter-generator so the later step is not a redesign.",
+     "openQuestions": "",
+     "revision": 1,
+     "threadId": "78258209-dac4-4b25-96d4-c98aa8da377f",
+     "versionId": "PT2",
+     "byMemberId": "ex-nadia",
+     "at": "2026-09-20T16:00:00.000Z",
+     "sources": [
+      {
+       "key": "thread:78258209-dac4-4b25-96d4-c98aa8da377f",
+       "kind": "thread",
+       "id": "78258209-dac4-4b25-96d4-c98aa8da377f",
+       "authorId": "ex-ravi",
+       "body": "**Background from 2026-09-25.** Alperen expects an electric pusher in the first PT2 configuration; a later gasoline version remains possible. The notes name Alperen.\n\n- [Vector’s September 25 project notes](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-25-2026)\n- [Spearhead technical call · September 25](https://discord.com/channels/853833144037277726/1478778896361980035/1553073519833649222)"
+      },
+      {
+       "key": "position:27f3d5b2-72bf-40e7-b6c3-5412b1445148",
+       "kind": "position",
+       "id": "27f3d5b2-72bf-40e7-b6c3-5412b1445148",
+       "positionId": "27f3d5b2-72bf-40e7-b6c3-5412b1445148",
+       "authorId": "ex-ravi",
+       "body": "Fly PT2 electric first and add the gasoline configuration once transition is proven. One new variable at a time."
+      },
+      {
+       "key": "position:s-mu4fe5xclrswg",
+       "kind": "position",
+       "id": "s-mu4fe5xclrswg",
+       "positionId": "s-mu4fe5xclrswg",
+       "authorId": "ex-mara",
+       "body": "Agree, but size the power board for the starter-generator now so the gasoline step isn't a redesign."
+      }
+     ]
+    }
+   },
+   {
+    "id": "d-mu759ts0zfad5",
+    "projectId": "spearhead",
+    "versionId": "PT2",
+    "threadId": "243005f2-91a7-4f13-8645-6569de20874f",
+    "positionId": "",
+    "question": "How should the tail servo regulators fail independently?",
+    "chosen": "Separate fused regulator per tail servo",
+    "rationale": "Adopted from the reviewed discussion outcome.",
+    "weightedRankAtDecision": 0,
+    "rawRankAtDecision": 0,
+    "byMemberId": "ex-nadia",
+    "at": "2026-09-18T16:00:00.000Z",
+    "status": "decided",
+    "outcomeSnapshot": {
+     "body": "Separate fused regulator per tail servo, fed from the tail board.\n\nEach regulator is sized for one servo's stall current with margin. Check heat on the bench before the board layout is frozen.",
+     "openQuestions": "",
+     "revision": 1,
+     "threadId": "243005f2-91a7-4f13-8645-6569de20874f",
+     "versionId": "PT2",
+     "byMemberId": "ex-nadia",
+     "at": "2026-09-18T16:00:00.000Z",
+     "sources": [
+      {
+       "key": "thread:243005f2-91a7-4f13-8645-6569de20874f",
+       "kind": "thread",
+       "id": "243005f2-91a7-4f13-8645-6569de20874f",
+       "authorId": "ex-mara",
+       "body": "**Background from 2026-09-25.** Separate regulators per servo are the working approach; a shared redundant-output arrangement is still being considered. The notes name Erick (errrks.eth).\n\n- [Vector’s September 25 project notes](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-25-2026)\n- [Spearhead technical call · September 25](https://discord.com/channels/853833144037277726/1478778896361980035/1553073519833649222)"
+      },
+      {
+       "key": "position:81394e40-b5d3-4789-9284-1d0812b0b803",
+       "kind": "position",
+       "id": "81394e40-b5d3-4789-9284-1d0812b0b803",
+       "positionId": "81394e40-b5d3-4789-9284-1d0812b0b803",
+       "authorId": "ex-mara",
+       "body": "Separate regulator per servo. A shared redundant output still has a single failure point in the OR-ing and the connector; two small regulators cost less than a lost tail surface."
+      },
+      {
+       "key": "comment:c-mu3ve000p03c7",
+       "kind": "comment",
+       "id": "c-mu3ve000p03c7",
+       "positionId": "81394e40-b5d3-4789-9284-1d0812b0b803",
+       "authorId": "ex-lin",
+       "body": "From the flight-control side: losing one elevator half is flyable in our sim; losing both is not. That argues for Mara's split."
+      },
+      {
+       "key": "position:s-mu30b680er720",
+       "kind": "position",
+       "id": "s-mu30b680er720",
+       "positionId": "s-mu30b680er720",
+       "authorId": "ex-dev",
+       "body": "A shared regulator with ideal-diode OR-ing from both batteries keeps the tail board smaller. Per-servo regulators double the heat in a tight tail boom."
+      }
+     ]
+    }
+   }
+  ],
+  "grants": [
+   {
+    "id": "g-mu2x3fk0g8sw7",
+    "projectId": "spearhead",
+    "versionId": "PT2",
+    "threadId": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+    "positionId": "",
+    "title": "Bench charging procedure for both packs",
+    "scope": "Write and run a bench procedure that charges both packs through the flight harness and logs cell temperatures and balancing.\n\n## Acceptance criteria\n\nA procedure document and one full logged charge cycle per pack.",
+    "constraints": [],
+    "proposerIds": [],
+    "proposerShare": 0.25,
+    "contributorIds": [
+     "ex-sofia"
+    ],
+    "weightedRankAtResolution": 0,
+    "rawRankAtResolution": 0,
+    "byMemberId": "ex-nadia",
+    "createdAt": "2026-09-15T17:00:00.000Z",
+    "updatedAt": "2026-09-23T15:30:00.000Z",
+    "status": "published",
+    "tracking": {
+     "stage": "completed",
+     "ownerId": "ex-sofia",
+     "dueDate": "",
+     "funding": "proposed",
+     "budget": "",
+     "amount": 2000,
+     "acceptance": "A procedure document and one full logged charge cycle per pack.",
+     "evidence": "Procedure v1 and two charge logs are in the Spearhead power folder. Both packs balanced within 12 mV; peak cell temperature 38 °C.",
+     "milestones": [],
+     "decisionIds": [
+      "d-mu2x3fk0d5b5r"
+     ],
+     "revision": 4,
+     "history": [
+      {
+       "at": "2026-09-15T17:05:00.000Z",
+       "byMemberId": "ex-nadia",
+       "note": "Opened for claims.",
+       "content": {
+        "stage": "open",
+        "ownerId": "",
+        "dueDate": "",
+        "funding": "unfunded",
+        "budget": "",
+        "amount": 2000,
+        "acceptance": "A procedure document and one full logged charge cycle per pack.",
+        "evidence": "",
+        "milestones": [],
+        "decisionIds": [
+         "d-mu2x3fk0d5b5r"
+        ]
+       }
+      },
+      {
+       "at": "2026-09-16T09:40:00.000Z",
+       "byMemberId": "ex-sofia",
+       "note": "Assignment accepted: I accept this work and its acceptance criteria.",
+       "content": {
+        "stage": "in_progress",
+        "ownerId": "ex-sofia",
+        "dueDate": "",
+        "funding": "unfunded",
+        "budget": "",
+        "amount": 2000,
+        "acceptance": "A procedure document and one full logged charge cycle per pack.",
+        "evidence": "",
+        "milestones": [],
+        "decisionIds": [
+         "d-mu2x3fk0d5b5r"
+        ]
+       }
+      },
+      {
+       "at": "2026-09-22T19:00:00.000Z",
+       "byMemberId": "ex-sofia",
+       "note": "Submitted for review.",
+       "content": {
+        "stage": "in_review",
+        "ownerId": "ex-sofia",
+        "dueDate": "",
+        "funding": "unfunded",
+        "budget": "",
+        "amount": 2000,
+        "acceptance": "A procedure document and one full logged charge cycle per pack.",
+        "evidence": "Procedure v1 and two charge logs are in the Spearhead power folder. Both packs balanced within 12 mV; peak cell temperature 38 °C.",
+        "milestones": [],
+        "decisionIds": [
+         "d-mu2x3fk0d5b5r"
+        ]
+       }
+      },
+      {
+       "at": "2026-09-23T15:30:00.000Z",
+       "byMemberId": "ex-nadia",
+       "note": "Results accepted.",
+       "content": {
+        "stage": "completed",
+        "ownerId": "ex-sofia",
+        "dueDate": "",
+        "funding": "proposed",
+        "budget": "",
+        "amount": 2000,
+        "acceptance": "A procedure document and one full logged charge cycle per pack.",
+        "evidence": "Procedure v1 and two charge logs are in the Spearhead power folder. Both packs balanced within 12 mV; peak cell temperature 38 °C.",
+        "milestones": [],
+        "decisionIds": [
+         "d-mu2x3fk0d5b5r"
+        ]
+       }
+      }
+     ]
+    },
+    "workKind": "bounty",
+    "workPurpose": "implementation",
+    "decisionIds": [
+     "d-mu2x3fk0d5b5r"
+    ],
+    "outcomeSnapshot": {
+     "body": "Characterize in-place charging on the bench before choosing a BMS.\n\nCharge both packs through the flight harness, log cell temperatures and balance behaviour, and pick the BMS from the results.",
+     "openQuestions": "",
+     "revision": 1,
+     "threadId": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+     "versionId": "PT2",
+     "byMemberId": "ex-nadia",
+     "at": "2026-09-15T17:00:00.000Z",
+     "sources": [
+      {
+       "key": "thread:b65a72d6-e5cc-40da-a248-d13a82130dff",
+       "kind": "thread",
+       "id": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+       "authorId": "ex-ravi",
+       "body": "**Background from 2026-09-25.** The proposed dual-battery layout still needs a BMS and charging-interface design.\n\n- [Vector’s September 25 project notes](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-25-2026)\n- [Spearhead technical call · September 25](https://discord.com/channels/853833144037277726/1478778896361980035/1553073519833649222)"
+      },
+      {
+       "key": "position:581536ad-8ad8-4381-aebf-2a49d9103fdf",
+       "kind": "position",
+       "id": "581536ad-8ad8-4381-aebf-2a49d9103fdf",
+       "positionId": "581536ad-8ad8-4381-aebf-2a49d9103fdf",
+       "authorId": "ex-ravi",
+       "body": "Characterize charging on the bench before choosing a BMS: charge both packs in place through the flight harness and log cell temperatures."
+      },
+      {
+       "key": "position:s-mu1ofx6or1w7b",
+       "kind": "position",
+       "id": "s-mu1ofx6or1w7b",
+       "positionId": "s-mu1ofx6or1w7b",
+       "authorId": "ex-sofia",
+       "body": "From an operator's side, charging inside the airframe matters more than a fancy BMS. If we never have to pull a pack in the field, that's a win."
+      }
+     ]
+    },
+    "proposerRecordId": "charging-bms"
+   },
+   {
+    "id": "g-mu759ts0ozs11",
+    "projectId": "spearhead",
+    "versionId": "PT2",
+    "threadId": "243005f2-91a7-4f13-8645-6569de20874f",
+    "positionId": "",
+    "title": "Tail servo regulator schematic and bench test",
+    "scope": "Schematic for two independent fused regulators on the tail board, plus a bench test at servo stall current.\n\n## Acceptance criteria\n\nSchematic reviewed; bench log showing both regulators holding stall current for 10 minutes below 85 °C.",
+    "constraints": [],
+    "proposerIds": [],
+    "proposerShare": 0.25,
+    "contributorIds": [
+     "ex-lin",
+     "ex-dev"
+    ],
+    "weightedRankAtResolution": 0,
+    "rawRankAtResolution": 0,
+    "byMemberId": "ex-nadia",
+    "createdAt": "2026-09-18T16:00:00.000Z",
+    "updatedAt": "2026-09-26T20:00:00.000Z",
+    "status": "published",
+    "tracking": {
+     "stage": "in_review",
+     "ownerId": "ex-mara",
+     "dueDate": "",
+     "funding": "unfunded",
+     "budget": "",
+     "amount": 3000,
+     "acceptance": "Schematic reviewed; bench log showing both regulators holding stall current for 10 minutes below 85 °C.",
+     "evidence": "Schematic rev A and the bench log are in the tail-board folder. Both regulators held stall current for 10 minutes; peak 71 °C.",
+     "milestones": [],
+     "decisionIds": [
+      "d-mu759ts0zfad5"
+     ],
+     "revision": 3,
+     "history": [
+      {
+       "at": "2026-09-18T16:05:00.000Z",
+       "byMemberId": "ex-nadia",
+       "note": "Opened for claims.",
+       "content": {
+        "stage": "open",
+        "ownerId": "",
+        "dueDate": "",
+        "funding": "unfunded",
+        "budget": "",
+        "amount": 3000,
+        "acceptance": "Schematic reviewed; bench log showing both regulators holding stall current for 10 minutes below 85 °C.",
+        "evidence": "",
+        "milestones": [],
+        "decisionIds": [
+         "d-mu759ts0zfad5"
+        ]
+       }
+      },
+      {
+       "at": "2026-09-19T10:00:00.000Z",
+       "byMemberId": "ex-mara",
+       "note": "Assignment accepted: I accept this work and its acceptance criteria.",
+       "content": {
+        "stage": "in_progress",
+        "ownerId": "ex-mara",
+        "dueDate": "",
+        "funding": "unfunded",
+        "budget": "",
+        "amount": 3000,
+        "acceptance": "Schematic reviewed; bench log showing both regulators holding stall current for 10 minutes below 85 °C.",
+        "evidence": "",
+        "milestones": [],
+        "decisionIds": [
+         "d-mu759ts0zfad5"
+        ]
+       }
+      },
+      {
+       "at": "2026-09-26T20:00:00.000Z",
+       "byMemberId": "ex-mara",
+       "note": "Submitted for review.",
+       "content": {
+        "stage": "in_review",
+        "ownerId": "ex-mara",
+        "dueDate": "",
+        "funding": "unfunded",
+        "budget": "",
+        "amount": 3000,
+        "acceptance": "Schematic reviewed; bench log showing both regulators holding stall current for 10 minutes below 85 °C.",
+        "evidence": "Schematic rev A and the bench log are in the tail-board folder. Both regulators held stall current for 10 minutes; peak 71 °C.",
+        "milestones": [],
+        "decisionIds": [
+         "d-mu759ts0zfad5"
+        ]
+       }
+      }
+     ]
+    },
+    "workKind": "bounty",
+    "workPurpose": "implementation",
+    "decisionIds": [
+     "d-mu759ts0zfad5"
+    ],
+    "outcomeSnapshot": {
+     "body": "Separate fused regulator per tail servo, fed from the tail board.\n\nEach regulator is sized for one servo's stall current with margin. Check heat on the bench before the board layout is frozen.",
+     "openQuestions": "",
+     "revision": 1,
+     "threadId": "243005f2-91a7-4f13-8645-6569de20874f",
+     "versionId": "PT2",
+     "byMemberId": "ex-nadia",
+     "at": "2026-09-18T16:00:00.000Z",
+     "sources": [
+      {
+       "key": "thread:243005f2-91a7-4f13-8645-6569de20874f",
+       "kind": "thread",
+       "id": "243005f2-91a7-4f13-8645-6569de20874f",
+       "authorId": "ex-mara",
+       "body": "**Background from 2026-09-25.** Separate regulators per servo are the working approach; a shared redundant-output arrangement is still being considered. The notes name Erick (errrks.eth).\n\n- [Vector’s September 25 project notes](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-25-2026)\n- [Spearhead technical call · September 25](https://discord.com/channels/853833144037277726/1478778896361980035/1553073519833649222)"
+      },
+      {
+       "key": "position:81394e40-b5d3-4789-9284-1d0812b0b803",
+       "kind": "position",
+       "id": "81394e40-b5d3-4789-9284-1d0812b0b803",
+       "positionId": "81394e40-b5d3-4789-9284-1d0812b0b803",
+       "authorId": "ex-mara",
+       "body": "Separate regulator per servo. A shared redundant output still has a single failure point in the OR-ing and the connector; two small regulators cost less than a lost tail surface."
+      },
+      {
+       "key": "comment:c-mu3ve000p03c7",
+       "kind": "comment",
+       "id": "c-mu3ve000p03c7",
+       "positionId": "81394e40-b5d3-4789-9284-1d0812b0b803",
+       "authorId": "ex-lin",
+       "body": "From the flight-control side: losing one elevator half is flyable in our sim; losing both is not. That argues for Mara's split."
+      },
+      {
+       "key": "position:s-mu30b680er720",
+       "kind": "position",
+       "id": "s-mu30b680er720",
+       "positionId": "s-mu30b680er720",
+       "authorId": "ex-dev",
+       "body": "A shared regulator with ideal-diode OR-ing from both batteries keeps the tail board smaller. Per-servo regulators double the heat in a tight tail boom."
+      }
+     ]
+    },
+    "proposerRecordId": "servo-redundancy"
+   },
+   {
+    "id": "g-muh5csg05q02g",
+    "projectId": "spearhead",
+    "versionId": "PT2",
+    "threadId": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+    "positionId": "",
+    "title": "Measure the PT1 tail section and correct the airfoil note",
+    "scope": "Measure the PT1 horizontal tail at three stations, compare with the 0015 and 0018 templates, and update the information note.\n\n## Acceptance criteria\n\nMeasurements with photos, the matching section named, and a corrected note.",
+    "constraints": [],
+    "proposerIds": [],
+    "proposerShare": 0.25,
+    "contributorIds": [
+     "ex-dev"
+    ],
+    "weightedRankAtResolution": 0,
+    "rawRankAtResolution": 0,
+    "byMemberId": "ex-nadia",
+    "createdAt": "2026-09-25T16:00:00.000Z",
+    "updatedAt": "2026-09-25T16:05:00.000Z",
+    "status": "published",
+    "tracking": {
+     "stage": "open",
+     "ownerId": "",
+     "dueDate": "",
+     "funding": "unfunded",
+     "budget": "",
+     "amount": 1500,
+     "acceptance": "Measurements with photos, the matching section named, and a corrected note.",
+     "evidence": "",
+     "milestones": [],
+     "decisionIds": [],
+     "revision": 1,
+     "history": [
+      {
+       "at": "2026-09-25T16:05:00.000Z",
+       "byMemberId": "ex-nadia",
+       "note": "Opened for claims.",
+       "content": {
+        "stage": "open",
+        "ownerId": "",
+        "dueDate": "",
+        "funding": "unfunded",
+        "budget": "",
+        "amount": 1500,
+        "acceptance": "Measurements with photos, the matching section named, and a corrected note.",
+        "evidence": "",
+        "milestones": [],
+        "decisionIds": []
+       }
+      }
+     ]
+    },
+    "workKind": "grant",
+    "workPurpose": "research",
+    "decisionIds": [],
+    "outcomeSnapshot": {
+     "body": "Confirm the PT1 tail section from the build templates and a measurement, then correct the note.",
+     "openQuestions": "Which section does PT1 actually fly?",
+     "revision": 1,
+     "threadId": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+     "versionId": "PT2",
+     "byMemberId": "ex-nadia",
+     "at": "2026-09-25T16:00:00.000Z",
+     "sources": [
+      {
+       "key": "thread:f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+       "kind": "thread",
+       "id": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+       "authorId": "ex-lin",
+       "body": "**Background from 2026-09-10.** The preliminary note says NACA 0015; its attached configuration and the sizing tool say NACA 0018.\n\n- [Preliminary design note · tail section](https://github.com/Arrow-air/project-spearhead/blob/e19da0485eec22891dc9027828713faa40bc6732/docs/information-note/phase-1/Aerodynamics/0001-Preliminary-Design/information-note.md#L95)\n- [Initial-sizing configuration · tail_airfoil](https://github.com/Arrow-air/project-spearhead/blob/e19da0485eec22891dc9027828713faa40bc6732/src/tools/initial_sizing/config.py#L75)\n- [September 10 · first-flight review and PT2 planning](https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009#september-10-2026)\n- [September 10 · original Spearhead transcript](https://discord.com/channels/853833144037277726/1478778896361980035/1547638922119487508)"
+      },
+      {
+       "key": "position:2fbc1727-27fa-4d66-8321-797c5471af99",
+       "kind": "position",
+       "id": "2fbc1727-27fa-4d66-8321-797c5471af99",
+       "positionId": "2fbc1727-27fa-4d66-8321-797c5471af99",
+       "authorId": "ex-lin",
+       "body": "The tail note says NACA 0015 and the configuration files say 0018. We should confirm which one PT1 actually flies before PT2 inherits it."
+      },
+      {
+       "key": "position:s-mud2jao0hnsgy",
+       "kind": "position",
+       "id": "s-mud2jao0hnsgy",
+       "positionId": "s-mud2jao0hnsgy",
+       "authorId": "ex-dev",
+       "body": "I'm fairly sure PT1's tail was cut from the 0018 templates and the note is stale, but I'd measure it before trusting me."
+      }
+     ]
+    },
+    "proposerRecordId": "tail-airfoil-conflict"
+   }
+  ],
+  "briefs": [],
+  "drafts": [
+   {
+    "body": "Characterize in-place charging on the bench before choosing a BMS.\n\nCharge both packs through the flight harness, log cell temperatures and balance behaviour, and pick the BMS from the results.",
+    "openQuestions": "",
+    "threadId": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+    "authorId": "ex-ravi",
+    "updatedBy": "ex-ravi",
+    "updatedAt": "2026-09-15T12:00:00.000Z",
+    "revision": 1,
+    "history": [
+     {
+      "revision": 1,
+      "byMemberId": "ex-ravi",
+      "at": "2026-09-15T12:00:00.000Z",
+      "content": {
+       "body": "Characterize in-place charging on the bench before choosing a BMS.\n\nCharge both packs through the flight harness, log cell temperatures and balance behaviour, and pick the BMS from the results.",
+       "openQuestions": ""
+      }
+     }
+    ]
+   },
+   {
+    "body": "PT2 flies electric first; the gasoline configuration follows once transition is proven.\n\nThe power board is sized for the starter-generator so the later step is not a redesign.",
+    "openQuestions": "",
+    "threadId": "78258209-dac4-4b25-96d4-c98aa8da377f",
+    "authorId": "ex-ravi",
+    "updatedBy": "ex-ravi",
+    "updatedAt": "2026-09-19T15:00:00.000Z",
+    "revision": 1,
+    "history": [
+     {
+      "revision": 1,
+      "byMemberId": "ex-ravi",
+      "at": "2026-09-19T15:00:00.000Z",
+      "content": {
+       "body": "PT2 flies electric first; the gasoline configuration follows once transition is proven.\n\nThe power board is sized for the starter-generator so the later step is not a redesign.",
+       "openQuestions": ""
+      }
+     }
+    ]
+   },
+   {
+    "body": "Separate fused regulator per tail servo, fed from the tail board.\n\nEach regulator is sized for one servo's stall current with margin. Check heat on the bench before the board layout is frozen.",
+    "openQuestions": "",
+    "threadId": "243005f2-91a7-4f13-8645-6569de20874f",
+    "authorId": "ex-mara",
+    "updatedBy": "ex-mara",
+    "updatedAt": "2026-09-17T15:00:00.000Z",
+    "revision": 1,
+    "history": [
+     {
+      "revision": 1,
+      "byMemberId": "ex-mara",
+      "at": "2026-09-17T15:00:00.000Z",
+      "content": {
+       "body": "Separate fused regulator per tail servo, fed from the tail board.\n\nEach regulator is sized for one servo's stall current with margin. Check heat on the bench before the board layout is frozen.",
+       "openQuestions": ""
+      }
+     }
+    ]
+   },
+   {
+    "body": "Confirm the PT1 tail section from the build templates and a measurement, then correct the note.",
+    "openQuestions": "Which section does PT1 actually fly?",
+    "threadId": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+    "authorId": "ex-lin",
+    "updatedBy": "ex-lin",
+    "updatedAt": "2026-09-24T12:00:00.000Z",
+    "revision": 1,
+    "history": [
+     {
+      "revision": 1,
+      "byMemberId": "ex-lin",
+      "at": "2026-09-24T12:00:00.000Z",
+      "content": {
+       "body": "Confirm the PT1 tail section from the build templates and a measurement, then correct the note.",
+       "openQuestions": "Which section does PT1 actually fly?"
+      }
+     }
+    ]
+   },
+   {
+    "body": "Main board: six PWM servo outputs, per-motor temperature inputs, two CAN buses (ESCs; servos and sensors), and gasoline ignition and fuel-pump outputs footprinted but unpopulated on the electric build.",
+    "openQuestions": "",
+    "threadId": "2eeda0ca-bfb3-4abc-9098-86c9d0ba893b",
+    "authorId": "ex-mara",
+    "updatedBy": "ex-mara",
+    "updatedAt": "2026-09-26T11:00:00.000Z",
+    "revision": 1,
+    "history": [
+     {
+      "revision": 1,
+      "byMemberId": "ex-mara",
+      "at": "2026-09-26T11:00:00.000Z",
+      "content": {
+       "body": "Main board: six PWM servo outputs, per-motor temperature inputs, two CAN buses (ESCs; servos and sensors), and gasoline ignition and fuel-pump outputs footprinted but unpopulated on the electric build.",
+       "openQuestions": ""
+      }
+     }
+    ]
+   }
+  ],
+  "specifications": []
+ },
+ "events": [
+  {
+   "actor": "ex-nadia",
+   "action": "setMemberStanding",
+   "entity": "ex-mara",
+   "at": "2026-09-14T14:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "setMemberStanding",
+   "entity": "ex-ravi",
+   "at": "2026-09-14T14:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "setMemberStanding",
+   "entity": "ex-dev",
+   "at": "2026-09-14T14:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "setMemberStanding",
+   "entity": "ex-lin",
+   "at": "2026-09-14T14:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "setMemberStanding",
+   "entity": "ex-sofia",
+   "at": "2026-09-14T14:00:00.000Z"
+  },
+  {
+   "actor": "ex-ravi",
+   "action": "startFromEvidence",
+   "entity": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+   "at": "2026-09-14T16:00:00.000Z"
+  },
+  {
+   "actor": "ex-sofia",
+   "action": "createPosition",
+   "entity": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+   "at": "2026-09-14T20:10:00.000Z"
+  },
+  {
+   "actor": "ex-mara",
+   "action": "castVote",
+   "entity": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+   "at": "2026-09-15T08:30:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "castVote",
+   "entity": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+   "at": "2026-09-15T08:30:00.000Z"
+  },
+  {
+   "actor": "ex-dev",
+   "action": "castVote",
+   "entity": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+   "at": "2026-09-15T08:30:00.000Z"
+  },
+  {
+   "actor": "ex-lin",
+   "action": "castVote",
+   "entity": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+   "at": "2026-09-15T08:30:00.000Z"
+  },
+  {
+   "actor": "ex-sofia",
+   "action": "setBuilderIntent",
+   "entity": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+   "at": "2026-09-15T08:30:00.000Z"
+  },
+  {
+   "actor": "ex-ravi",
+   "action": "saveOutcome",
+   "entity": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+   "at": "2026-09-15T12:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "concludeThread",
+   "entity": "b65a72d6-e5cc-40da-a248-d13a82130dff",
+   "at": "2026-09-15T17:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "updateWork",
+   "entity": "g-mu2x3fk0g8sw7",
+   "at": "2026-09-15T17:05:00.000Z"
+  },
+  {
+   "actor": "ex-sofia",
+   "action": "claimWork",
+   "entity": "g-mu2x3fk0g8sw7",
+   "at": "2026-09-16T09:40:00.000Z"
+  },
+  {
+   "actor": "ex-sofia",
+   "action": "updateWork",
+   "entity": "g-mu2x3fk0g8sw7",
+   "at": "2026-09-22T19:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "updateWork",
+   "entity": "g-mu2x3fk0g8sw7",
+   "at": "2026-09-23T15:30:00.000Z"
+  },
+  {
+   "actor": "ex-ravi",
+   "action": "startFromEvidence",
+   "entity": "78258209-dac4-4b25-96d4-c98aa8da377f",
+   "at": "2026-09-16T13:00:00.000Z"
+  },
+  {
+   "actor": "ex-mara",
+   "action": "createPosition",
+   "entity": "78258209-dac4-4b25-96d4-c98aa8da377f",
+   "at": "2026-09-16T18:20:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "castVote",
+   "entity": "78258209-dac4-4b25-96d4-c98aa8da377f",
+   "at": "2026-09-17T10:00:00.000Z"
+  },
+  {
+   "actor": "ex-lin",
+   "action": "castVote",
+   "entity": "78258209-dac4-4b25-96d4-c98aa8da377f",
+   "at": "2026-09-17T10:00:00.000Z"
+  },
+  {
+   "actor": "ex-sofia",
+   "action": "castVote",
+   "entity": "78258209-dac4-4b25-96d4-c98aa8da377f",
+   "at": "2026-09-17T10:00:00.000Z"
+  },
+  {
+   "actor": "ex-dev",
+   "action": "castVote",
+   "entity": "78258209-dac4-4b25-96d4-c98aa8da377f",
+   "at": "2026-09-17T10:00:00.000Z"
+  },
+  {
+   "actor": "ex-ravi",
+   "action": "castVote",
+   "entity": "78258209-dac4-4b25-96d4-c98aa8da377f",
+   "at": "2026-09-17T10:00:00.000Z"
+  },
+  {
+   "actor": "ex-ravi",
+   "action": "saveOutcome",
+   "entity": "78258209-dac4-4b25-96d4-c98aa8da377f",
+   "at": "2026-09-19T15:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "concludeThread",
+   "entity": "78258209-dac4-4b25-96d4-c98aa8da377f",
+   "at": "2026-09-20T16:00:00.000Z"
+  },
+  {
+   "actor": "ex-mara",
+   "action": "startFromEvidence",
+   "entity": "243005f2-91a7-4f13-8645-6569de20874f",
+   "at": "2026-09-15T14:10:00.000Z"
+  },
+  {
+   "actor": "ex-dev",
+   "action": "createPosition",
+   "entity": "243005f2-91a7-4f13-8645-6569de20874f",
+   "at": "2026-09-15T18:30:00.000Z"
+  },
+  {
+   "actor": "ex-lin",
+   "action": "addComment",
+   "entity": "243005f2-91a7-4f13-8645-6569de20874f",
+   "at": "2026-09-16T09:00:00.000Z"
+  },
+  {
+   "actor": "ex-lin",
+   "action": "castVote",
+   "entity": "243005f2-91a7-4f13-8645-6569de20874f",
+   "at": "2026-09-16T09:00:00.000Z"
+  },
+  {
+   "actor": "ex-ravi",
+   "action": "castVote",
+   "entity": "243005f2-91a7-4f13-8645-6569de20874f",
+   "at": "2026-09-16T09:00:00.000Z"
+  },
+  {
+   "actor": "ex-sofia",
+   "action": "castVote",
+   "entity": "243005f2-91a7-4f13-8645-6569de20874f",
+   "at": "2026-09-16T09:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "castVote",
+   "entity": "243005f2-91a7-4f13-8645-6569de20874f",
+   "at": "2026-09-16T09:00:00.000Z"
+  },
+  {
+   "actor": "ex-mara",
+   "action": "setBuilderIntent",
+   "entity": "243005f2-91a7-4f13-8645-6569de20874f",
+   "at": "2026-09-16T09:00:00.000Z"
+  },
+  {
+   "actor": "ex-mara",
+   "action": "saveOutcome",
+   "entity": "243005f2-91a7-4f13-8645-6569de20874f",
+   "at": "2026-09-17T15:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "concludeThread",
+   "entity": "243005f2-91a7-4f13-8645-6569de20874f",
+   "at": "2026-09-18T16:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "updateWork",
+   "entity": "g-mu759ts0ozs11",
+   "at": "2026-09-18T16:05:00.000Z"
+  },
+  {
+   "actor": "ex-mara",
+   "action": "claimWork",
+   "entity": "g-mu759ts0ozs11",
+   "at": "2026-09-19T10:00:00.000Z"
+  },
+  {
+   "actor": "ex-sofia",
+   "action": "createThread",
+   "entity": "n-mu6uk0w0wej1a",
+   "at": "2026-09-18T11:00:00.000Z"
+  },
+  {
+   "actor": "ex-dev",
+   "action": "createPosition",
+   "entity": "n-mu6uk0w0wej1a",
+   "at": "2026-09-18T15:40:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "castVote",
+   "entity": "n-mu6uk0w0wej1a",
+   "at": "2026-09-18T15:40:00.000Z"
+  },
+  {
+   "actor": "ex-lin",
+   "action": "castVote",
+   "entity": "n-mu6uk0w0wej1a",
+   "at": "2026-09-18T15:40:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "resolveThread",
+   "entity": "n-mu6uk0w0wej1a",
+   "at": "2026-09-19T14:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "setVersionPlan",
+   "entity": "PT2",
+   "at": "2026-09-20T17:00:00.000Z"
+  },
+  {
+   "actor": "ex-dev",
+   "action": "startFromEvidence",
+   "entity": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+   "at": "2026-09-20T15:00:00.000Z"
+  },
+  {
+   "actor": "ex-sofia",
+   "action": "createPosition",
+   "entity": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+   "at": "2026-09-21T11:00:00.000Z"
+  },
+  {
+   "actor": "ex-lin",
+   "action": "addComment",
+   "entity": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+   "at": "2026-09-21T13:00:00.000Z"
+  },
+  {
+   "actor": "ex-ravi",
+   "action": "createPosition",
+   "entity": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+   "at": "2026-09-22T09:30:00.000Z"
+  },
+  {
+   "actor": "ex-dev",
+   "action": "setBuilderIntent",
+   "entity": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+   "at": "2026-09-22T09:30:00.000Z"
+  },
+  {
+   "actor": "ex-mara",
+   "action": "castVote",
+   "entity": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+   "at": "2026-09-22T16:00:00.000Z"
+  },
+  {
+   "actor": "ex-lin",
+   "action": "castVote",
+   "entity": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+   "at": "2026-09-22T16:00:00.000Z"
+  },
+  {
+   "actor": "ex-ravi",
+   "action": "castVote",
+   "entity": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+   "at": "2026-09-22T16:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "castVote",
+   "entity": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+   "at": "2026-09-22T16:00:00.000Z"
+  },
+  {
+   "actor": "ex-dev",
+   "action": "castVote",
+   "entity": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+   "at": "2026-09-22T16:00:00.000Z"
+  },
+  {
+   "actor": "ex-sofia",
+   "action": "addComment",
+   "entity": "c3f398aa-ced8-4098-8c3c-225e57858c64",
+   "at": "2026-09-23T10:00:00.000Z"
+  },
+  {
+   "actor": "ex-lin",
+   "action": "startFromEvidence",
+   "entity": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+   "at": "2026-09-22T14:00:00.000Z"
+  },
+  {
+   "actor": "ex-dev",
+   "action": "createPosition",
+   "entity": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+   "at": "2026-09-22T19:30:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "castVote",
+   "entity": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+   "at": "2026-09-22T19:30:00.000Z"
+  },
+  {
+   "actor": "ex-mara",
+   "action": "castVote",
+   "entity": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+   "at": "2026-09-22T19:30:00.000Z"
+  },
+  {
+   "actor": "ex-sofia",
+   "action": "castVote",
+   "entity": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+   "at": "2026-09-22T19:30:00.000Z"
+  },
+  {
+   "actor": "ex-lin",
+   "action": "saveOutcome",
+   "entity": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+   "at": "2026-09-24T12:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "concludeThread",
+   "entity": "f88aaac2-d0a7-4a3b-874c-caacd7c496cc",
+   "at": "2026-09-25T16:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "updateWork",
+   "entity": "g-muh5csg05q02g",
+   "at": "2026-09-25T16:05:00.000Z"
+  },
+  {
+   "actor": "ex-sofia",
+   "action": "createThread",
+   "entity": "n-mub0l9c089gka",
+   "at": "2026-09-21T09:00:00.000Z"
+  },
+  {
+   "actor": "ex-lin",
+   "action": "createPosition",
+   "entity": "n-mub0l9c089gka",
+   "at": "2026-09-21T17:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "castVote",
+   "entity": "n-mub0l9c089gka",
+   "at": "2026-09-21T17:00:00.000Z"
+  },
+  {
+   "actor": "ex-dev",
+   "action": "castVote",
+   "entity": "n-mub0l9c089gka",
+   "at": "2026-09-21T17:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "resolveThread",
+   "entity": "n-mub0l9c089gka",
+   "at": "2026-09-24T15:00:00.000Z"
+  },
+  {
+   "actor": "ex-mara",
+   "action": "startFromEvidence",
+   "entity": "2eeda0ca-bfb3-4abc-9098-86c9d0ba893b",
+   "at": "2026-09-23T14:00:00.000Z"
+  },
+  {
+   "actor": "ex-ravi",
+   "action": "createPosition",
+   "entity": "2eeda0ca-bfb3-4abc-9098-86c9d0ba893b",
+   "at": "2026-09-24T10:30:00.000Z"
+  },
+  {
+   "actor": "ex-lin",
+   "action": "addComment",
+   "entity": "2eeda0ca-bfb3-4abc-9098-86c9d0ba893b",
+   "at": "2026-09-24T13:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "castVote",
+   "entity": "2eeda0ca-bfb3-4abc-9098-86c9d0ba893b",
+   "at": "2026-09-24T13:00:00.000Z"
+  },
+  {
+   "actor": "ex-lin",
+   "action": "castVote",
+   "entity": "2eeda0ca-bfb3-4abc-9098-86c9d0ba893b",
+   "at": "2026-09-24T13:00:00.000Z"
+  },
+  {
+   "actor": "ex-ravi",
+   "action": "castVote",
+   "entity": "2eeda0ca-bfb3-4abc-9098-86c9d0ba893b",
+   "at": "2026-09-24T13:00:00.000Z"
+  },
+  {
+   "actor": "ex-mara",
+   "action": "castVote",
+   "entity": "2eeda0ca-bfb3-4abc-9098-86c9d0ba893b",
+   "at": "2026-09-24T13:00:00.000Z"
+  },
+  {
+   "actor": "ex-dev",
+   "action": "castVote",
+   "entity": "2eeda0ca-bfb3-4abc-9098-86c9d0ba893b",
+   "at": "2026-09-24T13:00:00.000Z"
+  },
+  {
+   "actor": "ex-mara",
+   "action": "saveOutcome",
+   "entity": "2eeda0ca-bfb3-4abc-9098-86c9d0ba893b",
+   "at": "2026-09-26T11:00:00.000Z"
+  },
+  {
+   "actor": "ex-lin",
+   "action": "startFromEvidence",
+   "entity": "13a9865b-2fd6-4aac-927c-58c905211900",
+   "at": "2026-09-24T18:00:00.000Z"
+  },
+  {
+   "actor": "ex-dev",
+   "action": "createPosition",
+   "entity": "13a9865b-2fd6-4aac-927c-58c905211900",
+   "at": "2026-09-25T09:00:00.000Z"
+  },
+  {
+   "actor": "ex-nadia",
+   "action": "castVote",
+   "entity": "13a9865b-2fd6-4aac-927c-58c905211900",
+   "at": "2026-09-25T09:00:00.000Z"
+  },
+  {
+   "actor": "ex-mara",
+   "action": "castVote",
+   "entity": "13a9865b-2fd6-4aac-927c-58c905211900",
+   "at": "2026-09-25T09:00:00.000Z"
+  },
+  {
+   "actor": "ex-mara",
+   "action": "updateWork",
+   "entity": "g-mu759ts0ozs11",
+   "at": "2026-09-26T20:00:00.000Z"
+  }
+ ]
+}

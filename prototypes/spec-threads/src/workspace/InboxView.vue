@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue';
 import FollowRecord from '../components/FollowRecord.vue';
 import { state, refresh } from '../data/store';
 import { api } from '../data/sharedBackend';
+import { isSharedProject } from '../data/projectDataMode';
 import { trackingOf } from '../lib/projectRecords';
 import { useNav } from './nav';
 import { useProject, nameOf } from './useProject';
@@ -15,7 +16,7 @@ const { to, router } = useNav();
 const { data, isLead } = useProject();
 const notes = ref<Note[]>([]), events = ref<Event[]>([]), error = ref(''), busy = ref(false);
 async function load() {
-  if (!state.me) return;
+  if (!state.me || !isSharedProject) return;
   try { [notes.value, events.value] = await Promise.all([api<Note[]>('/notifications'), api<Event[]>('/events')]); error.value = ''; } catch (e: any) { error.value = e.message; }
 }
 watch(() => [state.me?.id, state.version], load, { immediate: true });
@@ -48,7 +49,8 @@ async function markAll() {
 
 <template>
   <div>
-    <p v-if="!state.me" class="pw-card"><RouterLink to="/sign-in">Sign in</RouterLink> to see your inbox.</p>
+    <p v-if="!isSharedProject" class="pw-card pw-muted">The inbox needs the shared workspace service; the example keeps no notifications.</p>
+    <p v-else-if="!state.me" class="pw-card"><RouterLink to="/sign-in">Sign in</RouterLink> to see your inbox.</p>
     <template v-else>
       <div class="pw-page-head">
         <div><h2>Inbox</h2><p class="pw-muted">What needs you, and updates on things you follow or took part in.</p></div>

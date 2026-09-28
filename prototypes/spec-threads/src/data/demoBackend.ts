@@ -47,38 +47,42 @@ const newId = (prefix: string) =>
 
 export class DemoBackend implements Backend {
   readonly kind = 'demo' as const;
-  private storage: StorageLike;
-  private state: DemoState;
+  protected storage: StorageLike;
+  protected state: DemoState;
   private sampleData: boolean;
+  private key: string;
+  private seed: () => DemoState;
 
-  constructor(storage?: StorageLike, options: { sampleData?: boolean } = {}) {
+  constructor(storage?: StorageLike, options: { sampleData?: boolean; key?: string; seed?: () => DemoState } = {}) {
     this.sampleData = options.sampleData ?? false;
+    this.key = options.key ?? KEY;
+    this.seed = options.seed ?? seedState;
     this.storage = storage ?? (typeof localStorage !== 'undefined' ? localStorage : memoryStorage());
     this.state = this.load();
   }
 
-  private load(): DemoState {
+  protected load(): DemoState {
     let saved: DemoState | undefined;
     try {
-      const raw = this.storage.getItem(KEY);
+      const raw = this.storage.getItem(this.key);
       if (raw) { saved = JSON.parse(raw) as DemoState; saved.briefs ??= []; }
     } catch {
       // Corrupt or unreadable storage: fall through to a fresh seed.
     }
     // A failed migration write must not be mistaken for corrupt existing data.
-    return this.enrich(saved ?? seedState());
+    return this.enrich(saved ?? this.seed());
   }
 
   private enrich(state: DemoState): DemoState {
-    if (this.sampleData && installDeliverySamples(state)) this.storage.setItem(KEY, JSON.stringify(state));
+    if (this.sampleData && installDeliverySamples(state)) this.storage.setItem(this.key, JSON.stringify(state));
     return state;
   }
 
-  private save() {
-    this.storage.setItem(KEY, JSON.stringify(this.state));
+  protected save() {
+    this.storage.setItem(this.key, JSON.stringify(this.state));
   }
 
-  private me(): Member {
+  protected me(): Member {
     // Re-read before every write: another tab may have changed the discussion or brief.
     this.state = this.load();
     const m = this.state.members.find((x) => x.id === this.state.actingAs);
@@ -720,8 +724,8 @@ export class DemoBackend implements Backend {
   }
 
   async reset() {
-    this.storage.removeItem(KEY);
-    this.state = this.enrich(seedState());
+    this.storage.removeItem(this.key);
+    this.state = this.enrich(this.seed());
     this.save();
   }
 }

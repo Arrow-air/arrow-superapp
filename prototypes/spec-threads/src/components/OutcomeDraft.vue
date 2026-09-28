@@ -8,7 +8,7 @@ import { briefMarkdown, corpusKey, discussionSources, sourceUrl } from '../lib/b
 import { startingOutcome } from '../lib/outcome';
 import Markdown from './Markdown.vue';
 import WorkFields from './WorkFields.vue';
-import { isSharedProject } from '../data/projectDataMode';
+import { usesWorkspaceShell, isSharedProject as hasServer } from '../data/projectDataMode';
 const firstLine = (text: string) => text.split('\n').map(l => l.replace(/^#{1,6}\s+|^[-*>]\s+|[*_`]/g, '').trim()).find(Boolean) ?? '';
 const props = defineProps<{ bundle: ThreadBundle; project: Project; decisionLine?: string }>();
 const emit = defineEmits<{ conversation: []; grant: [id: string] }>();
@@ -17,7 +17,7 @@ const discussionChanged = ref(false);
 const editing = ref(false), busy = ref(false), reviewed = ref(false), adopt = ref(false), commission = ref(false), feedback = ref(''), saved = ref(false);
 const work = ref<WorkInput>({ kind: 'grant', purpose: 'implementation', title: '', scope: '', acceptance: '' });
 const decisionText = ref('');
-const shared = isSharedProject;
+const shared = usesWorkspaceShell;
 const lead = computed(() => myRoleOn(props.project.id) === 'lead');
 const closed = computed(() => props.bundle.thread.status !== 'open');
 const outcome = computed(() => props.bundle.thread.resolution?.kind === 'conclude' ? props.bundle.thread.resolution : undefined);

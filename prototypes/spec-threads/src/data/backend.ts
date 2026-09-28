@@ -78,6 +78,10 @@ export interface Backend {
   concludeThread(input: { threadId: string; expectedRevision: number; expectedCorpus: string; adopt: boolean; decision?: string; work?: import('../lib/types').WorkInput }): Promise<Thread>;
   /** Lead only. Project role and lead-confirmed expertise. Shared and demo backends. */
   setMemberStanding?(input: { projectId: string; memberId: string; role?: import('../lib/types').Role; verifiedExpertise?: string[] }): Promise<Member>;
+  /** Start a discussion from a call or document record; the caller's text is contribution #1. */
+  startFromEvidence?(input: { recordId: string; title?: string; body: string }): Promise<Thread>;
+  /** Claim open work: the caller becomes the owner and work starts. */
+  claimWork?(input: { id: string; note: string }): Promise<Grant>;
   /** Lead only. Confirm who gets a work package's proposer award. */
   assignProposers?(input: { id: string; proposerIds: string[] }): Promise<Grant>;
   /** Lead only. Freeze target and retro pool for an open version. */

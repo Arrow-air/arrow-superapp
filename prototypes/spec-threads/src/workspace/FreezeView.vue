@@ -108,7 +108,7 @@ const days = computed(() => (version.value?.freezeTarget ? daysUntil(version.val
         <p v-if="!openBundles.length" class="pw-muted">Nothing left to settle.</p>
         <div v-for="b in openBundles" :key="b.thread.id" class="pw-freeze-row">
           <div>
-            <span class="pw-eyebrow">{{ systemName(data.evidence, b.thread.system || PROJECT_WIDE) }} · {{ b.positions.length }} contributions</span>
+            <span class="pw-eyebrow">{{ systemName(data.evidence, b.thread.system || PROJECT_WIDE) }} · {{ b.positions.length }} {{ b.positions.length === 1 ? 'contribution' : 'contributions' }}</span>
             <RouterLink :to="to('discussions', { thread: b.thread.id })"><strong>{{ b.thread.title }}</strong></RouterLink>
             <span v-if="tallyLeader(data, b)" class="pw-muted pw-small">Leading: “{{ positionTitle(b.positions.find(p => p.id === tallyLeader(data!, b)!.positionId)?.body ?? '', 70) }}” {{ signed(tallyLeader(data, b)!.score) }}</span>
           </div>

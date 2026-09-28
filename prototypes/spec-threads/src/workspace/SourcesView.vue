@@ -5,6 +5,7 @@ import ReconciliationQueue from '../components/ReconciliationQueue.vue';
 import RepoFollowThrough from '../components/RepoFollowThrough.vue';
 import { state } from '../data/store';
 import { api } from '../data/sharedBackend';
+import { isSharedProject } from '../data/projectDataMode';
 import { repoReview } from '../data/spearheadRepoReview';
 import type { ProjectSource } from '../lib/sourcedProject';
 import { useNav } from './nav';
@@ -34,7 +35,7 @@ async function exportProject() {
   <div v-if="data">
     <div class="pw-page-head">
       <div><h2>Sources</h2><p class="pw-muted">The calls, notes, repository documents and messages behind the records in this workspace, collected through {{ shortDate(data.evidence.asOf) }}. Anything the team adds in the app is stored separately and never overwrites a source.</p></div>
-      <button v-if="isMember" class="pw-btn pw-btn-quiet" @click="exportProject">Export project data</button>
+      <button v-if="isMember && isSharedProject" class="pw-btn pw-btn-quiet" @click="exportProject">Export project data</button>
     </div>
     <p v-if="error" role="alert" class="pw-warn">{{ error }}</p>
     <div class="pw-filters">
@@ -55,13 +56,13 @@ async function exportProject() {
       <h3>Repository catch-up <span class="pw-count">{{ needsWork.length }}</span></h3>
       <p class="pw-muted pw-small">Things agreed on calls that the Spearhead repository doesn’t record yet, or records differently. Checked {{ shortDate(repoReview.checked) }}.</p>
       <RepoFollowThrough :items="needsWork" />
-      <ReconciliationQueue v-if="state.me && state.roles.some(r => r.memberId === state.me!.id && r.role !== 'member')" />
+      <ReconciliationQueue v-if="isSharedProject && state.me && state.roles.some(r => r.memberId === state.me!.id && r.role !== 'member')" />
     </section>
 
     <details class="pw-card">
       <summary>About these records</summary>
       <ul class="pw-small"><li v-for="note in data.evidence.coverage" :key="note">{{ note }}</li></ul>
     </details>
-    <EvidenceImport v-if="isLead" />
+    <EvidenceImport v-if="isLead && isSharedProject" />
   </div>
 </template>

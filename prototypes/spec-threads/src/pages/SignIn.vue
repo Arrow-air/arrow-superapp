@@ -2,7 +2,11 @@
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { authClient, api } from "../data/sharedBackend";
-import { refresh } from "../data/store";
+import { act, backend, refresh, state } from "../data/store";
+import { isExampleWorkspace } from "../data/projectDataMode";
+async function explore(id: string) {
+  if (await act(() => backend.actAs!(id))) await router.replace("/p/spearhead");
+}
 const route = useRoute(),
   router = useRouter();
 const email = ref(""),
@@ -12,7 +16,7 @@ const email = ref(""),
   invitation = ref<any>();
 const joining = computed(() => route.name === "join");
 onMounted(async () => {
-  if (joining.value) {
+  if (joining.value && !isExampleWorkspace) {
     try {
       invitation.value = await api(
         "/invite/info?token=" +
@@ -53,7 +57,14 @@ async function submit() {
 }
 </script>
 <template>
-  <section class="auth-card briefing-panel">
+  <section v-if="isExampleWorkspace" class="auth-card briefing-panel">
+    <h1>Explore as</h1>
+    <p>This is an example workspace with fictional people. Choose who to be; you can switch any time from the top bar.</p>
+    <div class="stack">
+      <button v-for="m in state.members" :key="m.id" class="btn btn-ghost" @click="explore(m.id)">{{ m.displayName }} · {{ ({ lead: 'project lead', core: 'core', member: 'contributor' } as Record<string, string>)[state.roles.find((r) => r.memberId === m.id)?.role ?? 'member'] }}</button>
+    </div>
+  </section>
+  <section v-else class="auth-card briefing-panel">
     <h1>{{ joining ? "Join Spearhead" : "Sign in" }}</h1>
     <p v-if="invitation">
       Welcome, {{ invitation.display_name }}. Your invitation grants the

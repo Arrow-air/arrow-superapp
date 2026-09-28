@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { api } from "../data/sharedBackend";
+import { isSharedProject } from "../data/projectDataMode";
 import { state } from "../data/store";
 const props = defineProps<{ entityId: string }>();
 const files = ref<any[]>([]),
@@ -67,7 +68,7 @@ async function download(f: any) {
 }
 </script>
 <template>
-  <section v-if="state.me" class="briefing-panel record-attachments">
+  <section v-if="state.me && isSharedProject" class="briefing-panel record-attachments">
     <h3>Files & revisions</h3>
     <p class="small muted">
       CAD, test logs, photos, or documents. Each upload keeps its own file and a

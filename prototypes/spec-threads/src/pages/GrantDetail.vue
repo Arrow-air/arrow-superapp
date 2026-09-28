@@ -3,7 +3,7 @@
 import { computed, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
 import Markdown from '../components/Markdown.vue';
-import {isSharedProject} from '../data/projectDataMode';
+import { usesWorkspaceShell, isSharedProject as hasServer } from '../data/projectDataMode';
 import WorkTracker from '../components/WorkTracker.vue';
 import { useUnsaved } from '../composables/useUnsaved';
 import { trackingOf, workStages } from '../lib/projectRecords';
@@ -144,15 +144,15 @@ const issueUrl = computed(() => {
       <template v-if="idea?.record && idea.held">Idea from the <RouterLink :to="{ name: 'project', params: { id: project.id }, query: { view: 'discussions', record: idea.record.id } }">{{ ideaDate }} call notes</RouterLink><template v-if="idea.record.owner">, which name {{ idea.record.owner }}</template></template>
       <template v-else-if="idea?.legacy">Idea from {{ idea.legacy }}</template>
       <template v-else>Idea from {{ grant.proposerIds.map(nameOf).join(', ') }}<template v-if="idea?.record">, confirmed from the <RouterLink :to="{ name: 'project', params: { id: project.id }, query: { view: 'discussions', record: idea.record.id } }">{{ ideaDate }} call notes</RouterLink></template></template>
-      · drafted by {{ nameOf(grant.byMemberId) }} on {{ new Date(grant.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) }} when the discussion was settled · <RouterLink :to="embedded ? { name: 'project', params: { id: project.id }, query: { view: isSharedProject ? 'discussions' : 'shape', version: isSharedProject ? undefined : grant.versionId, thread: grant.threadId } } : { name: 'thread', params: { id: grant.threadId } }">Read the discussion →</RouterLink>
+      · drafted by {{ nameOf(grant.byMemberId) }} on {{ new Date(grant.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) }} when the discussion was settled · <RouterLink :to="embedded ? { name: 'project', params: { id: project.id }, query: { view: usesWorkspaceShell ? 'discussions' : 'shape', version: usesWorkspaceShell ? undefined : grant.versionId, thread: grant.threadId } } : { name: 'thread', params: { id: grant.threadId } }">Read the discussion →</RouterLink>
       <template v-if="!grant.outcomeSnapshot"> · weighted rank {{ grant.weightedRankAtResolution }}, raw rank {{ grant.rawRankAtResolution }} at promotion</template>
     </p>
-    <p v-if="isSharedProject" class="grant-reward">
+    <p v-if="usesWorkspaceShell" class="grant-reward">
       <template v-if="reward"><b>{{ fmtArrow(reward) }}</b> reward<template v-if="award"> · {{ fmtArrow(award) }} ({{ percent(grant.proposerShare) }}) proposer award {{ idea?.held ? 'held until a lead confirms who raised the idea' : 'to ' + grant.proposerIds.map(nameOf).join(', ') }} · {{ fmtArrow(reward - award) }} to whoever delivers it</template></template>
       <template v-else>No reward set yet<template v-if="myRoleOn(grant.projectId) === 'lead'">. Set one under Manage work below</template>.</template>
     </p>
 
-    <section v-if="isSharedProject && isLead && idea?.held" class="confirm-proposer">
+    <section v-if="usesWorkspaceShell && isLead && idea?.held" class="confirm-proposer">
       <strong>Who raised this idea?</strong>
       <p class="small muted">The discussion started from <template v-if="idea.record">the <RouterLink :to="{ name: 'project', params: { id: project.id }, query: { view: 'discussions', record: idea.record.id } }">{{ ideaDate }} call notes</RouterLink></template><template v-else>a call record</template>. Check them, then choose who gets the proposer award. If they aren't a member yet, invite them first.</p>
       <div class="row"><label v-for="m in state.members" :key="m.id" class="record-check"><input v-model="confirming" type="checkbox" :value="m.id" />{{ nameOf(m.id) }}</label></div>
@@ -212,9 +212,9 @@ const issueUrl = computed(() => {
       <div class="stack">
 
         <details class="card stack work-export">
-          <summary>{{ isSharedProject ? 'Post to GitHub' : 'Export work package' }}</summary>
+          <summary>{{ usesWorkspaceShell ? 'Post to GitHub' : 'Export work package' }}</summary>
           <div class="spread" style="align-items: center">
-            <div class="label">{{ isSharedProject ? 'For Arrow-air/grant-and-bounties' : 'Markdown for grant-and-bounties' }}</div>
+            <div class="label">{{ usesWorkspaceShell ? 'For Arrow-air/grant-and-bounties' : 'Markdown for grant-and-bounties' }}</div>
             <div class="row">
               <button class="btn btn-ghost" @click="copy">{{ copied ? 'Copied' : 'Copy markdown' }}</button>
               <a class="btn" :href="issueUrl" target="_blank" rel="noopener">Open as GitHub issue</a>

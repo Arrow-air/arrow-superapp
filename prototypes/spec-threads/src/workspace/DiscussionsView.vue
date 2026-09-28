@@ -96,7 +96,7 @@ function back() { if (window.history.state?.back) router.back(); else go('discus
         <RouterLink v-for="o in settled" :key="o.bundle.thread.id" :to="to('discussions', { thread: o.bundle.thread.id })" class="pw-q">
           <span class="pw-eyebrow">{{ o.rejected ? 'Not pursued' : o.adopted ? 'Adopted into the spec' : 'Concluded' }} · {{ systemName(data.evidence, o.bundle.thread.system || 'project-wide') }} · {{ shortDate(o.at) }}</span>
           <strong>{{ o.bundle.thread.title }}</strong>
-          <span class="pw-q-meta">{{ o.rejected ? o.summary : o.decision ? `Decided: ${o.summary}` : firstLine(o.summary) }} · {{ o.bundle.positions.length }} contributions · last active {{ shortDate(lastActivity(o.bundle)) }} · {{ nameOf(o.bundle.thread.authorId) }}</span>
+          <span class="pw-q-meta">{{ o.rejected ? o.summary : o.decision ? `Decided: ${o.summary}` : firstLine(o.summary) }} · {{ o.bundle.positions.length }} {{ o.bundle.positions.length === 1 ? 'contribution' : 'contributions' }} · last active {{ shortDate(lastActivity(o.bundle)) }} · {{ nameOf(o.bundle.thread.authorId) }}</span>
         </RouterLink>
       </section>
     </template>

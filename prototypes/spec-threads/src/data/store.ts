@@ -5,11 +5,13 @@ import type { Member, Project, ProjectRole, Version } from '../lib/types';
 import type { Backend } from './backend';
 import { DemoBackend } from './demoBackend';
 import { SharedBackend } from './sharedBackend';
-import { isRealProjectData, isSharedProject } from './projectDataMode';
+import { isExampleWorkspace, isRealProjectData, isSharedProject } from './projectDataMode';
+import { ExampleBackend } from './exampleBackend';
 import { SupabaseBackend } from './supabaseBackend';
 
 function makeBackend(): Backend {
   if(isSharedProject) return new SharedBackend();
+  if(isExampleWorkspace) return new ExampleBackend();
   const kind = import.meta.env.VITE_BACKEND ?? 'demo';
   if (kind === 'supabase') {
     const url = import.meta.env.VITE_SUPABASE_URL;

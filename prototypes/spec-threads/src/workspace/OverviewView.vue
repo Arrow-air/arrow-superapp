@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { state } from '../data/store';
+import { isExampleWorkspace } from '../data/projectDataMode';
 import { trackingOf } from '../lib/projectRecords';
 import { versionRetro, proposerAward } from '../lib/retro';
 import { freezeCheck } from '../lib/versions';
@@ -59,8 +60,9 @@ const leadName = computed(() => {
     </section>
 
     <section v-if="!isMember" class="pw-help">
-      <div><strong>How to help</strong><span>Read an open question below and add what you know, pick up an open bounty, or bring an idea for {{ pt2.name }}. Contributing needs an invitation while the pilot runs: ask {{ leadName }} in Arrow’s Discord.</span></div>
-      <div class="pw-row"><RouterLink class="pw-btn pw-btn-quiet" :to="to('discussions')">Open questions ({{ questions.length }})</RouterLink><RouterLink class="pw-btn pw-btn-quiet" :to="to('work')">Open bounties ({{ claimable.length }})</RouterLink><RouterLink v-if="!state.me" class="pw-btn" to="/sign-in">Sign in</RouterLink></div>
+      <div v-if="isExampleWorkspace"><strong>Try it</strong><span>Pick someone under “Explore as” at the top. As Nadia (lead) you can settle discussions, accept work, and freeze {{ pt2.name }} to see the retro split. As Sofia or Mara you can contribute, support ideas, and claim work.</span></div>
+      <div v-else><strong>How to help</strong><span>Read an open question below and add what you know, pick up an open bounty, or bring an idea for {{ pt2.name }}. Contributing needs an invitation while the pilot runs: ask {{ leadName }} in Arrow’s Discord.</span></div>
+      <div class="pw-row"><RouterLink class="pw-btn pw-btn-quiet" :to="to('discussions')">Open questions ({{ questions.length }})</RouterLink><RouterLink class="pw-btn pw-btn-quiet" :to="to('work')">Open bounties ({{ claimable.length }})</RouterLink><RouterLink v-if="!state.me && !isExampleWorkspace" class="pw-btn" to="/sign-in">Sign in</RouterLink></div>
     </section>
 
     <section v-if="lastFrozen" class="pw-card pw-frozen">

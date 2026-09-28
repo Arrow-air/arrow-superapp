@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {isSharedProject} from '../data/projectDataMode';
+import { usesWorkspaceShell, isSharedProject as hasServer } from '../data/projectDataMode';
 import { ref, watch } from 'vue';
 import { act, backend, isDemo, projectById, state } from '../data/store';
 import { parseTags, tokens } from '../lib/format';
@@ -27,7 +27,7 @@ async function save() {
   saved.value = false;
   const ok = await act(() =>
     backend.updateProfile({
-      ...(!isSharedProject ? {tokenBalance:Number(tokenBalance.value)} : {}),
+      ...(!usesWorkspaceShell ? {tokenBalance:Number(tokenBalance.value)} : {}),
       expertise: parseTags(expertise.value),
       location: location.value,
       bio: bio.value,
@@ -47,14 +47,14 @@ const myRoles = () =>
   <div v-else class="layout-2">
     <form class="stack" @submit.prevent="save">
       <div class="card card-subtle">
-        <strong>{{ state.me.displayName }}</strong> <span v-if="!isSharedProject" class="muted">@{{ state.me.handle }}</span><span v-else class="muted small">Mention as @{{ state.me.handle }}</span><span v-if="state.me.verifiedExpertise?.length" class="muted small"> · confirmed: {{ state.me.verifiedExpertise.join(', ') }}</span>
+        <strong>{{ state.me.displayName }}</strong> <span v-if="!usesWorkspaceShell" class="muted">@{{ state.me.handle }}</span><span v-else class="muted small">Mention as @{{ state.me.handle }}</span><span v-if="state.me.verifiedExpertise?.length" class="muted small"> · confirmed: {{ state.me.verifiedExpertise.join(', ') }}</span>
         <div class="row" style="margin-top: 8px; gap: 6px">
           <span v-for="r in myRoles()" :key="r.projectId" class="chip chip-project">{{ r.name }}: {{ r.role }}</span>
           <span v-if="!myRoles().length" class="muted small">No project roles. You vote as a member everywhere.</span>
         </div>
       </div>
 
-      <label v-if="!isSharedProject" class="field-row">
+      <label v-if="!usesWorkspaceShell" class="field-row">
         <span class="label">$ARROW balance</span>
         <input v-model.number="tokenBalance" type="number" min="0" step="1" />
         <div class="hint">
@@ -64,9 +64,9 @@ const myRoles = () =>
         </div>
       </label>
       <label class="field-row">
-        <span class="label">{{ isSharedProject ? 'Skills, comma separated' : 'Expertise tags, comma separated' }}</span>
+        <span class="label">{{ usesWorkspaceShell ? 'Skills, comma separated' : 'Expertise tags, comma separated' }}</span>
         <input v-model="expertise" type="text" placeholder="pcb, firmware, propulsion" />
-        <div class="hint">{{ isSharedProject ? 'Shown on your profile. Confirmed expertise is set by the project lead.' : 'Matched against the tags on each thread.' }}</div>
+        <div class="hint">{{ usesWorkspaceShell ? 'Shown on your profile. Confirmed expertise is set by the project lead.' : 'Matched against the tags on each thread.' }}</div>
       </label>
       <label class="field-row">
         <span class="label">Location</span>
@@ -84,7 +84,7 @@ const myRoles = () =>
 
     <aside class="card small">
       <div class="label">Why we ask</div>
-      <p v-if="isSharedProject" style="margin:6px 0 0">Your profile helps teammates find relevant experience. The skills you list here are self-described; the project lead confirms expertise and sets roles, and only those change how much your support counts.</p>
+      <p v-if="usesWorkspaceShell" style="margin:6px 0 0">Your profile helps teammates find relevant experience. The skills you list here are self-described; the project lead confirms expertise and sets roles, and only those change how much your support counts.</p>
       <p v-else style="margin: 6px 0 0">
         Tokens, expertise, and project role change how much your vote counts. Your role is set per project by an admin, not by you.
       </p>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, ref, watch } from 'vue';
-import { state } from '../data/store';
+import { act, backend, state } from '../data/store';
+import { isExampleWorkspace, isSharedProject } from '../data/projectDataMode';
 import { api } from '../data/sharedBackend';
 import { useNav, type View } from './nav';
 import { useProject } from './useProject';
@@ -42,12 +43,15 @@ function submitSearch() { if (search.value.trim()) go('search', { q: search.valu
 // Unread count for the signed-in member's inbox.
 const unread = ref(0);
 watch(() => [state.me?.id, state.version], async () => {
-  if (!state.me) { unread.value = 0; return; }
+  if (!state.me || !isSharedProject) { unread.value = 0; return; }
   try { unread.value = (await api<{ read_at: string | null }[]>('/notifications')).filter((n) => !n.read_at).length; } catch { unread.value = 0; }
 }, { immediate: true });
 // An example workspace announces itself so nobody mistakes its people or activity for Arrow's.
-const banner = ref('');
-fetch('/api/config').then((r) => r.json()).then((c) => { banner.value = c.banner ?? ''; }).catch(() => {});
+const banner = ref(isExampleWorkspace ? 'Example workspace · fictional people and activity; the call and repository records are real. Pick someone under “Explore as” to act as a lead or a contributor. Your changes stay in this browser.' : '');
+if (isSharedProject) fetch('/api/config').then((r) => r.json()).then((c) => { banner.value = c.banner ?? ''; }).catch(() => {});
+async function resetExample() {
+  if (confirm('Discard your changes and restore the example workspace?')) await act(() => backend.reset!());
+}
 const fmt = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 watch([view, () => route.query.thread, () => route.query.record], () => {
   const label = view.value === 'overview' ? 'Overview' : tabs.value.find((t) => t.id === view.value)?.label ?? view.value.charAt(0).toUpperCase() + view.value.slice(1);
@@ -57,7 +61,7 @@ watch([view, () => route.query.thread, () => route.query.record], () => {
 
 <template>
   <div class="pw">
-    <p v-if="banner" class="pw-banner" role="note">{{ banner }}</p>
+    <p v-if="banner" class="pw-banner" role="note">{{ banner }} <button v-if="isExampleWorkspace" class="pw-banner-reset" @click="resetExample">Reset the example</button></p>
     <header class="pw-head">
       <div class="pw-head-main">
         <div class="pw-title-row">
@@ -71,7 +75,7 @@ watch([view, () => route.query.thread, () => route.query.record], () => {
           <span v-else-if="pt2">{{ pt2.name }} freeze date not set</span>
         </p>
       </div>
-      <RouterLink v-if="state.me" class="pw-inbox-mobile" :to="{ path: '/p/spearhead', query: { view: 'inbox' } }">Inbox<span v-if="unread" class="pw-count pw-count-alert">{{ unread }}</span></RouterLink>
+      <RouterLink v-if="state.me && isSharedProject" class="pw-inbox-mobile" :to="{ path: '/p/spearhead', query: { view: 'inbox' } }">Inbox<span v-if="unread" class="pw-count pw-count-alert">{{ unread }}</span></RouterLink>
       <form class="pw-search" role="search" @submit.prevent="submitSearch">
         <label class="sr-only" for="pw-search">Search Spearhead</label>
         <input id="pw-search" v-model="search" type="search" placeholder="Search Spearhead…" />
@@ -79,7 +83,7 @@ watch([view, () => route.query.thread, () => route.query.record], () => {
     </header>
     <nav class="pw-tabs" aria-label="Project sections">
       <RouterLink v-for="t in tabs" :key="t.id" :to="{ path: '/p/spearhead', query: t.id === 'overview' ? {} : { view: t.id } }" :class="{ active: view === t.id }" :aria-current="view === t.id ? 'page' : undefined">{{ t.label }}<span v-if="t.count" class="pw-count">{{ t.count }}</span></RouterLink>
-      <RouterLink v-if="state.me" :to="{ path: '/p/spearhead', query: { view: 'inbox' } }" class="pw-tab-inbox" :class="{ active: view === 'inbox' }" :aria-current="view === 'inbox' ? 'page' : undefined">Inbox<span v-if="unread" class="pw-count pw-count-alert" :aria-label="`${unread} unread`">{{ unread }}</span></RouterLink>
+      <RouterLink v-if="state.me && isSharedProject" :to="{ path: '/p/spearhead', query: { view: 'inbox' } }" class="pw-tab-inbox" :class="{ active: view === 'inbox' }" :aria-current="view === 'inbox' ? 'page' : undefined">Inbox<span v-if="unread" class="pw-count pw-count-alert" :aria-label="`${unread} unread`">{{ unread }}</span></RouterLink>
     </nav>
     <p v-if="!data" class="pw-muted pw-loading">Loading Spearhead…</p>
     <RecordDetail v-else-if="route.query.record" :key="String(route.query.record)" :record-id="String(route.query.record)" />

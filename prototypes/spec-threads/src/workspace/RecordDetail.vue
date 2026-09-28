@@ -2,8 +2,8 @@
 import { computed, ref, watch } from 'vue';
 import Markdown from '../components/Markdown.vue';
 import FollowRecord from '../components/FollowRecord.vue';
+import { isExampleWorkspace } from '../data/projectDataMode';
 import { act, backend, state } from '../data/store';
-import { SharedBackend } from '../data/sharedBackend';
 import { useNav } from './nav';
 import { useProject, nameOf } from './useProject';
 import { recordLinks, recordState, systemName, firstLine, decisionTitle } from './derive';
@@ -33,10 +33,10 @@ function back() {
   else go(record.value?.kind === 'design' ? 'spec' : record.value?.kind === 'work' || record.value?.kind === 'result' ? 'work' : 'discussions');
 }
 async function start() {
-  if (!(backend instanceof SharedBackend) || !body.value.trim() || busy.value) return;
+  if (!backend.startFromEvidence || !body.value.trim() || busy.value) return;
   busy.value = true;
   let thread: { id: string } | undefined;
-  const ok = await act(async () => { thread = await (backend as SharedBackend).rpc('startFromEvidence', { recordId: props.recordId, title: title.value.trim() || undefined, body: body.value.trim() }); });
+  const ok = await act(async () => { thread = await backend.startFromEvidence!({ recordId: props.recordId, title: title.value.trim() || undefined, body: body.value.trim() }); });
   busy.value = false;
   if (ok && thread) await router.replace(to('discussions', { thread: thread.id }));
 }
@@ -79,7 +79,7 @@ const outcomeLine = computed(() => {
         <div class="pw-row"><button class="pw-btn" :disabled="busy || !body.trim()">{{ busy ? 'Starting…' : 'Start discussion' }}</button><button type="button" class="pw-btn pw-btn-quiet" @click="composing = false">Cancel</button></div>
       </form>
     </section>
-    <p v-else-if="!state.me" class="pw-callout"><RouterLink to="/sign-in">Sign in</RouterLink> to start a discussion about this.</p>
+    <p v-else-if="!state.me" class="pw-callout"><template v-if="isExampleWorkspace">Pick someone under “Explore as” at the top to start a discussion about this.</template><template v-else><RouterLink to="/sign-in">Sign in</RouterLink> to start a discussion about this.</template></p>
 
     <section v-if="record.next && link?.state !== 'answered'" class="pw-next"><strong>Next step</strong><p>{{ record.next }}</p></section>
     <section class="pw-prose"><Markdown :source="record.body" /></section>

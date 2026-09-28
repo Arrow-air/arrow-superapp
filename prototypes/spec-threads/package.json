@@ -21,7 +21,9 @@
     "server:start": "node scripts/service.mjs start",
     "server:restart": "node scripts/service.mjs restart",
     "backup": "node scripts/backup.mjs",
-    "demo:seed": "esbuild server/demo-seed.ts --bundle --platform=node --format=esm --packages=external --target=node22 --outfile=.runtime/demo-seed.mjs --log-level=warning && node .runtime/demo-seed.mjs"
+    "demo:seed": "esbuild server/demo-seed.ts --bundle --platform=node --format=esm --packages=external --target=node22 --outfile=.runtime/demo-seed.mjs --log-level=warning && node .runtime/demo-seed.mjs",
+    "example:build": "esbuild server/build-example.ts --bundle --platform=node --format=esm --packages=external --target=node22 --outfile=.runtime/build-example.mjs --log-level=warning && node .runtime/build-example.mjs",
+    "e2e:example": "node e2e/example-static.cjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.0",

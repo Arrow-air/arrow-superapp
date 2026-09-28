@@ -2,6 +2,7 @@
 import { ref, watch } from "vue";
 import { api } from "../data/sharedBackend";
 import { state } from "../data/store";
+import { isSharedProject } from "../data/projectDataMode";
 const props = defineProps<{ target: string }>();
 const following = ref(false),
   error = ref(""),
@@ -9,7 +10,7 @@ const following = ref(false),
 watch(
   () => [props.target, state.me?.id],
   async () => {
-    if (state.me)
+    if (state.me && isSharedProject)
       try {
         following.value = (await api<string[]>("/watches")).includes(
           props.target,
@@ -37,7 +38,7 @@ async function toggle() {
 </script>
 <template>
   <button
-    v-if="state.me"
+    v-if="state.me && isSharedProject"
     class="btn btn-ghost"
     :aria-pressed="following"
     :disabled="busy"

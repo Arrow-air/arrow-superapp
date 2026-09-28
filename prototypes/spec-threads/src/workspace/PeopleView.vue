@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import { act, backend, state } from '../data/store';
 import { api } from '../data/sharedBackend';
+import { isSharedProject } from '../data/projectDataMode';
 import { trackingOf } from '../lib/projectRecords';
 import { versionRetro } from '../lib/retro';
 import { positionTitle } from '../lib/format';
@@ -115,7 +116,7 @@ function back() { if (window.history.state?.back) router.back(); else go('people
     <template v-else>
       <div class="pw-page-head">
         <div><h2>People</h2><p class="pw-muted">Who’s working on Spearhead, what they’ve contributed, and what the reward rules assign them.</p></div>
-        <button v-if="isLead" class="pw-btn" @click="inviting = !inviting">Invite someone</button>
+        <button v-if="isLead && isSharedProject" class="pw-btn" @click="inviting = !inviting">Invite someone</button>
       </div>
       <form v-if="inviting && isLead" class="pw-card pw-form" @submit.prevent="createInvite">
         <h3>Invite someone</h3>
