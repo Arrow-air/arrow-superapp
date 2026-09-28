@@ -56,7 +56,7 @@ const outcomeLine = computed(() => {
     <p class="pw-eyebrow">{{ origin(data.evidence, record) }} · {{ systemName(data.evidence, record.systems[0]) }} · {{ record.versions.join(' / ') }}</p>
     <h2 class="pw-detail-title" tabindex="-1">{{ record.title }}</h2>
     <p class="pw-lede">{{ record.summary }}</p>
-    <p class="pw-row"><span class="pw-status" :data-status="link?.state === 'answered' ? 'answered' : record.status">{{ link?.state === 'answered' ? 'Answered' : link?.state === 'discussing' ? 'Being discussed' : recordStatus[record.status] }}</span><span v-if="record.owner" class="pw-muted">Reported by {{ record.owner }}</span><FollowRecord v-if="state.me" :target="record.id" /></p>
+    <p class="pw-row"><span class="pw-status" :data-status="link?.state === 'answered' ? 'answered' : record.status">{{ link?.state === 'answered' ? 'Answered' : link?.state === 'discussing' ? 'Being discussed' : recordStatus[record.status] }}</span><span v-if="record.owner" class="pw-muted">Named in the notes: {{ record.owner }}</span><FollowRecord v-if="state.me" :target="record.id" /></p>
 
     <section v-if="link" class="pw-callout" :data-tone="link.state">
       <template v-if="link.state === 'discussing'">

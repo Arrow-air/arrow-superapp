@@ -14,7 +14,7 @@ import {
   memberFor,
   migrateState,
   sourceThread,
-  creditCallProposers,
+  holdCallProposerAwards,
 } from "./state";
 import {
   inputs,
@@ -406,7 +406,7 @@ async function rpc(req: http.IncomingMessage) {
           "select data from arrow_workspace.evidence where workspace_id=$1",
           [workspaceId],
         );
-        creditCallProposers(s, evidence.rows[0].data);
+        holdCallProposerAwards(s, evidence.rows[0].data);
       }
       if (value?.positionId)
         entity = s.positions.find((p) => p.id === value.positionId)?.threadId;

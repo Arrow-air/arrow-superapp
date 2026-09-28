@@ -216,9 +216,14 @@ export interface Grant {
   /** Who wrote the idea. Gets proposerShare of the grant. */
   proposerIds: string[];
   /**
-   * Who raised the idea when that person is not (yet) a member, e.g. "Erick, Sep 25 call".
-   * Their proposer award is held until the lead assigns it to an account.
+   * The call or document record the idea came from, when the discussion started from one. The app
+   * cannot tell from notes alone who raised it, so the proposer award is held until a lead confirms.
    */
+  proposerRecordId?: string;
+  /** When a lead confirmed who gets the proposer award. */
+  proposerConfirmedBy?: string;
+  proposerConfirmedAt?: string;
+  /** Legacy free-text attribution from an earlier build; display only. */
   proposerNote?: string;
   /** Fraction of the grant paid to the proposers. Default 0.25. No tokens move in this prototype. */
   proposerShare: number;

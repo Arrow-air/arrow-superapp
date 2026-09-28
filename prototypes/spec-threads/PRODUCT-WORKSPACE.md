@@ -18,7 +18,9 @@ Thomas asked for the workspace to be ready to walk Alperen and Gavin through bef
 **Keeping the rewards honest:**
 - Nobody can support their own contribution.
 - The text someone opens a discussion with is contribution #1, so it can earn support.
-- Work that grows out of a call question credits whoever raised it on the call (e.g. "Erick, 2026-09-25"), not whoever clicked "Discuss this". That proposer award is held until the person has an account.
+- Work that grows out of a call question says so and links to the notes, e.g. "Idea from the Sep 25 call notes, which name Erick". The notes alone don't prove who raised an idea, so the proposer award is held until a lead checks and confirms who gets it (`assignProposers`).
+- A record's `owner` is shown as "named in the notes", never as "raised by".
+- Work records who drafted it and when, and links to the discussion.
 
 **Freeze plan and retro rewards** (DECISIONS 2026-09-23):
 - The lead sets the PT2 freeze date and a retro pool, optionally pre-split by system (`setVersionPlan`).
@@ -67,7 +69,10 @@ A second instance holds fictional contributors, so the whole flow can be shown b
   - a deferred and a declined idea;
   - a PT1 build question;
   - a 25,000 ARROW PT2 pool with 20% reserved for power, freezing on Oct 18.
-- **Accounts:** the project lead signs in with their own account and is the lead there. The fictional accounts share one password, kept in `.runtime/demo-server.json`.
+- **Accounts:**
+  - All seeded lead actions belong to a fictional lead, Nadia Park.
+  - The real project lead signs in with their own account as a second lead with no seeded history, so nothing is attributed to a real person.
+  - The fictional accounts share one password, kept in `.runtime/demo-server.json`.
 - **Seeding:** everything runs through the same domain rules as the real service (`server/demo-seed.ts`), with a scripted clock.
 
 ```sh

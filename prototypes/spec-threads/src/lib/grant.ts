@@ -90,7 +90,7 @@ export function grantMarkdown(args: {
     `# ${grant.workKind === 'bounty' ? 'Bounty' : 'Grant'}: ${grant.title}`,
     '',
     `**Project:** ${project.name}${version ? ` · ${version.name}` : ''}  `,
-    `**Idea from:** ${grant.proposerNote ?? grant.proposerIds.map(handle).join(', ')}  `,
+    `**Idea from:** ${grant.proposerIds.length ? grant.proposerIds.map(handle).join(', ') : grant.proposerNote ?? 'a call record in the workspace; not yet confirmed'}  `,
     `**Drafted by:** ${handle(grant.byMemberId)} (project lead)  `,
     grant.outcomeSnapshot ? `**Purpose:** ${grant.workPurpose} · ${grant.decisionIds?.length ? 'linked to an adopted design decision' : 'no design adoption implied'}` : `**Community signal at promotion:** weighted rank ${grant.weightedRankAtResolution}, raw rank ${grant.rawRankAtResolution}`,
   ];
@@ -111,7 +111,7 @@ export function grantMarkdown(args: {
     '## Rewards',
     '',
     `- Reward: ${grant.tracking?.amount ? `${grant.tracking.amount.toLocaleString('en-US')} ARROW` : grant.tracking?.budget || '_TBD_'}`,
-    pct ? `- Proposer award: **${pct}%**${grant.tracking?.amount ? ` (${Math.floor(grant.tracking.amount * grant.proposerShare).toLocaleString('en-US')} ARROW)` : ''} to ${grant.proposerNote ? `${grant.proposerNote.split(' · ')[0]} for raising it` : `${grant.proposerIds.map(handle).join(', ')} for the idea`}` : '- Proposer award: _Not allocated_',
+    pct ? `- Proposer award: **${pct}%**${grant.tracking?.amount ? ` (${Math.floor(grant.tracking.amount * grant.proposerShare).toLocaleString('en-US')} ARROW)` : ''}${grant.proposerIds.length ? ` to ${grant.proposerIds.map(handle).join(', ')} for the idea` : ', held until a lead confirms who raised the idea'}` : '- Proposer award: _Not allocated_',
     ...(grant.briefSnapshot || grant.outcomeSnapshot ? [] : ['', '## Deliverables', '', '- [ ] _Fill in from the spec above_']),
   );
   if (grant.tracking?.milestones.length) lines.push('', '## Milestones', '', ...grant.tracking.milestones.map(m=>`- [${m.completed ? 'x' : ' '}] ${m.title} — ${m.acceptance}${m.evidence ? `\n  Evidence: ${m.evidence}` : ''}`));

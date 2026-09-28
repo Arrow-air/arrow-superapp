@@ -249,6 +249,12 @@ export function daysUntil(date: string, now = new Date()) {
   return Math.ceil((Date.parse(date + 'T23:59:59') - now.getTime()) / 86_400_000);
 }
 
+/** Where a work package's idea came from, and whether the proposer award is still waiting for a lead. */
+export function ideaSource(g: Grant, evidence: SourcedProject) {
+  const record = g.proposerRecordId ? evidence.records.find((r) => r.id === g.proposerRecordId) : undefined;
+  return { record, held: g.proposerIds.length === 0, legacy: g.proposerRecordId ? undefined : g.proposerNote };
+}
+
 export const plural = (n: number, one: string, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 
 export const arrow = (n: number) => `${Math.round(n).toLocaleString('en-US')} ARROW`;

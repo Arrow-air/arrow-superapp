@@ -13,7 +13,8 @@ import { useUnsaved } from '../composables/useUnsaved';
 const props = defineProps<{ grant: Grant; scopeDirty?: boolean }>();
 const router = useRouter();
 const controls=ref<HTMLDetailsElement|null>(null);
-const leadName=computed(()=>memberById.value.get(state.roles.find(r=>r.projectId===props.grant.projectId&&r.role==='lead')?.memberId??'')?.displayName.split(' (')[0]??'Project lead');
+// With more than one lead, say "a project lead" rather than naming one of them as the reviewer.
+const leadName=computed(()=>{const leads=state.roles.filter(r=>r.projectId===props.grant.projectId&&r.role==='lead');return leads.length===1?memberById.value.get(leads[0].memberId)?.displayName.split(' (')[0]??'Project lead':'a project lead';});
 const next=computed(()=>nextWorkStep(props.grant,state.members,leadName.value));
 const actionLabel=computed(()=>loaded.value.stage==='in_review'&&lead.value?'Review submission':loaded.value.stage==='draft'?'Prepare work':loaded.value.stage==='completed'?'Update funding record':'Record progress');
 function openControls(){if(controls.value){controls.value.open=true;controls.value.scrollIntoView({behavior:'smooth',block:'start'});controls.value.querySelector('select')?.focus({preventScroll:true});}}

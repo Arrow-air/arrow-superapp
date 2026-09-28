@@ -84,7 +84,7 @@ function back() { if (window.history.state?.back) router.back(); else go('work')
           <div>
             <span class="pw-eyebrow">{{ systemName(data.evidence, systemOf(g)) }} · {{ g.workKind === 'bounty' ? 'Bounty' : 'Grant' }}<template v-if="g.workPurpose === 'research'"> · research</template></span>
             <strong>{{ g.title }}</strong>
-            <span class="pw-muted pw-small">{{ trackingOf(g).ownerId ? nameOf(trackingOf(g).ownerId) : 'Unclaimed' }}<template v-if="trackingOf(g).dueDate"> · due {{ shortDate(trackingOf(g).dueDate) }}</template> · idea from {{ g.proposerNote ? g.proposerNote.split(' · ')[0] : g.proposerIds.map(nameOf).join(', ') }}</span>
+            <span class="pw-muted pw-small">{{ trackingOf(g).ownerId ? nameOf(trackingOf(g).ownerId) : 'Unclaimed' }}<template v-if="trackingOf(g).dueDate"> · due {{ shortDate(trackingOf(g).dueDate) }}</template> · idea from {{ g.proposerIds.length ? g.proposerIds.map(nameOf).join(', ') : g.proposerNote ?? 'a call, unconfirmed' }}</span>
           </div>
           <div class="pw-work-side">
             <span class="pw-stage" :data-stage="trackingOf(g).stage">{{ stageLabel[trackingOf(g).stage] }}</span>

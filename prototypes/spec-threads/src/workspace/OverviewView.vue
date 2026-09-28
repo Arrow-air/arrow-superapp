@@ -36,7 +36,10 @@ const reward = (g: (typeof teamWork.value)[number]) => trackingOf(g).amount;
 const lastFrozen = computed(() => (data.value?.project.versions ?? []).filter((v) => v.state === 'frozen').sort((a, b) => b.order - a.order)[0]);
 const lastFrozenDecisions = computed(() => (data.value && lastFrozen.value ? data.value.decisions.filter((d) => d.versionId === lastFrozen.value!.id && d.status === 'decided').length : 0));
 const claimable = computed(() => (data.value?.grants ?? []).filter((g) => trackingOf(g).stage === 'open' && !trackingOf(g).ownerId));
-const leadName = computed(() => (data.value ? data.value.members.find((m) => data.value!.roles.some((r) => r.memberId === m.id && r.role === 'lead'))?.displayName ?? 'the project lead' : 'the project lead'));
+const leadName = computed(() => {
+  const leads = data.value ? data.value.members.filter((m) => data.value!.roles.some((r) => r.memberId === m.id && r.role === 'lead')) : [];
+  return leads.length === 1 ? leads[0].displayName : 'a project lead';
+});
 </script>
 
 <template>
@@ -107,7 +110,7 @@ const leadName = computed(() => (data.value ? data.value.members.find((m) => dat
         <RouterLink v-for="g in teamWork.slice(0, 4)" :key="g.id" :to="to('work', { grant: g.id })" class="pw-item">
           <span class="pw-eyebrow">{{ trackingOf(g).stage === 'open' && !trackingOf(g).ownerId ? 'Open bounty' : stageLabel[trackingOf(g).stage] }}<template v-if="reward(g)"> · {{ arrow(reward(g)!) }}</template></span>
           <strong>{{ g.title }}</strong>
-          <span class="pw-muted pw-small">{{ trackingOf(g).ownerId ? nameOf(trackingOf(g).ownerId) : 'Unclaimed' }}<template v-if="trackingOf(g).dueDate"> · due {{ shortDate(trackingOf(g).dueDate) }}</template><template v-if="reward(g) && g.proposerShare"> · {{ arrow(proposerAward(reward(g), g.proposerShare)) }} to {{ g.proposerNote ? g.proposerNote.split(' · ')[0] : g.proposerIds.map(nameOf).join(', ') }} for the idea</template></span>
+          <span class="pw-muted pw-small">{{ trackingOf(g).ownerId ? nameOf(trackingOf(g).ownerId) : 'Unclaimed' }}<template v-if="trackingOf(g).dueDate"> · due {{ shortDate(trackingOf(g).dueDate) }}</template><template v-if="reward(g) && g.proposerShare"> · {{ arrow(proposerAward(reward(g), g.proposerShare)) }} proposer award{{ g.proposerIds.length ? ' to ' + g.proposerIds.map(nameOf).join(', ') : ', held for a lead to confirm' }}</template></span>
         </RouterLink>
         <RouterLink v-for="w in reported.slice(0, 4)" :key="w.record.id" :to="to('work', { record: w.record.id })" class="pw-item">
           <span class="pw-eyebrow">{{ recordStatus[w.record.status] }} · reported {{ shortDate(w.record.date) }}</span>

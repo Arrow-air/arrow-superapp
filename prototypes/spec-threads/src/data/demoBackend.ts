@@ -650,6 +650,21 @@ export class DemoBackend implements Backend {
     this.save(); return structuredClone(saved);
   }
 
+  /** Lead only. Confirm who gets a work package's proposer award, e.g. after checking the call notes. */
+  async assignProposers(input: { id: string; proposerIds: string[] }) {
+    const me = this.me(), grant = this.state.grants.find(g => g.id === input.id);
+    if (!grant) throw new Error('No such work package.');
+    this.requireLead(grant.projectId, me);
+    const ids = [...new Set(input.proposerIds)];
+    if (!ids.length || ids.some(id => !this.state.members.some(m => m.id === id))) throw new Error('Choose one or more members.');
+    grant.proposerIds = ids;
+    grant.proposerConfirmedBy = me.id;
+    grant.proposerConfirmedAt = new Date().toISOString();
+    grant.updatedAt = grant.proposerConfirmedAt;
+    this.save();
+    return structuredClone(grant);
+  }
+
   /** Lead only. Set someone's project role and the expertise the lead has confirmed. */
   async setMemberStanding(input: { projectId: string; memberId: string; role?: Role; verifiedExpertise?: string[] }) {
     const me = this.me(), project = this.project(input.projectId);

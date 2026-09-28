@@ -157,7 +157,7 @@ export function sourceThread(
   if (!version) throw new Error("No version is open for discussion.");
   if (!body?.trim())
     throw new Error("Write your opening contribution before starting the discussion.");
-  const sourceText = `**Background from ${evidence.date}${evidence.owner ? `, raised by ${evidence.owner}` : ""}.** ${evidence.summary}\n\n${evidenceProject.sources
+  const sourceText = `**Background from ${evidence.date}.** ${evidence.summary}${evidence.owner ? ` The notes name ${evidence.owner}.` : ""}\n\n${evidenceProject.sources
     .filter((s) => evidence.sourceIds.includes(s.id))
     .map((s) => `- [${s.title}](${s.url})`)
     .join("\n")}`;
@@ -187,21 +187,22 @@ export function sourceThread(
   return thread;
 }
 /**
- * Work from a discussion that started as a call question credits whoever raised it on the call,
- * not whoever clicked "Discuss this". Until that person has an account the award is held.
+ * Work from a discussion that started as a call question: the idea came from the call, not from
+ * whoever clicked "Discuss this", and the notes alone don't prove who raised it. The proposer award
+ * is held, linked to the record, until a lead confirms who gets it.
  */
-export function creditCallProposers(
+export function holdCallProposerAwards(
   data: DemoState,
   evidenceProject = spearhead,
 ) {
   for (const g of data.grants) {
-    if (g.proposerNote !== undefined) continue;
+    if (g.proposerRecordId !== undefined || g.proposerNote !== undefined) continue;
     const t = data.threads.find((x) => x.id === g.threadId);
     const record = t?.sourceRecordId
       ? evidenceProject.records.find((r) => r.id === t.sourceRecordId)
       : undefined;
-    if (!record?.owner) continue;
-    g.proposerNote = `${record.owner} · ${record.date}`;
+    if (!record) continue;
+    g.proposerRecordId = record.id;
     g.proposerIds = [];
   }
 }

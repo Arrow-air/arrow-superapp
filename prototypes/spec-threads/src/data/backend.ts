@@ -78,6 +78,8 @@ export interface Backend {
   concludeThread(input: { threadId: string; expectedRevision: number; expectedCorpus: string; adopt: boolean; decision?: string; work?: import('../lib/types').WorkInput }): Promise<Thread>;
   /** Lead only. Project role and lead-confirmed expertise. Shared and demo backends. */
   setMemberStanding?(input: { projectId: string; memberId: string; role?: import('../lib/types').Role; verifiedExpertise?: string[] }): Promise<Member>;
+  /** Lead only. Confirm who gets a work package's proposer award. */
+  assignProposers?(input: { id: string; proposerIds: string[] }): Promise<Grant>;
   /** Lead only. Freeze target and retro pool for an open version. */
   setVersionPlan?(input: { projectId: string; versionId: string; freezeTarget?: string; retroPool?: { amount: number; systemShares?: Record<string, number> } | null }): Promise<Project>;
   createWork(input: { threadId: string; work: import('../lib/types').WorkInput }): Promise<Grant>;

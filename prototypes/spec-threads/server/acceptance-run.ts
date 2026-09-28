@@ -297,8 +297,16 @@ check(
   ).chosen === "Characterize charging on the bench first" &&
     g.tracking.amount === 4000 &&
     g.proposerShare === 0.25 &&
-    g.proposerIds[0] === member.id,
+    g.proposerRecordId === "charging-bms" &&
+    g.proposerIds.length === 0,
 );
+check(
+  "only a lead confirms who raised a call idea",
+  (await rpc(member, "assignProposers", { id: grantId, proposerIds: [member.id] })).status >= 400 &&
+    (await rpc(lead, "assignProposers", { id: grantId, proposerIds: [member.id] })).status === 200 &&
+    (await snapshot()).grants.find((x: any) => x.id === grantId).proposerIds[0] === member.id,
+);
+g = (await snapshot()).grants.find((x: any) => x.id === grantId);
 check(
   "only the lead plans the freeze and verifies expertise",
   (await rpc(member, "setVersionPlan", { projectId: "spearhead", versionId: "PT2", freezeTarget: "2026-11-15" })).status >= 400 &&

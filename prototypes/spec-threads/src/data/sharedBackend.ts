@@ -207,6 +207,8 @@ export class SharedBackend implements Backend {
   ) => ReturnType<Backend["updateWork"]> = (v) => this.rpc("updateWork", v);
   setMemberStanding = (v: Parameters<NonNullable<Backend["setMemberStanding"]>>[0]) =>
     this.rpc("setMemberStanding", v);
+  assignProposers = (v: Parameters<NonNullable<Backend["assignProposers"]>>[0]) =>
+    this.rpc("assignProposers", v);
   setVersionPlan = (v: Parameters<NonNullable<Backend["setVersionPlan"]>>[0]) =>
     this.rpc("setVersionPlan", v);
   startFollowUp: (

@@ -7,7 +7,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import pg from "pg";
 import { createClient } from "@supabase/supabase-js";
-import { creditCallProposers, digest, domain, initialState, memberFor, sourceThread, workspaceId } from "./state";
+import { holdCallProposerAwards, digest, domain, initialState, memberFor, sourceThread, workspaceId } from "./state";
 import { spearhead } from "../src/data/spearheadReal";
 import { corpusKey } from "../src/lib/brief";
 import { progressOf, trackingOf } from "../src/lib/projectRecords";
@@ -44,6 +44,7 @@ const at = (iso: string) => {
 
 // Fictional people. Names and bios are made up; the banner says so on every page.
 const people = [
+  { key: "nadia", name: "Nadia Park", role: "lead" as Role, verified: [], skills: ["systems engineering", "flight test"], location: "Denver, US", bio: "Fictional example project lead. Every earlier lead action in this example workspace is hers." },
   { key: "mara", name: "Mara Quinn", role: "core" as Role, verified: ["power", "avionics"], skills: ["power electronics", "pcb"], location: "Bristol, UK", bio: "Fictional example contributor. Power electronics engineer who designs small drone boards." },
   { key: "ravi", name: "Ravi Menon", role: "core" as Role, verified: ["propulsion"], skills: ["propulsion", "powertrain"], location: "Pune, IN", bio: "Fictional example contributor. Propulsion and powertrain." },
   { key: "dev", name: "Dev Okafor", role: "member" as Role, verified: ["airframe"], skills: ["composites", "airframe"], location: "Lagos, NG", bio: "Fictional example contributor. Composites builder with his own workshop." },
@@ -76,12 +77,15 @@ for (const p of people) {
 writeFileSync(userFile, JSON.stringify(created, null, 2), { mode: 0o600 });
 
 let state: DemoState = initialState();
-state.members = [memberFor(ids.thomas, LEAD_EMAIL, leadUser.user_metadata?.display_name ?? "Thomas")];
-state.roles = [{ projectId: workspaceId, memberId: ids.thomas, role: "lead" }];
+state.members = [];
+state.roles = [];
 for (const p of people) {
   state.members.push({ ...memberFor(ids[p.key], "", p.name, state.members.map((m) => m.handle)), expertise: p.skills, location: p.location, bio: p.bio });
-  state.roles.push({ projectId: workspaceId, memberId: ids[p.key], role: "member" });
+  state.roles.push({ projectId: workspaceId, memberId: ids[p.key], role: p.key === "nadia" ? "lead" : "member" });
 }
+// The real project lead is a second lead with no seeded history, so everything they see was done by fictional people.
+state.members.push(memberFor(ids.thomas, LEAD_EMAIL, leadUser.user_metadata?.display_name ?? "Thomas", state.members.map((m) => m.handle)));
+state.roles.push({ projectId: workspaceId, memberId: ids.thomas, role: "lead" });
 
 interface Ev { actor: string; action: string; entity?: string; at: string; data: any }
 const events: Ev[] = [];
@@ -106,13 +110,13 @@ async function summarize(who: string, threadId: string, body: string, openQuesti
   await act(who, "saveOutcome", (b) => b.saveOutcome({ threadId, expectedRevision: revision, body, openQuestions }), { threadId });
 }
 async function settle(threadId: string, adopt: boolean, decision?: string, work?: WorkInput) {
-  const d = domain(state, ids.thomas);
+  const d = domain(state, ids.nadia);
   const bundle = (await d.backend.getBundle(threadId))!;
   const input = { threadId, expectedRevision: bundle.draft!.revision, expectedCorpus: corpusKey(bundle), adopt, decision, work };
   const t = await d.backend.concludeThread(input);
   state = d.read();
-  creditCallProposers(state, spearhead);
-  events.push({ actor: ids.thomas, action: "concludeThread", entity: threadId, at: new RealDate(clock).toISOString(), data: input });
+  holdCallProposerAwards(state, spearhead);
+  events.push({ actor: ids.nadia, action: "concludeThread", entity: threadId, at: new RealDate(clock).toISOString(), data: input });
   return t.resolution?.kind === "conclude" ? t.resolution.grantIds[0] : undefined;
 }
 async function move(who: string, grantId: string, stage: WorkProgress["stage"], note: string, extra: Partial<WorkProgress> = {}) {
@@ -133,7 +137,7 @@ const intent = (who: string, threadId: string) => act(who, "setBuilderIntent", (
 
 // Sep 14 — the lead sets roles and confirms expertise.
 at("2026-09-14T14:00:00Z");
-for (const p of people) await act("thomas", "setMemberStanding", (b) => b.setMemberStanding!({ projectId: workspaceId, memberId: ids[p.key], role: p.role, verifiedExpertise: p.verified }), { memberId: ids[p.key], role: p.role });
+for (const p of people.filter((x) => x.key !== "nadia")) await act("nadia", "setMemberStanding", (b) => b.setMemberStanding!({ projectId: workspaceId, memberId: ids[p.key], role: p.role, verifiedExpertise: p.verified }), { memberId: ids[p.key], role: p.role });
 
 // Charging: discussed, adopted, funded, delivered, accepted.
 at("2026-09-14T16:00:00Z");
@@ -141,20 +145,20 @@ const charging = start("ravi", "charging-bms", "Characterize charging on the ben
 at("2026-09-14T20:10:00Z");
 const chargingOps = await post("sofia", charging, "From an operator's side, charging inside the airframe matters more than a fancy BMS. If we never have to pull a pack in the field, that's a win.");
 at("2026-09-15T08:30:00Z");
-await vote("mara", opening(charging)); await vote("thomas", opening(charging)); await vote("dev", chargingOps); await vote("lin", opening(charging));
+await vote("mara", opening(charging)); await vote("nadia", opening(charging)); await vote("dev", chargingOps); await vote("lin", opening(charging));
 await intent("sofia", charging);
 at("2026-09-15T12:00:00Z");
 await summarize("ravi", charging, "Characterize in-place charging on the bench before choosing a BMS.\n\nCharge both packs through the flight harness, log cell temperatures and balance behaviour, and pick the BMS from the results.");
 at("2026-09-15T17:00:00Z");
 const chargingWork = await settle(charging, true, "Characterize in-place charging on the bench before choosing a BMS", { kind: "bounty", purpose: "implementation", amount: 2000, title: "Bench charging procedure for both packs", scope: "Write and run a bench procedure that charges both packs through the flight harness and logs cell temperatures and balancing.", acceptance: "A procedure document and one full logged charge cycle per pack." });
 at("2026-09-15T17:05:00Z");
-await move("thomas", chargingWork!, "open", "Opened for claims.");
+await move("nadia", chargingWork!, "open", "Opened for claims.");
 at("2026-09-16T09:40:00Z");
 claim("sofia", chargingWork!);
 at("2026-09-22T19:00:00Z");
 await move("sofia", chargingWork!, "in_review", "Submitted for review.", { evidence: "Procedure v1 and two charge logs are in the Spearhead power folder. Both packs balanced within 12 mV; peak cell temperature 38 °C." });
 at("2026-09-23T15:30:00Z");
-await move("thomas", chargingWork!, "completed", "Results accepted.", { funding: "proposed" });
+await move("nadia", chargingWork!, "completed", "Results accepted.", { funding: "proposed" });
 
 // Electric first: adopted into the spec without work.
 at("2026-09-16T13:00:00Z");
@@ -162,7 +166,7 @@ const electric = start("ravi", "electric-first", "Fly PT2 electric first and add
 at("2026-09-16T18:20:00Z");
 const electricBoard = await post("mara", electric, "Agree, but size the power board for the starter-generator now so the gasoline step isn't a redesign.");
 at("2026-09-17T10:00:00Z");
-await vote("thomas", opening(electric)); await vote("lin", opening(electric)); await vote("sofia", opening(electric)); await vote("dev", electricBoard); await vote("ravi", electricBoard);
+await vote("nadia", opening(electric)); await vote("lin", opening(electric)); await vote("sofia", opening(electric)); await vote("dev", electricBoard); await vote("ravi", electricBoard);
 at("2026-09-19T15:00:00Z");
 await summarize("ravi", electric, "PT2 flies electric first; the gasoline configuration follows once transition is proven.\n\nThe power board is sized for the starter-generator so the later step is not a redesign.");
 at("2026-09-20T16:00:00Z");
@@ -175,14 +179,14 @@ at("2026-09-15T18:30:00Z");
 const servoShared = await post("dev", servo, "A shared regulator with ideal-diode OR-ing from both batteries keeps the tail board smaller. Per-servo regulators double the heat in a tight tail boom.");
 at("2026-09-16T09:00:00Z");
 await reply("lin", opening(servo), "From the flight-control side: losing one elevator half is flyable in our sim; losing both is not. That argues for Mara's split.");
-await vote("lin", opening(servo)); await vote("ravi", opening(servo)); await vote("sofia", servoShared); await vote("thomas", opening(servo));
+await vote("lin", opening(servo)); await vote("ravi", opening(servo)); await vote("sofia", servoShared); await vote("nadia", opening(servo));
 await intent("mara", servo);
 at("2026-09-17T15:00:00Z");
 await summarize("mara", servo, "Separate fused regulator per tail servo, fed from the tail board.\n\nEach regulator is sized for one servo's stall current with margin. Check heat on the bench before the board layout is frozen.");
 at("2026-09-18T16:00:00Z");
 const servoWork = await settle(servo, true, "Separate fused regulator per tail servo", { kind: "bounty", purpose: "implementation", amount: 3000, title: "Tail servo regulator schematic and bench test", scope: "Schematic for two independent fused regulators on the tail board, plus a bench test at servo stall current.", acceptance: "Schematic reviewed; bench log showing both regulators holding stall current for 10 minutes below 85 °C." });
 at("2026-09-18T16:05:00Z");
-await move("thomas", servoWork!, "open", "Opened for claims.");
+await move("nadia", servoWork!, "open", "Opened for claims.");
 at("2026-09-19T10:00:00Z");
 claim("mara", servoWork!);
 
@@ -191,13 +195,13 @@ at("2026-09-18T11:00:00Z");
 const vtail = await act("sofia", "createThread", (b) => b.createThread({ projectId: workspaceId, system: "airframe", title: "Should PT2 switch to a V-tail?", body: "A V-tail saves a servo and a little drag, and it's simpler to transport.", tags: [] }), {}, (t) => t.id);
 at("2026-09-18T15:40:00Z");
 const vtailNo = await post("dev", vtail.id, "It couples pitch and yaw in the mixer and changes the tail PCB and servo layout we're about to agree.");
-await vote("thomas", vtailNo); await vote("lin", vtailNo);
+await vote("nadia", vtailNo); await vote("lin", vtailNo);
 at("2026-09-19T14:00:00Z");
-await act("thomas", "resolveThread", (b) => b.resolveThread({ threadId: vtail.id, kind: "reject", note: "Out of scope for PT2: the tail PCB and servo layout assume a conventional tail." }), { threadId: vtail.id, kind: "reject" });
+await act("nadia", "resolveThread", (b) => b.resolveThread({ threadId: vtail.id, kind: "reject", note: "Out of scope for PT2: the tail PCB and servo layout assume a conventional tail." }), { threadId: vtail.id, kind: "reject" });
 
 // Freeze plan and retro pool.
 at("2026-09-20T17:00:00Z");
-await act("thomas", "setVersionPlan", (b) => b.setVersionPlan!({ projectId: workspaceId, versionId: "PT2", freezeTarget: "2026-10-18", retroPool: { amount: 25000, systemShares: { power: 0.2 } } }), { versionId: "PT2", freezeTarget: "2026-10-18", retroPool: { amount: 25000 } });
+await act("nadia", "setVersionPlan", (b) => b.setVersionPlan!({ projectId: workspaceId, versionId: "PT2", freezeTarget: "2026-10-18", retroPool: { amount: 25000, systemShares: { power: 0.2 } } }), { versionId: "PT2", freezeTarget: "2026-10-18", retroPool: { amount: 25000 } });
 
 // Wing skins: open, and weighting changes which approach leads.
 at("2026-09-20T15:00:00Z");
@@ -211,7 +215,7 @@ const wingHybrid = await post("ravi", wing, "Oracover now over a carbon D-box le
 await intent("dev", wing);
 at("2026-09-22T16:00:00Z");
 await vote("mara", wingCarbon); await vote("lin", wingCarbon); await vote("ravi", wingCarbon);
-await vote("thomas", wingHybrid); await vote("dev", wingHybrid);
+await vote("nadia", wingHybrid); await vote("dev", wingHybrid);
 at("2026-09-23T10:00:00Z");
 await reply("sofia", wingHybrid, "I could live with this if the D-box goes all the way to the tip.");
 
@@ -220,22 +224,22 @@ at("2026-09-22T14:00:00Z");
 const airfoil = start("lin", "tail-airfoil-conflict", "The tail note says NACA 0015 and the configuration files say 0018. We should confirm which one PT1 actually flies before PT2 inherits it.");
 at("2026-09-22T19:30:00Z");
 const airfoilDev = await post("dev", airfoil, "I'm fairly sure PT1's tail was cut from the 0018 templates and the note is stale, but I'd measure it before trusting me.");
-await vote("thomas", opening(airfoil)); await vote("mara", opening(airfoil)); await vote("sofia", airfoilDev);
+await vote("nadia", opening(airfoil)); await vote("mara", opening(airfoil)); await vote("sofia", airfoilDev);
 at("2026-09-24T12:00:00Z");
 await summarize("lin", airfoil, "Confirm the PT1 tail section from the build templates and a measurement, then correct the note.", "Which section does PT1 actually fly?");
 at("2026-09-25T16:00:00Z");
 const airfoilWork = await settle(airfoil, false, undefined, { kind: "grant", purpose: "research", amount: 1500, title: "Measure the PT1 tail section and correct the airfoil note", scope: "Measure the PT1 horizontal tail at three stations, compare with the 0015 and 0018 templates, and update the information note.", acceptance: "Measurements with photos, the matching section named, and a corrected note." });
 at("2026-09-25T16:05:00Z");
-await move("thomas", airfoilWork!, "open", "Opened for claims.");
+await move("nadia", airfoilWork!, "open", "Opened for claims.");
 
 // Belly payload rail: deferred to PT3.
 at("2026-09-21T09:00:00Z");
 const rail = await act("sofia", "createThread", (b) => b.createThread({ projectId: workspaceId, system: "payload", title: "Should PT2 carry a belly payload rail?", body: "Operators will want to hang a camera or a small sprayer. A standard rail now saves a redesign later.", tags: [] }), {}, (t) => t.id);
 at("2026-09-21T17:00:00Z");
 const railLin = await post("lin", rail.id, "A rail is fine, but we have no payload mass or power budget yet. It's hard to design an interface without a customer.");
-await vote("thomas", railLin); await vote("dev", railLin);
+await vote("nadia", railLin); await vote("dev", railLin);
 at("2026-09-24T15:00:00Z");
-await act("thomas", "resolveThread", (b) => b.resolveThread({ threadId: rail.id, kind: "defer", toVersionId: "next", note: "Needs payload mass and power requirements first; revisit for PT3." }), { threadId: rail.id, kind: "defer" });
+await act("nadia", "resolveThread", (b) => b.resolveThread({ threadId: rail.id, kind: "defer", toVersionId: "next", note: "Needs payload mass and power requirements first; revisit for PT3." }), { threadId: rail.id, kind: "defer" });
 
 // Main-board interfaces: converged, with a summary ready for the lead.
 at("2026-09-23T14:00:00Z");
@@ -244,7 +248,7 @@ at("2026-09-24T10:30:00Z");
 const boardRavi = await post("ravi", board, "Keep the ignition and fuel-pump outputs on the board even for the electric build, just unpopulated. Re-spinning the board for gasoline later costs more than the connector.");
 at("2026-09-24T13:00:00Z");
 await reply("lin", opening(board), "Two CAN buses please: one for the ESCs, one for servos and sensors.");
-await vote("thomas", opening(board)); await vote("lin", opening(board)); await vote("ravi", opening(board)); await vote("mara", boardRavi); await vote("dev", boardRavi);
+await vote("nadia", opening(board)); await vote("lin", opening(board)); await vote("ravi", opening(board)); await vote("mara", boardRavi); await vote("dev", boardRavi);
 at("2026-09-26T11:00:00Z");
 await summarize("mara", board, "Main board: six PWM servo outputs, per-motor temperature inputs, two CAN buses (ESCs; servos and sensors), and gasoline ignition and fuel-pump outputs footprinted but unpopulated on the electric build.");
 
@@ -253,7 +257,7 @@ at("2026-09-24T18:00:00Z");
 const imbalance = start("lin", "motor-imbalance", "Log heading and wind for every hover. If the imbalance tracks the wind direction, it's tail loading, not motor variation.");
 at("2026-09-25T09:00:00Z");
 const imbalanceDev = await post("dev", imbalance, "We already stiffened the arms. I'd also swap two motors front-to-back and see whether the imbalance follows the motor.");
-await vote("thomas", imbalanceDev); await vote("mara", opening(imbalance));
+await vote("nadia", imbalanceDev); await vote("mara", opening(imbalance));
 
 // Mara submits the servo work; it now waits for the lead.
 at("2026-09-26T20:00:00Z");

@@ -222,6 +222,7 @@ export const inputs: Record<string, z.ZodType> = {
     .strict(),
   reopenThread: z.object({ threadId: id, reason: text }).strict(),
   claimWork: z.object({ id, note: text }).strict(),
+  assignProposers: z.object({ id, proposerIds: ids.min(1) }).strict(),
 };
 export const rpcInput = z
   .object({
