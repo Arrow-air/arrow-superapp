@@ -36,5 +36,14 @@ The obvious merge: Gavin's shell and onboarding on the outside, our real-data pr
 - Paying tokens for follow-on-X and intro-message quests attracts farmers. Keep rewards for steps that cost effort (welcome call, first accepted PR); make the rest just a checklist.
 - A tab for everything is the superapp scope warning again. Gavin named it. Placeholders should stay placeholders until something real feeds them.
 
+## Update 2026-09-28: the second mockup, a frame around the workspace (Gavin, Discord)
+Gavin trashed the weekend Figma and started again. The new mockup is a **frame**, not an app: top bar (Arrow mark, project switcher, "Current Version PT 1.5", Contributor Dashboard, ARROW balance, avatar); breadcrumb `Spearhead › Design › Structural Design`; top tabs Overview, Design, Building, Manufacturing, Testing, Discussion, Store; a left sidebar with CAD Modelling (Structural, PCB, Propulsion, Conceptual, Power, Electrical) and Discussion (GTM Strategy, Potential Applications, Workshop Builds, Pricing); and a centre panel labelled "all content goes here."
+
+What the wrapper would handle, in his words: user profile; individualized (via agents) contributor dashboards; web3, voting, token amounts; app-wide nav (which aircraft or attachment, which version); the logical chunks all processes share (the top tabs); a side menu per collaborative feature; a style guide agents can build to. The point is one familiar shell for aircraft, attachment, DAO, and testing contributions alike: "the biggest killer of contribution would be different pathways to making that contribution."
+
+He liked the model viewer, the freeze date with the retro pool ("a sense of urgency"), the quantified open-question counts, and "Suggested from calls." His worry: tight groups look opaque to outsiders, and the app has to coexist with Discord by being "undeniably the best tool for the job," the way his own morning dashboard is. Thomas: "a nice merging moment"; one shared dashboard for everybody, with agents (Atlas for Alperen) serving custom versions on top; the app should never be considered complete.
+
+The seam between his frame and the workspace, and what the frame does not hold yet, is written up in `shell-contract.md`.
+
 ## Open questions
-Q27, Q28. Related: Q15, Q20, Q24.
+Q27, Q28, Q41. Related: Q15, Q20, Q24.

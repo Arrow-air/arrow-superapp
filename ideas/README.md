@@ -31,3 +31,4 @@ One file per idea, using the template in the root README. Status is the first li
 | `next-version-contributions.md` | adopted | Gavin, Alperen, Thomas |
 | `agent-per-person.md` | seed | Thomas |
 | `github-and-the-spec.md` | exploring | Thomas, Hex |
+| `shell-contract.md` | exploring | Gavin, Thomas, Hex |
