@@ -25,7 +25,10 @@ const views: Record<string, (t: Thread) => boolean> = {
   'ctx-testing': (t) => t.context === 'testing',
   'ctx-store': (t) => t.context === 'store',
 };
-const viewFilter = computed(() => views[String(route.params.item)] ?? views.all);
+// On an ordinary page, show only the threads that live on it; in the
+// Discussion tab, the sidebar item picks the view.
+const props = defineProps<{ page?: string }>();
+const viewFilter = computed(() => (props.page ? (t: Thread) => t.page === props.page : views[String(route.params.item)] ?? views.all));
 
 type Scope = 'open' | 'settled' | 'all';
 const scope = ref<Scope>(route.params.item === 'decisions' ? 'all' : 'open');
