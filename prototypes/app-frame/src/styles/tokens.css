@@ -90,20 +90,24 @@
   --tabs-fg-hover: var(--slate-11);
   --tabs-fg-active: var(--jade-11);
 
-  /* Account group (top right): the tab track's shape, flat. */
-  --account-track: var(--slate-a2);
-  --account-border: var(--slate-a3);
-  --account-active: var(--slate-a4);
+  /* Toolbar (after coss ui Toolbar): a flat card of ghost buttons in groups,
+     with outlined selects. Used for the account group top right. */
+  --toolbar-bg: var(--slate-2);
+  --toolbar-border: var(--slate-a4);
+  --toolbar-sep: var(--slate-a4);
+  --toolbar-active: var(--slate-a4);
+  --select-bg: var(--slate-a2);
+  --select-border: var(--slate-a5);
 
   --shadow: 0 12px 32px rgb(0 0 0 / 0.5);
 
   /* Type */
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --text-xs: 0.75rem;
-  --text-sm: 0.8125rem;
-  --text-base: 0.875rem;
-  --text-md: 0.9375rem;
+  --text-2xs: 0.625rem;  /* 10px, units */
+  --text-xs: 0.6875rem;  /* 11px, caps labels */
+  --text-sm: 0.75rem;    /* 12px, mono figures, hints */
+  --text-base: 0.8125rem;/* 13px, everything else */
   --tracking-caps: 0.12em;
 
   /* Space */
@@ -123,7 +127,7 @@
   /* Frame geometry */
   --bar-height: 56px;
   --control-height: 36px;
-  --sidebar-width: 300px;
+  --sidebar-width: 272px;
   --frame-inset: 8px;     /* gap between the window edge and the workspace card */
   --gutter: 24px;
 }

@@ -31,7 +31,7 @@ watch(() => route.fullPath, () => (open.value = false));
           class="item"
           :class="{ active: i.id === item?.id }"
         >
-          <Icon :name="i.icon" :size="18" />
+          <Icon :name="i.icon" :size="16" />
           <span>{{ i.label }}</span>
         </RouterLink>
       </section>
@@ -70,10 +70,10 @@ watch(() => route.fullPath, () => (open.value = false));
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 6px var(--space-2) 6px var(--space-3);
+  padding: 5px var(--space-2) 5px var(--space-3);
   border-radius: var(--radius-sm);
   color: var(--fg-muted);
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   text-decoration: none;
 }
 .item:hover { color: var(--fg-2); background: var(--surface-hover); }
