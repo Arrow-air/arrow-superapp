@@ -63,7 +63,7 @@
   /* Accents */
   --brand: var(--indigo-9);        /* logo tile */
   --brand-fg: var(--slate-12);
-  --accent: var(--jade-9);         /* active tab fill */
+  --accent: var(--jade-9);
   --accent-fg: var(--slate-1);
   --accent-text: var(--jade-11);   /* active nav item, current section crumb */
   --link: var(--indigo-11);        /* project crumb */
@@ -71,6 +71,16 @@
   --danger: var(--red-11);
   --danger-bg: var(--red-a2);
   --danger-border: var(--red-a7);
+  --focus-ring: var(--jade-a8);
+
+  /* Segmented tabs (coss ui lg). The active tab keeps the section green,
+     as a translucent pill rather than a solid fill. */
+  --tabs-track: var(--slate-a2);
+  --tabs-indicator: var(--jade-a4);
+  --tabs-fg: var(--slate-9);
+  --tabs-fg-hover: var(--slate-11);
+  --tabs-fg-active: var(--jade-11);
+
   --shadow: 0 12px 32px rgb(0 0 0 / 0.5);
 
   /* Type */

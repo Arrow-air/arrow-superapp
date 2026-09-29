@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Icon from './Icon.vue';
+import SegmentedTabs from './SegmentedTabs.vue';
 import { tabs } from './nav';
 import { useWorkspace } from './useWorkspace';
 
@@ -20,17 +21,11 @@ const { project, tab, item, base } = useWorkspace();
       </template>
     </nav>
 
-    <nav class="tabs" aria-label="Workspace">
-      <RouterLink
-        v-for="t in tabs"
-        :key="t.id"
-        :to="`${base}/${t.id}`"
-        class="tab"
-        :class="{ active: t.id === tab?.id }"
-      >
-        {{ t.label }}
-      </RouterLink>
-    </nav>
+    <SegmentedTabs
+      label="Workspace"
+      :items="tabs.map((t) => ({ id: t.id, label: t.label, to: `${base}/${t.id}` }))"
+      :active="tab?.id"
+    />
   </div>
 </template>
 
@@ -41,7 +36,7 @@ const { project, tab, item, base } = useWorkspace();
   justify-content: space-between;
   gap: var(--space-4);
   min-height: 64px;
-  padding: var(--space-2) var(--space-2) var(--space-2) var(--gutter);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--gutter);
   background: var(--surface-header);
   border-bottom: 1px solid var(--border);
 }
@@ -58,30 +53,6 @@ const { project, tab, item, base } = useWorkspace();
 .current { color: var(--fg-2); overflow: hidden; text-overflow: ellipsis; }
 .sep { color: var(--fg-faint); flex: none; }
 
-.tabs {
-  display: flex;
-  gap: 2px;
-  padding: var(--space-1);
-  background: var(--surface-sunken);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.tab {
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-sm);
-  color: var(--fg-muted);
-  font-size: var(--text-md);
-  text-decoration: none;
-  white-space: nowrap;
-}
-.tab:hover { color: var(--fg-2); background: var(--surface-hover); }
-.tab.active {
-  background: var(--accent);
-  color: var(--accent-fg);
-  font-weight: 500;
-}
 
 @media (max-width: 1023px) {
   .header { flex-direction: column; align-items: stretch; padding: var(--space-3) var(--gutter); }

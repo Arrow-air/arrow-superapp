@@ -13,16 +13,17 @@ export const router = createRouter({
     {
       path: '/:project/:tab/:item?',
       component: () => import('./pages/Placeholder.vue'),
-      beforeEnter: (to) => {
-        const tab = findTab(to.params.tab);
-        if (!findProject(to.params.project) || !tab) return true; // falls through to NotFound in the slot
-        if (!findItem(tab, to.params.item)) {
-          return `/${to.params.project}/${tab.id}/${firstItem(tab).id}`;
-        }
-      },
     },
     { path: '/:project', redirect: (to) => `/${to.params.project}/${tabs[0].id}` },
     { path: '/:rest(.*)*', component: () => import('./pages/NotFound.vue') },
   ],
   scrollBehavior: () => ({ top: 0 }),
+});
+
+// A tab with no page picked opens its first page. This is a global guard
+// because beforeEnter doesn't run when only the params change (tab to tab).
+router.beforeEach((to) => {
+  const tab = findTab(to.params.tab);
+  if (!findProject(to.params.project) || !tab) return true; // NotFound handles it
+  if (!findItem(tab, to.params.item)) return `/${to.params.project}/${tab.id}/${firstItem(tab).id}`;
 });
