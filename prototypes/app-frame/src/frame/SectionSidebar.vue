@@ -70,6 +70,7 @@ watch(() => route.fullPath, () => (open.value = false));
   gap: var(--space-2);
   margin: 0 0 var(--space-2);
   padding-inline: var(--space-2);
+  font-size: var(--text-sm);
   font-weight: 400;
   color: var(--fg-muted);
 }
@@ -88,7 +89,7 @@ watch(() => route.fullPath, () => (open.value = false));
   padding: 5px var(--space-2) 5px var(--space-3);
   border-radius: var(--radius-sm);
   color: var(--fg-muted);
-  font-size: var(--text-base);
+  font-size: var(--text-nav);
   text-decoration: none;
 }
 .item:hover { color: var(--fg-2); background: var(--surface-hover); }

@@ -150,6 +150,7 @@
   --text-sm: 0.6875rem;  /* 11px, mono figures, hints */
   --text-base: 0.75rem;  /* 12px, everything else */
   --text-md: 0.875rem;   /* 14px, drawer titles */
+  --text-nav: 0.8125rem; /* 13px, sidebar items */
   --text-xl: 1.625rem;   /* 26px, headline figures */
   --tracking-caps: 0.12em;
 
