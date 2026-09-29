@@ -43,7 +43,7 @@ watch(
             <SlotState v-if="pageError" kind="error" :detail="pageError.message" />
             <RouterView v-else v-slot="{ Component }">
               <Suspense>
-                <component :is="Component" :key="route.fullPath" />
+                <component :is="Component" :key="route.path" />
                 <template #fallback><SlotState kind="loading" /></template>
               </Suspense>
             </RouterView>

@@ -12,7 +12,7 @@ export const router = createRouter({
     { path: '/broken', component: () => import('./pages/Broken.vue') },
     {
       path: '/:project/:tab/:item?',
-      component: () => import('./pages/Placeholder.vue'),
+      component: () => import('./pages/ModuleHost.vue'),
     },
     { path: '/:project', redirect: (to) => `/${to.params.project}/${tabs[0].id}` },
     { path: '/:rest(.*)*', component: () => import('./pages/NotFound.vue') },
