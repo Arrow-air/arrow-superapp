@@ -4,6 +4,7 @@ import Icon from '../../frame/Icon.vue';
 import Avatar from './Avatar.vue';
 import StatusIcon from './StatusIcon.vue';
 import type { Thread } from './data';
+import type { Role } from './weights';
 import {
   CONVERGE_SHARE, changedWinner, leaderOf, myVote, person, reopen, reply, settle, state, statusOf, talliesOf, vote, weightOf,
 } from './store';
@@ -41,6 +42,7 @@ function send() {
   reply(t.value, draft.value.trim());
   draft.value = '';
 }
+const roles: Role[] = ['member', 'core', 'lead'];
 const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 </script>
 
@@ -169,7 +171,13 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
           Settle on {{ leader.top ? letter(leader.top.positionId) : '—' }}
         </button>
       </div>
-      <p v-else class="muted small">Only the project lead can settle. Switch “View as” to Lead to try it.</p>
+      <p v-else class="muted small">Only the project lead can settle.</p>
+      <div class="viewas">
+        <span class="muted">Prototype: view as</span>
+        <div class="seg" role="radiogroup" aria-label="View as">
+          <button v-for="r in roles" :key="r" type="button" role="radio" :aria-checked="state.role === r" @click="state.role = r">{{ r[0].toUpperCase() + r.slice(1) }}</button>
+        </div>
+      </div>
     </section>
 
     <!-- Replies -->
@@ -317,6 +325,11 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .reply-head strong { color: var(--fg); font-weight: 500; }
 .reply p { margin: 3px 0 0; color: var(--fg-2); line-height: 1.55; }
 .composer { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+
+.viewas { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--slate-a3); font-size: var(--text-sm); }
+.viewas .seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--slate-a2); }
+.viewas .seg button { height: 20px; padding: 0 7px; border: 0; border-radius: 6px; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; }
+.viewas .seg button[aria-checked='true'] { background: var(--slate-a4); color: var(--fg); }
 
 @media (max-width: 899px) {
   .detail { padding: 16px; }
