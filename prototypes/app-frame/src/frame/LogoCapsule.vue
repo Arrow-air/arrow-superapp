@@ -2,15 +2,14 @@
 import logomark from '../assets/arrow-logomark-white.svg';
 import { MOD } from './shortcuts';
 
-// The logo in a bordered capsule with an arrow that slides the Arrow drawer
-// in and out. The drawer draws the same capsule at the same spot, so it
-// reads as one control that stays put while the drawer moves under it.
-defineProps<{ open: boolean; onBrand?: boolean }>();
+// The logo in a bordered capsule with an arrow that pushes the Arrow panel
+// in and out. The capsule rides at the panel's edge like a handle.
+defineProps<{ open: boolean }>();
 defineEmits<{ toggle: [] }>();
 </script>
 
 <template>
-  <div class="capsule" :class="{ 'on-brand': onBrand }">
+  <div class="capsule">
     <RouterLink to="/" class="logo" aria-label="Arrow home">
       <img :src="logomark" alt="" width="18" height="20" />
     </RouterLink>
@@ -79,10 +78,4 @@ defineEmits<{ toggle: [] }>();
 .arrow svg.flip { transform: rotate(180deg); }
 .logo:focus-visible, .arrow:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
 
-/* The same capsule drawn on the brand-blue drawer. */
-.on-brand { border-color: var(--on-brand-line); background: var(--on-brand-fill); }
-.on-brand .logo { background: rgb(255 255 255 / 0.14); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2); }
-.on-brand .arrow { color: var(--on-brand-2); }
-.on-brand .arrow:hover { background: var(--on-brand-hover); color: var(--on-brand); }
-.on-brand .logo:focus-visible, .on-brand .arrow:focus-visible { box-shadow: 0 0 0 2px var(--on-brand); }
 </style>

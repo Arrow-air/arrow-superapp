@@ -173,6 +173,7 @@
   --control-height: 36px;
   --sidebar-width: 272px;
   --sidebar-rail: 52px;   /* collapsed icon rail */
+  --arrow-panel-width: 320px;
   --frame-inset: 8px;     /* gap between the window edge and the workspace card */
   --gutter: 24px;
 }

@@ -6,6 +6,7 @@ import SectionSidebar from './frame/SectionSidebar.vue';
 import PageHeader from './frame/PageHeader.vue';
 import SlotState from './frame/SlotState.vue';
 import AppFooter from './frame/AppFooter.vue';
+import GlobalDrawer from './frame/GlobalDrawer.vue';
 import { useWorkspace } from './frame/useWorkspace';
 
 const { route, project, tab, item } = useWorkspace();
@@ -27,6 +28,8 @@ watch(
 </script>
 
 <template>
+  <div class="shell">
+  <GlobalDrawer />
   <div class="frame">
     <AppBar />
 
@@ -50,10 +53,16 @@ watch(
     </div>
     <AppFooter />
   </div>
+  </div>
 </template>
 
 <style scoped>
+/* Shell: the Arrow panel and the app side by side, so opening the panel
+   pushes the whole app right. */
+.shell { display: flex; height: 100dvh; overflow: hidden; }
 .frame {
+  flex: 1;
+  min-width: 0;
   height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -92,6 +101,7 @@ watch(
 }
 
 @media (max-width: 767px) {
+  .shell { height: auto; overflow: visible; }
   .frame { height: auto; min-height: 100dvh; }
   .card { border-radius: 0; border-inline: 0; border-bottom: 0; }
   .body { flex-direction: column; }

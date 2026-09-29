@@ -5,7 +5,7 @@ import { nextTick, onBeforeUnmount, ref, watch } from 'vue';
 // a full-height panel, 3/4 of the screen up to 384px. Closes on Escape or an
 // overlay click, traps Tab inside, and hands focus back to the opener.
 const open = defineModel<boolean>('open', { required: true });
-withDefaults(defineProps<{ title: string; description?: string; side?: 'left' | 'right'; tone?: 'default' | 'brand' }>(), { side: 'right', tone: 'default' });
+withDefaults(defineProps<{ title: string; description?: string; side?: 'left' | 'right' }>(), { side: 'right' });
 
 const panel = ref<HTMLElement>();
 let opener: HTMLElement | null = null;
@@ -50,14 +50,13 @@ onBeforeUnmount(() => {
         <section
           ref="panel"
           class="panel"
-          :class="[side, tone]"
+          :class="side"
           role="dialog"
           aria-modal="true"
           :aria-label="title"
           tabindex="-1"
         >
-          <slot v-if="$slots.head" name="head" :close="() => (open = false)" />
-          <header v-else class="head">
+          <header class="head">
             <div class="head-text">
               <h2 class="title">{{ title }}</h2>
               <p v-if="description" class="desc">{{ description }}</p>
@@ -89,13 +88,6 @@ onBeforeUnmount(() => {
   box-shadow: -24px 0 48px rgb(0 0 0 / 0.35);
   outline: none;
 }
-/* Brand tone: solid Indigo with white text (the Arrow drawer). */
-.panel.brand {
-  background: var(--brand-panel);
-  border-color: var(--on-brand-line);
-  color: var(--on-brand);
-}
-.panel.brand .foot { border-top-color: var(--on-brand-line); }
 .panel.left {
   inset: 0 auto 0 0;
   border-left: 0;

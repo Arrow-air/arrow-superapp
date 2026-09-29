@@ -9,3 +9,7 @@ const read = () => {
 export const sidebarCollapsed = ref(read());
 watch(sidebarCollapsed, (v) => { try { localStorage.setItem(KEY, v ? '1' : '0'); } catch { /* storage unavailable */ } });
 export const toggleSidebar = () => (sidebarCollapsed.value = !sidebarCollapsed.value);
+
+// Whether the Arrow panel (behind the logo capsule) is open. Session-only.
+export const arrowPanelOpen = ref(false);
+export const toggleArrowPanel = () => (arrowPanelOpen.value = !arrowPanelOpen.value);

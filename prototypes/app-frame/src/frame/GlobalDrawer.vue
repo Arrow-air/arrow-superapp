@@ -1,35 +1,35 @@
 <script setup lang="ts">
+import { onBeforeUnmount, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import Drawer from './Drawer.vue';
-import LogoCapsule from './LogoCapsule.vue';
+import { arrowPanelOpen as open } from './layout';
 import { footerLinks, linkGroups } from './links';
 import { defaultVersion, projects } from './nav';
 import { useWorkspace } from './useWorkspace';
 
-// The "secret passage" behind the logo: everything Arrow-wide. Mirrors the
-// wallet drawer (right = you, left = Arrow).
-const open = defineModel<boolean>('open', { required: true });
+// The Arrow panel behind the logo capsule: everything Arrow-wide. It sits in
+// the page layout and pushes the app right rather than covering it; on
+// phones there's no room to push, so it overlays instead.
 const router = useRouter();
 const { project } = useWorkspace();
 
 function goTo(id: string) {
-  open.value = false;
   router.push(`/${id}/overview`);
 }
+
+const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && open.value) open.value = false; };
+onMounted(() => window.addEventListener('keydown', onKey));
+onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 </script>
 
 <template>
-  <Drawer v-model:open="open" side="left" tone="brand" title="Arrow">
-    <template #head="{ close }">
+  <aside class="arrow-panel" :class="{ open }" aria-label="Arrow" :inert="!open || undefined">
+    <div class="panel-inner">
       <header class="brand-head">
-        <LogoCapsule :open="true" on-brand @toggle="close" />
-        <div class="brand-title">
-          <span class="brand-name">Arrow</span>
-          <span class="brand-sub">Everything across the DAO</span>
-        </div>
+        <span class="brand-name">Arrow</span>
+        <span class="brand-sub">Everything across the DAO</span>
       </header>
-    </template>
 
+      <div class="panel-body">
     <section class="block">
       <h3 class="label caps">Hardware</h3>
       <div class="craft">
@@ -64,27 +64,61 @@ function goTo(id: string) {
       </ul>
     </section>
 
-    <template #footer>
-      <nav class="foot-links" aria-label="Arrow links">
-        <a v-for="l in footerLinks" :key="l.href" :href="l.href" target="_blank" rel="noopener">{{ l.label }}</a>
-      </nav>
-    </template>
-  </Drawer>
+      </div>
+
+      <footer class="panel-foot">
+        <nav class="foot-links" aria-label="Arrow links">
+          <a v-for="l in footerLinks" :key="l.href" :href="l.href" target="_blank" rel="noopener">{{ l.label }}</a>
+        </nav>
+      </footer>
+    </div>
+  </aside>
+  <div class="scrim" :class="{ open }" aria-hidden="true" @click="open = false"></div>
 </template>
 
 <style scoped>
-/* Head sits exactly where the app bar's capsule is, so the capsule stays put. */
+/* The panel animates its width, so the app beside it reflows (a push).
+   The inner column keeps a fixed width so content doesn't squash mid-slide. */
+.arrow-panel {
+  flex: none;
+  width: 0;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--brand-panel);
+  color: var(--on-brand);
+  transition: width 400ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.arrow-panel.open { width: var(--arrow-panel-width); }
+.panel-inner {
+  width: var(--arrow-panel-width);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 .brand-head {
   display: flex;
-  align-items: center;
-  gap: var(--space-3);
+  flex-direction: column;
+  justify-content: center;
   height: var(--bar-height);
-  padding: 0 var(--frame-inset);
-  margin-bottom: var(--space-2);
+  flex: none;
+  padding: 0 var(--space-4);
+  line-height: 1.25;
 }
-.brand-title { display: flex; flex-direction: column; line-height: 1.25; }
 .brand-name { font-size: var(--text-md); font-weight: 600; color: var(--on-brand); }
 .brand-sub { font-size: var(--text-sm); color: var(--on-brand-3); }
+.panel-body { flex: 1; min-height: 0; overflow-y: auto; padding: var(--space-2) var(--space-4) var(--space-4); scrollbar-width: none; }
+.panel-foot { flex: none; padding: var(--space-3) var(--space-4); border-top: 1px solid var(--on-brand-line); }
+.scrim { display: none; }
+
+@media (prefers-reduced-motion: reduce) { .arrow-panel { transition-duration: 1ms; } }
+
+/* Phones: no room to push, so the panel overlays with a scrim. */
+@media (max-width: 767px) {
+  .arrow-panel { position: fixed; inset: 0 auto 0 0; z-index: 50; box-shadow: 24px 0 48px rgb(0 0 0 / 0.35); }
+  .arrow-panel.open { width: min(var(--arrow-panel-width), 85vw); }
+  .scrim { position: fixed; inset: 0; z-index: 49; background: var(--overlay); opacity: 0; pointer-events: none; transition: opacity 300ms; }
+  .scrim.open { display: block; opacity: 1; pointer-events: auto; }
+}
 
 .caps { font-size: var(--text-xs); letter-spacing: var(--tracking-caps); text-transform: uppercase; }
 .label { margin: 0 0 var(--space-2); font-weight: 500; color: var(--on-brand-3); }

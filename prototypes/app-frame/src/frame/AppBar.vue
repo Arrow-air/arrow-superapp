@@ -2,23 +2,22 @@
 import { ref } from 'vue';
 import AccountBar from './AccountBar.vue';
 import CommandPalette from './CommandPalette.vue';
-import GlobalDrawer from './GlobalDrawer.vue';
 import Kbd from './Kbd.vue';
 import LogoCapsule from './LogoCapsule.vue';
 import { MOD, useShortcut } from './shortcuts';
+import { arrowPanelOpen, toggleArrowPanel } from './layout';
 
 // App-wide bar: identical whichever aircraft you're on.
 // The logo capsule's arrow (or ⌘\) slides the Arrow drawer in; ⌘K opens search.
-const drawerOpen = ref(false);
 const paletteOpen = ref(false);
 
 useShortcut('k', () => (paletteOpen.value = !paletteOpen.value));
-useShortcut('\\', () => (drawerOpen.value = !drawerOpen.value));
+useShortcut('\\', toggleArrowPanel);
 </script>
 
 <template>
   <header class="bar">
-    <LogoCapsule :open="drawerOpen" @toggle="drawerOpen = !drawerOpen" />
+    <LogoCapsule :open="arrowPanelOpen" @toggle="toggleArrowPanel" />
 
     <button class="search-bar" type="button" aria-haspopup="dialog" @click="paletteOpen = true">
       <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
@@ -30,7 +29,6 @@ useShortcut('\\', () => (drawerOpen.value = !drawerOpen.value));
 
     <AccountBar />
 
-    <GlobalDrawer v-model:open="drawerOpen" />
     <CommandPalette v-model:open="paletteOpen" />
   </header>
 </template>
