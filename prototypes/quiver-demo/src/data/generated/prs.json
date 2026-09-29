@@ -1,0 +1,125 @@
+{
+ "generatedAt": "2026-09-29T22:39:28.047Z",
+ "prs": [
+  {
+   "number": 270,
+   "title": "T-05 m1 milestones",
+   "author": "mahmudsudo",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/270",
+   "createdAt": "2026-09-23T13:21:44Z",
+   "updatedAt": "2026-09-29T20:59:48Z",
+   "excerpt": "closes #252 M1 milestones"
+  },
+  {
+   "number": 267,
+   "title": "CAD/BOM: Here4 and Holybro NEO-F9P primary GPS options; retire Wren",
+   "author": "thomasgarrison",
+   "draft": true,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/267",
+   "createdAt": "2026-09-19T04:09:43Z",
+   "updatedAt": "2026-09-19T04:24:54Z",
+   "excerpt": "## Summary Draft for Thomas's review; no wider review requested. **Stacked on [mechanical draft #266](https://github.com/Arrow-air/project-quiver/pull/266)** so this diff contains only GPS changes. Review #266 first; after it lands, retarget this PR to `main`. - Support **CubePil"
+  },
+  {
+   "number": 266,
+   "title": "CAD: sync verified mechanical changes from Fusion v148",
+   "author": "thomasgarrison",
+   "draft": true,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/266",
+   "createdAt": "2026-09-19T04:05:45Z",
+   "updatedAt": "2026-09-19T04:24:51Z",
+   "excerpt": "## Summary Draft for Thomas's review before requesting wider review. **Do not treat this as a manufacturing release.** Sync the verified mechanical differences between `Quiver_PT3_Drone_Assembly` v148 (2026-07-30) and repository main `ef316bc`: - Update 2311 main-PCB adapter, 231"
+  },
+  {
+   "number": 247,
+   "title": "QGB-02: Obstacle Avoidance System — Test, Tune & Document",
+   "author": "karanp0202",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/247",
+   "createdAt": "2026-08-31T09:02:15Z",
+   "updatedAt": "2026-09-02T23:32:44Z",
+   "excerpt": "Iteration 14 — confirmed branch at `e6531c7` with concrete diff vs `main` (22 files, +991/−16); `make test` exit 0 with ` present. Committed `e6531c7`: added `oa-branch-check` to `.make/oa-analysis.mk` so verify fails when branch has no diff vs `main` (addresses QA “claimed progr"
+  },
+  {
+   "number": 246,
+   "title": "docs: fix stale SF45B-proxy guidance, use native sim:rplidars2",
+   "author": "mahmudsudo",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/246",
+   "createdAt": "2026-08-30T16:22:25Z",
+   "updatedAt": "2026-09-10T13:19:46Z",
+   "excerpt": "## Fix stale SF45B-proxy guidance in SITL setup docs Closes part of #203 (QGB-02). The existing `SITL_SETUP_GUIDE.md` describes using an SF45 LiDAR as a 50°-FOV proxy for the S2L, on the premise that no native SITL sensor model exists for it. That's no longer accurate: - **PR #31"
+  },
+  {
+   "number": 245,
+   "title": "Add payload-side clip plate STEP; point attachments to payload-systems",
+   "author": "thomasgarrison",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/245",
+   "createdAt": "2026-08-06T21:46:18Z",
+   "updatedAt": "2026-08-06T21:49:48Z",
+   "excerpt": "Companion to [payload-systems#2](https://github.com/Arrow-air/payload-systems/pull/2). - **`2112_attach_plate_payload_side.step`** — the payload-side clip half of the BOM 2112 COTS quick-release set (\"Replaceable Base\", 50×50 mm, exported from the Fusion master model). The existi"
+  },
+  {
+   "number": 244,
+   "title": "docs: remove dead Pixhawk log links from PT1 flight test reports",
+   "author": "thomasgarrison",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/244",
+   "createdAt": "2026-08-06T21:38:36Z",
+   "updatedAt": "2026-09-25T01:03:24Z",
+   "excerpt": "## Summary The **Markdown Broken Link Checker** job has failed on every PR since the flight-test archive landed on main: `flight-test/PT1/001–003.md` link Pixhawk DataFlash logs (`./assets/NNN/logs/00000075.BIN` etc.) that were never committed to main, so the links 404 for reader"
+  },
+  {
+   "number": 235,
+   "title": "docs: fix HAR-0014 bottom payload signal label (FMU_CH1, not FMU_CH7)",
+   "author": "vector-arrow",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/235",
+   "createdAt": "2026-07-10T16:23:21Z",
+   "updatedAt": "2026-07-10T16:26:54Z",
+   "excerpt": "## Summary - HAR-0014 (bottom payload harness, Main PCB J31/J39 → bottom attachment interface) labeled Phoenix 1704859 pin 5 as **FMU_CH7** — that's the side-payload signal (HAR-0012/0013 → J29/J30). J31 pin 5 is **FMU_CH1**. - Label-only fix; pin-to-pin wire routing in the table"
+  },
+  {
+   "number": 232,
+   "title": "V1 of Quiver initial configuration document",
+   "author": "errrks",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/232",
+   "createdAt": "2026-07-09T01:26:00Z",
+   "updatedAt": "2026-09-22T19:32:10Z",
+   "excerpt": "Comprehensive setup guide on a freshly built Quiver. Covers FC firmware flashing, parameter loading, CAN ID assignments, various sensor setup, etc."
+  },
+  {
+   "number": 225,
+   "title": "feat: per-subassembly GLB export for the docs 3D viewer",
+   "author": "thomasgarrison",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/225",
+   "createdAt": "2026-06-11T02:43:36Z",
+   "updatedAt": "2026-06-18T21:14:39Z",
+   "excerpt": "**Stacked on #224** — the base branch here is `thomasg/oss-foundation-improvements`; once #224 merges, this can be retargeted to `main`. ## What & why Adds the quiver-side half of the interactive 3D viewer for the docs site (the viewer component lands in the website repo): - **`p"
+  },
+  {
+   "number": 223,
+   "title": "Added fusion link to project readme and manufacturing guide",
+   "author": "errrks",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/223",
+   "createdAt": "2026-05-29T14:06:07Z",
+   "updatedAt": "2026-08-06T21:24:02Z",
+   "excerpt": ""
+  },
+  {
+   "number": 222,
+   "title": "docs: add PWM MAD 4x08 parameter variant",
+   "author": "vector-arrow",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/222",
+   "createdAt": "2026-05-20T15:11:59Z",
+   "updatedAt": "2026-06-18T21:14:40Z",
+   "excerpt": "Temporary/reference parameter file for a Quiver setup using MAD 4x08 FOC motors over PWM instead of CAN ESC output.\\n\\nChanges from standard params:\\n- disables UAVCAN/DroneCAN ESC motor bitmap with `CAN_D1_UC_ESC_BM,0`\\n- switches motor output to normal PWM with `MOT_PWM_TYPE,0`"
+  }
+ ]
+}

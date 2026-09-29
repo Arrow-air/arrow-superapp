@@ -1,31 +1,23 @@
 import { ref, watch } from 'vue';
 
-// Mock contributor, wallet and prices. Nothing here is live: the frame only
-// needs something to lay out until Thomas's wallet/identity work plugs in.
+// The demo visitor: no account, no wallet linked, no history. Identity and
+// wallets plug in later; until then nothing here should look like a balance.
 export const contributor = {
-  name: 'Sleety',
-  handle: '@sl33ty',
-  address: '0x71C4a0e2b9D3f58A6c1E7b204dF9e3a8B5c63a9E',
-  arrow: 1440,
+  name: 'You',
+  handle: 'Demo visitor · no wallet linked',
+  address: '',
+  arrow: 0,
 };
 
-export const holdings = [
-  { symbol: 'ARROW', name: 'Arrow', amount: 1440 },
-  { symbol: 'USDC', name: 'USD Coin', amount: 125.5 },
-  { symbol: 'ETH', name: 'Ether', amount: 0.042 },
-] as const;
+export const holdings: { symbol: string; name: string; amount: number }[] = [
+  { symbol: 'ARROW', name: 'Arrow', amount: 0 },
+];
 
-export const activity = [
-  { id: 'a1', kind: 'in', label: 'Contribution reward', detail: 'From Arrow DAO treasury', amount: 400, symbol: 'ARROW', date: '27 Sep' },
-  { id: 'a2', kind: 'out', label: 'Swap', detail: 'Arrow to USDC', amount: -200, symbol: 'ARROW', date: '19 Sep' },
-  { id: 'a3', kind: 'in', label: 'Contribution reward', detail: 'From Arrow DAO treasury', amount: 640, symbol: 'ARROW', date: '30 Aug' },
-  { id: 'a4', kind: 'in', label: 'Received', detail: 'From 0x9a3F…c21B', amount: 0.02, symbol: 'ETH', date: '12 Aug' },
-] as const;
+export const activity: { id: string; kind: 'in' | 'out'; label: string; detail: string; amount: number; symbol: string; date: string }[] = [];
 
-// Live-ish DAO and network status for the footer. Mock values.
-export const network = { name: 'Mainnet', connected: true };
-export const sync = { source: 'GitHub', ago: '2m ago' };
-export const dao = { votesOpen: 2, bountiesOpen: 5 };
+// Footer status. The demo has no network connection; the GitHub data is a
+// snapshot taken at build time.
+export const network = { name: 'Demo', connected: false };
 
 // USDC per ARROW is the AIP-010 policy rate (effective $0.20/token), not a
 // market price. The ETH price is a placeholder.
@@ -49,7 +41,7 @@ export function formatMoney(n: number, symbol: string, signed = false) {
   if (symbol === 'ETH') return `${sign}Ξ${abs.toLocaleString('en-US', { maximumFractionDigits: 4 })}`;
   return `${sign}${abs.toLocaleString('en-US', { maximumFractionDigits: 2 })} Arrow`;
 }
-export const shortAddress = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
+export const shortAddress = (a: string) => (a.startsWith('0x') ? `${a.slice(0, 6)}…${a.slice(-4)}` : 'Not linked');
 
 // The chosen quote currency, shared by the toolbar and the wallet drawer.
 // A per-viewer convenience, so it lives in localStorage.

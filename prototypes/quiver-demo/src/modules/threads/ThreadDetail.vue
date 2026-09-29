@@ -3,15 +3,17 @@ import { computed, ref, watch } from 'vue';
 import Icon from '../../frame/Icon.vue';
 import Kbd from '../../frame/Kbd.vue';
 import { MOD } from '../../frame/shortcuts';
+import { zoneLabel, zonePath } from '../../frame/nav';
 import Avatar from './Avatar.vue';
+import SourceChip from './SourceChip.vue';
 import StatusIcon from './StatusIcon.vue';
 import type { Thread } from './data';
 import type { Role } from './weights';
 import {
-  CONVERGE_SHARE, changedWinner, leaderOf, myVote, person, reopen, reply, settle, state, statusOf, talliesOf, vote, weightOf,
+  changedWinner, day, leaderOf, myVote, person, propose, reopen, reply, settle, state, statusOf, talliesOf, vote, weightOf,
 } from './store';
 
-const props = defineProps<{ thread: Thread }>();
+const props = defineProps<{ thread: Thread; index?: boolean }>();
 defineEmits<{ back: [] }>();
 
 const t = computed(() => props.thread);
@@ -19,16 +21,20 @@ const status = computed(() => statusOf(t.value));
 const tallies = computed(() => talliesOf(t.value));
 const tallyOf = (id: string) => tallies.value.find((x) => x.positionId === id)!;
 const leader = computed(() => leaderOf(t.value));
-const maxScore = computed(() => Math.max(1, ...tallies.value.map((x) => Math.abs(x.weightedScore))));
 const mine = computed(() => weightOf(t.value, 'me'));
 const flipped = computed(() => changedWinner(t.value));
 const rawLeader = computed(() => [...tallies.value].sort((a, b) => b.rawScore - a.rawScore)[0]);
 const rawTie = computed(() => tallies.value.filter((x) => x.rawScore === rawLeader.value?.rawScore).length > 1);
 const letter = (id: string) => String.fromCharCode(65 + t.value.positions.findIndex((p) => p.id === id));
+const typeLabel = computed(() => ({ question: 'Question', proposal: 'Proposal', idea: 'Idea' })[t.value.type]);
 
-// Positions ordered by weighted score, so the leader reads first.
-const ordered = computed(() => [...t.value.positions].sort((a, b) => tallyOf(b.id).weightedScore - tallyOf(a.id).weightedScore));
+// Positions ordered by weighted score, so the leader reads first; ties keep
+// the order they were proposed in.
+const ordered = computed(() =>
+  t.value.positions.map((p, i) => ({ p, i })).sort((a, b) => tallyOf(b.p.id).weightedScore - tallyOf(a.p.id).weightedScore || a.i - b.i).map((x) => x.p),
+);
 const votersOf = (id: string) => t.value.votes.filter((v) => v.positionId === id && v.value === 1).map((v) => v.memberId);
+const nameOf = (id?: string) => (id === 'me' ? 'You' : person(id)?.name);
 
 const showWhy = ref(false);
 const isLead = computed(() => state.role === 'lead');
@@ -37,12 +43,17 @@ const draft = ref('');
 watch(() => t.value.id, () => { showWhy.value = false; settleNote.value = ''; draft.value = ''; });
 
 function doSettle(positionId: string) {
-  settle(t.value, positionId, settleNote.value.trim() || 'Settled on the weighted leader.');
+  settle(t.value, positionId, settleNote.value.trim() || 'Decided on the weighted leader.');
   settleNote.value = '';
 }
 function send() {
   if (!draft.value.trim()) return;
   reply(t.value, draft.value.trim());
+  draft.value = '';
+}
+function asPosition() {
+  if (!draft.value.trim()) return;
+  propose(t.value, draft.value.trim());
   draft.value = '';
 }
 const roles: Role[] = ['member', 'core', 'lead'];
@@ -57,13 +68,21 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         <StatusIcon :status="status" :override="t.settled?.override" :size="12" />
         <span class="mono">{{ t.id }}</span>
         <span class="dot">·</span>
-        <span>{{ t.kind === 'funding' ? 'Funding, token-weighted' : 'Technical, signal-weighted' }}</span>
+        <span>{{ typeLabel }}</span>
+        <span class="dot">·</span>
+        <span>{{ t.kind === 'funding' ? 'token-weighted' : 'signal-weighted' }}</span>
       </div>
       <h1 class="title">{{ t.title }}</h1>
       <p class="meta">
-        {{ t.system[0].toUpperCase() + t.system.slice(1) }}<span class="dot">·</span>{{ t.anchor.label }}<span class="dot">·</span><span class="mono">{{ t.version }}</span><span class="dot">·</span><Avatar :id="t.authorId" :size="16" /> {{ person(t.authorId)?.name }}, {{ t.raised }}
+        <RouterLink v-if="index" class="zlink" :to="{ path: zonePath(t.zone), query: { thread: t.id } }">{{ zoneLabel(t.zone) }}</RouterLink>
+        <span v-else>{{ zoneLabel(t.zone) }}</span>
+        <span class="dot">·</span><span class="mono">{{ t.version }}</span>
+        <span class="dot">·</span>
+        <template v-if="t.authorId"><Avatar :id="t.authorId" :size="16" /> {{ nameOf(t.authorId) }}, {{ day(t.raisedAt) }}</template>
+        <template v-else>{{ day(t.raisedAt) }}</template>
+        <template v-if="t.source"><span class="dot"></span><SourceChip :source="t.source" /></template>
       </p>
-      <p class="body">{{ t.body }}</p>
+      <p v-if="t.body" class="body">{{ t.body }}</p>
     </header>
 
     <!-- Decided: plain text, no tinted box. -->
@@ -71,8 +90,9 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
       <div class="decided-head">
         <StatusIcon status="settled" :override="t.settled.override" :size="13" />
         <span class="strong">Decided: {{ letter(t.settled.positionId) }}</span>
+        <span class="tag mono">{{ t.settled.decision }}</span>
         <span v-if="t.settled.override" class="tag">Override</span>
-        <span class="muted">{{ person(t.settled.byId)?.name }}, {{ t.settled.at }}</span>
+        <span class="muted">{{ nameOf(t.settled.byId) }} as lead, {{ day(t.settled.at) }}</span>
         <button v-if="isLead" class="ghost" type="button" @click="reopen(t)">Reopen</button>
       </div>
       <p class="note">{{ t.settled.note }}</p>
@@ -85,14 +105,8 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
       </div>
 
       <div v-if="showWhy" class="why">
-        <template v-if="mine.kind === 'technical'">
-          <p class="formula mono">({{ mine.base }} base + {{ mine.token }} token + {{ mine.expertise }} expertise + {{ mine.builder }} builder) × {{ mine.roleMultiplier }} {{ mine.role }} = <b>{{ mine.total }}</b></p>
-          <p class="why-note">Technical calls are signal-weighted: role, matching expertise{{ mine.matched.length ? ` (${mine.matched.join(', ')})` : '' }} and a declared intent to build count for more than holdings.</p>
-        </template>
-        <template v-else>
-          <p class="formula mono">1 base + √(1,440 / 1,000) = <b>{{ mine.total }}</b></p>
-          <p class="why-note">Funding calls are token-weighted on a square-root curve, a proposal from ideas/weighted-voting.md.</p>
-        </template>
+        <p class="formula mono">({{ mine.base }} base + {{ mine.token }} token + {{ mine.expertise }} expertise + {{ mine.builder }} builder) × {{ mine.roleMultiplier }} {{ mine.role }} = <b>{{ mine.total }}</b></p>
+        <p class="why-note">Technical calls are signal-weighted: role, expertise a lead has verified, and a declared intent to help build count for more than holdings. No wallet is linked in the demo, so tokens add nothing.</p>
         <p class="why-note">Scores below are weighted; hover a score for the raw headcount.</p>
       </div>
 
@@ -118,9 +132,11 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
             </div>
             <p class="pos-text">{{ p.text }}</p>
             <div class="pos-meta">
-              <span class="by"><Avatar :id="p.authorId" :size="14" /> {{ person(p.authorId)?.name }}</span>
+              <span v-if="p.authorId" class="by"><Avatar :id="p.authorId" :size="14" /> {{ nameOf(p.authorId) }}</span>
+              <span v-else class="muted">From</span>
+              <template v-if="p.source"><span class="dot"></span><SourceChip :source="p.source" /></template>
               <span class="dot">·</span>
-              <span class="stack" :title="votersOf(p.id).map((id) => person(id)?.name).join(', ')">
+              <span class="stack" :title="votersOf(p.id).map((id) => nameOf(id)).join(', ')">
                 <Avatar v-for="id in votersOf(p.id).slice(0, 4)" :key="id" :id="id" :size="14" />
               </span>
               <span class="muted">{{ tallyOf(p.id).voters }} {{ tallyOf(p.id).voters === 1 ? 'vote' : 'votes' }}</span>
@@ -137,35 +153,44 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
     </section>
 
     <!-- Decision state: a quiet line, controls only for the lead. -->
-    <section v-if="!t.settled && t.positions.length" class="settle">
-      <p class="stats">
-        Leader holds <b class="mono">{{ Math.round(leader.share * 100) }}%</b><span class="dot">·</span>margin <b class="mono">{{ leader.margin }}</b><span class="dot">·</span>{{ t.objections ? `${t.objections} open objection${t.objections > 1 ? 's' : ''}` : 'no open objections' }}
+    <section v-if="!t.settled" class="settle">
+      <p v-if="t.positions.length" class="stats">
+        <template v-if="leader.top && leader.top.weightedScore > 0">
+          Leader holds <b class="mono">{{ Math.round(leader.share * 100) }}%</b><span class="dot">·</span>margin <b class="mono">{{ leader.margin }}</b><span class="dot">·</span>
+        </template>
+        <template v-else>No support yet<span class="dot">·</span></template>
+        {{ t.objections ? `${t.objections} open objection${t.objections > 1 ? 's' : ''}` : 'no open objections' }}
       </p>
-      <div v-if="isLead" class="settle-act">
-        <input v-model="settleNote" class="field" placeholder="Decision note" />
+      <div v-if="isLead && t.positions.length" class="settle-act">
+        <input v-model="settleNote" class="field" placeholder="Why: the decision note" />
         <button class="primary" type="button" :disabled="!leader.top || leader.top.weightedScore <= 0" @click="doSettle(leader.top!.positionId)">
-          Decide on {{ leader.top ? letter(leader.top.positionId) : '—' }}
+          Decide on {{ leader.top && leader.top.weightedScore > 0 ? letter(leader.top.positionId) : '—' }}
         </button>
       </div>
       <div class="viewas">
-        <span class="muted">Prototype: view as</span>
+        <span class="muted">Demo: view as</span>
         <div class="seg" role="radiogroup" aria-label="View as">
           <button v-for="r in roles" :key="r" type="button" role="radio" :aria-checked="state.role === r" @click="state.role = r">{{ r[0].toUpperCase() + r.slice(1) }}</button>
         </div>
+        <label class="check"><input v-model="state.builder" type="checkbox" /> I'd help build it</label>
       </div>
     </section>
 
     <section class="block">
       <div class="block-head"><h2 class="label">Discussion</h2><span class="legend">{{ t.replies.length }} {{ t.replies.length === 1 ? 'reply' : 'replies' }}</span></div>
       <div v-for="r in t.replies" :key="r.id" class="reply">
-        <Avatar :id="r.authorId" :size="20" />
+        <Avatar :id="r.authorId ?? ''" :size="20" />
         <div>
-          <div class="reply-head"><span class="strong">{{ person(r.authorId)?.name }}</span><span class="muted">{{ r.at }}</span></div>
+          <div class="reply-head">
+            <span class="strong">{{ nameOf(r.authorId) ?? 'From' }}</span>
+            <SourceChip v-if="r.source" :source="r.source" />
+            <span v-else class="muted">{{ day(r.at) }}</span>
+          </div>
           <p>{{ r.text }}</p>
         </div>
       </div>
 
-      <!-- Composer: a real text area with a clear primary action. -->
+      <!-- Composer: reply, or put the text up as a position people can vote on. -->
       <form class="composer" @submit.prevent="send">
         <textarea
           v-model="draft"
@@ -175,8 +200,11 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
           @keydown.ctrl.enter.prevent="send"
         ></textarea>
         <div class="composer-bar">
-          <span class="hint"><Kbd :keys="[MOD, '↵']" outline /> to send</span>
-          <button class="primary" type="submit" :disabled="!draft.trim()">Reply</button>
+          <span class="hint"><Kbd :keys="[MOD, '↵']" outline /> to reply</span>
+          <span class="composer-actions">
+            <button class="secondary" type="button" :disabled="!draft.trim() || !!t.settled" @click="asPosition">Propose as position</button>
+            <button class="primary" type="submit" :disabled="!draft.trim()">Reply</button>
+          </span>
         </div>
       </form>
     </section>
@@ -302,6 +330,18 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .composer textarea::placeholder { color: var(--fg-faint); }
 .composer-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 8px 14px; }
 .hint { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--fg-faint); }
+
+.zlink { color: var(--fg-2); text-decoration: none; }
+.zlink:hover { color: var(--fg); text-decoration: underline; }
+.check { display: inline-flex; align-items: center; gap: 5px; color: var(--fg-muted); cursor: pointer; }
+.check input { accent-color: var(--indigo-9); }
+.composer-actions { display: inline-flex; gap: 6px; }
+.secondary {
+  height: 32px; padding: 0 12px; border: 1px solid var(--slate-a5); border-radius: 9px; background: none; color: var(--fg-2);
+  font: inherit; font-size: var(--text-base); font-weight: 500; cursor: pointer;
+}
+.secondary:hover:not(:disabled) { color: var(--fg); border-color: var(--slate-a7); }
+.secondary:disabled { opacity: 0.4; cursor: default; }
 
 @media (max-width: 899px) {
   .detail { padding: 16px; }

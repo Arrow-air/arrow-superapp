@@ -1,63 +1,61 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import Icon from '../../frame/Icon.vue';
 import StatusIcon from './StatusIcon.vue';
 import ThreadDetail from './ThreadDetail.vue';
 import type { Thread } from './data';
-import { state, statusOf, type Status } from './store';
+import { ago, startThread, state, statusOf, type Status } from './store';
+import { zoneLabel, zoneTab } from '../../frame/nav';
 
 // Community decisions, Linear-style but minimal: the list is only for finding
 // a thread (status, title, time). Everything else is in the thread itself. Votes are weighted
-// with the real formula (see weights.ts). The sidebar item picks the view.
+// with the real formula (see weights.ts). On a zone page the list is that
+// zone's threads; in the Discussion tab it is the index over every zone.
 const route = useRoute();
 const router = useRouter();
 
+const props = defineProps<{ zone?: string }>();
 const views: Record<string, (t: Thread) => boolean> = {
   all: () => true,
-  proposals: (t) => t.type === 'proposal',
-  decisions: (t) => !!t.settled,
-  ideas: (t) => t.type === 'idea',
-  qa: (t) => t.type === 'question',
+  'ctx-overview': (t) => t.context === 'overview',
   'ctx-design': (t) => t.context === 'design',
-  'ctx-building': (t) => t.context === 'building',
-  'ctx-manufacturing': (t) => t.context === 'manufacturing',
-  'ctx-testing': (t) => t.context === 'testing',
-  'ctx-store': (t) => t.context === 'store',
+  'ctx-docs': (t) => t.context === 'docs',
+  'ctx-market': (t) => t.context === 'market',
 };
-// On an ordinary page, show only the threads that live on it; in the
-// Discussion tab, the sidebar item picks the view.
-const props = defineProps<{ page?: string }>();
-const viewFilter = computed(() => (props.page ? (t: Thread) => t.page === props.page : views[String(route.params.item)] ?? views.all));
+const index = computed(() => !props.zone);
+const viewFilter = computed(() => (props.zone ? (t: Thread) => t.zone === props.zone : views[String(route.params.item)] ?? views.all));
 
 type Scope = 'open' | 'settled' | 'all';
-const scope = ref<Scope>(route.params.item === 'decisions' ? 'all' : 'open');
-watch(() => route.params.item, (i) => (scope.value = i === 'decisions' ? 'all' : 'open'));
+const scope = ref<Scope>('open');
 const query = ref('');
 const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
 
+const inView = computed(() => state.threads.filter((t) => viewFilter.value(t)));
 const visible = computed(() =>
-  state.threads.filter((t) => {
+  inView.value.filter((t) => {
     const st = statusOf(t);
     if (scope.value === 'open' && st === 'settled') return false;
     if (scope.value === 'settled' && st !== 'settled') return false;
     const q = query.value.trim().toLowerCase();
-    if (q && !`${t.id} ${t.title} ${t.anchor.label} ${t.system}`.toLowerCase().includes(q)) return false;
-    return viewFilter.value(t);
+    if (q && !`${t.id} ${t.title} ${zoneLabel(t.zone)} ${t.body}`.toLowerCase().includes(q)) return false;
+    return true;
   }),
 );
 
 const groupsDef: { id: Status; label: string }[] = [
   { id: 'needs', label: 'Needs input' },
   { id: 'converging', label: 'Converging' },
-  { id: 'settled', label: 'Settled' },
+  { id: 'settled', label: 'Decided' },
 ];
+const byActivity = (a: Thread, b: Thread) => b.activeAt.localeCompare(a.activeAt);
 const groups = computed(() =>
-  groupsDef.map((g) => ({ ...g, threads: visible.value.filter((t) => statusOf(t) === g.id) })).filter((g) => g.threads.length),
+  groupsDef
+    .map((g) => ({ ...g, threads: visible.value.filter((t) => statusOf(t) === g.id).sort(byActivity) }))
+    .filter((g) => g.threads.length),
 );
 const flat = computed(() => groups.value.flatMap((g) => g.threads));
 
-// Selection lives in the URL (?thread=ARW-14) so a thread can be linked to directly.
+// Selection lives in the URL (?thread=Q-3) so a thread can be linked to directly.
 const selectedId = computed(() => (route.query.thread as string) || flat.value[0]?.id);
 const selected = computed(() => state.threads.find((t) => t.id === selectedId.value));
 const mobileDetail = ref(!!route.query.thread);
@@ -65,11 +63,31 @@ function select(id: string) {
   router.replace({ query: { ...route.query, thread: id } });
   mobileDetail.value = true;
 }
+// A linked thread that is settled should still show when the scope is "open".
+watch(selected, (t) => { if (t?.settled && scope.value === 'open' && route.query.thread) scope.value = 'all'; }, { immediate: true });
+
+// Starting a thread: only on a zone page, so every thread lives somewhere.
+const composing = ref(false);
+const draft = ref({ title: '', body: '', type: 'question' as Thread['type'] });
+function create() {
+  if (!props.zone || !draft.value.title.trim()) return;
+  const t = startThread({
+    zone: props.zone,
+    context: zoneTab(props.zone)?.id ?? 'overview',
+    title: draft.value.title.trim(),
+    body: draft.value.body.trim(),
+    type: draft.value.type,
+  });
+  draft.value = { title: '', body: '', type: 'question' };
+  composing.value = false;
+  scope.value = 'open';
+  select(t.id);
+}
 
 // j / k move through the list, like Linear. Ignored while typing.
 function onKey(e: KeyboardEvent) {
   const el = e.target as HTMLElement | null;
-  if (el?.closest?.('input, textarea, [contenteditable]') || e.metaKey || e.ctrlKey) return;
+  if (el?.closest?.('input, textarea, select, [contenteditable]') || e.metaKey || e.ctrlKey) return;
   if (e.key !== 'j' && e.key !== 'k') return;
   const i = flat.value.findIndex((t) => t.id === selectedId.value);
   const next = flat.value[Math.min(flat.value.length - 1, Math.max(0, i + (e.key === 'j' ? 1 : -1)))];
@@ -93,13 +111,34 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
         </div>
         <div class="seg" role="radiogroup" aria-label="Scope">
           <button v-for="s in (['open', 'settled', 'all'] as Scope[])" :key="s" type="button" role="radio" :aria-checked="scope === s" @click="scope = s">
-            {{ cap(s) }}
+            {{ s === 'settled' ? 'Decided' : cap(s) }}
           </button>
         </div>
       </div>
 
+      <div v-if="zone" class="new">
+        <button v-if="!composing" class="new-btn" type="button" @click="composing = true">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" /></svg> New thread
+        </button>
+        <form v-else class="new-form" @submit.prevent="create">
+          <input v-model="draft.title" class="nf-title" placeholder="What needs deciding?" aria-label="Title" autofocus />
+          <textarea v-model="draft.body" rows="3" placeholder="Context: what you know, what it affects" aria-label="Thread context"></textarea>
+          <div class="nf-bar">
+            <div class="seg" role="radiogroup" aria-label="Kind">
+              <button v-for="k in (['question', 'proposal', 'idea'] as Thread['type'][])" :key="k" type="button" role="radio" :aria-checked="draft.type === k" @click="draft.type = k">{{ cap(k) }}</button>
+            </div>
+            <span class="nf-actions">
+              <button class="ghost-btn" type="button" @click="composing = false">Cancel</button>
+              <button class="primary-sm" type="submit" :disabled="!draft.title.trim()">Start</button>
+            </span>
+          </div>
+        </form>
+      </div>
+
       <div class="list">
-        <p v-if="!flat.length" class="empty">Nothing here.</p>
+        <p v-if="!flat.length" class="empty">
+          {{ inView.length ? 'Nothing here with this filter.' : zone ? 'No threads in this zone yet.' : 'Nothing here.' }}
+        </p>
         <section v-for="g in groups" :key="g.id" class="group">
           <h3 class="group-head">{{ g.label }}</h3>
           <button
@@ -113,16 +152,19 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
             @click="select(t.id)"
           >
             <StatusIcon :status="statusOf(t)" :override="t.settled?.override" :size="13" />
-            <span class="rtitle">{{ t.title }}</span>
-            <span class="rtime">{{ t.active }}</span>
+            <span class="rmain">
+              <span class="rtitle">{{ t.title }}</span>
+              <span v-if="index" class="rzone">{{ zoneLabel(t.zone) }}</span>
+            </span>
+            <span class="rtime">{{ ago(t.activeAt) }}</span>
           </button>
         </section>
       </div>
     </section>
 
     <section class="detail-pane" aria-label="Thread">
-      <ThreadDetail v-if="selected" :thread="selected" @back="mobileDetail = false" />
-      <p v-else class="empty pad">Pick a thread.</p>
+      <ThreadDetail v-if="selected" :thread="selected" :index="index" @back="mobileDetail = false" />
+      <p v-else class="empty pad">{{ zone ? 'Start the first thread in this zone.' : 'Pick a thread.' }}</p>
     </section>
   </div>
 </template>
@@ -187,6 +229,34 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 .detail-pane { min-height: 0; overflow-y: auto; background: var(--thread-bg); }
 .empty { margin: 0; padding: 24px 8px; text-align: center; color: var(--fg-muted); }
 .empty.pad { padding: 48px; }
+
+/* Starting a thread */
+.new { padding: 0 12px 8px; }
+.new-btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border: 1px dashed var(--slate-a5); border-radius: 8px;
+  background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); cursor: pointer; width: 100%;
+}
+.new-btn:hover { color: var(--fg); border-color: var(--slate-a7); }
+.new-btn svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.new-form { display: grid; gap: 6px; padding: 8px; border: 1px solid var(--slate-a4); border-radius: 10px; background: var(--slate-a2); }
+.new-form input, .new-form textarea {
+  width: 100%; border: 0; background: none; color: var(--fg); font: inherit; font-size: var(--text-nav); outline: none; resize: vertical;
+}
+.nf-title { font-weight: 500; }
+.new-form textarea { font-size: var(--text-base); color: var(--fg-2); }
+.new-form ::placeholder { color: var(--fg-faint); }
+.nf-bar { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.nf-bar .seg button { height: 20px; padding: 0 7px; }
+.nf-actions { display: inline-flex; gap: 4px; }
+.ghost-btn { height: 24px; padding: 0 8px; border: 0; border-radius: 6px; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); cursor: pointer; }
+.ghost-btn:hover { color: var(--fg); }
+.primary-sm {
+  height: 24px; padding: 0 10px; border: 0; border-radius: 6px; background: var(--indigo-9); color: #fff;
+  font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer;
+}
+.primary-sm:disabled { opacity: 0.4; cursor: default; }
+.rmain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.rzone { font-size: var(--text-sm); color: var(--fg-faint); }
 
 @media (max-width: 899px) {
   .threads { grid-template-columns: minmax(0, 1fr); }

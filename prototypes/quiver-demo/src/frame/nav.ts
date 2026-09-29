@@ -1,10 +1,17 @@
 // Everything the frame navigates is described here: projects, their versions,
 // the workspace tabs, and the sidebar under each tab. The top bar, breadcrumb,
 // tabs, sidebar and routes are all generated from this file.
+//
+// Quiver demo: the sidebar items are working zones (Gavin, Sep 29). A zone
+// is any place work happens, a part of the aircraft, a campaign or a topic,
+// and every zone can hold threads, votes and decisions. A few items are
+// views instead of zones: the BOM, the task board, the decision register.
 import type { IconName } from './icons';
-import spearheadThumb from '../assets/spearhead-thumb.png';
 
-export interface NavItem { id: string; label: string; icon: IconName }
+/** What renders in the content slot. Zones get the zone page with its threads. */
+export type PageKind = 'zone' | 'gate' | 'bom' | 'work' | 'prs' | 'people' | 'sources' | 'threads' | 'suggested' | 'decisions';
+
+export interface NavItem { id: string; label: string; icon: IconName; page?: PageKind }
 export interface NavGroup { id: string; label: string; sortable?: boolean; items: NavItem[] }
 export interface Tab { id: string; label: string; groups: NavGroup[] }
 export type VersionStatus = 'upcoming' | 'current' | 'previous' | 'unmaintained';
@@ -18,44 +25,31 @@ export const statusLabel: Record<VersionStatus, string> = {
   unmaintained: 'Unmaintained',
 };
 export const statusNote: Record<VersionStatus, string> = {
-  upcoming: 'In development',
+  upcoming: 'Under discussion, not named yet',
   current: 'Latest release',
   previous: 'Older, still supported',
   unmaintained: 'No longer maintained',
 };
 
+// Quiver's own history: three prototypes, then the 2026 Dev Kit (bom/meta.yaml).
 export const projects: Project[] = [
-  {
-    id: 'spearhead',
-    label: 'Spearhead',
-    thumb: spearheadThumb,
-    versions: [
-      { id: 'pt-2-0', code: 'PT 2.0', status: 'upcoming' },
-      { id: 'pt-1-5', code: 'PT 1.5', status: 'current' },
-      { id: 'pt-1-0', code: 'PT 1.0', status: 'previous' },
-      { id: 'pt-0-9', code: 'PT 0.9', status: 'unmaintained' },
-    ],
-  },
   {
     id: 'quiver',
     label: 'Quiver',
     versions: [
-      { id: 'v1-1', code: 'V 1.1', status: 'upcoming' },
-      { id: 'v1-0', code: 'V 1.0', status: 'current' },
-      { id: 'v0-8', code: 'V 0.8', status: 'unmaintained' },
+      { id: 'next', code: 'Next', status: 'upcoming' },
+      { id: 'dev-kit', code: 'Dev Kit', status: 'current' },
+      { id: 'pt3', code: 'PT3', status: 'previous' },
+      { id: 'pt2', code: 'PT2', status: 'unmaintained' },
+      { id: 'pt1', code: 'PT1', status: 'unmaintained' },
     ],
   },
-  { id: 'caribou', label: 'Caribou', versions: [{ id: 'v0-1', code: 'V 0.1', status: 'upcoming' }] },
 ];
 
 // The version a project opens on: its current release, or whatever it has.
 export const defaultVersion = (p: Project) => p.versions.find((v) => v.status === 'current') ?? p.versions[0];
 
-// Each tab's sidebar: the topics for that context first, then the
-// discussion scoped to it. Design, Building and Manufacturing share
-// subsystem names so you stay on the same part of the aircraft across tabs.
-const item = (id: string, label: string, icon: IconName): NavItem => ({ id, label, icon });
-const talk = (...items: NavItem[]): NavGroup => ({ id: 'discussion', label: 'Discussion', sortable: true, items });
+const item = (id: string, label: string, icon: IconName, page?: PageKind): NavItem => ({ id, label, icon, page });
 
 export const tabs: Tab[] = [
   {
@@ -63,17 +57,14 @@ export const tabs: Tab[] = [
     label: 'Overview',
     groups: [
       {
-        id: 'about',
-        label: 'About',
+        id: 'now',
+        label: 'Now',
         items: [
-          item('summary', 'Summary', 'info'),
-          item('specifications', 'Specifications', 'sliders'),
-          item('roadmap', 'Roadmap', 'flag'),
-          item('changelog', 'Changelog', 'history'),
-          item('contributors', 'Contributors', 'people'),
+          item('road-to-selling', 'Road to selling', 'flag', 'gate'),
+          item('people', 'People', 'people', 'people'),
         ],
       },
-      talk(item('announcements', 'Announcements', 'megaphone'), item('qa', 'Q&A', 'question')),
+      { id: 'sources', label: 'Sources', items: [item('calls', 'Call notes', 'log', 'sources')] },
     ],
   },
   {
@@ -81,108 +72,79 @@ export const tabs: Tab[] = [
     label: 'Design',
     groups: [
       {
-        id: 'subsystems',
-        label: 'Subsystems',
+        id: 'zones',
+        label: 'Next revision',
         items: [
-          item('airframe', 'Airframe', 'airframe'),
-          item('wings-tail', 'Wings & tail', 'wing'),
-          item('propulsion', 'Propulsion', 'fan'),
+          item('airframe', 'Structure & enclosure', 'airframe'),
+          item('gps-rf', 'GPS & RF', 'target'),
           item('power', 'Power & battery', 'battery'),
-          item('avionics', 'Avionics', 'chip'),
-          item('wiring', 'Wiring harness', 'harness'),
-          item('payload', 'Payload bay', 'box'),
+          item('payload', 'Payload & attachments', 'box'),
+          item('avionics', 'Avionics & parameters', 'chip'),
+          item('cad', 'CAD model', 'layers'),
         ],
       },
-      {
-        id: 'reference',
-        label: 'Reference',
-        items: [
-          item('cad-files', 'CAD files', 'file'),
-          item('drawings', 'Drawings', 'ruler'),
-          item('requirements', 'Requirements', 'check-square'),
-        ],
-      },
-      talk(item('design-reviews', 'Design reviews', 'eye'), item('change-proposals', 'Change proposals', 'branch')),
-    ],
-  },
-  {
-    id: 'building',
-    label: 'Building',
-    groups: [
-      {
-        id: 'prepare',
-        label: 'Prepare',
-        items: [item('bom', 'Bill of materials', 'list'), item('tools', 'Tools & workspace', 'wrench')],
-      },
-      {
-        id: 'assembly',
-        label: 'Assembly',
-        items: [
-          item('airframe', 'Airframe', 'airframe'),
-          item('wings', 'Wings', 'wing'),
-          item('propulsion', 'Propulsion', 'fan'),
-          item('electrical', 'Electrical', 'harness'),
-        ],
-      },
-      {
-        id: 'setup',
-        label: 'Setup',
-        items: [item('flight-controller', 'Flight controller', 'chip'), item('calibration', 'Calibration', 'target')],
-      },
-      talk(item('workshop-builds', 'Workshop builds', 'hexagon'), item('troubleshooting', 'Troubleshooting', 'question')),
-    ],
-  },
-  {
-    id: 'manufacturing',
-    label: 'Manufacturing',
-    groups: [
-      {
-        id: 'parts',
-        label: 'Parts',
-        items: [
-          item('printed', 'Printed parts', 'printer'),
-          item('composite', 'Composite parts', 'layers'),
-          item('sourced', 'Sourced parts & suppliers', 'truck'),
-        ],
-      },
-      {
-        id: 'processes',
-        label: 'Processes',
-        items: [
-          item('layup', 'Layup', 'layers'),
-          item('print-settings', 'Print settings', 'sliders'),
-          item('inspection', 'Inspection', 'check-square'),
-        ],
-      },
-      { id: 'cost', label: 'Cost', items: [item('cost-breakdown', 'Cost breakdown', 'coin')] },
-      talk(item('bom-optimization', 'BOM optimization', 'list'), item('supplier-options', 'Supplier options', 'truck')),
+      { id: 'reference', label: 'Reference', items: [item('bom', 'Bill of materials', 'list', 'bom')] },
     ],
   },
   {
     id: 'testing',
     label: 'Testing',
     groups: [
-      { id: 'plan', label: 'Plan', items: [item('test-plan', 'Test plan', 'check-square')] },
       {
-        id: 'ground',
-        label: 'Ground tests',
-        items: [item('bench-thrust', 'Bench thrust', 'gauge'), item('static-load', 'Static load', 'airframe')],
-      },
-      {
-        id: 'flight',
-        label: 'Flight tests',
+        id: 'campaigns',
+        label: 'Campaigns',
         items: [
-          item('hover', 'Hover', 'fan'),
-          item('transition', 'Transition', 'plane'),
-          item('endurance', 'Endurance', 'battery'),
+          item('obstacle-avoidance', 'Obstacle avoidance', 'alert'),
+          item('gps-interference', 'GPS interference', 'gauge'),
+          item('endurance', 'Endurance', 'plane'),
         ],
       },
+    ],
+  },
+  {
+    id: 'docs',
+    label: 'Docs',
+    groups: [
       {
-        id: 'results',
-        label: 'Results',
-        items: [item('flight-logs', 'Flight logs', 'log'), item('findings', 'Findings', 'bulb')],
+        id: 'guides',
+        label: 'Guides',
+        items: [
+          item('config-guide', 'Configuration guide', 'sliders'),
+          item('pilots-handbook', 'Pilot\'s handbook', 'book'),
+          item('attachment-guide', 'Attachment developer guide', 'file'),
+          item('assembly', 'Assembly', 'wrench'),
+        ],
       },
-      talk(item('test-results', 'Test results', 'chart'), item('incidents', 'Incidents', 'alert')),
+    ],
+  },
+  {
+    id: 'market',
+    label: 'Go-to-market',
+    groups: [
+      {
+        id: 'selling',
+        label: 'Selling',
+        items: [
+          item('where-we-sell', 'Where we sell', 'store'),
+          item('who-we-sell-to', 'Who we sell to', 'people'),
+          item('sales-page', 'Sales page', 'chart'),
+          item('dao-return', 'What goes back to the DAO', 'coin'),
+        ],
+      },
+    ],
+  },
+  {
+    id: 'work',
+    label: 'Work',
+    groups: [
+      {
+        id: 'board',
+        label: 'From GitHub',
+        items: [
+          item('tasks', 'Task board', 'check-square', 'work'),
+          item('prs', 'Open pull requests', 'branch', 'prs'),
+        ],
+      },
     ],
   },
   {
@@ -193,45 +155,27 @@ export const tabs: Tab[] = [
         id: 'threads',
         label: 'Threads',
         items: [
-          item('all', 'All threads', 'comment'),
-          item('proposals', 'Proposals', 'branch'),
-          item('decisions', 'Decisions', 'check-circle'),
-          item('ideas', 'Ideas', 'bulb'),
-          item('qa', 'Q&A', 'question'),
+          item('all', 'All threads', 'comment', 'threads'),
+          item('suggested', 'Suggested from calls', 'bulb', 'suggested'),
         ],
       },
       {
         id: 'by-context',
-        label: 'By context',
+        label: 'By tab',
         items: [
-          item('ctx-design', 'Design', 'half-diamond'),
-          item('ctx-building', 'Building', 'wrench'),
-          item('ctx-manufacturing', 'Manufacturing', 'layers'),
-          item('ctx-testing', 'Testing', 'plane'),
-          item('ctx-store', 'Store', 'store'),
+          item('ctx-overview', 'Overview', 'flag', 'threads'),
+          item('ctx-design', 'Design', 'half-diamond', 'threads'),
+          item('ctx-docs', 'Docs', 'book', 'threads'),
+          item('ctx-market', 'Go-to-market', 'store', 'threads'),
         ],
       },
     ],
   },
   {
-    id: 'store',
-    label: 'Store',
+    id: 'decisions',
+    label: 'Decisions',
     groups: [
-      {
-        id: 'shop',
-        label: 'Shop',
-        items: [item('kits', 'Kits', 'bag'), item('parts', 'Parts', 'box'), item('merch', 'Merch', 'shirt')],
-      },
-      {
-        id: 'strategy',
-        label: 'Strategy',
-        items: [
-          item('pricing', 'Pricing', 'tag'),
-          item('go-to-market', 'Go-to-market', 'chart'),
-          item('applications', 'Potential applications', 'globe'),
-        ],
-      },
-      talk(item('pricing-discussion', 'Pricing discussion', 'tag')),
+      { id: 'register', label: 'Register', items: [item('register', 'Decision register', 'check-circle', 'decisions')] },
     ],
   },
 ];
@@ -241,3 +185,15 @@ export const findTab = (id: unknown) => tabs.find((t) => t.id === id);
 export const findItem = (tab: Tab | undefined, id: unknown) =>
   tab?.groups.flatMap((g) => g.items).find((i) => i.id === id);
 export const firstItem = (tab: Tab) => tab.groups[0].items[0];
+/** Where a zone lives, for links from anywhere. */
+export function zonePath(zoneId: string, projectId = 'quiver') {
+  for (const t of tabs) for (const g of t.groups) for (const i of g.items) if (i.id === zoneId) return `/${projectId}/${t.id}/${i.id}`;
+  return `/${projectId}/overview`;
+}
+export function zoneLabel(zoneId: string) {
+  for (const t of tabs) for (const g of t.groups) for (const i of g.items) if (i.id === zoneId) return i.label;
+  return zoneId;
+}
+export function zoneTab(zoneId: string) {
+  return tabs.find((t) => t.groups.some((g) => g.items.some((i) => i.id === zoneId)));
+}

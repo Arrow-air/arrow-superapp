@@ -1,0 +1,50 @@
+/* Shared look for the views that are not zones: the task board, BOM, people,
+   call notes, suggestions and the decision register. Same tokens as the
+   threads module: neutral rows, hairlines, quiet labels. */
+.view { padding: 22px 28px 48px; max-width: 1100px; }
+.view-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.view-title { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.01em; color: var(--fg); }
+.view-lede { margin: 6px 0 0; max-width: 720px; color: var(--fg-muted); font-size: var(--text-nav); line-height: 1.55; }
+.view-lede a { color: var(--indigo-11); }
+.view-section { margin-top: 26px; }
+.view-section > h2 { margin: 0 0 8px; font-size: var(--text-sm); font-weight: 500; color: var(--fg-faint); }
+.view .mono { font-family: var(--font-mono); }
+.view .muted { color: var(--fg-muted); }
+.view .faint { color: var(--fg-faint); }
+.view .dot { margin: 0 6px; color: var(--fg-faint); }
+.view a.link, .view .link { color: var(--indigo-11); text-decoration: none; }
+.view a.link:hover { text-decoration: underline; }
+
+.vt { width: 100%; border-collapse: collapse; font-size: var(--text-base); }
+.vt th { padding: 6px 10px; text-align: left; font-weight: 500; font-size: var(--text-sm); color: var(--fg-faint); border-bottom: 1px solid var(--slate-a4); white-space: nowrap; }
+.vt td { padding: 8px 10px; vertical-align: top; color: var(--fg-2); border-bottom: 1px solid var(--slate-a3); line-height: 1.45; }
+.vt tr:hover td { background: var(--slate-a2); }
+.vt tr.hit td { background: var(--indigo-a3); }
+.vt td.num, .vt th.num { text-align: right; font-family: var(--font-mono); white-space: nowrap; }
+.vt td a { color: var(--fg); text-decoration: none; }
+.vt td a:hover { text-decoration: underline; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 4px; height: 18px; padding: 0 6px; border-radius: 5px;
+  background: var(--slate-a3); color: var(--fg-2); font-size: var(--text-sm); text-decoration: none; white-space: nowrap;
+}
+a.chip:hover { background: var(--slate-a5); color: var(--fg); }
+.chip.amber { background: var(--amber-a3); color: var(--amber-11); }
+.chip.jade { background: var(--jade-a3); color: var(--jade-11); }
+.chip.indigo { background: var(--indigo-a3); color: var(--indigo-11); }
+
+.vseg { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--slate-a2); }
+.vseg button { height: 24px; padding: 0 9px; border: 0; border-radius: 6px; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; }
+.vseg button[aria-checked='true'] { background: var(--slate-a4); color: var(--fg); }
+
+.vbtn {
+  height: 26px; padding: 0 10px; border: 1px solid var(--slate-a5); border-radius: 7px; background: none; color: var(--fg-2);
+  font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer;
+}
+.vbtn:hover { color: var(--fg); border-color: var(--slate-a7); }
+.vempty { padding: 28px 0; color: var(--fg-muted); font-size: var(--text-nav); }
+
+@media (max-width: 767px) {
+  .view { padding: 16px; }
+  .vt .hide-sm { display: none; }
+}

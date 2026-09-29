@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import Icon from './Icon.vue';
-import { dao, formatMoney, network, quote, quoteValue, sync, type Quote, USDC_PER_ETH } from './account';
+import { computed } from 'vue';
+import { formatMoney, network, quote, quoteValue, type Quote } from './account';
+import { generatedAt, shortDate, tasks } from '../data/quiver';
+import { resetDemo, state, statusOf, touched } from '../modules/threads/store';
 import { socials } from './links';
 import logomark from '../assets/arrow-logomark-white.svg';
 import { theme, type Theme } from './theme';
@@ -17,24 +20,30 @@ const themes: { id: Theme; label: string; icon: IconName }[] = [
 // quote currency on the right. The currency switch shares state with the
 // wallet toolbar.
 const SITE = 'https://arrowair.com';
+const needInput = computed(() => state.threads.filter((t) => statusOf(t) === 'needs').length);
+const claimable = tasks.filter((t) => t.claimable).length;
+function reset() {
+  if (confirm('Reset the demo? Your votes, replies, new threads and decisions in this browser are cleared.')) resetDemo();
+}
 </script>
 
 <template>
   <footer class="footer" aria-label="Status">
     <div class="side">
-      <span class="stat" :title="network.connected ? `Connected to ${network.name}` : 'Disconnected'">
+      <span class="stat" title="A demo with no backend: what you do stays in this browser">
         <span class="live" :class="{ off: !network.connected }" aria-hidden="true"></span>
-        {{ network.name }}
+        Demo<span class="hide-md">&nbsp;· changes stay in this browser</span>
       </span>
-      <span class="sep" aria-hidden="true"></span>
-      <span class="stat"><Icon name="sync" :size="11" /> Synced with {{ sync.source }} · {{ sync.ago }}</span>
+      <button v-if="touched" class="stat link reset" type="button" @click="reset">Reset demo</button>
+      <span class="sep hide-sm" aria-hidden="true"></span>
+      <span class="stat hide-sm"><Icon name="sync" :size="11" /> GitHub data from {{ shortDate(generatedAt) }}</span>
       <span class="sep hide-md" aria-hidden="true"></span>
-      <a class="stat link hide-md" :href="`${SITE}/docs/governance/good-to-know/dao-voting`" target="_blank" rel="noopener">
-        <Icon name="vote" :size="11" /> {{ dao.votesOpen }} votes open
-      </a>
-      <a class="stat link hide-md" :href="`${SITE}/bounty/`" target="_blank" rel="noopener">
-        <Icon name="coin" :size="11" /> {{ dao.bountiesOpen }} bounties
-      </a>
+      <RouterLink class="stat link hide-md" to="/quiver/discussion/all">
+        <Icon name="vote" :size="11" /> {{ needInput }} threads need input
+      </RouterLink>
+      <RouterLink class="stat link hide-md" to="/quiver/work/tasks">
+        <Icon name="coin" :size="11" /> {{ claimable }} claimable tasks
+      </RouterLink>
       <span class="sep hide-md" aria-hidden="true"></span>
       <a class="stat link hide-md" :href="`${SITE}/docs/`" target="_blank" rel="noopener">Docs</a>
       <span class="socials hide-md">
@@ -47,9 +56,6 @@ const SITE = 'https://arrowair.com';
     <div class="side">
       <span class="stat price hide-sm" title="Arrow at the AIP-010 rate">
         <span class="coin arrow" aria-hidden="true"><img :src="logomark" alt="" /></span>{{ formatMoney(quoteValue(1, 'ARROW', 'USDC'), 'USDC') }}
-      </span>
-      <span class="stat price hide-sm" title="Ether (placeholder price)">
-        <span class="coin eth" aria-hidden="true">Ξ</span>{{ formatMoney(USDC_PER_ETH, 'USDC') }}
       </span>
       <span class="sep hide-sm" aria-hidden="true"></span>
       <a class="stat link hide-sm" href="https://discord.com/invite/arrow" target="_blank" rel="noopener"><Icon name="discord" :size="12" /> Community Support</a>
@@ -102,6 +108,7 @@ const SITE = 'https://arrowair.com';
 .link { color: inherit; text-decoration: none; transition: color 150ms; }
 .link:hover { color: var(--fg); }
 .link:hover :deep(svg) { color: var(--fg-2); }
+.reset { padding: 0; border: 0; background: none; font: inherit; color: var(--amber-11); cursor: pointer; }
 .sep { width: 1px; height: 12px; background: var(--slate-a5); }
 
 /* Live dot: jade with a slow breathing halo, like OpenSea's. */
