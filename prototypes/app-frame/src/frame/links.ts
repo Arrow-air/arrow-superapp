@@ -45,3 +45,9 @@ export const footerLinks: GlobalLink[] = [
   { label: 'FAQs', href: `${SITE}/docs/intro` },
   { label: 'arrowair.com', href: SITE },
 ];
+
+export const socials: { label: string; icon: 'discord' | 'x-logo' | 'github'; href: string }[] = [
+  { label: 'Discord', icon: 'discord', href: 'https://discord.com/invite/arrow' },
+  { label: 'X', icon: 'x-logo', href: 'https://x.com/ArrowAir_' },
+  { label: 'GitHub', icon: 'github', href: 'https://github.com/Arrow-air' },
+];

@@ -5,6 +5,7 @@ import WorkspaceHeader from './frame/WorkspaceHeader.vue';
 import SectionSidebar from './frame/SectionSidebar.vue';
 import PageHeader from './frame/PageHeader.vue';
 import SlotState from './frame/SlotState.vue';
+import AppFooter from './frame/AppFooter.vue';
 import { useWorkspace } from './frame/useWorkspace';
 
 const { route, project, tab, item } = useWorkspace();
@@ -47,6 +48,7 @@ watch(
         </div>
       </div>
     </div>
+    <AppFooter />
   </div>
 </template>
 

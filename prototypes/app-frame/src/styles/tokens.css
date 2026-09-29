@@ -160,6 +160,7 @@
 
   /* Frame geometry */
   --bar-height: 56px;
+  --footer-height: 32px;
   --control-height: 36px;
   --sidebar-width: 272px;
   --sidebar-rail: 52px;   /* collapsed icon rail */

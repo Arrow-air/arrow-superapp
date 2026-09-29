@@ -22,6 +22,11 @@ export const activity = [
   { id: 'a4', kind: 'in', label: 'Received', detail: 'From 0x9a3F…c21B', amount: 0.02, symbol: 'ETH', date: '12 Aug' },
 ] as const;
 
+// Live-ish DAO and network status for the footer. Mock values.
+export const network = { name: 'Mainnet', connected: true };
+export const sync = { source: 'GitHub', ago: '2m ago' };
+export const dao = { votesOpen: 2, bountiesOpen: 5 };
+
 // USDC per ARROW is the AIP-010 policy rate (effective $0.20/token), not a
 // market price. The ETH price is a placeholder.
 export const USDC_PER_ARROW = 0.2;
