@@ -84,6 +84,14 @@
     0 1px 2px rgb(0 0 0 / 0.5),
     0 4px 10px var(--indigo-a4);
   --brand-fg: var(--slate-12);
+  /* Surfaces and text on solid brand blue (the Arrow drawer). */
+  --brand-panel: var(--indigo-9);
+  --on-brand: #ffffff;
+  --on-brand-2: rgb(255 255 255 / 0.78);
+  --on-brand-3: rgb(255 255 255 / 0.58);
+  --on-brand-line: rgb(255 255 255 / 0.18);
+  --on-brand-fill: rgb(255 255 255 / 0.08);
+  --on-brand-hover: rgb(255 255 255 / 0.12);
   --accent: var(--indigo-9);
   --accent-fg: var(--slate-1);
   --accent-text: var(--indigo-11);   /* active nav item, current section crumb */
