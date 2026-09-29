@@ -1,0 +1,78 @@
+/* Design tokens for the frame. Neutral placeholders: these get replaced
+   with the Figma variables once the concept is pulled in. Everything in
+   the frame reads from here, so restyling happens in this file only. */
+
+:root {
+  /* Colour */
+  --bg: #f7f7f8;
+  --surface: #ffffff;
+  --surface-2: #ececef;
+  --fg: #16161a;
+  --fg-muted: #6b6b76;
+  --border: #e2e2e6;
+  --accent: #1f4fff;
+  --accent-fg: #ffffff;
+  --danger: #d4351c;
+  --bar-bg: #ffffff;
+  --bar-fg: #16161a;
+  --bar-fg-muted: #6b6b76;
+
+  /* Type */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-2xl: 1.5rem;
+
+  /* Space */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 40px;
+
+  /* Shape */
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+  --shadow-lg: 0 -8px 32px rgb(0 0 0 / 0.12);
+
+  /* Frame geometry */
+  --bar-height: 56px;
+  --mobile-nav-height: 60px;
+  --panel-width: 360px;
+  --frame-max: 1440px;
+  --content-max: 1200px;
+  --gutter: 24px;
+}
+
+@media (max-width: 767px) {
+  :root { --gutter: 16px; }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0e0e11;
+    --surface: #17171b;
+    --surface-2: #232329;
+    --fg: #ededf0;
+    --fg-muted: #9a9aa6;
+    --border: #2a2a31;
+    --accent: #5b7cff;
+    --bar-bg: #131316;
+    --bar-fg: #ededf0;
+    --bar-fg-muted: #9a9aa6;
+  }
+}
+:root[data-theme='dark'] {
+  --bg: #0e0e11;
+  --surface: #17171b;
+  --surface-2: #232329;
+  --fg: #ededf0;
+  --fg-muted: #9a9aa6;
+  --border: #2a2a31;
+  --accent: #5b7cff;
+  --bar-bg: #131316;
+  --bar-fg: #ededf0;
+  --bar-fg-muted: #9a9aa6;
+}
