@@ -3,6 +3,7 @@ import { computed, onErrorCaptured, ref, watch } from 'vue';
 import AppBar from './frame/AppBar.vue';
 import WorkspaceHeader from './frame/WorkspaceHeader.vue';
 import SectionSidebar from './frame/SectionSidebar.vue';
+import PageHeader from './frame/PageHeader.vue';
 import SlotState from './frame/SlotState.vue';
 import { useWorkspace } from './frame/useWorkspace';
 
@@ -32,15 +33,18 @@ watch(
       <WorkspaceHeader v-if="inWorkspace" />
       <div class="body">
         <SectionSidebar v-if="inWorkspace" />
-        <main class="slot">
-          <SlotState v-if="pageError" kind="error" :detail="pageError.message" />
-          <RouterView v-else v-slot="{ Component }">
-            <Suspense>
-              <component :is="Component" :key="route.fullPath" />
-              <template #fallback><SlotState kind="loading" /></template>
-            </Suspense>
-          </RouterView>
-        </main>
+        <div class="column">
+          <PageHeader v-if="inWorkspace && item" />
+          <main class="slot">
+            <SlotState v-if="pageError" kind="error" :detail="pageError.message" />
+            <RouterView v-else v-slot="{ Component }">
+              <Suspense>
+                <component :is="Component" :key="route.fullPath" />
+                <template #fallback><SlotState kind="loading" /></template>
+              </Suspense>
+            </RouterView>
+          </main>
+        </div>
       </div>
     </div>
   </div>
@@ -68,11 +72,17 @@ watch(
   min-height: 0;
   display: flex;
 }
+.column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
 /* The slot is the only thing that scrolls; bar, header and sidebar stay put. */
 .slot {
   flex: 1;
-  min-width: 0;
-  margin: var(--space-4);
+  min-height: 0;
+  margin: var(--space-2) var(--space-4) var(--space-4);
   background: var(--slot-bg);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);

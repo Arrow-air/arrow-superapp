@@ -4,7 +4,7 @@ import Menu, { type MenuItem } from './Menu.vue';
 // Breadcrumb after shadcn/ui (base). The last crumb is the current page.
 // A crumb with `menu` opens its siblings; on phones the middle crumbs
 // collapse into an ellipsis menu.
-export interface Crumb { id: string; label: string; to?: string; menu?: MenuItem[] }
+export interface Crumb { id: string; label: string; to?: string; menu?: MenuItem[]; current?: string }
 const props = defineProps<{ crumbs: Crumb[] }>();
 
 const middle = () => props.crumbs.slice(1, -1);
@@ -32,7 +32,7 @@ const middle = () => props.crumbs.slice(1, -1);
 
         <li class="item" :class="{ middle: i > 0 && i < crumbs.length - 1 }">
           <span v-if="i === crumbs.length - 1" class="page" role="link" aria-disabled="true" aria-current="page">{{ c.label }}</span>
-          <Menu v-else-if="c.menu" :items="c.menu" :current="c.id">
+          <Menu v-else-if="c.menu" :items="c.menu" :current="c.current ?? c.id">
             <template #trigger="{ open, toggle }">
               <button class="link trigger" type="button" aria-haspopup="menu" :aria-expanded="open" @click="toggle">
                 {{ c.label }}

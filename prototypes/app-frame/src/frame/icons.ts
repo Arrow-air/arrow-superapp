@@ -16,6 +16,8 @@ export const icons = {
   sort: 'M7 3 11 8H8v13H6V8H3Zm10 18-4-5h3V3h2v13h3ZM13 5h8v2h-8Zm0 4h6v2h-6Z',
   arrow: 'M12 2 20 21 12 16.5 4 21Z',
   menu: 'M3 5h18v2H3Zm0 6h18v2H3Zm0 6h18v2H3Z',
+  comment: 'M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-9l-5 4v-4H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z',
+  share: 'M18 2a3 3 0 1 1-2.8 4.1L8.9 9.3a3 3 0 0 1 0 1.4l6.3 3.2A3 3 0 1 1 15 16l-6.3-3.2a3 3 0 1 1 0-5.6L15 4a3 3 0 0 1 3-2Z',
 } as const;
 
 export type IconName = keyof typeof icons;
