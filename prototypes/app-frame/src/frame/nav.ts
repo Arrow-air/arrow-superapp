@@ -2,16 +2,18 @@
 // the workspace tabs, and the sidebar under each tab. The top bar, breadcrumb,
 // tabs, sidebar and routes are all generated from this file.
 import type { IconName } from './icons';
+import spearheadThumb from '../assets/spearhead-thumb.png';
 
 export interface NavItem { id: string; label: string; icon: IconName }
 export interface NavGroup { id: string; label: string; sortable?: boolean; items: NavItem[] }
 export interface Tab { id: string; label: string; groups: NavGroup[] }
-export interface Project { id: string; label: string; versions: { id: string; label: string; code: string }[] }
+export interface Project { id: string; label: string; thumb?: string; versions: { id: string; label: string; code: string }[] }
 
 export const projects: Project[] = [
   {
     id: 'spearhead',
     label: 'Spearhead',
+    thumb: spearheadThumb,
     versions: [
       { id: 'pt-1-5', label: 'Current Version', code: 'PT 1.5' },
       { id: 'pt-1-0', label: 'Previous Version', code: 'PT 1.0' },

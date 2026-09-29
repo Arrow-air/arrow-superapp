@@ -108,6 +108,8 @@
   --select-border: var(--slate-a5);
 
   --overlay: rgb(0 0 0 / 0.5);
+  /* Behind aircraft renders: a soft light pool so a dark airframe reads. */
+  --thumb-bg: radial-gradient(ellipse at 50% 40%, var(--slate-a7), var(--slate-a3) 70%);
   --success: var(--jade-11);
 
   --shadow: 0 12px 32px rgb(0 0 0 / 0.5);
