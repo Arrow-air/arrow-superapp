@@ -2,6 +2,7 @@
 import Icon from './Icon.vue';
 import { dao, formatMoney, network, quote, quoteValue, sync, type Quote, USDC_PER_ETH } from './account';
 import { socials } from './links';
+import logomark from '../assets/arrow-logomark-white.svg';
 import { theme, type Theme } from './theme';
 import type { IconName } from './icons';
 
@@ -45,7 +46,7 @@ const SITE = 'https://arrowair.com';
 
     <div class="side">
       <span class="stat price hide-sm" title="Arrow at the AIP-010 rate">
-        <span class="coin arrow" aria-hidden="true">A</span>{{ formatMoney(quoteValue(1, 'ARROW', 'USDC'), 'USDC') }}
+        <span class="coin arrow" aria-hidden="true"><img :src="logomark" alt="" /></span>{{ formatMoney(quoteValue(1, 'ARROW', 'USDC'), 'USDC') }}
       </span>
       <span class="stat price hide-sm" title="Ether (placeholder price)">
         <span class="coin eth" aria-hidden="true">Ξ</span>{{ formatMoney(USDC_PER_ETH, 'USDC') }}
@@ -151,7 +152,9 @@ const SITE = 'https://arrowair.com';
   font-size: 8px;
   font-weight: 700;
 }
-.coin.arrow { background: var(--indigo-9); color: #fff; }
+.coin.arrow { background: var(--brand-fill); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25); }
+/* Same centroid nudge as the other logomarks: ~2.6% of its height, downward. */
+.coin.arrow img { width: 7px; height: auto; transform: translateY(0.2px); }
 .coin.eth { background: var(--slate-a4); color: var(--fg-2); }
 
 /* Small segmented switch, same family as the tabs, flat. */
