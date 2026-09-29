@@ -40,7 +40,7 @@ import AccountBar from './AccountBar.vue';
 .logo:focus-visible { outline: none; box-shadow: var(--brand-shadow), 0 0 0 2px var(--focus-ring); }
 .logo img {
   display: block;
-  margin-top: -1px; /* the mark's viewBox sits low; nudge it to optical centre */
+  transform: translateY(0.6px); /* centroid sits ~2.6% above canvas centre */
   filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.35));
 }
 .spacer { flex: 1; }

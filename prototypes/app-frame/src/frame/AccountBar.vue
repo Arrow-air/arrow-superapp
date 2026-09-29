@@ -82,7 +82,9 @@ const walletOpen = ref(false);
   background: var(--brand-fill);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 0 0 1px rgb(0 0 0 / 0.3);
 }
-.token img { width: 11px; height: 12px; margin-top: -1px; }
+/* The mark's centroid sits ~2.6% above its canvas centre, so it moves down
+   by that much of its height to look centred in the circle. */
+.token img { width: 10px; height: auto; transform: translateY(0.3px); }
 .amount { color: var(--fg-2); font-weight: 500; }
 .num { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--fg); }
 .approx { color: var(--fg-muted); font-weight: 400; }
