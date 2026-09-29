@@ -54,6 +54,7 @@ export const icons = {
   chart: 'M3 3h2v16h16v2H3Zm4 9h3v6H7Zm5-4h3v10h-3Zm5-4h3v14h-3Z',
   tag: 'M3 3h9l9 9-9 9-9-9Zm4.5 2.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z',
   bulb: 'M12 2a7 7 0 0 1 4 12.7V17H8v-2.3A7 7 0 0 1 12 2Zm-3 17h6v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1Z',
+  'panel-left': 'M4 3h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 2v14h5V5Zm7 0v14h9V5Z',
 } as const;
 
 export type IconName = keyof typeof icons;
