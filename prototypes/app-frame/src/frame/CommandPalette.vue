@@ -14,7 +14,7 @@ const open = defineModel<boolean>('open', { required: true });
 const router = useRouter();
 const { project, base } = useWorkspace();
 
-interface Result { id: string; label: string; hint?: string; icon: IconName; run: () => void }
+interface Result { id: string; label: string; hint?: string; icon: IconName; action: string; run: () => void }
 interface Section { id: string; label: string; results: Result[] }
 
 const query = ref('');
@@ -33,6 +33,7 @@ const all = computed<Section[]>(() => [
           label: i.label,
           hint: `${t.label} · ${g.label}`,
           icon: i.icon,
+          action: 'Go to page',
           run: () => router.push(`${base.value}/${t.id}/${i.id}`),
         })),
       ),
@@ -46,6 +47,7 @@ const all = computed<Section[]>(() => [
       label: p.label,
       hint: p.versions[0].code,
       icon: 'plane' as IconName,
+      action: 'Switch aircraft',
       run: () => router.push(`/${p.id}/overview`),
     })),
   },
@@ -58,6 +60,7 @@ const all = computed<Section[]>(() => [
         label: l.label,
         hint: g.label,
         icon: 'share' as IconName,
+        action: 'Open link',
         run: () => window.open(l.href, '_blank', 'noopener'),
       })),
     ),
@@ -150,8 +153,8 @@ const indexOf = (r: Result) => flat.value.indexOf(r);
           </div>
 
           <footer class="foot">
-            <span><Kbd :keys="['↑', '↓']" /> to move</span>
-            <span><Kbd :keys="['↵']" /> to open</span>
+            <span class="foot-action"><Kbd :keys="['↵']" outline /> {{ flat[active]?.action ?? 'No result' }}</span>
+            <span class="foot-move"><Kbd :keys="['↑', '↓']" outline /> Move</span>
           </footer>
         </div>
       </div>
@@ -162,6 +165,9 @@ const indexOf = (r: Result) => flat.value.indexOf(r);
 <style scoped>
 .palette-root { position: fixed; inset: 0; z-index: 60; }
 .overlay { position: absolute; inset: 0; background: var(--overlay); }
+/* Hybrid of our palette and the shadcn docs search: a thick bezel ring,
+   an inset search field, outlined selection, and a lighter footer strip
+   that names what Enter will do. */
 .palette {
   position: absolute;
   top: 12vh;
@@ -170,22 +176,32 @@ const indexOf = (r: Result) => flat.value.indexOf(r);
   max-height: min(480px, 76vh);
   display: flex;
   flex-direction: column;
+  padding: 8px 8px 0;
   transform: translateX(-50%);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--slate-2);
   border-radius: 14px;
-  box-shadow: 0 24px 64px rgb(0 0 0 / 0.5), inset 0 1px 0 var(--slate-a3);
+  box-shadow:
+    0 0 0 1px var(--slate-a5),          /* crisp inner edge of the bezel */
+    0 0 0 5px var(--slate-3),           /* the 4px bezel ring */
+    0 0 0 6px var(--slate-a4),          /* its outer edge */
+    inset 0 1px 0 var(--slate-a3),
+    0 25px 50px -12px rgb(0 0 0 / 0.6);
   overflow: hidden;
 }
 .field {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 0 var(--space-3);
-  height: 48px;
-  border-bottom: 1px solid var(--border-soft);
+  height: 36px;
+  padding: 0 6px 0 var(--space-3);
+  border: 1px solid var(--slate-a5);
+  border-radius: 8px;
+  background: var(--slate-a3);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.25);
+  transition: border-color 150ms;
 }
-.search { width: 16px; height: 16px; fill: none; stroke: var(--fg-muted); stroke-width: 2; stroke-linecap: round; flex: none; }
+.field:focus-within { border-color: var(--indigo-a7); }
+.search { width: 14px; height: 14px; fill: none; stroke: var(--fg-muted); stroke-width: 2; stroke-linecap: round; flex: none; }
 .field input {
   flex: 1;
   min-width: 0;
@@ -198,11 +214,11 @@ const indexOf = (r: Result) => flat.value.indexOf(r);
 }
 .field input::placeholder { color: var(--fg-faint); }
 
-.results { flex: 1; overflow-y: auto; padding: var(--space-2); }
-.section + .section { margin-top: var(--space-2); }
+.results { flex: 1; overflow-y: auto; padding: 4px 0 8px; scrollbar-width: none; }
+.section + .section { margin-top: 4px; }
 .section-label {
   margin: 0;
-  padding: 6px var(--space-2) 4px;
+  padding: 10px var(--space-3) 4px;
   font-size: var(--text-sm);
   font-weight: 500;
   color: var(--fg-muted);
@@ -212,27 +228,40 @@ const indexOf = (r: Result) => flat.value.indexOf(r);
   align-items: center;
   gap: var(--space-2);
   height: 34px;
-  padding: 0 var(--space-2);
+  padding: 0 var(--space-3);
+  border: 1px solid transparent;
   border-radius: 8px;
   color: var(--fg-2);
+  font-weight: 500;
   cursor: pointer;
 }
-.result[aria-selected='true'] { background: var(--indigo-a3); color: var(--fg); }
+.result[aria-selected='true'] {
+  border-color: var(--indigo-a6);
+  background: var(--indigo-a3);
+  box-shadow: inset 0 1px 0 var(--indigo-a4);
+  color: var(--fg);
+}
 .r-icon { color: var(--fg-muted); flex: none; }
 .result[aria-selected='true'] .r-icon { color: var(--indigo-11); }
 .r-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.r-hint { font-size: var(--text-sm); color: var(--fg-faint); white-space: nowrap; }
+.r-hint { font-size: var(--text-sm); font-weight: 400; color: var(--fg-faint); white-space: nowrap; }
 .empty { margin: 0; padding: var(--space-6) var(--space-2); text-align: center; color: var(--fg-muted); }
 
 .foot {
   display: flex;
-  gap: var(--space-4);
-  padding: var(--space-2) var(--space-3);
-  border-top: 1px solid var(--border-soft);
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  margin: 0 -8px;
+  padding: 0 var(--space-4);
+  border-top: 1px solid var(--slate-a4);
+  background: var(--slate-3);
   font-size: var(--text-sm);
+  font-weight: 500;
   color: var(--fg-muted);
 }
-.foot span { display: inline-flex; align-items: center; gap: 6px; }
+.foot span { display: inline-flex; align-items: center; gap: 8px; }
+.foot-action { color: var(--fg-2); }
 
 .palette-enter-active, .palette-leave-active { transition: opacity 160ms ease; }
 .palette-enter-active .palette, .palette-leave-active .palette { transition: transform 160ms ease, opacity 160ms ease; }

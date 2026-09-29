@@ -1,11 +1,12 @@
 <script setup lang="ts">
 // Keyboard key hints, after coss ui Kbd: small borderless keys on a faint fill.
-defineProps<{ keys: string[] }>();
+// `outline` gives the bordered variant.
+defineProps<{ keys: string[]; outline?: boolean }>();
 </script>
 
 <template>
   <span class="kbd-group" aria-hidden="true">
-    <kbd v-for="k in keys" :key="k" class="kbd">{{ k }}</kbd>
+    <kbd v-for="k in keys" :key="k" class="kbd" :class="{ outline }">{{ k }}</kbd>
   </span>
 </template>
 
@@ -27,4 +28,6 @@ defineProps<{ keys: string[] }>();
   line-height: 1;
   user-select: none;
 }
+/* Bordered key on a dark fill, for use on lighter strips (shadcn command footer). */
+.kbd.outline { background: var(--slate-1); border: 1px solid var(--slate-a5); }
 </style>
