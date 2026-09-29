@@ -26,9 +26,9 @@ function switchProject(id: string) {
   <div class="toolbar" role="toolbar" aria-label="Aircraft">
     <Menu :items="projects.map((p) => ({ id: p.id, label: p.label }))" :current="project?.id" @select="switchProject">
       <template #trigger="{ open, toggle }">
-        <button class="tbtn" type="button" aria-haspopup="menu" :aria-expanded="open" aria-label="Aircraft" @click="toggle">
+        <button class="tbtn with-thumb" type="button" aria-haspopup="menu" :aria-expanded="open" aria-label="Aircraft" @click="toggle">
           <span class="thumb" aria-hidden="true">
-            <img v-if="project?.thumb" :src="project.thumb" alt="" width="56" height="25" />
+            <img v-if="project?.thumb" :src="project.thumb" alt="" width="48" height="21" />
             <span v-else class="sketch"></span>
           </span>
           <span class="name">{{ project?.label ?? 'Select aircraft' }}</span>
@@ -59,19 +59,20 @@ function switchProject(id: string) {
 <style scoped>
 .toolbar { flex: none; }
 .name { color: var(--fg); }
+/* Thumbnail sits 7px from the toolbar edge on the left, top and bottom. */
+.with-thumb { padding-left: 2px; gap: 8px; }
 /* The aircraft render is dark on transparent, so it sits on a small lit tile. */
 .thumb {
   display: grid;
   place-items: center;
-  width: 64px;
-  height: 26px;
-  margin-left: -5px;
+  width: 52px;
+  height: 22px;
   border-radius: 6px;
   background: var(--thumb-bg);
   box-shadow: inset 0 1px 0 var(--slate-a4), inset 0 0 0 1px var(--slate-a3);
   overflow: hidden;
 }
-.thumb img { display: block; width: 56px; height: auto; filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.4)); }
+.thumb img { display: block; width: 48px; height: auto; filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.4)); }
 .sketch {
   width: 36px;
   height: 16px;
