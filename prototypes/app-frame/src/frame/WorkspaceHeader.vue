@@ -1,25 +1,32 @@
 <script setup lang="ts">
-import Icon from './Icon.vue';
+import { computed } from 'vue';
+import Breadcrumb, { type Crumb } from './Breadcrumb.vue';
 import SegmentedTabs from './SegmentedTabs.vue';
 import { tabs } from './nav';
 import { useWorkspace } from './useWorkspace';
 
 const { project, tab, item, base } = useWorkspace();
+
+// Project, then the tab (which opens a menu of the other tabs), then the page.
+const crumbs = computed<Crumb[]>(() => {
+  const out: Crumb[] = [];
+  if (project.value) out.push({ id: project.value.id, label: project.value.label, to: `${base.value}/overview` });
+  if (tab.value) {
+    out.push({
+      id: tab.value.id,
+      label: tab.value.label,
+      to: `${base.value}/${tab.value.id}`,
+      menu: tabs.map((t) => ({ id: t.id, label: t.label, to: `${base.value}/${t.id}` })),
+    });
+  }
+  if (item.value) out.push({ id: item.value.id, label: item.value.label });
+  return out;
+});
 </script>
 
 <template>
   <div class="header">
-    <nav class="crumbs caps" aria-label="Breadcrumb">
-      <RouterLink :to="`${base}/overview`" class="crumb project">{{ project?.label }}</RouterLink>
-      <template v-if="tab">
-        <Icon name="chevron-right" :size="12" class="sep" />
-        <RouterLink :to="`${base}/${tab.id}`" class="crumb section">{{ tab.label }}</RouterLink>
-      </template>
-      <template v-if="item">
-        <Icon name="chevron-right" :size="12" class="sep" />
-        <span class="crumb current" aria-current="page">{{ item.label }}</span>
-      </template>
-    </nav>
+    <Breadcrumb :crumbs="crumbs" />
 
     <SegmentedTabs
       label="Workspace"
@@ -40,19 +47,6 @@ const { project, tab, item, base } = useWorkspace();
   background: var(--surface-header);
   border-bottom: 1px solid var(--border);
 }
-.crumbs {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-width: 0;
-  white-space: nowrap;
-}
-.crumb { text-decoration: none; }
-.project { color: var(--link); }
-.section { color: var(--accent-text); }
-.current { color: var(--fg-2); overflow: hidden; text-overflow: ellipsis; }
-.sep { color: var(--fg-faint); flex: none; }
-
 
 @media (max-width: 1023px) {
   .header { flex-direction: column; align-items: stretch; padding: var(--space-3) var(--gutter); }
