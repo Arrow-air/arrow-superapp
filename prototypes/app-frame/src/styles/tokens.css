@@ -87,7 +87,7 @@
     0 4px 10px var(--indigo-a4);
   --brand-fg: #ffffff;
   /* Surfaces and text on solid brand blue (the Arrow drawer). */
-  --brand-panel: var(--indigo-9);
+  --brand-panel: #0943bf;          /* Arrow panel (off the Radix scale by request) */
   --on-brand: #ffffff;
   --on-brand-2: rgb(255 255 255 / 0.78);
   --on-brand-3: rgb(255 255 255 / 0.58);
