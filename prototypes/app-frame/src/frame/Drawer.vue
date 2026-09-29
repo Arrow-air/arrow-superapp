@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue';
 
-// Side drawer after shadcn/ui Drawer (direction right): a dimmed overlay and
+// Side drawer after shadcn/ui Drawer (direction left or right): a dimmed overlay and
 // a full-height panel, 3/4 of the screen up to 384px. Closes on Escape or an
 // overlay click, traps Tab inside, and hands focus back to the opener.
 const open = defineModel<boolean>('open', { required: true });
-defineProps<{ title: string; description?: string }>();
+withDefaults(defineProps<{ title: string; description?: string; side?: 'left' | 'right' }>(), { side: 'right' });
 
 const panel = ref<HTMLElement>();
 let opener: HTMLElement | null = null;
@@ -50,6 +50,7 @@ onBeforeUnmount(() => {
         <section
           ref="panel"
           class="panel"
+          :class="side"
           role="dialog"
           aria-modal="true"
           :aria-label="title"
@@ -86,6 +87,12 @@ onBeforeUnmount(() => {
   border-left: 1px solid var(--border);
   box-shadow: -24px 0 48px rgb(0 0 0 / 0.35);
   outline: none;
+}
+.panel.left {
+  inset: 0 auto 0 0;
+  border-left: 0;
+  border-right: 1px solid var(--border);
+  box-shadow: 24px 0 48px rgb(0 0 0 / 0.35);
 }
 .head {
   display: flex;
@@ -124,6 +131,7 @@ onBeforeUnmount(() => {
 .drawer-enter-active .overlay, .drawer-leave-active .overlay { transition: opacity 500ms cubic-bezier(0.32, 0.72, 0, 1); }
 .drawer-enter-active .panel, .drawer-leave-active .panel { transition: transform 500ms cubic-bezier(0.32, 0.72, 0, 1); }
 .drawer-enter-from .panel, .drawer-leave-to .panel { transform: translateX(100%); }
+.drawer-enter-from .panel.left, .drawer-leave-to .panel.left { transform: translateX(-100%); }
 .drawer-enter-from .overlay, .drawer-leave-to .overlay { opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
   .drawer-enter-active .overlay, .drawer-leave-active .overlay,
