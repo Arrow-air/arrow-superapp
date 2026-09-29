@@ -79,7 +79,7 @@ function switchProject(id: string) {
   height: var(--control-height);
   border-radius: var(--radius-sm);
   background: var(--brand);
-  color: #fff;
+  color: var(--brand-fg);
 }
 .thumb {
   width: 44px;

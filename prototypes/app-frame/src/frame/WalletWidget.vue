@@ -26,7 +26,7 @@ defineProps<{ balance: number }>();
 .balance {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
-  color: #717171;
+  color: var(--fg-3);
   letter-spacing: 0.02em;
 }
 .avatar {

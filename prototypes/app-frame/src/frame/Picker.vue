@@ -52,7 +52,7 @@ function choose(id: string) {
   background: var(--surface-raised);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
-  box-shadow: 0 12px 32px rgb(0 0 0 / 0.5);
+  box-shadow: var(--shadow);
 }
 .menu button {
   display: flex;
@@ -67,7 +67,7 @@ function choose(id: string) {
   white-space: nowrap;
   cursor: pointer;
 }
-.menu button:hover { background: var(--surface-header); }
+.menu button:hover { background: var(--surface-hover); }
 .menu button[aria-selected='true'] { color: var(--accent-text); }
 .hint { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--fg-faint); }
 </style>
