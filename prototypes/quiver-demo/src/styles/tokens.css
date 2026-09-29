@@ -1,0 +1,299 @@
+/* Design tokens for the frame. Every colour is a step on a Radix Colors
+   dark scale (radix-ui.com/colors, v3): Slate for neutrals, Indigo for brand,
+   links and the active state, Jade for success, Sky and Amber for
+   version status, Plum for the avatar, Red for
+   errors. Components only read the semantic tokens at the bottom, so
+   restyling happens in this file only. Dark is the default; the light theme
+   is at the bottom of this file. */
+
+:root {
+  color-scheme: dark;
+
+  /* Radix scales. Step guide: 1-2 app bg, 3-5 component bg, 6-8 borders,
+     9-10 solid fills, 11 low-contrast text, 12 high-contrast text.
+     The -a scales are the same steps as translucent overlays. */
+  --slate-1: #111113; --slate-2: #18191b; --slate-3: #212225; --slate-4: #272a2d;
+  --slate-5: #2e3135; --slate-6: #363a3f; --slate-7: #43484e; --slate-8: #5a6169;
+  --slate-9: #696e77; --slate-10: #777b84; --slate-11: #b0b4ba; --slate-12: #edeef0;
+  --slate-a1: #00000000; --slate-a2: #d8f4f609; --slate-a3: #ddeaf814; --slate-a4: #d3edf81d;
+  --slate-a5: #d9edfe25; --slate-a6: #d6ebfd30; --slate-a7: #d9edff40; --slate-a8: #d9edff5d;
+  --slate-a9: #dfebfd6d; --slate-a10: #e5edfd7b; --slate-a11: #f1f7feb5; --slate-a12: #fcfdffef;
+  --jade-1: #0d1512; --jade-2: #121c18; --jade-3: #0f2e22; --jade-4: #0b3b2c;
+  --jade-5: #114837; --jade-6: #1b5745; --jade-7: #246854; --jade-8: #2a7e68;
+  --jade-9: #29a383; --jade-10: #27b08b; --jade-11: #1fd8a4; --jade-12: #adf0d4;
+  --jade-a1: #00de4505; --jade-a2: #27fba60c; --jade-a3: #02f99920; --jade-a4: #00ffaa2d;
+  --jade-a5: #11ffb63b; --jade-a6: #34ffc24b; --jade-a7: #45fdc75e; --jade-a8: #48ffcf75;
+  --jade-a9: #38feca9d; --jade-a10: #31fec7ab; --jade-a11: #21fec0d6; --jade-a12: #b8ffe1ef;
+  --indigo-1: #11131f; --indigo-2: #141726; --indigo-3: #182449; --indigo-4: #1d2e62;
+  --indigo-5: #253974; --indigo-6: #304384; --indigo-7: #3a4f97; --indigo-8: #435db1;
+  --indigo-9: #3e63dd; --indigo-10: #5472e4; --indigo-11: #9eb1ff; --indigo-12: #d6e1ff;
+  --indigo-a1: #1133ff0f; --indigo-a2: #3354fa17; --indigo-a3: #2f62ff3c; --indigo-a4: #3566ff57;
+  --indigo-a5: #4171fd6b; --indigo-a6: #5178fd7c; --indigo-a7: #5a7fff90; --indigo-a8: #5b81feac;
+  --indigo-a9: #4671ffdb; --indigo-a10: #5c7efee3; --indigo-a11: #9eb1ff; --indigo-a12: #d6e1ff;
+  --plum-1: #181118; --plum-2: #201320; --plum-3: #351a35; --plum-4: #451d47;
+  --plum-5: #512454; --plum-6: #5e3061; --plum-7: #734079; --plum-8: #92549c;
+  --plum-9: #ab4aba; --plum-10: #b658c4; --plum-11: #e796f3; --plum-12: #f4d4f4;
+  --red-1: #191111; --red-2: #201314; --red-3: #3b1219; --red-4: #500f1c;
+  --red-5: #611623; --red-6: #72232d; --red-7: #8c333a; --red-8: #b54548;
+  --red-9: #e5484d; --red-10: #ec5d5e; --red-11: #ff9592; --red-12: #ffd1d9;
+  --red-a1: #f4121209; --red-a2: #f22f3e11; --red-a3: #ff173f2d; --red-a4: #fe0a3b44;
+  --red-a5: #ff204756; --red-a6: #ff3e5668; --red-a7: #ff536184; --red-a8: #ff5d61b0;
+  --red-a9: #fe4e54e4; --red-a10: #ff6465eb; --red-a11: #ff9592; --red-a12: #ffd1d9;
+  --amber-1: #16120c; --amber-2: #1d180f; --amber-3: #302008; --amber-4: #3f2700;
+  --amber-5: #4d3000; --amber-6: #5c3d05; --amber-7: #714f19; --amber-8: #8f6424;
+  --amber-9: #ffc53d; --amber-10: #ffd60a; --amber-11: #ffca16; --amber-12: #ffe7b3;
+  --amber-a1: #e63c0006; --amber-a2: #fd9b000d; --amber-a3: #fa820022; --amber-a4: #fc820032;
+  --amber-a5: #fd8b0041; --amber-a6: #fd9b0051; --amber-a7: #ffab2567; --amber-a8: #ffae3587;
+  --amber-a9: #ffc53d; --amber-a10: #ffd60a; --amber-a11: #ffca16; --amber-a12: #ffe7b3;
+  --sky-1: #0d141f; --sky-2: #111a27; --sky-3: #112840; --sky-4: #113555;
+  --sky-5: #154467; --sky-6: #1b537b; --sky-7: #1f6692; --sky-8: #197cae;
+  --sky-9: #7ce2fe; --sky-10: #a8eeff; --sky-11: #75c7f0; --sky-12: #c2f3ff;
+  --sky-a1: #0044ff0f; --sky-a2: #1171fb18; --sky-a3: #1184fc33; --sky-a4: #128fff49;
+  --sky-a5: #1c9dfd5d; --sky-a6: #28a5ff72; --sky-a7: #2badfe8b; --sky-a8: #1db2fea9;
+  --sky-a9: #7ce3fffe; --sky-a10: #a8eeff; --sky-a11: #7cd3ffef; --sky-a12: #c2f3ff;
+
+  /* Surfaces */
+  --bg: var(--slate-1);             /* page behind the card */
+  --slot-bg: var(--slate-1);        /* the content slot */
+  --surface: var(--slate-2);        /* workspace card */
+  --surface-raised: var(--slate-2); /* pickers, buttons */
+  --surface-header: var(--slate-3); /* workspace header strip */
+  --surface-sunken: var(--slate-2); /* tab group */
+  --surface-hover: var(--slate-a3);
+  --thread-bg: #0b0b0b;            /* thread (discussion) pane, off the Radix scale by request */
+  --footer-bg: #050505;            /* status footer, near-black (off the Radix scale by request) */
+  --surface-active: var(--indigo-a3); /* selected nav item */
+
+  /* Lines (translucent, so they sit right on any surface) */
+  --border: var(--slate-a6);
+  --border-strong: var(--slate-a7);
+  --border-soft: var(--slate-a4);
+
+  /* Text */
+  --fg: var(--slate-12);
+  --fg-2: var(--slate-11);      /* current breadcrumb, hovered nav */
+  --fg-3: var(--slate-10);      /* balance */
+  --fg-muted: var(--slate-9);   /* inactive tabs, nav items */
+  --fg-faint: var(--slate-8);   /* version code, separators */
+
+  /* Accents */
+  --brand: var(--indigo-9);        /* logo tile */
+  /* Logo tile depth, same recipe as the active tab pill: lit from above. */
+  --brand-fill: linear-gradient(180deg, var(--indigo-10), var(--indigo-9) 55%, var(--indigo-8));
+  --brand-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.28),  /* top highlight */
+    inset 0 -1px 0 rgb(0 0 0 / 0.25),
+    0 0 0 1px rgb(0 0 0 / 0.35),
+    0 1px 2px rgb(0 0 0 / 0.5),
+    0 4px 10px var(--indigo-a4);
+  --brand-fg: #ffffff;
+  /* Surfaces and text on solid brand blue (the Arrow drawer). */
+  --brand-panel: #0943bf;          /* Arrow panel (off the Radix scale by request) */
+  --on-brand: #ffffff;
+  --on-brand-2: rgb(255 255 255 / 0.78);
+  --on-brand-3: rgb(255 255 255 / 0.58);
+  --on-brand-line: rgb(255 255 255 / 0.18);
+  --on-brand-fill: rgb(255 255 255 / 0.08);
+  --on-brand-hover: rgb(255 255 255 / 0.12);
+  --accent: var(--indigo-9);
+  --accent-fg: var(--slate-1);
+  --accent-text: var(--indigo-11);   /* active nav item, current section crumb */
+  --link: var(--indigo-11);        /* project crumb */
+  --avatar: linear-gradient(135deg, var(--plum-11), var(--plum-9));
+  --danger: var(--red-11);
+  --danger-bg: var(--red-a2);
+  --danger-border: var(--red-a7);
+  --focus-ring: var(--indigo-a8);
+
+  /* Segmented tabs (coss ui lg, with depth). The track is recessed into
+     the surface; the active pill sits raised on it in brand Indigo. */
+  --tabs-track: var(--slate-1);
+  --tabs-track-shadow:
+    inset 0 1px 2px rgb(0 0 0 / 0.55),   /* shadow under the top lip */
+    inset 0 2px 8px rgb(0 0 0 / 0.35),
+    0 1px 0 var(--slate-a3);             /* light catching the bottom edge */
+  --tabs-indicator: linear-gradient(180deg, var(--indigo-a6), var(--indigo-a4));
+  --tabs-indicator-shadow:
+    inset 0 1px 0 var(--slate-a5),       /* top highlight */
+    inset 0 -1px 0 rgb(0 0 0 / 0.25),
+    0 1px 2px rgb(0 0 0 / 0.5),
+    0 3px 8px rgb(0 0 0 / 0.35);
+  --tabs-fg: var(--slate-9);
+  --tabs-fg-hover: var(--slate-11);
+  --tabs-fg-active: var(--indigo-11);
+
+  /* Toolbar (after coss ui Toolbar): a flat card of ghost buttons in groups,
+     with outlined selects. Used for the account group top right. */
+  --toolbar-bg: var(--slate-2);
+  --toolbar-border: var(--slate-a4);
+  --toolbar-sep: var(--slate-a4);
+  --toolbar-active: var(--slate-a4);
+  --select-bg: var(--slate-a2);
+  --select-border: var(--slate-a5);
+
+  --overlay: rgb(0 0 0 / 0.5);
+  /* Behind aircraft renders: a soft light pool so a dark airframe reads. */
+  --thumb-bg: radial-gradient(ellipse at 50% 40%, var(--slate-a7), var(--slate-a3) 70%);
+  --success: var(--jade-11);         /* incoming funds, connected */
+
+  /* Version status dots: how current the version you're viewing is. */
+  --status-upcoming: var(--sky-9);
+  --status-current: var(--jade-9);
+  --status-previous: var(--amber-9);
+  --status-unmaintained: var(--red-9);
+
+  --shadow: 0 12px 32px rgb(0 0 0 / 0.5);
+
+  /* Type */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --text-2xs: 0.625rem;  /* 10px, units (ARROW, USDC) */
+  --text-xs: 0.625rem;   /* 10px, caps labels */
+  --text-sm: 0.6875rem;  /* 11px, mono figures, hints */
+  --text-base: 0.75rem;  /* 12px, everything else */
+  --text-md: 0.875rem;   /* 14px, drawer titles */
+  --text-nav: 0.8125rem; /* 13px, sidebar items */
+  --text-xl: 1.625rem;   /* 26px, headline figures */
+  --tracking-caps: 0.12em;
+
+  /* Space */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 40px;
+
+  /* Shape */
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-lg: 12px;
+
+  /* Frame geometry */
+  --bar-height: 56px;
+  --footer-height: 32px;
+  --control-height: 36px;
+  --sidebar-width: 272px;
+  --sidebar-rail: 52px;   /* collapsed icon rail */
+  --arrow-panel-width: 320px;
+  --frame-inset: 8px;     /* gap between the window edge and the workspace card */
+  --gutter: 24px;
+}
+
+@media (max-width: 767px) {
+  :root { --gutter: 16px; --frame-inset: 0px; }
+}
+
+/* Light theme: the same semantic tokens, pointed at Radix's light scales.
+   Applied when the viewer picks Light, or picks System on a light OS. */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --slate-1: #fcfcfd; --slate-2: #f9f9fb; --slate-3: #f0f0f3; --slate-4: #e8e8ec;
+  --slate-5: #e0e1e6; --slate-6: #d9d9e0; --slate-7: #cdced6; --slate-8: #b9bbc6;
+  --slate-9: #8b8d98; --slate-10: #80838d; --slate-11: #60646c; --slate-12: #1c2024;
+  --slate-a1: #00005503; --slate-a2: #00005506; --slate-a3: #0000330f; --slate-a4: #00002d17;
+  --slate-a5: #0009321f; --slate-a6: #00002f26; --slate-a7: #00062e32; --slate-a8: #00083046;
+  --slate-a9: #00051d74; --slate-a10: #00071b7f; --slate-a11: #0007149f; --slate-a12: #000509e3;
+  --indigo-1: #fdfdfe; --indigo-2: #f7f9ff; --indigo-3: #edf2fe; --indigo-4: #e1e9ff;
+  --indigo-5: #d2deff; --indigo-6: #c1d0ff; --indigo-7: #abbdf9; --indigo-8: #8da4ef;
+  --indigo-9: #3e63dd; --indigo-10: #3358d4; --indigo-11: #3a5bc7; --indigo-12: #1f2d5c;
+  --indigo-a1: #00008002; --indigo-a2: #0040ff08; --indigo-a3: #0047f112; --indigo-a4: #0044ff1e;
+  --indigo-a5: #0044ff2d; --indigo-a6: #003eff3e; --indigo-a7: #0037ed54; --indigo-a8: #0034dc72;
+  --indigo-a9: #0031d2c1; --indigo-a10: #002ec9cc; --indigo-a11: #002bb7c5; --indigo-a12: #001046e0;
+  --jade-1: #fbfefd; --jade-2: #f4fbf7; --jade-3: #e6f7ed; --jade-4: #d6f1e3;
+  --jade-5: #c3e9d7; --jade-6: #acdec8; --jade-7: #8bceb6; --jade-8: #56ba9f;
+  --jade-9: #29a383; --jade-10: #26997b; --jade-11: #208368; --jade-12: #1d3b31;
+  --jade-a1: #00c08004; --jade-a2: #00a3460b; --jade-a3: #00ae4819; --jade-a4: #00a85129;
+  --jade-a5: #00a2553c; --jade-a6: #009a5753; --jade-a7: #00945f74; --jade-a8: #00976ea9;
+  --jade-a9: #00916bd6; --jade-a10: #008764d9; --jade-a11: #007152df; --jade-a12: #002217e2;
+  --plum-1: #fefcff; --plum-2: #fdf7fd; --plum-3: #fbebfb; --plum-4: #f7def8;
+  --plum-5: #f2d1f3; --plum-6: #e9c2ec; --plum-7: #deade3; --plum-8: #cf91d8;
+  --plum-9: #ab4aba; --plum-10: #a144af; --plum-11: #953ea3; --plum-12: #53195d;
+  --red-1: #fffcfc; --red-2: #fff7f7; --red-3: #feebec; --red-4: #ffdbdc;
+  --red-5: #ffcdce; --red-6: #fdbdbe; --red-7: #f4a9aa; --red-8: #eb8e90;
+  --red-9: #e5484d; --red-10: #dc3e42; --red-11: #ce2c31; --red-12: #641723;
+  --red-a1: #ff000003; --red-a2: #ff000008; --red-a3: #f3000d14; --red-a4: #ff000824;
+  --red-a5: #ff000632; --red-a6: #f8000442; --red-a7: #df000356; --red-a8: #d2000571;
+  --red-a9: #db0007b7; --red-a10: #d10005c1; --red-a11: #c40006d3; --red-a12: #55000de8;
+  --amber-1: #fefdfb; --amber-2: #fefbe9; --amber-3: #fff7c2; --amber-4: #ffee9c;
+  --amber-5: #fbe577; --amber-6: #f3d673; --amber-7: #e9c162; --amber-8: #e2a336;
+  --amber-9: #ffc53d; --amber-10: #ffba18; --amber-11: #ab6400; --amber-12: #4f3422;
+  --sky-1: #f9feff; --sky-2: #f1fafd; --sky-3: #e1f6fd; --sky-4: #d1f0fa;
+  --sky-5: #bee7f5; --sky-6: #a9daed; --sky-7: #8dcae3; --sky-8: #60b3d7;
+  --sky-9: #7ce2fe; --sky-10: #74daf8; --sky-11: #00749e; --sky-12: #1d3e56;
+
+  /* Light-specific tuning: softer shadows and depth, a light pool behind renders. */
+  --footer-bg: var(--slate-2);
+  --thread-bg: var(--slate-1);
+  --overlay: rgb(0 0 0 / 0.28);
+  --shadow: 0 12px 32px rgb(0 0 0 / 0.14);
+  --thumb-bg: radial-gradient(ellipse at 50% 40%, #ffffff, var(--slate-4) 75%);
+  --tabs-track: var(--slate-3);
+  --tabs-track-shadow:
+    inset 0 1px 2px rgb(0 0 0 / 0.1),
+    inset 0 2px 6px rgb(0 0 0 / 0.05),
+    0 1px 0 rgb(255 255 255 / 0.9);
+  --tabs-indicator-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    inset 0 -1px 0 rgb(0 0 0 / 0.06),
+    0 1px 2px rgb(0 0 0 / 0.12),
+    0 2px 6px rgb(0 0 0 / 0.06);
+  --status-upcoming: var(--sky-11);
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme='system'] {
+    color-scheme: light;
+    --slate-1: #fcfcfd; --slate-2: #f9f9fb; --slate-3: #f0f0f3; --slate-4: #e8e8ec;
+    --slate-5: #e0e1e6; --slate-6: #d9d9e0; --slate-7: #cdced6; --slate-8: #b9bbc6;
+    --slate-9: #8b8d98; --slate-10: #80838d; --slate-11: #60646c; --slate-12: #1c2024;
+    --slate-a1: #00005503; --slate-a2: #00005506; --slate-a3: #0000330f; --slate-a4: #00002d17;
+    --slate-a5: #0009321f; --slate-a6: #00002f26; --slate-a7: #00062e32; --slate-a8: #00083046;
+    --slate-a9: #00051d74; --slate-a10: #00071b7f; --slate-a11: #0007149f; --slate-a12: #000509e3;
+    --indigo-1: #fdfdfe; --indigo-2: #f7f9ff; --indigo-3: #edf2fe; --indigo-4: #e1e9ff;
+    --indigo-5: #d2deff; --indigo-6: #c1d0ff; --indigo-7: #abbdf9; --indigo-8: #8da4ef;
+    --indigo-9: #3e63dd; --indigo-10: #3358d4; --indigo-11: #3a5bc7; --indigo-12: #1f2d5c;
+    --indigo-a1: #00008002; --indigo-a2: #0040ff08; --indigo-a3: #0047f112; --indigo-a4: #0044ff1e;
+    --indigo-a5: #0044ff2d; --indigo-a6: #003eff3e; --indigo-a7: #0037ed54; --indigo-a8: #0034dc72;
+    --indigo-a9: #0031d2c1; --indigo-a10: #002ec9cc; --indigo-a11: #002bb7c5; --indigo-a12: #001046e0;
+    --jade-1: #fbfefd; --jade-2: #f4fbf7; --jade-3: #e6f7ed; --jade-4: #d6f1e3;
+    --jade-5: #c3e9d7; --jade-6: #acdec8; --jade-7: #8bceb6; --jade-8: #56ba9f;
+    --jade-9: #29a383; --jade-10: #26997b; --jade-11: #208368; --jade-12: #1d3b31;
+    --jade-a1: #00c08004; --jade-a2: #00a3460b; --jade-a3: #00ae4819; --jade-a4: #00a85129;
+    --jade-a5: #00a2553c; --jade-a6: #009a5753; --jade-a7: #00945f74; --jade-a8: #00976ea9;
+    --jade-a9: #00916bd6; --jade-a10: #008764d9; --jade-a11: #007152df; --jade-a12: #002217e2;
+    --plum-1: #fefcff; --plum-2: #fdf7fd; --plum-3: #fbebfb; --plum-4: #f7def8;
+    --plum-5: #f2d1f3; --plum-6: #e9c2ec; --plum-7: #deade3; --plum-8: #cf91d8;
+    --plum-9: #ab4aba; --plum-10: #a144af; --plum-11: #953ea3; --plum-12: #53195d;
+    --red-1: #fffcfc; --red-2: #fff7f7; --red-3: #feebec; --red-4: #ffdbdc;
+    --red-5: #ffcdce; --red-6: #fdbdbe; --red-7: #f4a9aa; --red-8: #eb8e90;
+    --red-9: #e5484d; --red-10: #dc3e42; --red-11: #ce2c31; --red-12: #641723;
+    --red-a1: #ff000003; --red-a2: #ff000008; --red-a3: #f3000d14; --red-a4: #ff000824;
+    --red-a5: #ff000632; --red-a6: #f8000442; --red-a7: #df000356; --red-a8: #d2000571;
+    --red-a9: #db0007b7; --red-a10: #d10005c1; --red-a11: #c40006d3; --red-a12: #55000de8;
+    --amber-1: #fefdfb; --amber-2: #fefbe9; --amber-3: #fff7c2; --amber-4: #ffee9c;
+    --amber-5: #fbe577; --amber-6: #f3d673; --amber-7: #e9c162; --amber-8: #e2a336;
+    --amber-9: #ffc53d; --amber-10: #ffba18; --amber-11: #ab6400; --amber-12: #4f3422;
+    --sky-1: #f9feff; --sky-2: #f1fafd; --sky-3: #e1f6fd; --sky-4: #d1f0fa;
+    --sky-5: #bee7f5; --sky-6: #a9daed; --sky-7: #8dcae3; --sky-8: #60b3d7;
+    --sky-9: #7ce2fe; --sky-10: #74daf8; --sky-11: #00749e; --sky-12: #1d3e56;
+
+    /* Light-specific tuning: softer shadows and depth, a light pool behind renders. */
+  --footer-bg: var(--slate-2);
+  --thread-bg: var(--slate-1);
+    --overlay: rgb(0 0 0 / 0.28);
+    --shadow: 0 12px 32px rgb(0 0 0 / 0.14);
+    --thumb-bg: radial-gradient(ellipse at 50% 40%, #ffffff, var(--slate-4) 75%);
+    --tabs-track: var(--slate-3);
+    --tabs-track-shadow:
+      inset 0 1px 2px rgb(0 0 0 / 0.1),
+      inset 0 2px 6px rgb(0 0 0 / 0.05),
+      0 1px 0 rgb(255 255 255 / 0.9);
+    --tabs-indicator-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.5),
+      inset 0 -1px 0 rgb(0 0 0 / 0.06),
+      0 1px 2px rgb(0 0 0 / 0.12),
+      0 2px 6px rgb(0 0 0 / 0.06);
+    --status-upcoming: var(--sky-11);
+  }
+}
