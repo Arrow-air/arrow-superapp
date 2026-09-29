@@ -60,6 +60,7 @@
   --surface-header: var(--slate-3); /* workspace header strip */
   --surface-sunken: var(--slate-2); /* tab group */
   --surface-hover: var(--slate-a3);
+  --footer-bg: #050505;            /* status footer, near-black (off the Radix scale by request) */
   --surface-active: var(--indigo-a3); /* selected nav item */
 
   /* Lines (translucent, so they sit right on any surface) */
@@ -222,6 +223,7 @@
   --sky-9: #7ce2fe; --sky-10: #74daf8; --sky-11: #00749e; --sky-12: #1d3e56;
 
   /* Light-specific tuning: softer shadows and depth, a light pool behind renders. */
+  --footer-bg: var(--slate-2);
   --overlay: rgb(0 0 0 / 0.28);
   --shadow: 0 12px 32px rgb(0 0 0 / 0.14);
   --thumb-bg: radial-gradient(ellipse at 50% 40%, #ffffff, var(--slate-4) 75%);
@@ -275,6 +277,7 @@
     --sky-9: #7ce2fe; --sky-10: #74daf8; --sky-11: #00749e; --sky-12: #1d3e56;
 
     /* Light-specific tuning: softer shadows and depth, a light pool behind renders. */
+  --footer-bg: var(--slate-2);
     --overlay: rgb(0 0 0 / 0.28);
     --shadow: 0 12px 32px rgb(0 0 0 / 0.14);
     --thumb-bg: radial-gradient(ellipse at 50% 40%, #ffffff, var(--slate-4) 75%);

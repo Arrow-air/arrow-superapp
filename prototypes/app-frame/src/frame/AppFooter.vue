@@ -90,7 +90,7 @@ const SITE = 'https://arrowair.com';
   height: var(--footer-height);
   padding: 0 var(--frame-inset) 0 calc(var(--frame-inset) + 4px);
   border-top: 1px solid var(--slate-a4);
-  background: var(--bg);
+  background: var(--footer-bg);
   font-size: var(--text-sm);
   color: var(--fg-muted);
   white-space: nowrap;
