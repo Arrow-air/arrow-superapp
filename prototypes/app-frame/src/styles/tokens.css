@@ -1,78 +1,69 @@
-/* Design tokens for the frame. Neutral placeholders: these get replaced
-   with the Figma variables once the concept is pulled in. Everything in
-   the frame reads from here, so restyling happens in this file only. */
+/* Design tokens for the frame, sampled from the Figma concept (29 Sep).
+   Everything in the frame reads from here, so restyling happens in this file only.
+   The concept is dark-only for now. */
 
 :root {
-  /* Colour */
-  --bg: #f7f7f8;
-  --surface: #ffffff;
-  --surface-2: #ececef;
-  --fg: #16161a;
-  --fg-muted: #6b6b76;
-  --border: #e2e2e6;
-  --accent: #1f4fff;
-  --accent-fg: #ffffff;
-  --danger: #d4351c;
-  --bar-bg: #ffffff;
-  --bar-fg: #16161a;
-  --bar-fg-muted: #6b6b76;
+  color-scheme: dark;
+
+  /* Surfaces, darkest to lightest */
+  --bg: #0e0e0e;          /* page behind the card */
+  --slot-bg: #080808;     /* the content slot */
+  --surface: #151515;     /* workspace card */
+  --surface-raised: #191919; /* pickers, buttons */
+  --surface-header: #1c1c1c; /* workspace header strip */
+  --surface-sunken: #141313; /* tab group */
+
+  /* Lines */
+  --border: #2e2e2e;
+  --border-strong: #363636;
+  --border-soft: #232323;
+
+  /* Text */
+  --fg: #ffffff;
+  --fg-2: #9a9a9a;        /* current breadcrumb, hovered nav */
+  --fg-muted: #5a5a5a;    /* inactive tabs, nav items */
+  --fg-faint: #494949;    /* version code */
+
+  /* Accents */
+  --brand: #444ecc;       /* logo tile */
+  --accent: #6aad97;      /* active tab fill */
+  --accent-fg: #0c1a15;
+  --accent-text: #73bda5; /* active nav item, current section crumb */
+  --link: #4a75d7;        /* project crumb */
+  --avatar: linear-gradient(135deg, #e28ae0, #c56fd6);
+  --danger: #e5484d;
 
   /* Type */
-  --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --text-xs: 0.75rem;
   --text-sm: 0.8125rem;
-  --text-base: 0.9375rem;
-  --text-2xl: 1.5rem;
+  --text-base: 0.875rem;
+  --text-md: 0.9375rem;
+  --tracking-caps: 0.12em;
 
   /* Space */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
+  --space-5: 20px;
   --space-6: 24px;
   --space-8: 40px;
 
   /* Shape */
+  --radius-sm: 6px;
+  --radius: 8px;
   --radius-lg: 12px;
-  --radius-pill: 999px;
-  --shadow-lg: 0 -8px 32px rgb(0 0 0 / 0.12);
 
   /* Frame geometry */
   --bar-height: 56px;
-  --mobile-nav-height: 60px;
-  --panel-width: 360px;
-  --frame-max: 1440px;
-  --content-max: 1200px;
+  --control-height: 36px;
+  --sidebar-width: 300px;
+  --frame-inset: 8px;     /* gap between the window edge and the workspace card */
   --gutter: 24px;
 }
 
 @media (max-width: 767px) {
-  :root { --gutter: 16px; }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --bg: #0e0e11;
-    --surface: #17171b;
-    --surface-2: #232329;
-    --fg: #ededf0;
-    --fg-muted: #9a9aa6;
-    --border: #2a2a31;
-    --accent: #5b7cff;
-    --bar-bg: #131316;
-    --bar-fg: #ededf0;
-    --bar-fg-muted: #9a9aa6;
-  }
-}
-:root[data-theme='dark'] {
-  --bg: #0e0e11;
-  --surface: #17171b;
-  --surface-2: #232329;
-  --fg: #ededf0;
-  --fg-muted: #9a9aa6;
-  --border: #2a2a31;
-  --accent: #5b7cff;
-  --bar-bg: #131316;
-  --bar-fg: #ededf0;
-  --bar-fg-muted: #9a9aa6;
+  :root { --gutter: 16px; --frame-inset: 0px; }
 }

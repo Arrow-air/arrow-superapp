@@ -11,18 +11,31 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-a { color: var(--accent); }
+a { color: var(--link); }
+
+button { font: inherit; color: inherit; }
 
 .muted { color: var(--fg-muted); }
 
-.btn {
-  font: inherit;
-  font-size: var(--text-sm);
-  padding: var(--space-1) var(--space-3);
+.caps {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+/* The shared raised control: pickers, dashboard button, wallet. */
+.control {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--control-height);
+  padding-inline: var(--space-3);
   border: 1px solid var(--border);
-  border-radius: var(--radius-pill);
-  background: var(--surface);
+  border-radius: var(--radius);
+  background: var(--surface-raised);
   color: var(--fg);
+  font-size: var(--text-base);
+  white-space: nowrap;
   cursor: pointer;
 }
-.btn:hover { background: var(--surface-2); }
+.control:hover { border-color: var(--border-strong); }

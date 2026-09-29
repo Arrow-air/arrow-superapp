@@ -24,6 +24,7 @@ defineProps<{ kind: 'loading' | 'empty' | 'error'; detail?: string }>();
   padding: var(--space-8) var(--space-4);
   border: 1px dashed var(--border);
   border-radius: var(--radius-lg);
+  margin: var(--space-4);
   color: var(--fg-muted);
   text-align: center;
 }

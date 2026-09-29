@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import { computed, onErrorCaptured, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
 import AppBar from './frame/AppBar.vue';
-import MobileNav from './frame/MobileNav.vue';
-import SidePanel from './frame/SidePanel.vue';
-import PageHeader from './frame/PageHeader.vue';
+import WorkspaceHeader from './frame/WorkspaceHeader.vue';
+import SectionSidebar from './frame/SectionSidebar.vue';
 import SlotState from './frame/SlotState.vue';
+import { useWorkspace } from './frame/useWorkspace';
 
-const route = useRoute();
-const title = computed(() => route.meta.title ?? '');
-const hasPanel = computed(() => !!route.meta.panel);
-const panelOpen = ref(true);
+const { route, project, tab, item } = useWorkspace();
+const inWorkspace = computed(() => !!project.value && !!tab.value);
 
 // A page that throws is contained to the content slot; the frame stays usable.
 const pageError = ref<Error | null>(null);
@@ -20,67 +17,72 @@ onErrorCaptured((err) => {
 });
 watch(() => route.fullPath, () => (pageError.value = null));
 
-watch(title, (t) => (document.title = t ? `${t} · Arrow` : 'Arrow'), { immediate: true });
+watch(
+  () => [item.value?.label, project.value?.label].filter(Boolean).join(' · '),
+  (t) => (document.title = t ? `${t} · Arrow` : 'Arrow'),
+  { immediate: true },
+);
 </script>
 
 <template>
-  <div class="frame" :class="{ 'has-panel': hasPanel && panelOpen }">
-    <AppBar class="frame-bar" />
+  <div class="frame">
+    <AppBar />
 
-    <main class="frame-main">
-      <PageHeader :title="title">
-        <template #actions>
-          <button v-if="hasPanel" class="btn" type="button" @click="panelOpen = !panelOpen">
-            {{ panelOpen ? 'Hide panel' : 'Show panel' }}
-          </button>
-        </template>
-      </PageHeader>
-
-      <div class="frame-slot">
-        <SlotState v-if="pageError" kind="error" :detail="pageError.message" />
-        <RouterView v-else v-slot="{ Component }">
-          <Suspense>
-            <component :is="Component" :key="route.fullPath" />
-            <template #fallback><SlotState kind="loading" /></template>
-          </Suspense>
-        </RouterView>
+    <div class="card">
+      <WorkspaceHeader v-if="inWorkspace" />
+      <div class="body">
+        <SectionSidebar v-if="inWorkspace" />
+        <main class="slot">
+          <SlotState v-if="pageError" kind="error" :detail="pageError.message" />
+          <RouterView v-else v-slot="{ Component }">
+            <Suspense>
+              <component :is="Component" :key="route.fullPath" />
+              <template #fallback><SlotState kind="loading" /></template>
+            </Suspense>
+          </RouterView>
+        </main>
       </div>
-    </main>
-
-    <SidePanel v-if="hasPanel && panelOpen" class="frame-panel" @close="panelOpen = false" />
-    <MobileNav class="frame-mobile-nav" />
+    </div>
   </div>
 </template>
 
 <style scoped>
 .frame {
-  min-height: 100dvh;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto 1fr;
-  grid-template-areas: 'bar' 'main';
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
-.frame.has-panel {
-  grid-template-columns: minmax(0, 1fr) var(--panel-width);
-  grid-template-areas: 'bar bar' 'main panel';
+.card {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin: 0 var(--frame-inset) var(--frame-inset);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
-.frame-bar { grid-area: bar; }
-.frame-main {
-  grid-area: main;
-  width: 100%;
-  max-width: var(--content-max);
-  margin-inline: auto;
-  padding: var(--space-6) var(--gutter) var(--space-8);
+.body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
 }
-.frame-panel { grid-area: panel; }
-.frame-mobile-nav { display: none; }
+/* The slot is the only thing that scrolls; bar, header and sidebar stay put. */
+.slot {
+  flex: 1;
+  min-width: 0;
+  margin: var(--space-4);
+  background: var(--slot-bg);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  overflow: auto;
+}
 
 @media (max-width: 767px) {
-  .frame.has-panel {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: 'bar' 'main';
-  }
-  .frame-main { padding-bottom: calc(var(--mobile-nav-height) + var(--space-6)); }
-  .frame-mobile-nav { display: flex; }
+  .frame { height: auto; min-height: 100dvh; }
+  .card { border-radius: 0; border-inline: 0; border-bottom: 0; }
+  .body { flex-direction: column; }
+  .slot { margin: var(--space-3); min-height: 60dvh; }
 }
 </style>

@@ -1,22 +1,21 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
-const route = useRoute();
+import { useWorkspace } from '../frame/useWorkspace';
+const { item } = useWorkspace();
 </script>
 
 <template>
+  <!-- Empty on purpose: the design shows the slot bare. Modules render here. -->
   <div class="placeholder">
-    <p>Content for <strong>{{ route.meta.title }}</strong> goes here.</p>
-    <!-- Tall filler so scrolling, the sticky bar and the panel can be checked. -->
-    <div v-for="n in 12" :key="n" class="block"></div>
+    <span class="caps">{{ item?.label }} module</span>
   </div>
 </template>
 
 <style scoped>
-.placeholder { display: grid; gap: var(--space-4); }
-.block {
-  height: 120px;
-  border: 1px dashed var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
+.placeholder {
+  height: 100%;
+  min-height: 240px;
+  display: grid;
+  place-items: center;
+  color: var(--fg-faint);
 }
 </style>
