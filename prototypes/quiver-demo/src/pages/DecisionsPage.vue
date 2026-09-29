@@ -4,7 +4,7 @@ import StatusIcon from '../modules/threads/StatusIcon.vue';
 import SourceChip from '../modules/threads/SourceChip.vue';
 import { day, person, state } from '../modules/threads/store';
 import { taskById } from '../data/quiver';
-import { zoneLabel, zonePath } from '../frame/nav';
+import { zoneLabel } from '../frame/nav';
 
 // The decision register T-09 is funded to write: every settled thread, with
 // what was chosen, who decided, why, and whether it overrode the weighted
@@ -32,7 +32,7 @@ const nameOf = (id?: string) => (id === 'me' ? 'You' : person(id)?.name);
     </div>
 
     <p v-if="!rows.length" class="vempty">
-      Nothing decided yet. In the demo, switch "view as" to Lead on a thread, vote, and decide it: it lands here with its number.
+      Nothing decided yet. In the demo, open the Demo menu in the footer, view as Lead, then decide a thread: it lands here with its number.
     </p>
 
     <table v-else class="vt">
@@ -43,7 +43,7 @@ const nameOf = (id?: string) => (id === 'me' ? 'You' : person(id)?.name);
           <td>
             <div class="choice">{{ r.p?.text }}</div>
             <div class="sub">
-              <RouterLink :to="{ path: zonePath(r.t.zone), query: { thread: r.t.id } }" class="q">
+              <RouterLink :to="{ query: { thread: r.t.id } }" class="q">
                 <StatusIcon status="settled" :override="r.s.override" :size="11" /> {{ r.t.id }} · {{ r.t.title }}
               </RouterLink>
             </div>

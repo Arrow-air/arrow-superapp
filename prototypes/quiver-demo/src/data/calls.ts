@@ -49,17 +49,17 @@ export const calls: Call[] = [
       { id: 'sep29-12', kind: 'update', who: ['julius', 'erick'], zone: 'gps-interference', text: 'Julius will fly Quiver or Kestrel this week with Ethernet and a remote Mission Planner connection (no telemetry radio), to see whether GPS is affected. His IP address assignment differs from Erick\'s setup; neither expects that to matter.' },
 
       // Obstacle avoidance
-      { id: 'sep29-13', kind: 'update', who: ['erick'], zone: 'obstacle-avoidance', text: 'Found two test sites: a park with a large open field (waypoint tests with a ladder and poles) and a wide, quiet street for automated obstacle avoidance. Plans to test Thursday, early morning.' },
-      { id: 'sep29-14', kind: 'agreement', who: ['zeynep', 'erick'], zone: 'obstacle-avoidance', text: 'Zeynep will send the updated obstacle avoidance parameters for backyard testing.' },
+      { id: 'sep29-13', kind: 'update', who: ['erick'], zone: 'autonomy', text: 'Found two test sites: a park with a large open field (waypoint tests with a ladder and poles) and a wide, quiet street for automated obstacle avoidance. Plans to test Thursday, early morning.' },
+      { id: 'sep29-14', kind: 'agreement', who: ['zeynep', 'erick'], zone: 'autonomy', text: 'Zeynep will send the updated obstacle avoidance parameters for backyard testing.' },
 
       // Battery
-      { id: 'sep29-15', kind: 'update', who: ['erick', 'julius'], zone: 'power', thread: 'Q-6', text: 'Erick asked Julius for the battery cutoffs now that the Tattu BMS is available (T-01). Julius will write his answer on GitHub.' },
+      { id: 'sep29-15', kind: 'update', who: ['erick', 'julius'], zone: 'parameters', thread: 'Q-6', text: 'Erick asked Julius for the battery cutoffs now that the Tattu BMS is available (T-01). Julius will write his answer on GitHub.' },
       { id: 'sep29-16', kind: 'gap', who: ['erick'], zone: 'config-guide', text: 'How to log the battery PCB temperature sensors in Mission Planner is not in the configuration guide or an information note. Julius explained it briefly (assign them to available sensors); Erick will follow up by DM.' },
 
       // Docs
       { id: 'sep29-17', kind: 'update', who: ['erick'], zone: 'config-guide', text: 'Syncing local documents to GitHub: configuration guide changes, harness changes, Pilot\'s Handbook updates, parts of the SDK, and working notes.' },
       { id: 'sep29-18', kind: 'agreement', who: ['erick', 'zeynep'], zone: 'config-guide', thread: 'Q-12', text: 'Flight-controller parameter changes that deviate from what is on GitHub go in their own pull request, so Zeynep can review and merge them.' },
-      { id: 'sep29-19', kind: 'update', who: ['erick', 'thomas'], zone: 'attachment-guide', text: 'The Attachment Developer Guide (T-05) is about 30% done. Thomas will review it once the first milestone is in and it reads cleanly.' },
+      { id: 'sep29-19', kind: 'update', who: ['erick', 'thomas'], zone: 'dev-guide', text: 'The Attachment Developer Guide (T-05) is about 30% done. Thomas will review it once the first milestone is in and it reads cleanly.' },
 
       // Structure and CAD
       { id: 'sep29-20', kind: 'question', who: ['kbm', 'erick'], zone: 'airframe', thread: 'Q-11', text: 'KBM: is there a plan to improve the enclosure or the structure? He offered structural advice. Erick has no list yet and will bring easy wins to Thursday.' },

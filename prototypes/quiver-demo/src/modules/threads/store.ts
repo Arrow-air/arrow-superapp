@@ -2,11 +2,12 @@ import { computed, reactive, watch } from 'vue';
 import { threads as seed, type Position, type Thread } from './data';
 import { tally, voteWeight, weightingChangedWinner, type Role, type Tally, type Voter, type WeightBreakdown } from './weights';
 import { personById, type Person } from '../../data/people';
+import { zoneTab } from '../../frame/nav';
 
 // Module state: the threads, who you are voting as, and the derived tallies
 // and statuses. A demo with no backend: everything you do is kept in this
 // browser's localStorage, and "Reset demo" puts the seed back.
-const KEY = 'quiver-demo.threads.v1';
+const KEY = 'quiver-demo.threads.v2';
 
 interface Saved { threads: Thread[]; role: Role; builder: boolean; nextThread: number; nextDecision: number }
 const fresh = (): Saved => ({
@@ -110,11 +111,10 @@ export function propose(thread: Thread, text: string): Position {
   return p;
 }
 
-export function startThread(input: { zone: string; context: string; title: string; body: string; type?: Thread['type']; fromCall?: string }): Thread {
+export function startThread(input: { zone: string; title: string; body: string; type?: Thread['type']; fromCall?: string }): Thread {
   const t: Thread = {
     id: `Q-${state.nextThread++}`,
     zone: input.zone,
-    context: input.context,
     title: input.title,
     body: input.body,
     kind: 'technical',
@@ -149,4 +149,20 @@ export function ago(iso: string) {
 export const day = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
 export const threadsInZone = (zone: string) => state.threads.filter((t) => t.zone === zone);
+/** The tab a thread's zone sits under: Attachments, Software, Aircraft… */
+export const areaOf = (t: Thread) => zoneTab(t.zone)?.id ?? 'overview';
+export const byActivity = (a: Thread, b: Thread) => b.activeAt.localeCompare(a.activeAt);
+
+/** One line on where a thread stands, for rows and the panel. */
+export function standing(t: Thread) {
+  const letter = (id: string) => String.fromCharCode(65 + t.positions.findIndex((p) => p.id === id));
+  if (t.settled) return { status: 'settled' as Status, text: `Decided: ${letter(t.settled.positionId)} · ${t.settled.decision}` };
+  const n = t.positions.length;
+  if (!n) return { status: 'needs' as Status, text: 'No positions yet' };
+  const votes = t.votes.length;
+  const { top, share } = leaderOf(t);
+  const pos = `${n} position${n === 1 ? '' : 's'}`;
+  if (!votes || !top || top.weightedScore <= 0) return { status: statusOf(t), text: `${pos} · no votes yet` };
+  return { status: statusOf(t), text: `${pos} · ${letter(top.positionId)} leads with ${Math.round(share * 100)}%` };
+}
 export const openIn = (zone: string) => threadsInZone(zone).filter((t) => !t.settled).length;

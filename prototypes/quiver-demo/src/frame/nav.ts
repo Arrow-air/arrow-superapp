@@ -3,17 +3,18 @@
 // tabs, sidebar and routes are all generated from this file.
 //
 // Quiver demo: the sidebar items are working zones (Gavin, Sep 29). A zone
-// is any place work happens, a part of the aircraft, a campaign or a topic,
-// and every zone can hold threads, votes and decisions. A few items are
-// views instead of zones: the BOM, the task board, the decision register.
+// is any place work happens: an attachment, a piece of software, a part of
+// the aircraft, a campaign or a topic. Every zone can hold threads, votes and
+// decisions. A few items are views instead of zones: the summary, the
+// attachment catalog, the BOM, the task board, the decision register.
 import type { IconName } from './icons';
 
 /** What renders in the content slot. Zones get the zone page with its threads. */
-export type PageKind = 'zone' | 'gate' | 'bom' | 'work' | 'prs' | 'people' | 'sources' | 'threads' | 'suggested' | 'decisions';
+export type PageKind = 'zone' | 'gate' | 'summary' | 'catalog' | 'bom' | 'work' | 'prs' | 'people' | 'sources' | 'threads' | 'suggested' | 'decisions';
 
 export interface NavItem { id: string; label: string; icon: IconName; page?: PageKind }
 export interface NavGroup { id: string; label: string; sortable?: boolean; items: NavItem[] }
-export interface Tab { id: string; label: string; groups: NavGroup[] }
+export interface Tab { id: string; label: string; groups: NavGroup[]; /** A view across places, shown after the divider. */ view?: boolean }
 export type VersionStatus = 'upcoming' | 'current' | 'previous' | 'unmaintained';
 export interface Version { id: string; code: string; status: VersionStatus }
 export interface Project { id: string; label: string; thumb?: string; versions: Version[] }
@@ -51,82 +52,161 @@ export const defaultVersion = (p: Project) => p.versions.find((v) => v.status ==
 
 const item = (id: string, label: string, icon: IconName, page?: PageKind): NavItem => ({ id, label, icon, page });
 
+// Places first (where the work is), then the views that cut across them.
+// `view` tabs sit after a divider in the tab bar.
 export const tabs: Tab[] = [
   {
     id: 'overview',
     label: 'Overview',
     groups: [
       {
-        id: 'now',
-        label: 'Now',
+        id: 'quiver',
+        label: 'Quiver',
         items: [
-          item('road-to-selling', 'Road to selling', 'flag', 'gate'),
+          item('summary', 'Summary', 'grid', 'summary'),
           item('people', 'People', 'people', 'people'),
+          item('calls', 'Call notes', 'log', 'sources'),
         ],
       },
-      { id: 'sources', label: 'Sources', items: [item('calls', 'Call notes', 'log', 'sources')] },
     ],
   },
   {
-    id: 'design',
-    label: 'Design',
+    id: 'attachments',
+    label: 'Attachments',
     groups: [
       {
-        id: 'zones',
+        id: 'catalog',
+        label: 'Catalog',
+        items: [
+          item('catalog', 'All attachments', 'grid', 'catalog'),
+          item('interface', 'Attachment interface', 'bolt'),
+          item('dev-guide', 'Developer guide', 'book'),
+        ],
+      },
+      {
+        id: 'built',
+        label: 'Attachments',
+        items: [
+          item('payload-latch', 'Payload latch', 'box'),
+          item('multispectral', 'Multispectral camera', 'target'),
+          item('ram-ball', 'RAM ball mount', 'hexagon'),
+          item('spreader', 'Granular spreader adapter', 'layers'),
+        ],
+      },
+      {
+        id: 'next',
+        label: 'Next',
+        items: [
+          item('concepts', 'Ready for contributors', 'flag'),
+          item('attachment-ideas', 'New ideas', 'bulb'),
+        ],
+      },
+    ],
+  },
+  {
+    id: 'software',
+    label: 'Software',
+    groups: [
+      {
+        id: 'platform',
+        label: 'Platform',
+        items: [
+          item('sdk', 'Quiver SDK', 'chip'),
+          item('quiverhub', 'QuiverHub', 'grid'),
+          item('ground-station', 'Ground station & remote', 'monitor'),
+        ],
+      },
+      {
+        id: 'flight',
+        label: 'Flight',
+        items: [
+          item('autonomy', 'Autonomy & obstacle avoidance', 'alert'),
+          item('parameters', 'Parameters & failsafes', 'sliders'),
+          item('flight-data', 'Flight logs & data', 'chart'),
+        ],
+      },
+    ],
+  },
+  {
+    id: 'aircraft',
+    label: 'Aircraft',
+    groups: [
+      {
+        id: 'next-revision',
         label: 'Next revision',
         items: [
           item('airframe', 'Structure & enclosure', 'airframe'),
-          item('gps-rf', 'GPS & RF', 'target'),
+          item('gps-rf', 'GPS & RF', 'globe'),
           item('power', 'Power & battery', 'battery'),
-          item('payload', 'Payload & attachments', 'box'),
-          item('avionics', 'Avionics & parameters', 'chip'),
-          item('cad', 'CAD model', 'layers'),
+          item('avionics', 'Avionics & network', 'harness'),
         ],
       },
-      { id: 'reference', label: 'Reference', items: [item('bom', 'Bill of materials', 'list', 'bom')] },
-    ],
-  },
-  {
-    id: 'testing',
-    label: 'Testing',
-    groups: [
       {
-        id: 'campaigns',
-        label: 'Campaigns',
+        id: 'testing',
+        label: 'Testing',
         items: [
-          item('obstacle-avoidance', 'Obstacle avoidance', 'alert'),
           item('gps-interference', 'GPS interference', 'gauge'),
           item('endurance', 'Endurance', 'plane'),
+          item('flight-campaign', 'Flight test campaign', 'flag'),
+        ],
+      },
+      {
+        id: 'operating',
+        label: 'Operating',
+        items: [
+          item('pilots-handbook', 'Pilot\'s handbook', 'book'),
+          item('maintenance', 'Maintenance', 'wrench'),
+        ],
+      },
+      {
+        id: 'reference',
+        label: 'Reference',
+        items: [
+          item('cad', 'CAD model', 'layers'),
+          item('bom', 'Bill of materials', 'list', 'bom'),
         ],
       },
     ],
   },
   {
-    id: 'docs',
-    label: 'Docs',
+    id: 'build',
+    label: 'Build',
     groups: [
       {
         id: 'guides',
-        label: 'Guides',
+        label: 'Build it',
         items: [
-          item('config-guide', 'Configuration guide', 'sliders'),
-          item('pilots-handbook', 'Pilot\'s handbook', 'book'),
-          item('attachment-guide', 'Attachment developer guide', 'file'),
           item('assembly', 'Assembly', 'wrench'),
+          item('config-guide', 'Configuration guide', 'sliders'),
+          item('case', 'Case & shipping', 'box'),
+        ],
+      },
+      {
+        id: 'makers',
+        label: 'Manufacturers',
+        items: [
+          item('manufacturers', 'Bringing on manufacturers', 'people'),
+          item('suppliers', 'Suppliers & cost', 'truck'),
         ],
       },
     ],
   },
   {
-    id: 'market',
-    label: 'Go-to-market',
+    id: 'selling',
+    label: 'Selling',
     groups: [
       {
-        id: 'selling',
-        label: 'Selling',
+        id: 'now',
+        label: 'Now',
+        items: [item('road-to-selling', 'Road to selling', 'flag', 'gate')],
+      },
+      {
+        id: 'market',
+        label: 'Market',
         items: [
           item('where-we-sell', 'Where we sell', 'store'),
-          item('who-we-sell-to', 'Who we sell to', 'people'),
+          item('who-we-sell-to', 'Customers & applications', 'globe'),
+          item('pricing', 'Pricing', 'tag'),
           item('sales-page', 'Sales page', 'chart'),
           item('dao-return', 'What goes back to the DAO', 'coin'),
         ],
@@ -134,22 +214,9 @@ export const tabs: Tab[] = [
     ],
   },
   {
-    id: 'work',
-    label: 'Work',
-    groups: [
-      {
-        id: 'board',
-        label: 'From GitHub',
-        items: [
-          item('tasks', 'Task board', 'check-square', 'work'),
-          item('prs', 'Open pull requests', 'branch', 'prs'),
-        ],
-      },
-    ],
-  },
-  {
     id: 'discussion',
     label: 'Discussion',
+    view: true,
     groups: [
       {
         id: 'threads',
@@ -160,13 +227,14 @@ export const tabs: Tab[] = [
         ],
       },
       {
-        id: 'by-context',
-        label: 'By tab',
+        id: 'by-area',
+        label: 'By area',
         items: [
-          item('ctx-overview', 'Overview', 'flag', 'threads'),
-          item('ctx-design', 'Design', 'half-diamond', 'threads'),
-          item('ctx-docs', 'Docs', 'book', 'threads'),
-          item('ctx-market', 'Go-to-market', 'store', 'threads'),
+          item('area-attachments', 'Attachments', 'box', 'threads'),
+          item('area-software', 'Software', 'chip', 'threads'),
+          item('area-aircraft', 'Aircraft', 'airframe', 'threads'),
+          item('area-build', 'Build', 'wrench', 'threads'),
+          item('area-selling', 'Selling', 'store', 'threads'),
         ],
       },
     ],
@@ -174,8 +242,24 @@ export const tabs: Tab[] = [
   {
     id: 'decisions',
     label: 'Decisions',
+    view: true,
     groups: [
       { id: 'register', label: 'Register', items: [item('register', 'Decision register', 'check-circle', 'decisions')] },
+    ],
+  },
+  {
+    id: 'work',
+    label: 'Work',
+    view: true,
+    groups: [
+      {
+        id: 'board',
+        label: 'From GitHub',
+        items: [
+          item('tasks', 'Task board', 'check-square', 'work'),
+          item('prs', 'Open pull requests', 'branch', 'prs'),
+        ],
+      },
     ],
   },
 ];

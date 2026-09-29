@@ -1,32 +1,35 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import Icon from '../../frame/Icon.vue';
 import Kbd from '../../frame/Kbd.vue';
 import { MOD } from '../../frame/shortcuts';
-import { zoneLabel, zonePath } from '../../frame/nav';
 import Avatar from './Avatar.vue';
 import SourceChip from './SourceChip.vue';
 import StatusIcon from './StatusIcon.vue';
 import type { Thread } from './data';
-import type { Role } from './weights';
 import {
-  changedWinner, day, leaderOf, myVote, person, propose, reopen, reply, settle, state, statusOf, talliesOf, vote, weightOf,
+  changedWinner, day, leaderOf, myVote, person, propose, reopen, reply, settle, standing, state, talliesOf, vote, weightOf,
 } from './store';
 
-const props = defineProps<{ thread: Thread; index?: boolean }>();
-defineEmits<{ back: [] }>();
+// One thread, always in the same order: the question, the positions people
+// vote on, the lead's decision, then the replies. Rendered in the thread
+// panel wherever the thread is opened from.
+const props = defineProps<{ thread: Thread }>();
 
 const t = computed(() => props.thread);
-const status = computed(() => statusOf(t.value));
+const stand = computed(() => standing(t.value));
 const tallies = computed(() => talliesOf(t.value));
 const tallyOf = (id: string) => tallies.value.find((x) => x.positionId === id)!;
 const leader = computed(() => leaderOf(t.value));
+const hasLeader = computed(() => !!leader.value.top && leader.value.top.weightedScore > 0);
 const mine = computed(() => weightOf(t.value, 'me'));
 const flipped = computed(() => changedWinner(t.value));
 const rawLeader = computed(() => [...tallies.value].sort((a, b) => b.rawScore - a.rawScore)[0]);
 const rawTie = computed(() => tallies.value.filter((x) => x.rawScore === rawLeader.value?.rawScore).length > 1);
 const letter = (id: string) => String.fromCharCode(65 + t.value.positions.findIndex((p) => p.id === id));
 const typeLabel = computed(() => ({ question: 'Question', proposal: 'Proposal', idea: 'Idea' })[t.value.type]);
+const formula = computed(() =>
+  `(${mine.value.base} base + ${mine.value.token} token + ${mine.value.expertise} expertise + ${mine.value.builder} builder) × ${mine.value.roleMultiplier} ${mine.value.role} = ${mine.value.total}. Technical calls weigh role, verified expertise and intent to build more than holdings. No wallet is linked in the demo.`,
+);
 
 // Positions ordered by weighted score, so the leader reads first; ties keep
 // the order they were proposed in.
@@ -36,62 +39,63 @@ const ordered = computed(() =>
 const votersOf = (id: string) => t.value.votes.filter((v) => v.positionId === id && v.value === 1).map((v) => v.memberId);
 const nameOf = (id?: string) => (id === 'me' ? 'You' : person(id)?.name);
 
-const showWhy = ref(false);
-const isLead = computed(() => state.role === 'lead');
-const settleNote = ref('');
-const draft = ref('');
-watch(() => t.value.id, () => { showWhy.value = false; settleNote.value = ''; draft.value = ''; });
-
-function doSettle(positionId: string) {
-  settle(t.value, positionId, settleNote.value.trim() || 'Decided on the weighted leader.');
-  settleNote.value = '';
+// Adding a position is its own action, at the end of the positions.
+const adding = ref(false);
+const newPosition = ref('');
+function addPosition() {
+  if (!newPosition.value.trim()) return;
+  propose(t.value, newPosition.value.trim());
+  newPosition.value = '';
+  adding.value = false;
 }
+
+// The lead's decision: one place, pick a position, say why.
+const isLead = computed(() => state.role === 'lead');
+const choice = ref<string>();
+const note = ref('');
+const chosen = computed(() => choice.value ?? (hasLeader.value ? leader.value.top!.positionId : t.value.positions[0]?.id));
+const overrides = computed(() => hasLeader.value && chosen.value !== leader.value.top!.positionId);
+function decide() {
+  if (!chosen.value || !note.value.trim()) return;
+  settle(t.value, chosen.value, note.value.trim());
+  note.value = '';
+  choice.value = undefined;
+}
+
+// Replies only; positions have their own control above.
+const draft = ref('');
 function send() {
   if (!draft.value.trim()) return;
   reply(t.value, draft.value.trim());
   draft.value = '';
 }
-function asPosition() {
-  if (!draft.value.trim()) return;
-  propose(t.value, draft.value.trim());
-  draft.value = '';
-}
-const roles: Role[] = ['member', 'core', 'lead'];
+watch(() => t.value.id, () => { adding.value = false; newPosition.value = ''; choice.value = undefined; note.value = ''; draft.value = ''; });
 const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 </script>
 
 <template>
   <article class="detail">
     <header class="head">
-      <button class="tbtn back" type="button" @click="$emit('back')"><Icon name="chevron-right" :size="12" class="flip" /> Threads</button>
-      <div class="eyebrow">
-        <StatusIcon :status="status" :override="t.settled?.override" :size="12" />
-        <span class="mono">{{ t.id }}</span>
-        <span class="dot">·</span>
-        <span>{{ typeLabel }}</span>
-        <span class="dot">·</span>
-        <span>{{ t.kind === 'funding' ? 'token-weighted' : 'signal-weighted' }}</span>
-      </div>
       <h1 class="title">{{ t.title }}</h1>
       <p class="meta">
-        <RouterLink v-if="index" class="zlink" :to="{ path: zonePath(t.zone), query: { thread: t.id } }">{{ zoneLabel(t.zone) }}</RouterLink>
-        <span v-else>{{ zoneLabel(t.zone) }}</span>
-        <span class="dot">·</span><span class="mono">{{ t.version }}</span>
-        <span class="dot">·</span>
-        <template v-if="t.authorId"><Avatar :id="t.authorId" :size="16" /> {{ nameOf(t.authorId) }}, {{ day(t.raisedAt) }}</template>
-        <template v-else>{{ day(t.raisedAt) }}</template>
+        <span class="kind">{{ typeLabel }}</span><span class="dot">·</span>
+        <template v-if="t.authorId"><Avatar :id="t.authorId" :size="16" /> {{ nameOf(t.authorId) }}<span class="dot">·</span></template>
+        <span>{{ day(t.raisedAt) }}</span>
         <template v-if="t.source"><span class="dot"></span><SourceChip :source="t.source" /></template>
+        <span class="dot">·</span><span class="mono ver" title="The version this thread is about">{{ t.version }}</span>
+      </p>
+      <p class="state" :data-status="stand.status">
+        <StatusIcon :status="stand.status" :override="t.settled?.override" :size="12" />
+        {{ stand.status === 'needs' ? 'Needs input' : stand.status === 'converging' ? 'Converging' : 'Decided' }}<span class="dot">·</span>{{ stand.text }}
       </p>
       <p v-if="t.body" class="body">{{ t.body }}</p>
     </header>
 
-    <!-- Decided: plain text, no tinted box. -->
     <section v-if="t.settled" class="decided">
       <div class="decided-head">
-        <StatusIcon status="settled" :override="t.settled.override" :size="13" />
         <span class="strong">Decided: {{ letter(t.settled.positionId) }}</span>
         <span class="tag mono">{{ t.settled.decision }}</span>
-        <span v-if="t.settled.override" class="tag">Override</span>
+        <span v-if="t.settled.override" class="tag warn">Override</span>
         <span class="muted">{{ nameOf(t.settled.byId) }} as lead, {{ day(t.settled.at) }}</span>
         <button v-if="isLead" class="ghost" type="button" @click="reopen(t)">Reopen</button>
       </div>
@@ -101,25 +105,18 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
     <section class="block">
       <div class="block-head">
         <h2 class="label">Positions</h2>
-        <span class="legend">Your vote counts <b class="mono">{{ mine.total }}</b> <button class="ghost link" type="button" :aria-expanded="showWhy" @click="showWhy = !showWhy">{{ showWhy ? 'Hide' : 'Why' }}</button></span>
+        <span class="legend" :title="formula">Your vote counts <b class="mono">{{ mine.total }}</b></span>
       </div>
 
-      <div v-if="showWhy" class="why">
-        <p class="formula mono">({{ mine.base }} base + {{ mine.token }} token + {{ mine.expertise }} expertise + {{ mine.builder }} builder) × {{ mine.roleMultiplier }} {{ mine.role }} = <b>{{ mine.total }}</b></p>
-        <p class="why-note">Technical calls are signal-weighted: role, expertise a lead has verified, and a declared intent to help build count for more than holdings. No wallet is linked in the demo, so tokens add nothing.</p>
-        <p class="why-note">Scores below are weighted; hover a score for the raw headcount.</p>
-      </div>
-
-      <p v-if="!t.positions.length" class="empty">No positions yet. Propose one below.</p>
+      <p v-if="!t.positions.length" class="empty">No positions yet. Add the first one.</p>
 
       <div class="positions">
         <div v-for="p in ordered" :key="p.id" class="pos">
-          <!-- The vote capsule: obvious, one tap, solid when it's yours. -->
           <div class="vote" role="group" :aria-label="`Vote on position ${letter(p.id)}`" :class="{ locked: !!t.settled }">
             <button class="v up" type="button" :aria-pressed="myVote(t, p.id) === 1" :disabled="!!t.settled" aria-label="Vote up" @click="vote(t, p.id, 1)">
               <svg viewBox="0 0 16 16"><path d="m4 10 4-4 4 4" /></svg>
             </button>
-            <span class="n mono" :title="`Raw ${fmt(tallyOf(p.id).rawScore)} from ${tallyOf(p.id).voters} ${tallyOf(p.id).voters === 1 ? 'vote' : 'votes'}`">{{ Math.round(tallyOf(p.id).weightedScore * 10) / 10 }}</span>
+            <span class="n mono" :title="`Weighted. Raw ${fmt(tallyOf(p.id).rawScore)} from ${tallyOf(p.id).voters} ${tallyOf(p.id).voters === 1 ? 'vote' : 'votes'}`">{{ Math.round(tallyOf(p.id).weightedScore * 10) / 10 }}</span>
             <button class="v down" type="button" :aria-pressed="myVote(t, p.id) === -1" :disabled="!!t.settled" aria-label="Vote down" @click="vote(t, p.id, -1)">
               <svg viewBox="0 0 16 16"><path d="m4 6 4 4 4-4" /></svg>
             </button>
@@ -127,8 +124,8 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
           <div class="pos-main">
             <div class="pos-top">
               <span class="letter">{{ letter(p.id) }}</span>
-              <span v-if="t.settled?.positionId === p.id" class="tag">Decided</span>
-              <span v-else-if="!t.settled && leader.top?.positionId === p.id && tallyOf(p.id).weightedScore > 0" class="tag">Leading</span>
+              <span v-if="t.settled?.positionId === p.id" class="tag ok">Decided</span>
+              <span v-else-if="!t.settled && hasLeader && leader.top?.positionId === p.id" class="tag">Leading</span>
             </div>
             <p class="pos-text">{{ p.text }}</p>
             <div class="pos-meta">
@@ -140,10 +137,22 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
                 <Avatar v-for="id in votersOf(p.id).slice(0, 4)" :key="id" :id="id" :size="14" />
               </span>
               <span class="muted">{{ tallyOf(p.id).voters }} {{ tallyOf(p.id).voters === 1 ? 'vote' : 'votes' }}</span>
-              <button v-if="isLead && !t.settled" class="ghost settle-this" type="button" @click="doSettle(p.id)">Decide on {{ letter(p.id) }}</button>
             </div>
           </div>
         </div>
+      </div>
+
+      <div v-if="!t.settled" class="add">
+        <button v-if="!adding" class="add-btn" type="button" @click="adding = true">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" /></svg> Add a position
+        </button>
+        <form v-else class="add-form" @submit.prevent="addPosition">
+          <textarea v-model="newPosition" rows="2" placeholder="A concrete option people can vote for" aria-label="New position" autofocus></textarea>
+          <div class="add-bar">
+            <button class="ghost" type="button" @click="adding = false">Cancel</button>
+            <button class="primary sm" type="submit" :disabled="!newPosition.trim()">Add position</button>
+          </div>
+        </form>
       </div>
 
       <p v-if="flipped && !t.settled" class="aside">
@@ -152,32 +161,31 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
       </p>
     </section>
 
-    <!-- Decision state: a quiet line, controls only for the lead. -->
-    <section v-if="!t.settled" class="settle">
-      <p v-if="t.positions.length" class="stats">
-        <template v-if="leader.top && leader.top.weightedScore > 0">
-          Leader holds <b class="mono">{{ Math.round(leader.share * 100) }}%</b><span class="dot">·</span>margin <b class="mono">{{ leader.margin }}</b><span class="dot">·</span>
-        </template>
-        <template v-else>No support yet<span class="dot">·</span></template>
-        {{ t.objections ? `${t.objections} open objection${t.objections > 1 ? 's' : ''}` : 'no open objections' }}
-      </p>
-      <div v-if="isLead && t.positions.length" class="settle-act">
-        <input v-model="settleNote" class="field" placeholder="Why: the decision note" />
-        <button class="primary" type="button" :disabled="!leader.top || leader.top.weightedScore <= 0" @click="doSettle(leader.top!.positionId)">
-          Decide on {{ leader.top && leader.top.weightedScore > 0 ? letter(leader.top.positionId) : '—' }}
-        </button>
+    <section v-if="isLead && !t.settled && t.positions.length" class="decide">
+      <h2 class="label">Decide as lead</h2>
+      <div class="choices" role="radiogroup" aria-label="Position to decide on">
+        <button
+          v-for="p in t.positions"
+          :key="p.id"
+          type="button"
+          role="radio"
+          :aria-checked="chosen === p.id"
+          @click="choice = p.id"
+        >{{ letter(p.id) }}</button>
       </div>
-      <div class="viewas">
-        <span class="muted">Demo: view as</span>
-        <div class="seg" role="radiogroup" aria-label="View as">
-          <button v-for="r in roles" :key="r" type="button" role="radio" :aria-checked="state.role === r" @click="state.role = r">{{ r[0].toUpperCase() + r.slice(1) }}</button>
-        </div>
-        <label class="check"><input v-model="state.builder" type="checkbox" /> I'd help build it</label>
+      <p class="hint-line">
+        <template v-if="!hasLeader">No votes yet: this records your call without the group's signal.</template>
+        <template v-else-if="overrides">This overrides the weighted leader ({{ letter(leader.top!.positionId) }}). The note is recorded with the override.</template>
+        <template v-else>{{ letter(chosen!) }} is the weighted leader.</template>
+      </p>
+      <div class="settle-act">
+        <input v-model="note" class="field" placeholder="Why (required): the decision note" aria-label="Decision note" />
+        <button class="primary" type="button" :disabled="!note.trim()" @click="decide">Record decision</button>
       </div>
     </section>
 
     <section class="block">
-      <div class="block-head"><h2 class="label">Discussion</h2><span class="legend">{{ t.replies.length }} {{ t.replies.length === 1 ? 'reply' : 'replies' }}</span></div>
+      <div class="block-head"><h2 class="label">Replies</h2><span class="legend">{{ t.replies.length }}</span></div>
       <div v-for="r in t.replies" :key="r.id" class="reply">
         <Avatar :id="r.authorId ?? ''" :size="20" />
         <div>
@@ -190,21 +198,18 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         </div>
       </div>
 
-      <!-- Composer: reply, or put the text up as a position people can vote on. -->
       <form class="composer" @submit.prevent="send">
         <textarea
           v-model="draft"
           rows="2"
-          placeholder="Write a reply, or propose a position…"
+          placeholder="Reply…"
+          aria-label="Reply"
           @keydown.meta.enter.prevent="send"
           @keydown.ctrl.enter.prevent="send"
         ></textarea>
         <div class="composer-bar">
-          <span class="hint"><Kbd :keys="[MOD, '↵']" outline /> to reply</span>
-          <span class="composer-actions">
-            <button class="secondary" type="button" :disabled="!draft.trim() || !!t.settled" @click="asPosition">Propose as position</button>
-            <button class="primary" type="submit" :disabled="!draft.trim()">Reply</button>
-          </span>
+          <span class="hint"><Kbd :keys="[MOD, '↵']" outline /> to send</span>
+          <button class="primary" type="submit" :disabled="!draft.trim()">Reply</button>
         </div>
       </form>
     </section>
@@ -222,7 +227,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .flip { transform: rotate(180deg); }
 .eyebrow { display: flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--fg-muted); }
 .eyebrow .dot { margin: 0; }
-.title { margin: 10px 0 8px; font-size: 18px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; color: var(--fg); }
+.title { margin: 0 0 8px; font-size: 18px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; color: var(--fg); }
 .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0; margin: 0; font-size: var(--text-sm); color: var(--fg-muted); }
 .meta .av { margin-right: 5px; }
 .body { margin: 16px 0 0; color: var(--fg-2); line-height: 1.6; font-size: var(--text-nav); }
@@ -347,4 +352,33 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
   .detail { padding: 16px; }
   .back { display: inline-flex; }
 }
+
+.ver { color: var(--fg-muted); }
+.state { display: flex; align-items: center; gap: 6px; margin: 10px 0 0; font-size: var(--text-sm); color: var(--fg-muted); }
+.state[data-status='settled'] { color: var(--jade-11); }
+.state[data-status='converging'] { color: var(--indigo-11); }
+.state .dot { margin: 0; }
+.tag.ok { background: var(--jade-a3); color: var(--jade-11); }
+.tag.warn { background: var(--amber-a3); color: var(--amber-11); }
+.add { margin-top: 10px; }
+.add-btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border: 1px dashed var(--slate-a6); border-radius: 9px;
+  background: none; color: var(--fg-2); font: inherit; font-size: var(--text-base); cursor: pointer;
+}
+.add-btn:hover { color: var(--fg); border-color: var(--slate-a8); }
+.add-btn svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.add-form { border: 1px solid var(--slate-a5); border-radius: 12px; background: var(--slate-a2); }
+.add-form textarea { display: block; width: 100%; padding: 10px 12px 4px; border: 0; background: none; resize: vertical; color: var(--fg); font: inherit; font-size: var(--text-nav); outline: none; }
+.add-form textarea::placeholder { color: var(--fg-faint); }
+.add-bar { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 6px 8px 8px; }
+.primary.sm { height: 28px; padding: 0 12px; font-size: var(--text-sm); }
+.decide { margin-top: 24px; padding: 14px; border: 1px solid var(--slate-a4); border-radius: 12px; background: var(--slate-a2); }
+.choices { display: inline-flex; gap: 4px; margin-top: 8px; }
+.choices button {
+  min-width: 34px; height: 28px; padding: 0 10px; border: 1px solid var(--slate-a5); border-radius: 8px; background: none;
+  color: var(--fg-2); font: inherit; font-weight: 600; cursor: pointer;
+}
+.choices button[aria-checked='true'] { background: var(--indigo-9); border-color: var(--indigo-9); color: #fff; }
+.hint-line { margin: 8px 0 0; font-size: var(--text-sm); color: var(--fg-muted); }
+.kind { color: var(--fg-2); font-weight: 500; }
 </style>

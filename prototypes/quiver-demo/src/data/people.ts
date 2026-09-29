@@ -22,6 +22,7 @@ export const people: Person[] = [
     does: [
       { text: 'Project lead: flies the lead flights and reviews the Attachment Developer Guide', source: 'T-03, T-05' },
       { text: 'Author of the Initial Configuration Guide', source: 'T-02' },
+      { text: 'Champion for the V1 payload latch and multispectral camera', source: 'payload-systems V1 notes' },
       { text: 'Runs the obstacle avoidance tests and the spectrum analyzer work', source: 'Sep 29 call' },
     ],
   },
@@ -54,7 +55,10 @@ export const people: Person[] = [
   },
   {
     id: 'alperen', name: 'Alperen', initials: 'A', hue: 'indigo', discord: 'alperenag',
-    does: [{ text: 'Reviewer for structure and CAD on the decision register', source: 'T-09' }],
+    does: [
+      { text: 'Built the V1 payload latch and multispectral camera with Erick', source: 'payload-systems V1 notes' },
+      { text: 'Reviewer for structure and CAD on the decision register', source: 'T-09' },
+    ],
   },
   {
     id: 'mahmud', name: 'mahmudsudo', initials: 'M', hue: 'jade', github: 'mahmudsudo',
@@ -62,7 +66,7 @@ export const people: Person[] = [
   },
   {
     id: 'alex', name: 'Alex', initials: 'AD', hue: 'amber', github: 'alexdada555',
-    does: [{ text: 'QuiverHub on the Houston unit', source: 'T-18, T-12' }],
+    does: [{ text: 'QuiverHub: deploying V1 on the Houston unit and scoping what comes next', source: 'T-18, T-12' }],
   },
   {
     id: 'karan', name: 'karanp0202', initials: 'KP', hue: 'sky', github: 'karanp0202',

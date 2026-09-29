@@ -17,7 +17,7 @@ const threadStatus = (id?: string) => {
 
 <template>
   <div class="gate">
-    <h3 class="h">Before Quiver ships</h3>
+    <h2 class="h">Before Quiver ships</h2>
     <ol class="items">
       <li v-for="g in gate" :key="g.id" class="item">
         <span class="state" :data-status="g.status" :title="g.statusText"></span>
@@ -48,9 +48,8 @@ const threadStatus = (id?: string) => {
 </template>
 
 <style scoped>
-.gate { flex-basis: 100% !important; }
 .h { margin: 0 0 6px; font-size: var(--text-sm); font-weight: 500; color: var(--fg-faint); }
-.items { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.items { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
 .item { display: flex; gap: 8px; padding: 9px 11px; border: 1px solid var(--slate-a3); border-radius: 10px; background: var(--slate-a2); }
 .state { flex: none; width: 8px; height: 8px; margin-top: 6px; border-radius: 50%; background: var(--slate-9); }
 .state[data-status='waiting'] { background: var(--amber-9); }

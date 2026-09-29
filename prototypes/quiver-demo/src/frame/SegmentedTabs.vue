@@ -4,7 +4,8 @@ import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 // Segmented tabs with a sliding indicator, after coss ui Tabs (size lg),
 // with a recessed track and a raised pill for depth.
 // Items are router links, so each tab is a real, shareable URL.
-const props = defineProps<{ items: { id: string; label: string; to: string }[]; active?: string; label: string }>();
+// An item with `divider` starts a new group: places first, then the views across them.
+const props = defineProps<{ items: { id: string; label: string; to: string; divider?: boolean }[]; active?: string; label: string }>();
 
 const list = ref<HTMLElement>();
 const indicator = ref({ left: 0, width: 0, visible: false });
@@ -33,15 +34,16 @@ watch(() => props.active, () => nextTick(measure));
 
 <template>
   <nav ref="list" class="tabs" :class="{ animate }" :aria-label="label">
-    <RouterLink
-      v-for="t in items"
-      :key="t.id"
-      :to="t.to"
-      class="tab"
-      :aria-current="t.id === active ? 'page' : undefined"
-    >
-      {{ t.label }}
-    </RouterLink>
+    <template v-for="t in items" :key="t.id">
+      <span v-if="t.divider" class="divider" aria-hidden="true"></span>
+      <RouterLink
+        :to="t.to"
+        class="tab"
+        :aria-current="t.id === active ? 'page' : undefined"
+      >
+        {{ t.label }}
+      </RouterLink>
+    </template>
     <span
       v-show="indicator.visible"
       class="indicator"
@@ -52,6 +54,7 @@ watch(() => props.active, () => nextTick(measure));
 </template>
 
 <style scoped>
+.divider { flex: none; align-self: center; width: 1px; height: 16px; margin: 0 6px; background: var(--slate-a6); }
 .tabs {
   position: relative;
   z-index: 0;

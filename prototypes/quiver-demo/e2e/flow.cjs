@@ -1,6 +1,7 @@
-// Walks the demo's write paths against a built dist: vote, decide as lead,
-// the register, a new thread, a proposed position, starting from a call
-// suggestion, persistence across reload, and reset. node e2e/flow.cjs
+// Walks the demo's main paths against a built dist: open a thread in the
+// panel from a zone, vote, decide as lead, the register, a new thread and a
+// position, starting from a call suggestion, the same panel from another
+// page, scroll reset, Esc, persistence, and reset. node e2e/flow.cjs
 const { chromium } = require('playwright-core');
 const { spawn } = require('node:child_process');
 const fs = require('node:fs');
@@ -14,60 +15,95 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   const srv = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
   await new Promise((r) => setTimeout(r, 2000));
   const b = await chromium.launch({ executablePath: exe });
-  const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
+  const p = await b.newPage({ viewport: { width: 1280, height: 800 } });
   const errors = [];
   p.on('pageerror', (e) => errors.push(String(e)));
   p.on('dialog', (d) => d.accept());
   const text = () => p.locator('body').innerText();
+  const panel = p.locator('aside.panel');
 
-  // Vote as a member, then decide as lead.
-  await p.goto(`${BASE}/quiver/design/gps-rf?thread=Q-3`);
+  // A zone opens on its page, not on a thread.
+  await p.goto(`${BASE}/quiver/aircraft/gps-rf`);
   await p.waitForTimeout(600);
-  await p.getByRole('button', { name: 'Vote up' }).first().click();
-  check((await p.locator('.vote .n').first().innerText()).trim() === '1', 'member up-vote counts 1');
+  check(!(await panel.count()), 'zone page opens with no thread open');
+  await p.locator('.row[data-thread="Q-3"]').click();
+  await p.waitForTimeout(300);
+  check((await panel.locator('h1.title').innerText()).includes('GPS interference'), 'row opens the thread in the panel');
+  check((await p.locator('.zp-title').isVisible()), 'zone page stays visible behind the panel');
+
+  // Vote, then decide as lead from the Demo menu.
+  await panel.getByRole('button', { name: 'Vote up' }).first().click();
+  check((await panel.locator('.vote .n').first().innerText()).trim() === '1', 'member up-vote counts 1');
+  await p.getByRole('button', { name: /^Demo/ }).click();
   await p.getByRole('radio', { name: 'Lead' }).click();
-  check((await p.locator('.vote .n').first().innerText()).trim() === '2', 'same vote counts 2 as lead');
-  await p.getByPlaceholder('Why: the decision note').fill('Cheapest change; test it before any board spin.');
-  await p.getByRole('button', { name: /^Decide on A$/ }).last().click();
+  await p.getByRole('button', { name: /^Demo/ }).click();
+  check((await panel.locator('.vote .n').first().innerText()).trim() === '2', 'same vote counts 2 as lead');
+  await panel.getByLabel('Decision note').fill('Cheapest change; test it before any board spin.');
+  await panel.getByRole('button', { name: 'Record decision' }).click();
   await p.waitForTimeout(200);
-  check((await text()).includes('D-001'), 'decision gets D-001');
+  check((await panel.innerText()).includes('D-001'), 'decision gets D-001');
 
   await p.goto(`${BASE}/quiver/decisions/register`);
   await p.waitForTimeout(500);
   const reg = await text();
   check(reg.includes('D-001') && reg.includes('Cheapest change') && reg.includes('longer cable'), 'register lists D-001 with note and choice');
+  await p.locator('a.q').first().click();
+  await p.waitForTimeout(300);
+  check(p.url().includes('/decisions/register') && (await panel.count()) === 1, 'register opens the same panel in place');
 
-  // New thread in a zone, then a proposed position on it.
-  await p.goto(`${BASE}/quiver/design/airframe`);
+  // New thread, then a position on it.
+  await p.goto(`${BASE}/quiver/attachments/payload-latch`);
   await p.waitForTimeout(500);
   await p.getByRole('button', { name: 'New thread' }).click();
-  await p.getByLabel('Title').fill('Stiffen the arm mounts?');
+  await p.getByLabel('Title').fill('Rate the latch for 5 kg?');
   await p.getByLabel('Thread context').fill('Test thread from the flow check.');
-  await p.getByRole('button', { name: 'Start' }).click();
+  await p.getByRole('button', { name: 'Start thread' }).click();
   await p.waitForTimeout(300);
-  check((await p.locator('h1.title').innerText()).includes('Stiffen the arm mounts?'), 'new thread opens selected');
-  await p.getByPlaceholder('Write a reply, or propose a position…').fill('Add a gusset at each arm root.');
-  await p.getByRole('button', { name: 'Propose as position' }).click();
+  check((await panel.locator('h1.title').innerText()).includes('Rate the latch for 5 kg?'), 'new thread opens in the panel');
+  await panel.getByRole('button', { name: 'Add a position' }).click();
+  await panel.getByLabel('New position').fill('Yes, with a second structural path.');
+  await panel.getByRole('button', { name: 'Add position' }).click();
   await p.waitForTimeout(200);
-  check((await text()).includes('Add a gusset at each arm root.'), 'proposed position shows');
+  check((await panel.innerText()).includes('Yes, with a second structural path.'), 'position added');
+  await panel.getByLabel('Reply').fill('A reply, not a position.');
+  await panel.getByRole('button', { name: 'Reply', exact: true }).click();
+  await p.waitForTimeout(200);
+  check((await panel.locator('.reply').last().innerText()).includes('A reply, not a position.'), 'reply lands under replies');
 
   // Start a discussion from a call suggestion.
   await p.goto(`${BASE}/quiver/discussion/suggested`);
   await p.waitForTimeout(500);
   const before = await p.getByRole('button', { name: 'Start a discussion' }).count();
   await p.getByRole('button', { name: 'Start a discussion' }).first().click();
-  await p.waitForTimeout(500);
-  check(/thread=Q-\d+/.test(p.url()), 'suggestion starts a thread in its zone');
-  check((await text()).includes('call notes, which name'), 'thread credits the notes as source');
-  await p.goto(`${BASE}/quiver/discussion/suggested`);
   await p.waitForTimeout(400);
+  check(/thread=Q-\d+/.test(p.url()) && (await panel.count()) === 1, 'suggestion starts a thread and opens it');
+  check((await panel.innerText()).includes('call notes, which name'), 'thread credits the notes as source');
   check((await p.getByRole('button', { name: 'Start a discussion' }).count()) === before - 1, 'suggestion drops out once picked up');
 
+  // Road to selling opens a thread from another zone in the same panel.
+  await p.goto(`${BASE}/quiver/selling/road-to-selling`);
+  await p.waitForTimeout(500);
+  await p.locator('.links a', { hasText: 'Q-3' }).click();
+  await p.waitForTimeout(300);
+  check((await panel.locator('h1.title').innerText()).includes('GPS interference') && (await panel.locator('a.home').innerText()) === 'GPS & RF', 'gate link opens Q-3 with a link to its zone');
+  await p.keyboard.press('Escape');
+  await p.waitForTimeout(300);
+  check(!(await panel.count()), 'Esc closes the panel');
+
+  // Scroll does not carry between pages.
+  await p.goto(`${BASE}/quiver/aircraft/gps-rf`);
+  await p.waitForTimeout(400);
+  await p.evaluate(() => document.querySelector('.slot').scrollTo(0, 9999));
+  await p.locator('.sidebar a', { hasText: 'Power & battery' }).click();
+  await p.waitForTimeout(400);
+  check((await p.evaluate(() => document.querySelector('.slot').scrollTop)) === 0, 'next page starts at the top');
+
   // Persistence and reset.
-  await p.reload();
   await p.goto(`${BASE}/quiver/decisions/register`);
+  await p.reload();
   await p.waitForTimeout(500);
   check((await text()).includes('D-001'), 'decision survives reload');
+  await p.getByRole('button', { name: /^Demo/ }).click();
   await p.getByRole('button', { name: 'Reset demo' }).click();
   await p.waitForTimeout(300);
   check((await text()).includes('Nothing decided yet'), 'reset clears the register');

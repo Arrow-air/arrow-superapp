@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import Avatar from '../modules/threads/Avatar.vue';
 import { callItems } from '../data/calls';
 import { personById } from '../data/people';
-import { zoneLabel, zonePath, zoneTab } from '../frame/nav';
+import { zoneLabel, zonePath } from '../frame/nav';
 import { startThread, state } from '../modules/threads/store';
 
 // Questions, proposals and gaps from the calls that no thread has picked up.
@@ -18,13 +18,12 @@ const kindLabel = { question: 'Question', proposal: 'Proposal', gap: 'Gap' } as 
 function start(c: (typeof callItems)[number]) {
   const t = startThread({
     zone: c.zone,
-    context: zoneTab(c.zone)?.id ?? 'overview',
     title: c.text.length > 90 ? `${c.text.slice(0, 87).trimEnd()}…` : c.text,
     body: `From the ${c.call.date} call notes, which name ${c.who.map((w) => personById(w)?.name).join(' and ')}: ${c.text}`,
     type: c.kind === 'proposal' ? 'proposal' : 'question',
     fromCall: c.id,
   });
-  router.push({ path: zonePath(c.zone), query: { thread: t.id } });
+  router.replace({ query: { thread: t.id } });
 }
 </script>
 

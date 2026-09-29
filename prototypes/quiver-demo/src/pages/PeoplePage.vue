@@ -42,7 +42,7 @@ const positionsBy = (id: string) => state.threads.flatMap((t) => t.positions.fil
           <a v-for="t in ownsTasks(p.id, p.github)" :key="t.id" :href="t.url" target="_blank" rel="noopener" class="chip">{{ t.id }}</a>
         </div>
         <div v-if="positionsBy(p.id).length" class="chips">
-          <RouterLink v-for="t in positionsBy(p.id)" :key="t.id" :to="{ path: '/quiver/discussion/all', query: { thread: t.id } }" class="chip indigo">{{ t.id }}</RouterLink>
+          <RouterLink v-for="t in positionsBy(p.id)" :key="t.id" :to="{ query: { thread: t.id } }" class="chip indigo">{{ t.id }}</RouterLink>
         </div>
       </article>
     </div>

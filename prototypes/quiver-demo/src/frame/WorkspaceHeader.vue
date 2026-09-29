@@ -12,7 +12,7 @@ const { tab, base } = useWorkspace();
     <ProjectSwitcher />
     <SegmentedTabs
       label="Workspace"
-      :items="tabs.map((t) => ({ id: t.id, label: t.label, to: `${base}/${t.id}` }))"
+      :items="tabs.map((t, i) => ({ id: t.id, label: t.label, to: `${base}/${t.id}`, divider: !!t.view && !tabs[i - 1]?.view }))"
       :active="tab?.id"
     />
   </div>

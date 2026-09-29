@@ -31,7 +31,7 @@ export const gate: GateItem[] = [
   {
     id: 'oa', title: 'Obstacle avoidance tested and documented', owners: ['erick', 'zeynep'], status: 'in-progress', statusText: 'Testing',
     next: 'Zeynep sends the updated parameters; Erick tests at the park on Thursday morning.',
-    zone: 'obstacle-avoidance', issues: [203], prs: [247], callItem: 'sep29-13',
+    zone: 'autonomy', issues: [203], prs: [247], callItem: 'sep29-13',
   },
   {
     id: 'gps', title: 'GPS interference found and fixed', owners: ['julius', 'erick'], status: 'open', statusText: 'Diagnosing; fix not chosen',

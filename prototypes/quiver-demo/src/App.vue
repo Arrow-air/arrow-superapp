@@ -7,6 +7,7 @@ import PageHeader from './frame/PageHeader.vue';
 import SlotState from './frame/SlotState.vue';
 import AppFooter from './frame/AppFooter.vue';
 import GlobalDrawer from './frame/GlobalDrawer.vue';
+import ThreadPanel from './modules/threads/ThreadPanel.vue';
 import { useWorkspace } from './frame/useWorkspace';
 
 const { route, project, tab, item } = useWorkspace();
@@ -19,6 +20,10 @@ onErrorCaptured((err) => {
   return false;
 });
 watch(() => route.fullPath, () => (pageError.value = null));
+
+// Each page starts at the top; opening a thread (a query change) does not scroll.
+const slot = ref<HTMLElement>();
+watch(() => route.path, () => slot.value?.scrollTo(0, 0));
 
 watch(
   () => [item.value?.label, project.value?.label].filter(Boolean).join(' · '),
@@ -39,7 +44,7 @@ watch(
         <SectionSidebar v-if="inWorkspace" />
         <div class="column">
           <PageHeader v-if="inWorkspace && item" />
-          <main class="slot">
+          <main ref="slot" class="slot">
             <SlotState v-if="pageError" kind="error" :detail="pageError.message" />
             <RouterView v-else v-slot="{ Component }">
               <Suspense>
@@ -48,6 +53,7 @@ watch(
               </Suspense>
             </RouterView>
           </main>
+          <ThreadPanel v-if="inWorkspace" />
         </div>
       </div>
     </div>
@@ -84,6 +90,7 @@ watch(
   display: flex;
 }
 .column {
+  position: relative;
   flex: 1;
   min-width: 0;
   display: flex;

@@ -3,7 +3,8 @@ import Icon from './Icon.vue';
 import { computed } from 'vue';
 import { formatMoney, network, quote, quoteValue, type Quote } from './account';
 import { generatedAt, shortDate, tasks } from '../data/quiver';
-import { resetDemo, state, statusOf, touched } from '../modules/threads/store';
+import { state } from '../modules/threads/store';
+import DemoMenu from './DemoMenu.vue';
 import { socials } from './links';
 import logomark from '../assets/arrow-logomark-white.svg';
 import { theme, type Theme } from './theme';
@@ -20,26 +21,20 @@ const themes: { id: Theme; label: string; icon: IconName }[] = [
 // quote currency on the right. The currency switch shares state with the
 // wallet toolbar.
 const SITE = 'https://arrowair.com';
-const needInput = computed(() => state.threads.filter((t) => statusOf(t) === 'needs').length);
+const openThreads = computed(() => state.threads.filter((t) => !t.settled).length);
 const claimable = tasks.filter((t) => t.claimable).length;
-function reset() {
-  if (confirm('Reset the demo? Your votes, replies, new threads and decisions in this browser are cleared.')) resetDemo();
-}
+
 </script>
 
 <template>
   <footer class="footer" aria-label="Status">
     <div class="side">
-      <span class="stat" title="A demo with no backend: what you do stays in this browser">
-        <span class="live" :class="{ off: !network.connected }" aria-hidden="true"></span>
-        Demo<span class="hide-md">&nbsp;· changes stay in this browser</span>
-      </span>
-      <button v-if="touched" class="stat link reset" type="button" @click="reset">Reset demo</button>
+      <DemoMenu />
       <span class="sep hide-sm" aria-hidden="true"></span>
       <span class="stat hide-sm"><Icon name="sync" :size="11" /> GitHub data from {{ shortDate(generatedAt) }}</span>
       <span class="sep hide-md" aria-hidden="true"></span>
       <RouterLink class="stat link hide-md" to="/quiver/discussion/all">
-        <Icon name="vote" :size="11" /> {{ needInput }} threads need input
+        <Icon name="vote" :size="11" /> {{ openThreads }} open threads
       </RouterLink>
       <RouterLink class="stat link hide-md" to="/quiver/work/tasks">
         <Icon name="coin" :size="11" /> {{ claimable }} claimable tasks

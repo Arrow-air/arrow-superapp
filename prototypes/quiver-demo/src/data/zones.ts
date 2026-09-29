@@ -1,6 +1,6 @@
 // Working zones: the places work happens. Gavin's frame puts them in the
 // sidebar; any zone can hold threads, votes and decisions. Each zone also
-// says what already exists for it in the repository, so the page opens on
+// says what already exists for it in the repositories, so the page opens on
 // real work rather than an empty room.
 
 export interface Zone {
@@ -12,19 +12,95 @@ export interface Zone {
   prs?: number[];
   parts?: string[];
   links?: { label: string; url: string }[];
+  /** Attachment catalog entry shown at the top of the zone. */
+  attachment?: string;
 }
 
+const PS = 'https://github.com/Arrow-air/payload-systems';
+const PQ = 'https://github.com/Arrow-air/project-quiver';
+const SDK = 'https://github.com/Arrow-air/quiver-sdk';
+
 export const zones: Zone[] = [
-  // Overview
+  // Attachments
   {
-    id: 'road-to-selling',
-    summary: 'What stands between Quiver and US sales, as Thomas listed it on the Sep 29 call. Each item links to the zone where the work is.',
+    id: 'interface',
+    summary: 'The standard every attachment builds against: three quick-release ports, what power, network and signals each one carries, and the mechanical mate. Changes here affect every payload.',
+    issues: [234],
+    parts: ['2112', '3331'],
+    links: [
+      { label: 'Interface Control Document (ICD 1.0-draft)', url: `${PS}/blob/main/interface/ICD.md` },
+      { label: 'Payload template', url: `${PS}/tree/main/payloads/_template` },
+    ],
+  },
+  {
+    id: 'dev-guide',
+    summary: 'The one document a third party reads to build a Quiver attachment: connect it physically, power it without browning out the aircraft, and talk to the flight controller and QuiverHub.',
+    tasks: ['T-05'],
+    prs: [270],
+    links: [{ label: 'Quiver SDK developer guide', url: `${PQ}/blob/main/docs/Develop-Attachments-Software/Quiver-SDK-Developer-Guide.md` }],
+  },
+  { id: 'payload-latch', attachment: 'payload-latch', summary: 'Servo-driven cargo hook for slung loads on the bottom port. V1 flew at the August meetup; V2 opens when the V1 note lands.', tasks: ['T-07', 'T-11'] },
+  { id: 'multispectral', attachment: 'multispectral', summary: 'Fixed nadir mount for the MAPIR Survey3 RGN camera, triggered by the flight controller. V1 flew at the August meetup; V2 opens when the V1 note lands.', tasks: ['T-06', 'T-11'] },
+  { id: 'ram-ball', attachment: 'ram-ball', summary: 'One printed part that puts a 1.5" RAM Size-C ball on any port, so anything in the RAM ecosystem can hang off Quiver.' },
+  { id: 'spreader', attachment: 'spreader', summary: 'An adapter board for the JMRRC FS2516 granular spreader, as a DroneCAN reference design. It is also where the payload power limit was hit in practice.', issues: [233, 234] },
+  {
+    id: 'concepts',
+    summary: 'Attachments with requirements already written, waiting for someone to pick them up: cargo container, aerial LiDAR, machine vision, a magnification camera, a stabilized sensor carrier, and a flood light.',
+    links: [
+      { label: 'Payload concepts in payload-systems', url: `${PS}#payload-concepts` },
+      { label: 'Detailed attachment requirements', url: `${PQ}/tree/main/task-grant-bounty/equipment/attachment/0002-detailed_attachment_requirement_for_bounty` },
+    ],
+  },
+  {
+    id: 'attachment-ideas',
+    summary: 'The best payload is the one you actually need. Propose an attachment here before it has requirements; the ones that gather support become concepts.',
+    links: [{ label: 'Possible attachments list', url: `${PQ}/blob/main/task-grant-bounty/equipment/attachment/0001-possible_attachment_list/information-note.md` }],
   },
 
-  // Design: the next revision
+  // Software
+  {
+    id: 'sdk',
+    summary: 'A Python SDK so developers can control the vehicle, the camera and attachments without thinking about MAVLink: one pip install, offline-first, runs on the onboard Pi or a ground laptop.',
+    links: [
+      { label: 'quiver-sdk repository', url: SDK },
+      { label: 'Planning document', url: `${SDK}/blob/main/PLANNING.md` },
+      { label: 'Examples: takeoff, battery monitor, photo, spray mission', url: `${SDK}/tree/main/examples` },
+    ],
+  },
+  {
+    id: 'quiverhub',
+    summary: 'The companion-computer software on the onboard Raspberry Pi. V1 shipped; the next scope is written after it runs on the Houston unit.',
+    tasks: ['T-18', 'T-12'],
+  },
+  {
+    id: 'ground-station',
+    summary: 'What the operator sees and presses in the field: the RC remote, the ground station, and the video and telemetry link. Interface improvements for operators go here.',
+    parts: ['3280', '3230', '3240'],
+  },
+  {
+    id: 'autonomy',
+    summary: 'Obstacle avoidance with the 360° LiDAR and forward radar, return-to-launch, and autonomous missions. QGB-02 tests, tunes and documents obstacle avoidance.',
+    issues: [203],
+    prs: [247, 246],
+    parts: ['3210', '3290'],
+  },
+  {
+    id: 'parameters',
+    summary: 'The flight-controller parameter card, failsafes, and the Lua scripts that run on the flight controller. Changes that deviate from the baseline get their own pull request.',
+    tasks: ['T-01'],
+    prs: [222],
+  },
+  {
+    id: 'flight-data',
+    summary: 'Flight logs, the tracking platform at flights.arrowair.com, and the reliability numbers built from them.',
+    tasks: ['T-14', 'T-17'],
+    links: [{ label: 'flights.arrowair.com', url: 'https://flights.arrowair.com' }],
+  },
+
+  // Aircraft
   {
     id: 'airframe',
-    summary: 'Frame, plates, arms and the sealed cockpit. KBM asked on Sep 29 whether there is a plan to improve the structure or the enclosure; Erick is bringing a list to Thursday.',
+    summary: 'Frame, plates, arms and the sealed cockpit.',
     parts: ['1111', '1112'],
     prs: [266],
   },
@@ -38,52 +114,58 @@ export const zones: Zone[] = [
   },
   {
     id: 'power',
-    summary: 'The Tattu smart pack, its BMS, and the failsafe values that read it.',
-    tasks: ['T-01'],
-    parts: ['3410', '3320'],
-  },
-  {
-    id: 'payload',
-    summary: 'The three quick-release attachment interfaces and the power they can deliver.',
-    tasks: ['T-07', 'T-06'],
-    issues: [234, 233],
-    prs: [245],
-    parts: ['2112', '3331'],
+    summary: 'The Tattu smart pack, its BMS, the power distribution, and the 12 V rails that feed avionics and payloads.',
+    parts: ['3410', '3320', '3310'],
   },
   {
     id: 'avionics',
-    summary: 'Flight controller, companion computer and the parameter card.',
-    prs: [222, 235],
-  },
-  {
-    id: 'cad',
-    summary: 'The build123d model is the source of truth for CAD. Recent Fusion changes still need to reach it.',
-    prs: [266, 225],
-    links: [{ label: 'CAD package (src/quiver)', url: 'https://github.com/Arrow-air/project-quiver/tree/main/src/quiver' }],
-  },
-
-  // Testing
-  {
-    id: 'obstacle-avoidance',
-    summary: 'QGB-02: test, tune and document the 360° LiDAR and forward radar. One of the two technical items Thomas wants closed before shipping.',
-    issues: [203],
-    prs: [247, 246],
-    parts: ['3210', '3290'],
+    summary: 'Flight controller, companion computer, Ethernet switches and the onboard network every device and attachment shares.',
+    parts: ['3312', '3313', '3201'],
+    prs: [235],
   },
   {
     id: 'gps-interference',
-    summary: 'Is the Ethernet switch build the source of the M9N dropouts, and does a fix hold in flight? Diagnosis for the GPS & RF design zone.',
+    summary: 'Is the Ethernet switch build the source of the M9N dropouts, and does a fix hold in flight? Diagnosis for the GPS & RF zone.',
     tasks: ['T-13'],
     issues: [191],
   },
   {
     id: 'endurance',
-    summary: 'Six-flight endurance matrix: no payload, 5 kg and 7 kg, hover and circle. Flights by Erick, study by KBM.',
-    tasks: ['T-03', 'T-17'],
-    links: [{ label: 'flights.arrowair.com', url: 'https://flights.arrowair.com' }],
+    summary: 'Six-flight endurance matrix: no payload, 5 kg and 7 kg, hover and circle.',
+    tasks: ['T-03'],
+  },
+  {
+    id: 'flight-campaign',
+    summary: 'The flight test campaign and how validated logs are paid.',
+    tasks: ['T-17'],
+    links: [{ label: '20-hour flight plan', url: `${PQ}/blob/main/flight-test/20hr-flight-plan.md` }],
+  },
+  {
+    id: 'pilots-handbook',
+    summary: 'The Pilot\'s Handbook, field edition: what the logs cannot say.',
+    tasks: ['T-04'],
+    links: [{ label: 'Pilot\'s Handbook', url: `${PQ}/blob/main/docs/Operations/Pilot-Handbook.md` }],
+  },
+  {
+    id: 'maintenance',
+    summary: 'Keeping units flying: inspections, wear parts, and repairs in the field.',
+    links: [{ label: 'Maintenance guide', url: `${PQ}/blob/main/docs/Operations/Maintenance-Guide.md` }],
+  },
+  {
+    id: 'cad',
+    summary: 'The build123d model is the source of truth for CAD. Recent Fusion changes still need to reach it.',
+    prs: [266, 225],
+    links: [{ label: 'CAD package (src/quiver)', url: `${PQ}/tree/main/src/quiver` }],
   },
 
-  // Docs and build
+  // Build
+  {
+    id: 'assembly',
+    summary: 'Assembly and manufacturing guides: what a new builder follows to put a Quiver together.',
+    issues: [179],
+    prs: [223],
+    links: [{ label: 'Assembly guides', url: 'https://arrowair.com/quiver/category/manufacturing/' }],
+  },
   {
     id: 'config-guide',
     summary: 'The Initial Configuration Guide: a builder who has never seen the first unit configures a new aircraft from it alone.',
@@ -91,42 +173,28 @@ export const zones: Zone[] = [
     prs: [232],
   },
   {
-    id: 'pilots-handbook',
-    summary: 'The Pilot\'s Handbook, field edition: what the logs cannot say.',
-    tasks: ['T-04'],
+    id: 'case',
+    summary: 'The transport case, its foam inserts, and getting a finished unit to a customer.',
   },
   {
-    id: 'attachment-guide',
-    summary: 'The one document a third party reads to build a Quiver attachment.',
-    tasks: ['T-05', 'T-11'],
-    prs: [270],
+    id: 'manufacturers',
+    summary: 'Quiver is open hardware (CERN-OHL-S). Bringing on more manufacturers: what a new builder needs to get started, and how what one learns selling carries over to the others.',
   },
   {
-    id: 'assembly',
-    summary: 'Assembly and manufacturing guides.',
-    issues: [179],
-    prs: [223],
-    links: [{ label: 'Assembly guides', url: 'https://arrowair.com/quiver/category/manufacturing/' }],
+    id: 'suppliers',
+    summary: 'Where the parts come from and what a unit costs to build, from the BOM.',
   },
 
-  // Go-to-market
+  // Selling
   {
-    id: 'where-we-sell',
-    summary: 'The Arrow store, a local page, or both. Thomas wants sales to be the Quiver focus for the coming months.',
+    id: 'road-to-selling',
+    summary: 'What stands between Quiver and US sales, as Thomas listed it on the Sep 29 call.',
   },
-  {
-    id: 'who-we-sell-to',
-    summary: 'Who the online funnel is for, and what local customers need from a seller.',
-  },
-  {
-    id: 'sales-page',
-    summary: 'The arrowair.com sales page refresh, scoped at the October checkpoint once the marketing discovery is filed.',
-    tasks: ['T-15', 'T-14'],
-  },
-  {
-    id: 'dao-return',
-    summary: 'Every sale runs through the Arrow store process and pays back to the DAO. How much, and how, is not written down yet.',
-  },
+  { id: 'where-we-sell', summary: 'The Arrow store, a local page, or both. Thomas wants sales to be the Quiver focus for the coming months.' },
+  { id: 'who-we-sell-to', summary: 'Who buys a Quiver and what they use it for: integrators, attachment developers, operators, and local customers.' },
+  { id: 'pricing', summary: 'What a unit, a dev kit and the attachments cost to buy.' },
+  { id: 'sales-page', summary: 'The arrowair.com sales page refresh, scoped at the October checkpoint once the marketing discovery is filed.', tasks: ['T-15'] },
+  { id: 'dao-return', summary: 'Every sale runs through the Arrow store process and pays back to the DAO. How much, and how, is not written down yet.' },
 ];
 
 export const zoneById = (id: string | undefined) => zones.find((z) => z.id === id);

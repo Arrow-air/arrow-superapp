@@ -43,7 +43,7 @@ onMounted(async () => {
               <RouterLink :to="zonePath(i.zone)" class="link">{{ zoneLabel(i.zone) }}</RouterLink>
               <template v-if="threadFor(i.id, i.thread)">
                 <span class="dot">·</span>
-                <RouterLink :to="{ path: zonePath(i.zone), query: { thread: threadFor(i.id, i.thread) } }" class="link">{{ threadFor(i.id, i.thread) }}</RouterLink>
+                <RouterLink :to="{ query: { ...$route.query, thread: threadFor(i.id, i.thread) } }" class="link">{{ threadFor(i.id, i.thread) }}</RouterLink>
               </template>
             </div>
           </div>
