@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import Icon from './Icon.vue';
+import logomark from '../assets/arrow-logomark-white.svg';
 import AccountBar from './AccountBar.vue';
 // App-wide bar: identical whichever aircraft you're on.
 </script>
 
 <template>
   <header class="bar">
-    <RouterLink to="/" class="logo" aria-label="Arrow home"><Icon name="arrow" :size="20" /></RouterLink>
+    <RouterLink to="/" class="logo" aria-label="Arrow home"><img :src="logomark" alt="" width="22" height="24" /></RouterLink>
 
     <span class="spacer"></span>
 
@@ -31,9 +31,17 @@ import AccountBar from './AccountBar.vue';
   place-items: center;
   width: var(--control-height);
   height: var(--control-height);
-  border-radius: var(--radius-sm);
-  background: var(--brand);
-  color: var(--brand-fg);
+  border-radius: 9px;
+  background: var(--brand-fill);
+  box-shadow: var(--brand-shadow);
+  transition: filter 150ms;
+}
+.logo:hover { filter: brightness(1.08); }
+.logo:focus-visible { outline: none; box-shadow: var(--brand-shadow), 0 0 0 2px var(--focus-ring); }
+.logo img {
+  display: block;
+  margin-top: -1px; /* the mark's viewBox sits low; nudge it to optical centre */
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.35));
 }
 .spacer { flex: 1; }
 
