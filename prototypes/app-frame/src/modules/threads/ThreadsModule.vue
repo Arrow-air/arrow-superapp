@@ -127,15 +127,15 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 <style scoped>
 .threads { display: grid; grid-template-columns: 340px minmax(0, 1fr); height: 100%; min-height: 0; }
 
-/* The list sits on a lighter surface with a soft edge shadow, so the thread
-   beside it reads as its own sheet. */
+/* The list keeps the slot's colour and casts a soft shadow over the thread,
+   so the two read as separate sheets. */
 .list-pane {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  background: var(--slate-2);
+  background: var(--slot-bg);
   box-shadow: 1px 0 0 var(--slate-a5), 14px 0 32px -12px rgb(0 0 0 / 0.7);
 }
 .top { display: flex; align-items: center; gap: 8px; padding: 12px; }
