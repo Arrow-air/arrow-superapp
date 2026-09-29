@@ -127,7 +127,17 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 <style scoped>
 .threads { display: grid; grid-template-columns: 340px minmax(0, 1fr); height: 100%; min-height: 0; }
 
-.list-pane { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--slate-a3); }
+/* The list sits on a lighter surface with a soft edge shadow, so the thread
+   beside it reads as its own sheet. */
+.list-pane {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--slate-2);
+  box-shadow: 1px 0 0 var(--slate-a5), 14px 0 32px -12px rgb(0 0 0 / 0.7);
+}
 .top { display: flex; align-items: center; gap: 8px; padding: 12px; }
 
 .find { position: relative; flex: 1; min-width: 0; }
@@ -180,6 +190,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
   .detail-pane { display: none; }
   .show-detail .list-pane { display: none; }
   .show-detail .detail-pane { display: block; }
-  .list-pane { border-right: 0; }
+  .list-pane { box-shadow: none; }
 }
 </style>
