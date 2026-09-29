@@ -7,7 +7,7 @@ import { findProject, findTab, findItem, firstItem, projects, tabs } from './fra
 export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    { path: '/', redirect: `/${projects[0].id}/design/structural-design` },
+    { path: '/', redirect: `/${projects[0].id}/design/airframe` },
     // Deliberately broken page, to prove a failing module can't take the frame down.
     { path: '/broken', component: () => import('./pages/Broken.vue') },
     {

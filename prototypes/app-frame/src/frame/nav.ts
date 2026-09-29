@@ -23,52 +23,189 @@ export const projects: Project[] = [
   { id: 'caribou', label: 'Caribou', versions: [{ id: 'v0', label: 'Current Version', code: 'V 0.1' }] },
 ];
 
-const discussion: NavGroup = {
-  id: 'discussion',
-  label: 'Discussion',
-  sortable: true,
-  items: [
-    { id: 'gtm-strategy', label: 'GTM Strategy', icon: 'store' },
-    { id: 'potential-applications', label: 'Potential Applications', icon: 'globe' },
-    { id: 'workshop-builds', label: 'Workshop Builds', icon: 'hexagon' },
-    { id: 'pricing-discussion', label: 'Pricing Discussion', icon: 'diamond' },
-    { id: 'bom-optimization', label: 'BOM Optimization', icon: 'list' },
-    { id: 'prototype-2', label: 'Prototype 2.0', icon: 'half-diamond' },
-  ],
-};
-
-// Placeholder sidebar for tabs whose structure isn't designed yet.
-const stub = (label: string): NavGroup[] => [
-  { id: 'main', label, items: [{ id: 'index', label: 'All', icon: 'list' }] },
-  discussion,
-];
+// Each tab's sidebar: the topics for that context first, then the
+// discussion scoped to it. Design, Building and Manufacturing share
+// subsystem names so you stay on the same part of the aircraft across tabs.
+const item = (id: string, label: string, icon: IconName): NavItem => ({ id, label, icon });
+const talk = (...items: NavItem[]): NavGroup => ({ id: 'discussion', label: 'Discussion', sortable: true, items });
 
 export const tabs: Tab[] = [
-  { id: 'overview', label: 'Overview', groups: stub('Overview') },
+  {
+    id: 'overview',
+    label: 'Overview',
+    groups: [
+      {
+        id: 'about',
+        label: 'About',
+        items: [
+          item('summary', 'Summary', 'info'),
+          item('specifications', 'Specifications', 'sliders'),
+          item('roadmap', 'Roadmap', 'flag'),
+          item('changelog', 'Changelog', 'history'),
+          item('contributors', 'Contributors', 'people'),
+        ],
+      },
+      talk(item('announcements', 'Announcements', 'megaphone'), item('qa', 'Q&A', 'question')),
+    ],
+  },
   {
     id: 'design',
     label: 'Design',
     groups: [
       {
-        id: 'cad',
-        label: 'CAD Modelling',
+        id: 'subsystems',
+        label: 'Subsystems',
         items: [
-          { id: 'structural-design', label: 'Structural Design', icon: 'half-diamond' },
-          { id: 'pcb-design', label: 'PCB Design', icon: 'globe' },
-          { id: 'propulsion-system', label: 'Propulsion System', icon: 'cylinder' },
-          { id: 'conceptual-design', label: 'Conceptual Design', icon: 'gear' },
-          { id: 'power-design', label: 'Power Design', icon: 'bolt' },
-          { id: 'electrical-design', label: 'Electrical Design', icon: 'chip' },
+          item('airframe', 'Airframe', 'airframe'),
+          item('wings-tail', 'Wings & tail', 'wing'),
+          item('propulsion', 'Propulsion', 'fan'),
+          item('power', 'Power & battery', 'battery'),
+          item('avionics', 'Avionics', 'chip'),
+          item('wiring', 'Wiring harness', 'harness'),
+          item('payload', 'Payload bay', 'box'),
         ],
       },
-      discussion,
+      {
+        id: 'reference',
+        label: 'Reference',
+        items: [
+          item('cad-files', 'CAD files', 'file'),
+          item('drawings', 'Drawings', 'ruler'),
+          item('requirements', 'Requirements', 'check-square'),
+        ],
+      },
+      talk(item('design-reviews', 'Design reviews', 'eye'), item('change-proposals', 'Change proposals', 'branch')),
     ],
   },
-  { id: 'building', label: 'Building', groups: stub('Building') },
-  { id: 'manufacturing', label: 'Manufacturing', groups: stub('Manufacturing') },
-  { id: 'testing', label: 'Testing', groups: stub('Testing') },
-  { id: 'discussion', label: 'Discussion', groups: [discussion] },
-  { id: 'store', label: 'Store', groups: stub('Store') },
+  {
+    id: 'building',
+    label: 'Building',
+    groups: [
+      {
+        id: 'prepare',
+        label: 'Prepare',
+        items: [item('bom', 'Bill of materials', 'list'), item('tools', 'Tools & workspace', 'wrench')],
+      },
+      {
+        id: 'assembly',
+        label: 'Assembly',
+        items: [
+          item('airframe', 'Airframe', 'airframe'),
+          item('wings', 'Wings', 'wing'),
+          item('propulsion', 'Propulsion', 'fan'),
+          item('electrical', 'Electrical', 'harness'),
+        ],
+      },
+      {
+        id: 'setup',
+        label: 'Setup',
+        items: [item('flight-controller', 'Flight controller', 'chip'), item('calibration', 'Calibration', 'target')],
+      },
+      talk(item('workshop-builds', 'Workshop builds', 'hexagon'), item('troubleshooting', 'Troubleshooting', 'question')),
+    ],
+  },
+  {
+    id: 'manufacturing',
+    label: 'Manufacturing',
+    groups: [
+      {
+        id: 'parts',
+        label: 'Parts',
+        items: [
+          item('printed', 'Printed parts', 'printer'),
+          item('composite', 'Composite parts', 'layers'),
+          item('sourced', 'Sourced parts & suppliers', 'truck'),
+        ],
+      },
+      {
+        id: 'processes',
+        label: 'Processes',
+        items: [
+          item('layup', 'Layup', 'layers'),
+          item('print-settings', 'Print settings', 'sliders'),
+          item('inspection', 'Inspection', 'check-square'),
+        ],
+      },
+      { id: 'cost', label: 'Cost', items: [item('cost-breakdown', 'Cost breakdown', 'coin')] },
+      talk(item('bom-optimization', 'BOM optimization', 'list'), item('supplier-options', 'Supplier options', 'truck')),
+    ],
+  },
+  {
+    id: 'testing',
+    label: 'Testing',
+    groups: [
+      { id: 'plan', label: 'Plan', items: [item('test-plan', 'Test plan', 'check-square')] },
+      {
+        id: 'ground',
+        label: 'Ground tests',
+        items: [item('bench-thrust', 'Bench thrust', 'gauge'), item('static-load', 'Static load', 'airframe')],
+      },
+      {
+        id: 'flight',
+        label: 'Flight tests',
+        items: [
+          item('hover', 'Hover', 'fan'),
+          item('transition', 'Transition', 'plane'),
+          item('endurance', 'Endurance', 'battery'),
+        ],
+      },
+      {
+        id: 'results',
+        label: 'Results',
+        items: [item('flight-logs', 'Flight logs', 'log'), item('findings', 'Findings', 'bulb')],
+      },
+      talk(item('test-results', 'Test results', 'chart'), item('incidents', 'Incidents', 'alert')),
+    ],
+  },
+  {
+    id: 'discussion',
+    label: 'Discussion',
+    groups: [
+      {
+        id: 'threads',
+        label: 'Threads',
+        items: [
+          item('all', 'All threads', 'comment'),
+          item('proposals', 'Proposals', 'branch'),
+          item('decisions', 'Decisions', 'check-circle'),
+          item('ideas', 'Ideas', 'bulb'),
+          item('qa', 'Q&A', 'question'),
+        ],
+      },
+      {
+        id: 'by-context',
+        label: 'By context',
+        items: [
+          item('ctx-design', 'Design', 'half-diamond'),
+          item('ctx-building', 'Building', 'wrench'),
+          item('ctx-manufacturing', 'Manufacturing', 'layers'),
+          item('ctx-testing', 'Testing', 'plane'),
+          item('ctx-store', 'Store', 'store'),
+        ],
+      },
+    ],
+  },
+  {
+    id: 'store',
+    label: 'Store',
+    groups: [
+      {
+        id: 'shop',
+        label: 'Shop',
+        items: [item('kits', 'Kits', 'bag'), item('parts', 'Parts', 'box'), item('merch', 'Merch', 'shirt')],
+      },
+      {
+        id: 'strategy',
+        label: 'Strategy',
+        items: [
+          item('pricing', 'Pricing', 'tag'),
+          item('go-to-market', 'Go-to-market', 'chart'),
+          item('applications', 'Potential applications', 'globe'),
+        ],
+      },
+      talk(item('pricing-discussion', 'Pricing discussion', 'tag')),
+    ],
+  },
 ];
 
 export const findProject = (id: unknown) => projects.find((p) => p.id === id);
