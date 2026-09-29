@@ -7,7 +7,22 @@ import spearheadThumb from '../assets/spearhead-thumb.png';
 export interface NavItem { id: string; label: string; icon: IconName }
 export interface NavGroup { id: string; label: string; sortable?: boolean; items: NavItem[] }
 export interface Tab { id: string; label: string; groups: NavGroup[] }
-export interface Project { id: string; label: string; thumb?: string; versions: { id: string; label: string; code: string }[] }
+export type VersionStatus = 'upcoming' | 'current' | 'previous' | 'unmaintained';
+export interface Version { id: string; code: string; status: VersionStatus }
+export interface Project { id: string; label: string; thumb?: string; versions: Version[] }
+
+export const statusLabel: Record<VersionStatus, string> = {
+  upcoming: 'Upcoming',
+  current: 'Current',
+  previous: 'Previous',
+  unmaintained: 'Unmaintained',
+};
+export const statusNote: Record<VersionStatus, string> = {
+  upcoming: 'In development',
+  current: 'Latest release',
+  previous: 'Older, still supported',
+  unmaintained: 'No longer maintained',
+};
 
 export const projects: Project[] = [
   {
@@ -15,13 +30,26 @@ export const projects: Project[] = [
     label: 'Spearhead',
     thumb: spearheadThumb,
     versions: [
-      { id: 'pt-1-5', label: 'Current Version', code: 'PT 1.5' },
-      { id: 'pt-1-0', label: 'Previous Version', code: 'PT 1.0' },
+      { id: 'pt-2-0', code: 'PT 2.0', status: 'upcoming' },
+      { id: 'pt-1-5', code: 'PT 1.5', status: 'current' },
+      { id: 'pt-1-0', code: 'PT 1.0', status: 'previous' },
+      { id: 'pt-0-9', code: 'PT 0.9', status: 'unmaintained' },
     ],
   },
-  { id: 'quiver', label: 'Quiver', versions: [{ id: 'v1', label: 'Current Version', code: 'V 1.0' }] },
-  { id: 'caribou', label: 'Caribou', versions: [{ id: 'v0', label: 'Current Version', code: 'V 0.1' }] },
+  {
+    id: 'quiver',
+    label: 'Quiver',
+    versions: [
+      { id: 'v1-1', code: 'V 1.1', status: 'upcoming' },
+      { id: 'v1-0', code: 'V 1.0', status: 'current' },
+      { id: 'v0-8', code: 'V 0.8', status: 'unmaintained' },
+    ],
+  },
+  { id: 'caribou', label: 'Caribou', versions: [{ id: 'v0-1', code: 'V 0.1', status: 'upcoming' }] },
 ];
+
+// The version a project opens on: its current release, or whatever it has.
+export const defaultVersion = (p: Project) => p.versions.find((v) => v.status === 'current') ?? p.versions[0];
 
 // Each tab's sidebar: the topics for that context first, then the
 // discussion scoped to it. Design, Building and Manufacturing share

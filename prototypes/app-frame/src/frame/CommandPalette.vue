@@ -5,7 +5,7 @@ import Icon from './Icon.vue';
 import Kbd from './Kbd.vue';
 import type { IconName } from './icons';
 import { linkGroups } from './links';
-import { projects, tabs } from './nav';
+import { defaultVersion, projects, tabs } from './nav';
 import { useWorkspace } from './useWorkspace';
 
 // ⌘K: jump to any page of the current aircraft, switch aircraft, or open an
@@ -45,7 +45,7 @@ const all = computed<Section[]>(() => [
     results: projects.map((p) => ({
       id: `aircraft:${p.id}`,
       label: p.label,
-      hint: p.versions[0].code,
+      hint: defaultVersion(p).code,
       icon: 'plane' as IconName,
       action: 'Switch aircraft',
       run: () => router.push(`/${p.id}/overview`),

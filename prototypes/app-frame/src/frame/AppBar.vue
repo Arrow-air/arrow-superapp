@@ -119,7 +119,7 @@ onMounted(() => {
 .search-bar:hover { border-color: var(--border); background: var(--slate-a3); }
 .search-bar:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
 .search-icon { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; flex: none; }
-.search-text { flex: 1; }
+.search-text { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* The crack: a sliver of the drawer's edge, lit indigo. */
 .crack {

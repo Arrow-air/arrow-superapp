@@ -1,6 +1,7 @@
 /* Design tokens for the frame. Every colour is a step on a Radix Colors
    dark scale (radix-ui.com/colors, v3): Slate for neutrals, Indigo for brand,
-   links and the active state, Jade for success, Plum for the avatar, Red for
+   links and the active state, Jade for success, Sky and Amber for
+   version status, Plum for the avatar, Red for
    errors. Components only read the semantic tokens at the bottom, so
    restyling happens in this file only. The concept is dark-only for now. */
 
@@ -37,6 +38,18 @@
   --red-a1: #f4121209; --red-a2: #f22f3e11; --red-a3: #ff173f2d; --red-a4: #fe0a3b44;
   --red-a5: #ff204756; --red-a6: #ff3e5668; --red-a7: #ff536184; --red-a8: #ff5d61b0;
   --red-a9: #fe4e54e4; --red-a10: #ff6465eb; --red-a11: #ff9592; --red-a12: #ffd1d9;
+  --amber-1: #16120c; --amber-2: #1d180f; --amber-3: #302008; --amber-4: #3f2700;
+  --amber-5: #4d3000; --amber-6: #5c3d05; --amber-7: #714f19; --amber-8: #8f6424;
+  --amber-9: #ffc53d; --amber-10: #ffd60a; --amber-11: #ffca16; --amber-12: #ffe7b3;
+  --amber-a1: #e63c0006; --amber-a2: #fd9b000d; --amber-a3: #fa820022; --amber-a4: #fc820032;
+  --amber-a5: #fd8b0041; --amber-a6: #fd9b0051; --amber-a7: #ffab2567; --amber-a8: #ffae3587;
+  --amber-a9: #ffc53d; --amber-a10: #ffd60a; --amber-a11: #ffca16; --amber-a12: #ffe7b3;
+  --sky-1: #0d141f; --sky-2: #111a27; --sky-3: #112840; --sky-4: #113555;
+  --sky-5: #154467; --sky-6: #1b537b; --sky-7: #1f6692; --sky-8: #197cae;
+  --sky-9: #7ce2fe; --sky-10: #a8eeff; --sky-11: #75c7f0; --sky-12: #c2f3ff;
+  --sky-a1: #0044ff0f; --sky-a2: #1171fb18; --sky-a3: #1184fc33; --sky-a4: #128fff49;
+  --sky-a5: #1c9dfd5d; --sky-a6: #28a5ff72; --sky-a7: #2badfe8b; --sky-a8: #1db2fea9;
+  --sky-a9: #7ce3fffe; --sky-a10: #a8eeff; --sky-a11: #7cd3ffef; --sky-a12: #c2f3ff;
 
   /* Surfaces */
   --bg: var(--slate-1);             /* page behind the card */
@@ -111,6 +124,12 @@
   /* Behind aircraft renders: a soft light pool so a dark airframe reads. */
   --thumb-bg: radial-gradient(ellipse at 50% 40%, var(--slate-a7), var(--slate-a3) 70%);
   --success: var(--jade-11);         /* incoming funds, connected */
+
+  /* Version status dots: how current the version you're viewing is. */
+  --status-upcoming: var(--sky-9);
+  --status-current: var(--jade-9);
+  --status-previous: var(--amber-9);
+  --status-unmaintained: var(--red-9);
 
   --shadow: 0 12px 32px rgb(0 0 0 / 0.5);
 

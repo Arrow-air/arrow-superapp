@@ -3,7 +3,7 @@ import { onBeforeUnmount, ref } from 'vue';
 
 // A popover list anchored to its trigger. Items with `to` are router links,
 // the rest emit `select`. Shared by the pickers and the breadcrumb.
-export interface MenuItem { id: string; label: string; hint?: string; to?: string }
+export interface MenuItem { id: string; label: string; hint?: string; to?: string; note?: string; dot?: string }
 defineProps<{ items: MenuItem[]; current?: string; align?: 'start' | 'end' }>();
 const emit = defineEmits<{ select: [id: string] }>();
 
@@ -39,7 +39,13 @@ function choose(id: string) {
           :aria-current="o.id === current ? 'page' : undefined"
           @click="open = false"
         >
-          <span>{{ o.label }}</span>
+          <span class="main">
+            <span v-if="o.dot" class="dot" :style="{ '--dot': o.dot }" aria-hidden="true"></span>
+            <span class="text">
+              <span>{{ o.label }}</span>
+              <span v-if="o.note" class="note">{{ o.note }}</span>
+            </span>
+          </span>
           <span v-if="o.hint" class="hint">{{ o.hint }}</span>
         </RouterLink>
         <button
@@ -50,7 +56,13 @@ function choose(id: string) {
           :aria-checked="o.id === current"
           @click="choose(o.id)"
         >
-          <span>{{ o.label }}</span>
+          <span class="main">
+            <span v-if="o.dot" class="dot" :style="{ '--dot': o.dot }" aria-hidden="true"></span>
+            <span class="text">
+              <span>{{ o.label }}</span>
+              <span v-if="o.note" class="note">{{ o.note }}</span>
+            </span>
+          </span>
           <span v-if="o.hint" class="hint">{{ o.hint }}</span>
         </button>
       </li>
@@ -95,4 +107,16 @@ function choose(id: string) {
 .menu-item[aria-current='page'],
 .menu-item[aria-checked='true'] { color: var(--accent-text); }
 .hint { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--fg-faint); }
+.main { display: inline-flex; align-items: center; gap: var(--space-2); }
+.text { display: inline-flex; flex-direction: column; }
+.note { font-size: var(--text-sm); color: var(--fg-muted); }
+.menu-item:has(.note) { padding-block: 6px; align-items: center; }
+.dot {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--dot);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--dot) 22%, transparent);
+}
 </style>

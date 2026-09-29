@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router';
 import Drawer from './Drawer.vue';
 import { footerLinks, linkGroups } from './links';
-import { projects } from './nav';
+import { defaultVersion, projects } from './nav';
 import { useWorkspace } from './useWorkspace';
 
 // The "secret passage" behind the logo: everything Arrow-wide. Mirrors the
@@ -35,7 +35,7 @@ function goTo(id: string) {
             <span v-else class="craft-sketch"></span>
           </span>
           <span class="craft-name">{{ p.label }}</span>
-          <span class="craft-ver">{{ p.versions[0].code }}</span>
+          <span class="craft-ver">{{ defaultVersion(p).code }}</span>
         </button>
       </div>
     </section>
