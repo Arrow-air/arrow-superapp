@@ -121,19 +121,19 @@ const indexOf = (r: Result) => flat.value.indexOf(r);
               ref="input"
               v-model="query"
               type="text"
-              placeholder="Search pages, aircraft and links…"
+              placeholder="Type a command or search…"
               role="combobox"
               aria-expanded="true"
               aria-controls="palette-list"
               :aria-activedescendant="flat[active] ? `pal-${active}` : undefined"
               @keydown="onKey"
             />
-            <Kbd :keys="['Esc']" />
           </div>
 
           <div id="palette-list" ref="list" class="results" role="listbox">
             <p v-if="!flat.length" class="empty">Nothing matches “{{ query }}”.</p>
-            <section v-for="s in sections" :key="s.id" class="section">
+            <section v-for="(s, si) in sections" :key="s.id" class="section">
+              <hr v-if="si > 0" class="divider" />
               <h3 class="section-label">{{ s.label }}</h3>
               <div
                 v-for="r in s.results"
@@ -153,8 +153,8 @@ const indexOf = (r: Result) => flat.value.indexOf(r);
           </div>
 
           <footer class="foot">
-            <span class="foot-action"><Kbd :keys="['↵']" outline /> {{ flat[active]?.action ?? 'No result' }}</span>
-            <span class="foot-move"><Kbd :keys="['↑', '↓']" outline /> Move</span>
+            <span class="foot-action">{{ flat[active]?.action ?? 'No result' }} <Kbd :keys="['↵']" outline /></span>
+            <Kbd :keys="['Esc']" outline />
           </footer>
         </div>
       </div>
@@ -164,43 +164,41 @@ const indexOf = (r: Result) => flat.value.indexOf(r);
 
 <style scoped>
 .palette-root { position: fixed; inset: 0; z-index: 60; }
-.overlay { position: absolute; inset: 0; background: var(--overlay); }
-/* Hybrid of our palette and the shadcn docs search: a thick bezel ring,
-   an inset search field, outlined selection, and a lighter footer strip
-   that names what Enter will do. */
+/* After the spell.sh (coss ui) command menu: a blurred backdrop, the search
+   field flush in the outer shell, results on a nested inner sheet, quiet
+   neutral selection, divided groups, a fade at the bottom of the list, and a
+   footer naming what Enter does. */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--overlay);
+  backdrop-filter: blur(10px) saturate(0.9);
+  -webkit-backdrop-filter: blur(10px) saturate(0.9);
+}
 .palette {
   position: absolute;
   top: 12vh;
   left: 50%;
-  width: min(560px, calc(100vw - 32px));
-  max-height: min(480px, 76vh);
+  width: min(576px, calc(100vw - 32px));
+  max-height: min(420px, 76vh);
   display: flex;
   flex-direction: column;
-  padding: 8px 8px 0;
   transform: translateX(-50%);
   background: var(--slate-2);
-  border-radius: 14px;
-  box-shadow:
-    0 0 0 1px var(--slate-a5),          /* crisp inner edge of the bezel */
-    0 0 0 5px var(--slate-3),           /* the 4px bezel ring */
-    0 0 0 6px var(--slate-a4),          /* its outer edge */
-    inset 0 1px 0 var(--slate-a3),
-    0 25px 50px -12px rgb(0 0 0 / 0.6);
+  border: 1px solid var(--slate-a4);
+  border-radius: 16px;
+  box-shadow: 0 16px 40px -8px rgb(0 0 0 / 0.45), 0 4px 10px -4px rgb(0 0 0 / 0.25);
   overflow: hidden;
 }
 .field {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  height: 36px;
-  padding: 0 6px 0 var(--space-3);
-  border: 1px solid var(--slate-a5);
-  border-radius: 8px;
-  background: var(--slate-a3);
-  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.25);
-  transition: border-color 150ms;
+  gap: 10px;
+  height: 48px;
+  flex: none;
+  padding: 0 var(--space-4);
 }
-.field:focus-within { border-color: var(--indigo-a7); }
 .search { width: 14px; height: 14px; fill: none; stroke: var(--fg-muted); stroke-width: 2; stroke-linecap: round; flex: none; }
 .field input {
   flex: 1;
@@ -214,11 +212,26 @@ const indexOf = (r: Result) => flat.value.indexOf(r);
 }
 .field input::placeholder { color: var(--fg-faint); }
 
-.results { flex: 1; overflow-y: auto; padding: 4px 0 8px; scrollbar-width: none; }
-.section + .section { margin-top: 4px; }
+/* The inner sheet: results sit on their own recessed card. */
+.results {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px;
+  margin: 0 -1px;
+  border: 1px solid var(--slate-a4);
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+  background: var(--slate-1);
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent);
+  padding-bottom: 24px;
+}
+.divider { height: 1px; margin: 8px; border: 0; background: var(--slate-a4); }
 .section-label {
   margin: 0;
-  padding: 10px var(--space-3) 4px;
+  padding: 6px 8px;
   font-size: var(--text-sm);
   font-weight: 500;
   color: var(--fg-muted);
@@ -226,42 +239,33 @@ const indexOf = (r: Result) => flat.value.indexOf(r);
 .result {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 10px;
   height: 34px;
-  padding: 0 var(--space-3);
-  border: 1px solid transparent;
+  padding: 0 8px;
   border-radius: 8px;
   color: var(--fg-2);
-  font-weight: 500;
   cursor: pointer;
 }
-.result[aria-selected='true'] {
-  border-color: var(--indigo-a6);
-  background: var(--indigo-a3);
-  box-shadow: inset 0 1px 0 var(--indigo-a4);
-  color: var(--fg);
-}
-.r-icon { color: var(--fg-muted); flex: none; }
+.result[aria-selected='true'] { background: var(--slate-a3); color: var(--fg); }
+.r-icon { color: var(--fg-faint); flex: none; }
 .result[aria-selected='true'] .r-icon { color: var(--indigo-11); }
 .r-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.r-hint { font-size: var(--text-sm); font-weight: 400; color: var(--fg-faint); white-space: nowrap; }
+.r-hint { font-size: var(--text-sm); color: var(--fg-faint); white-space: nowrap; }
 .empty { margin: 0; padding: var(--space-6) var(--space-2); text-align: center; color: var(--fg-muted); }
 
 .foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 40px;
-  margin: 0 -8px;
+  height: 44px;
+  flex: none;
   padding: 0 var(--space-4);
   border-top: 1px solid var(--slate-a4);
-  background: var(--slate-3);
+  background: var(--slate-2);
   font-size: var(--text-sm);
-  font-weight: 500;
   color: var(--fg-muted);
 }
-.foot span { display: inline-flex; align-items: center; gap: 8px; }
-.foot-action { color: var(--fg-2); }
+.foot-action { display: inline-flex; align-items: center; gap: 8px; color: var(--fg-2); }
 
 .palette-enter-active, .palette-leave-active { transition: opacity 160ms ease; }
 .palette-enter-active .palette, .palette-leave-active .palette { transition: transform 160ms ease, opacity 160ms ease; }

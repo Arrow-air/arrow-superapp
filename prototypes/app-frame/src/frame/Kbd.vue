@@ -28,6 +28,13 @@ defineProps<{ keys: string[]; outline?: boolean }>();
   line-height: 1;
   user-select: none;
 }
-/* Bordered key on a dark fill, for use on lighter strips (shadcn command footer). */
-.kbd.outline { background: var(--slate-1); border: 1px solid var(--slate-a5); }
+/* Outlined key: a hairline ring, mono text, no fill (spell.sh command footer). */
+.kbd.outline {
+  min-width: 16px;
+  height: 16px;
+  background: none;
+  box-shadow: 0 0 0 1px var(--slate-a5);
+  font-family: var(--font-mono);
+  font-weight: 400;
+}
 </style>
