@@ -1,6 +1,6 @@
 /* Design tokens for the frame. Every colour is a step on a Radix Colors
-   dark scale (radix-ui.com/colors, v3): Slate for neutrals, Jade for the
-   active state, Indigo for brand and links, Plum for the avatar, Red for
+   dark scale (radix-ui.com/colors, v3): Slate for neutrals, Indigo for brand,
+   links and the active state, Jade for success, Plum for the avatar, Red for
    errors. Components only read the semantic tokens at the bottom, so
    restyling happens in this file only. The concept is dark-only for now. */
 
@@ -46,7 +46,7 @@
   --surface-header: var(--slate-3); /* workspace header strip */
   --surface-sunken: var(--slate-2); /* tab group */
   --surface-hover: var(--slate-a3);
-  --surface-active: var(--jade-a3); /* selected nav item */
+  --surface-active: var(--indigo-a3); /* selected nav item */
 
   /* Lines (translucent, so they sit right on any surface) */
   --border: var(--slate-a6);
@@ -71,24 +71,24 @@
     0 1px 2px rgb(0 0 0 / 0.5),
     0 4px 10px var(--indigo-a4);
   --brand-fg: var(--slate-12);
-  --accent: var(--jade-9);
+  --accent: var(--indigo-9);
   --accent-fg: var(--slate-1);
-  --accent-text: var(--jade-11);   /* active nav item, current section crumb */
+  --accent-text: var(--indigo-11);   /* active nav item, current section crumb */
   --link: var(--indigo-11);        /* project crumb */
   --avatar: linear-gradient(135deg, var(--plum-11), var(--plum-9));
   --danger: var(--red-11);
   --danger-bg: var(--red-a2);
   --danger-border: var(--red-a7);
-  --focus-ring: var(--jade-a8);
+  --focus-ring: var(--indigo-a8);
 
   /* Segmented tabs (coss ui lg, with depth). The track is recessed into
-     the surface; the active pill sits raised on it and keeps the section green. */
+     the surface; the active pill sits raised on it in brand Indigo. */
   --tabs-track: var(--slate-1);
   --tabs-track-shadow:
     inset 0 1px 2px rgb(0 0 0 / 0.55),   /* shadow under the top lip */
     inset 0 2px 8px rgb(0 0 0 / 0.35),
     0 1px 0 var(--slate-a3);             /* light catching the bottom edge */
-  --tabs-indicator: linear-gradient(180deg, var(--jade-a5), var(--jade-a3));
+  --tabs-indicator: linear-gradient(180deg, var(--indigo-a6), var(--indigo-a4));
   --tabs-indicator-shadow:
     inset 0 1px 0 var(--slate-a5),       /* top highlight */
     inset 0 -1px 0 rgb(0 0 0 / 0.25),
@@ -96,7 +96,7 @@
     0 3px 8px rgb(0 0 0 / 0.35);
   --tabs-fg: var(--slate-9);
   --tabs-fg-hover: var(--slate-11);
-  --tabs-fg-active: var(--jade-11);
+  --tabs-fg-active: var(--indigo-11);
 
   /* Toolbar (after coss ui Toolbar): a flat card of ghost buttons in groups,
      with outlined selects. Used for the account group top right. */
@@ -110,7 +110,7 @@
   --overlay: rgb(0 0 0 / 0.5);
   /* Behind aircraft renders: a soft light pool so a dark airframe reads. */
   --thumb-bg: radial-gradient(ellipse at 50% 40%, var(--slate-a7), var(--slate-a3) 70%);
-  --success: var(--jade-11);
+  --success: var(--jade-11);         /* incoming funds, connected */
 
   --shadow: 0 12px 32px rgb(0 0 0 / 0.5);
 
