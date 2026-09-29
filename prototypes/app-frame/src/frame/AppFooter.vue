@@ -2,6 +2,14 @@
 import Icon from './Icon.vue';
 import { dao, formatMoney, network, quote, quoteValue, sync, type Quote, USDC_PER_ETH } from './account';
 import { socials } from './links';
+import { theme, type Theme } from './theme';
+import type { IconName } from './icons';
+
+const themes: { id: Theme; label: string; icon: IconName }[] = [
+  { id: 'system', label: 'System', icon: 'monitor' },
+  { id: 'light', label: 'Light', icon: 'sun' },
+  { id: 'dark', label: 'Dark', icon: 'moon' },
+];
 
 // The status bar pinned to the bottom, after OpenSea's footer: network and
 // sync state and live DAO activity on the left; prices, support and the
@@ -44,6 +52,18 @@ const SITE = 'https://arrowair.com';
       </span>
       <span class="sep hide-sm" aria-hidden="true"></span>
       <a class="stat link hide-sm" href="https://discord.com/invite/arrow" target="_blank" rel="noopener"><Icon name="help" :size="11" /> Support</a>
+      <div class="seg icons" role="radiogroup" aria-label="Theme">
+        <button
+          v-for="t in themes"
+          :key="t.id"
+          type="button"
+          role="radio"
+          :aria-checked="theme === t.id"
+          :aria-label="t.label"
+          :title="t.label"
+          @click="theme = t.id"
+        ><Icon :name="t.icon" :size="11" /></button>
+      </div>
       <div class="seg" role="radiogroup" aria-label="Show values in">
         <button
           v-for="q in (['USDC', 'ETH'] as Quote[])"
@@ -149,6 +169,8 @@ const SITE = 'https://arrowair.com';
 }
 .seg button:hover { color: var(--fg-2); }
 .seg button[aria-checked='true'] { background: var(--slate-a5); color: var(--fg); }
+.seg.icons button { width: 24px; padding: 0; display: grid; place-items: center; }
+.seg.icons button :deep(svg) { color: inherit; }
 .link:focus-visible, .socials a:focus-visible, .seg button:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); border-radius: 5px; }
 
 @media (max-width: 1279px) { .hide-md { display: none; } }
