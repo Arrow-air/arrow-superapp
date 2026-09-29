@@ -246,7 +246,8 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .v.down[aria-pressed='true'] { background: var(--red-9); color: #fff; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2); }
 .v:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
 .n { padding: 4px 0; font-size: var(--text-nav); font-weight: 600; color: var(--fg); cursor: default; }
-.vote.locked .v { visibility: hidden; height: 10px; }
+.vote.locked { border-color: transparent; background: none; }
+.vote.locked .v { display: none; }
 
 .pos-main { flex: 1; min-width: 0; padding-top: 2px; }
 .pos-top { display: flex; align-items: center; gap: 8px; }
