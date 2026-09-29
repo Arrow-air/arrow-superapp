@@ -90,6 +90,11 @@
   --tabs-fg-hover: var(--slate-11);
   --tabs-fg-active: var(--jade-11);
 
+  /* Account group (top right): the tab track's shape, flat. */
+  --account-track: var(--slate-a2);
+  --account-border: var(--slate-a3);
+  --account-active: var(--slate-a4);
+
   --shadow: 0 12px 32px rgb(0 0 0 / 0.5);
 
   /* Type */

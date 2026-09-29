@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Icon from './Icon.vue';
 import Picker from './Picker.vue';
-import WalletWidget from './WalletWidget.vue';
+import AccountBar from './AccountBar.vue';
 import { projects } from './nav';
 import { useWorkspace } from './useWorkspace';
 
@@ -50,13 +50,7 @@ function switchProject(id: string) {
 
     <span class="spacer"></span>
 
-    <div class="account">
-      <button class="control dashboard" type="button">
-        <Icon name="grid" :size="14" class="muted" />
-        <span class="dashboard-label">Contributor Dashboard</span>
-      </button>
-      <WalletWidget :balance="1440" />
-    </div>
+    <AccountBar />
   </header>
 </template>
 
@@ -93,12 +87,9 @@ function switchProject(id: string) {
   color: var(--fg-faint);
 }
 .spacer { flex: 1; }
-.account { display: flex; align-items: center; }
-.dashboard { border-radius: var(--radius) 0 0 var(--radius); }
 
 @media (max-width: 767px) {
   .bar { padding-inline: var(--gutter); }
-  .version-label, .dashboard-label, .thumb { display: none; }
-  .dashboard { border-radius: var(--radius); margin-right: var(--space-2); }
+  .version-label, .thumb { display: none; }
 }
 </style>
