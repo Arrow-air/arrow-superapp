@@ -63,7 +63,7 @@ watch(
   flex-direction: column;
   margin: 0 var(--frame-inset) var(--frame-inset);
   background: var(--surface);
-  border: 1px solid var(--toolbar-border);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
