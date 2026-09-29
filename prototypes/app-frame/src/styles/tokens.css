@@ -60,6 +60,7 @@
   --surface-header: var(--slate-3); /* workspace header strip */
   --surface-sunken: var(--slate-2); /* tab group */
   --surface-hover: var(--slate-a3);
+  --thread-bg: #0b0b0b;            /* thread (discussion) pane, off the Radix scale by request */
   --footer-bg: #050505;            /* status footer, near-black (off the Radix scale by request) */
   --surface-active: var(--indigo-a3); /* selected nav item */
 
@@ -224,6 +225,7 @@
 
   /* Light-specific tuning: softer shadows and depth, a light pool behind renders. */
   --footer-bg: var(--slate-2);
+  --thread-bg: var(--slate-1);
   --overlay: rgb(0 0 0 / 0.28);
   --shadow: 0 12px 32px rgb(0 0 0 / 0.14);
   --thumb-bg: radial-gradient(ellipse at 50% 40%, #ffffff, var(--slate-4) 75%);
@@ -278,6 +280,7 @@
 
     /* Light-specific tuning: softer shadows and depth, a light pool behind renders. */
   --footer-bg: var(--slate-2);
+  --thread-bg: var(--slate-1);
     --overlay: rgb(0 0 0 / 0.28);
     --shadow: 0 12px 32px rgb(0 0 0 / 0.14);
     --thumb-bg: radial-gradient(ellipse at 50% 40%, #ffffff, var(--slate-4) 75%);

@@ -181,7 +181,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 .row[aria-current='true'] .rtitle { color: var(--fg); }
 .rtime { flex: none; margin-top: 2px; font-size: var(--text-sm); color: var(--fg-faint); }
 
-.detail-pane { min-height: 0; overflow-y: auto; }
+.detail-pane { min-height: 0; overflow-y: auto; background: var(--thread-bg); }
 .empty { margin: 0; padding: 24px 8px; text-align: center; color: var(--fg-muted); }
 .empty.pad { padding: 48px; }
 
