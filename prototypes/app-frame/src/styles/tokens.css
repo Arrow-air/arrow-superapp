@@ -1,25 +1,42 @@
-/* Design tokens for the frame. Neutrals are Radix Slate; accents are sampled
-   from the Figma concept (29 Sep).
-   Everything in the frame reads from here, so restyling happens in this file only.
-   The concept is dark-only for now. */
+/* Design tokens for the frame. Every colour is a step on a Radix Colors
+   dark scale (radix-ui.com/colors, v3): Slate for neutrals, Jade for the
+   active state, Indigo for brand and links, Plum for the avatar, Red for
+   errors. Components only read the semantic tokens at the bottom, so
+   restyling happens in this file only. The concept is dark-only for now. */
 
 :root {
   color-scheme: dark;
 
-  /* Radix Slate, dark (radix-ui.com/colors). The only neutral scale in the app:
-     every surface, line and text colour below is a step on it. */
-  --slate-1: #111113;
-  --slate-2: #18191b;
-  --slate-3: #212225;
-  --slate-4: #272a2d;
-  --slate-5: #2e3135;
-  --slate-6: #363a3f;
-  --slate-7: #43484e;
-  --slate-8: #5a6169;
-  --slate-9: #696e77;
-  --slate-10: #777b84;
-  --slate-11: #b0b4ba;
-  --slate-12: #edeef0;
+  /* Radix scales. Step guide: 1-2 app bg, 3-5 component bg, 6-8 borders,
+     9-10 solid fills, 11 low-contrast text, 12 high-contrast text.
+     The -a scales are the same steps as translucent overlays. */
+  --slate-1: #111113; --slate-2: #18191b; --slate-3: #212225; --slate-4: #272a2d;
+  --slate-5: #2e3135; --slate-6: #363a3f; --slate-7: #43484e; --slate-8: #5a6169;
+  --slate-9: #696e77; --slate-10: #777b84; --slate-11: #b0b4ba; --slate-12: #edeef0;
+  --slate-a1: #00000000; --slate-a2: #d8f4f609; --slate-a3: #ddeaf814; --slate-a4: #d3edf81d;
+  --slate-a5: #d9edfe25; --slate-a6: #d6ebfd30; --slate-a7: #d9edff40; --slate-a8: #d9edff5d;
+  --slate-a9: #dfebfd6d; --slate-a10: #e5edfd7b; --slate-a11: #f1f7feb5; --slate-a12: #fcfdffef;
+  --jade-1: #0d1512; --jade-2: #121c18; --jade-3: #0f2e22; --jade-4: #0b3b2c;
+  --jade-5: #114837; --jade-6: #1b5745; --jade-7: #246854; --jade-8: #2a7e68;
+  --jade-9: #29a383; --jade-10: #27b08b; --jade-11: #1fd8a4; --jade-12: #adf0d4;
+  --jade-a1: #00de4505; --jade-a2: #27fba60c; --jade-a3: #02f99920; --jade-a4: #00ffaa2d;
+  --jade-a5: #11ffb63b; --jade-a6: #34ffc24b; --jade-a7: #45fdc75e; --jade-a8: #48ffcf75;
+  --jade-a9: #38feca9d; --jade-a10: #31fec7ab; --jade-a11: #21fec0d6; --jade-a12: #b8ffe1ef;
+  --indigo-1: #11131f; --indigo-2: #141726; --indigo-3: #182449; --indigo-4: #1d2e62;
+  --indigo-5: #253974; --indigo-6: #304384; --indigo-7: #3a4f97; --indigo-8: #435db1;
+  --indigo-9: #3e63dd; --indigo-10: #5472e4; --indigo-11: #9eb1ff; --indigo-12: #d6e1ff;
+  --indigo-a1: #1133ff0f; --indigo-a2: #3354fa17; --indigo-a3: #2f62ff3c; --indigo-a4: #3566ff57;
+  --indigo-a5: #4171fd6b; --indigo-a6: #5178fd7c; --indigo-a7: #5a7fff90; --indigo-a8: #5b81feac;
+  --indigo-a9: #4671ffdb; --indigo-a10: #5c7efee3; --indigo-a11: #9eb1ff; --indigo-a12: #d6e1ff;
+  --plum-1: #181118; --plum-2: #201320; --plum-3: #351a35; --plum-4: #451d47;
+  --plum-5: #512454; --plum-6: #5e3061; --plum-7: #734079; --plum-8: #92549c;
+  --plum-9: #ab4aba; --plum-10: #b658c4; --plum-11: #e796f3; --plum-12: #f4d4f4;
+  --red-1: #191111; --red-2: #201314; --red-3: #3b1219; --red-4: #500f1c;
+  --red-5: #611623; --red-6: #72232d; --red-7: #8c333a; --red-8: #b54548;
+  --red-9: #e5484d; --red-10: #ec5d5e; --red-11: #ff9592; --red-12: #ffd1d9;
+  --red-a1: #f4121209; --red-a2: #f22f3e11; --red-a3: #ff173f2d; --red-a4: #fe0a3b44;
+  --red-a5: #ff204756; --red-a6: #ff3e5668; --red-a7: #ff536184; --red-a8: #ff5d61b0;
+  --red-a9: #fe4e54e4; --red-a10: #ff6465eb; --red-a11: #ff9592; --red-a12: #ffd1d9;
 
   /* Surfaces */
   --bg: var(--slate-1);             /* page behind the card */
@@ -28,12 +45,13 @@
   --surface-raised: var(--slate-2); /* pickers, buttons */
   --surface-header: var(--slate-3); /* workspace header strip */
   --surface-sunken: var(--slate-2); /* tab group */
-  --surface-hover: var(--slate-4);
+  --surface-hover: var(--slate-a3);
+  --surface-active: var(--jade-a3); /* selected nav item */
 
-  /* Lines */
-  --border: var(--slate-6);
-  --border-strong: var(--slate-7);
-  --border-soft: var(--slate-4);
+  /* Lines (translucent, so they sit right on any surface) */
+  --border: var(--slate-a6);
+  --border-strong: var(--slate-a7);
+  --border-soft: var(--slate-a4);
 
   /* Text */
   --fg: var(--slate-12);
@@ -42,15 +60,17 @@
   --fg-muted: var(--slate-9);   /* inactive tabs, nav items */
   --fg-faint: var(--slate-8);   /* version code, separators */
 
-  /* Accents (still the Figma samples, not Radix scales yet) */
-  --brand: #444ecc;       /* logo tile */
+  /* Accents */
+  --brand: var(--indigo-9);        /* logo tile */
   --brand-fg: var(--slate-12);
-  --accent: #6aad97;      /* active tab fill */
+  --accent: var(--jade-9);         /* active tab fill */
   --accent-fg: var(--slate-1);
-  --accent-text: #73bda5; /* active nav item, current section crumb */
-  --link: #4a75d7;        /* project crumb */
-  --avatar: linear-gradient(135deg, #e28ae0, #c56fd6);
-  --danger: #e5484d;
+  --accent-text: var(--jade-11);   /* active nav item, current section crumb */
+  --link: var(--indigo-11);        /* project crumb */
+  --avatar: linear-gradient(135deg, var(--plum-11), var(--plum-9));
+  --danger: var(--red-11);
+  --danger-bg: var(--red-a2);
+  --danger-border: var(--red-a7);
   --shadow: 0 12px 32px rgb(0 0 0 / 0.5);
 
   /* Type */

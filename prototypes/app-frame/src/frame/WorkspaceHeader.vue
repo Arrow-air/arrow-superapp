@@ -76,7 +76,7 @@ const { project, tab, item, base } = useWorkspace();
   text-decoration: none;
   white-space: nowrap;
 }
-.tab:hover { color: var(--fg-2); }
+.tab:hover { color: var(--fg-2); background: var(--surface-hover); }
 .tab.active {
   background: var(--accent);
   color: var(--accent-fg);

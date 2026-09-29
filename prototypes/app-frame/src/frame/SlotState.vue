@@ -28,6 +28,6 @@ defineProps<{ kind: 'loading' | 'empty' | 'error'; detail?: string }>();
   color: var(--fg-muted);
   text-align: center;
 }
-.state.error { border-color: var(--danger); color: var(--fg); }
+.state.error { border: 1px solid var(--danger-border); background: var(--danger-bg); color: var(--fg); }
 code { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--danger); }
 </style>

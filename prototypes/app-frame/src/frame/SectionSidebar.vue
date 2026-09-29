@@ -76,8 +76,8 @@ watch(() => route.fullPath, () => (open.value = false));
   font-size: var(--text-md);
   text-decoration: none;
 }
-.item:hover { color: var(--fg-2); }
-.item.active { color: var(--accent-text); }
+.item:hover { color: var(--fg-2); background: var(--surface-hover); }
+.item.active { color: var(--accent-text); background: var(--surface-active); }
 
 @media (max-width: 767px) {
   .sidebar {
