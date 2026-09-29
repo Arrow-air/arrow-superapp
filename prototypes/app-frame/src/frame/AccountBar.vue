@@ -1,90 +1,75 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import Icon from './Icon.vue';
 import Menu from './Menu.vue';
-import { contributor, formatQuote, type Quote } from './account';
+import WalletDrawer from './WalletDrawer.vue';
+import { contributor, formatQuote, quote, type Quote } from './account';
 
-// The top-right account toolbar, after coss ui Toolbar: ghost buttons in
-// groups split by separators, with the quote currency as an outlined select.
-
-// The chosen quote currency is a per-viewer convenience, so it lives in localStorage.
-const KEY = 'arrow.quote';
-const read = (): Quote => {
-  try { return localStorage.getItem(KEY) === 'ETH' ? 'ETH' : 'USDC'; } catch { return 'USDC'; }
-};
-const quote = ref<Quote>(read());
-watch(quote, (q) => { try { localStorage.setItem(KEY, q); } catch { /* storage unavailable */ } });
-
+// Top right: the dashboard button on its own, then a toolbar (after coss ui
+// Toolbar) holding the balance with its quote select, and the contributor,
+// which opens the wallet drawer.
 const arrow = computed(() => contributor.arrow.toLocaleString('en-US'));
 const value = computed(() => formatQuote(contributor.arrow, quote.value));
 const quotes = computed(() =>
   (['USDC', 'ETH'] as Quote[]).map((q) => ({ id: q, label: q, hint: formatQuote(contributor.arrow, q) })),
 );
-const accountMenu = [
-  { id: 'profile', label: 'Profile' },
-  { id: 'wallet', label: 'Wallet' },
-  { id: 'settings', label: 'Settings' },
-  { id: 'sign-out', label: 'Sign out' },
-];
+const walletOpen = ref(false);
 </script>
 
 <template>
-  <div class="toolbar" role="toolbar" aria-label="Account">
-    <div class="tgroup">
+  <div class="account">
+    <div class="toolbar">
       <button class="tbtn" type="button">
-        <Icon name="grid" :size="13" class="icon" />
+        <Icon name="grid" :size="12" class="icon" />
         <span class="hide-md">Contributor Dashboard</span>
         <span class="show-md">Dashboard</span>
       </button>
     </div>
 
-    <span class="sep hide-sm" aria-hidden="true"></span>
+    <div class="toolbar" role="toolbar" aria-label="Wallet">
+      <div class="tgroup hide-sm">
+        <span class="balance" :aria-label="`${arrow} ARROW`">
+          <span class="num">{{ arrow }}</span><span class="unit">ARROW</span>
+        </span>
+        <Menu :items="quotes" :current="quote" align="end" @select="quote = $event as Quote">
+          <template #trigger="{ open, toggle }">
+            <button
+              class="select"
+              type="button"
+              aria-haspopup="menu"
+              :aria-expanded="open"
+              :aria-label="`Worth about ${value} ${quote}. Change currency`"
+              @click="toggle"
+            >
+              <span class="approx">≈</span>
+              <span class="num">{{ value }}</span><span class="unit">{{ quote }}</span>
+              <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5" /></svg>
+            </button>
+          </template>
+        </Menu>
+      </div>
 
-    <div class="tgroup hide-sm">
-      <span class="balance" :aria-label="`${arrow} ARROW`">
-        <span class="num">{{ arrow }}</span><span class="unit">ARROW</span>
-      </span>
-      <Menu :items="quotes" :current="quote" align="end" @select="quote = $event as Quote">
-        <template #trigger="{ open, toggle }">
-          <button
-            class="select"
-            type="button"
-            aria-haspopup="menu"
-            :aria-expanded="open"
-            :aria-label="`Worth about ${value} ${quote}. Change currency`"
-            @click="toggle"
-          >
-            <span class="approx">≈</span>
-            <span class="num">{{ value }}</span><span class="unit">{{ quote }}</span>
-            <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5" /></svg>
-          </button>
-        </template>
-      </Menu>
+      <span class="sep hide-sm" aria-hidden="true"></span>
+
+      <button
+        class="tbtn who"
+        type="button"
+        aria-haspopup="dialog"
+        :aria-expanded="walletOpen"
+        :aria-label="`Open wallet for ${contributor.name}`"
+        @click="walletOpen = true"
+      >
+        <span class="avatar" aria-hidden="true"></span>
+        <span class="hide-sm">{{ contributor.name }}</span>
+      </button>
     </div>
 
-    <span class="sep" aria-hidden="true"></span>
-
-    <div class="tgroup">
-      <Menu :items="accountMenu" align="end">
-        <template #trigger="{ open, toggle }">
-          <button
-            class="tbtn who"
-            type="button"
-            aria-haspopup="menu"
-            :aria-expanded="open"
-            :aria-label="`Account menu for ${contributor.name}`"
-            @click="toggle"
-          >
-            <span class="hide-sm">{{ contributor.name }}</span>
-            <span class="avatar" aria-hidden="true"></span>
-          </button>
-        </template>
-      </Menu>
-    </div>
+    <WalletDrawer v-model:open="walletOpen" />
   </div>
 </template>
 
 <style scoped>
+.account { display: flex; align-items: center; gap: var(--space-2); }
 .toolbar {
   display: flex;
   align-items: center;
@@ -156,7 +141,7 @@ const accountMenu = [
   stroke-linejoin: round;
 }
 
-.who { padding-right: 3px; gap: 7px; }
+.who { padding-left: 3px; gap: 7px; }
 .avatar {
   width: 22px;
   height: 22px;
@@ -171,6 +156,6 @@ const accountMenu = [
 }
 @media (max-width: 767px) {
   .hide-sm, .show-md { display: none; }
-  .who { padding-left: 3px; }
+  .who { padding-right: 3px; }
 }
 </style>

@@ -99,15 +99,20 @@
   --select-bg: var(--slate-a2);
   --select-border: var(--slate-a5);
 
+  --overlay: rgb(0 0 0 / 0.5);
+  --success: var(--jade-11);
+
   --shadow: 0 12px 32px rgb(0 0 0 / 0.5);
 
   /* Type */
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --text-2xs: 0.625rem;  /* 10px, units */
-  --text-xs: 0.6875rem;  /* 11px, caps labels */
-  --text-sm: 0.75rem;    /* 12px, mono figures, hints */
-  --text-base: 0.8125rem;/* 13px, everything else */
+  --text-2xs: 0.625rem;  /* 10px, units (ARROW, USDC) */
+  --text-xs: 0.625rem;   /* 10px, caps labels */
+  --text-sm: 0.6875rem;  /* 11px, mono figures, hints */
+  --text-base: 0.75rem;  /* 12px, everything else */
+  --text-md: 0.875rem;   /* 14px, drawer titles */
+  --text-xl: 1.625rem;   /* 26px, headline figures */
   --tracking-caps: 0.12em;
 
   /* Space */
