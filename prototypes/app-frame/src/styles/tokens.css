@@ -73,10 +73,19 @@
   --danger-border: var(--red-a7);
   --focus-ring: var(--jade-a8);
 
-  /* Segmented tabs (coss ui lg). The active tab keeps the section green,
-     as a translucent pill rather than a solid fill. */
-  --tabs-track: var(--slate-a2);
-  --tabs-indicator: var(--jade-a4);
+  /* Segmented tabs (coss ui lg, with depth). The track is recessed into
+     the surface; the active pill sits raised on it and keeps the section green. */
+  --tabs-track: var(--slate-1);
+  --tabs-track-shadow:
+    inset 0 1px 2px rgb(0 0 0 / 0.55),   /* shadow under the top lip */
+    inset 0 2px 8px rgb(0 0 0 / 0.35),
+    0 1px 0 var(--slate-a3);             /* light catching the bottom edge */
+  --tabs-indicator: linear-gradient(180deg, var(--jade-a5), var(--jade-a3));
+  --tabs-indicator-shadow:
+    inset 0 1px 0 var(--slate-a5),       /* top highlight */
+    inset 0 -1px 0 rgb(0 0 0 / 0.25),
+    0 1px 2px rgb(0 0 0 / 0.5),
+    0 3px 8px rgb(0 0 0 / 0.35);
   --tabs-fg: var(--slate-9);
   --tabs-fg-hover: var(--slate-11);
   --tabs-fg-active: var(--jade-11);

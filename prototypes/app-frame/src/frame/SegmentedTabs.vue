@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
-// Segmented tabs with a sliding indicator, after coss ui Tabs (size lg).
+// Segmented tabs with a sliding indicator, after coss ui Tabs (size lg),
+// with a recessed track and a raised pill for depth.
 // Items are router links, so each tab is a real, shareable URL.
 const props = defineProps<{ items: { id: string; label: string; to: string }[]; active?: string; label: string }>();
 
@@ -58,9 +59,10 @@ watch(() => props.active, () => nextTick(measure));
   gap: 2px;
   width: fit-content;
   max-width: 100%;
-  padding: 2px;
-  border-radius: 10px;
+  padding: 3px;
+  border-radius: 11px;
   background: var(--tabs-track);
+  box-shadow: var(--tabs-track-shadow);
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -82,18 +84,21 @@ watch(() => props.active, () => nextTick(measure));
   transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .tab:hover { color: var(--tabs-fg-hover); }
-.tab[aria-current='page'] { color: var(--tabs-fg-active); }
+.tab[aria-current='page'] {
+  color: var(--tabs-fg-active);
+  text-shadow: 0 1px 1px rgb(0 0 0 / 0.4);
+}
 .tab:focus-visible { box-shadow: 0 0 0 2px var(--focus-ring); }
 
 .indicator {
   position: absolute;
   z-index: -1;
-  top: 2px;
-  bottom: 2px;
+  top: 3px;
+  bottom: 3px;
   left: 0;
   border-radius: 8px;
   background: var(--tabs-indicator);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+  box-shadow: var(--tabs-indicator-shadow);
 }
 .animate .indicator {
   transition: width 200ms cubic-bezier(0.4, 0, 0.2, 1), translate 200ms cubic-bezier(0.4, 0, 0.2, 1);
