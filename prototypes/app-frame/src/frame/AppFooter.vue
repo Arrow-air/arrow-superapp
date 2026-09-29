@@ -51,7 +51,7 @@ const SITE = 'https://arrowair.com';
         <span class="coin eth" aria-hidden="true">Ξ</span>{{ formatMoney(USDC_PER_ETH, 'USDC') }}
       </span>
       <span class="sep hide-sm" aria-hidden="true"></span>
-      <a class="stat link hide-sm" href="https://discord.com/invite/arrow" target="_blank" rel="noopener"><Icon name="help" :size="11" /> Support</a>
+      <a class="stat link hide-sm" href="https://discord.com/invite/arrow" target="_blank" rel="noopener"><Icon name="discord" :size="12" /> Community Support</a>
       <div class="seg icons" role="radiogroup" aria-label="Theme">
         <button
           v-for="t in themes"
