@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import Drawer from './Drawer.vue';
 import {
-  activity, contributor, formatAmount, holdings, quote, quoteValue, shortAddress, type Quote,
+  activity, contributor, formatMoney, holdings, quote, quoteValue, shortAddress, type Quote,
 } from './account';
 
 // The contributor's wallet in detail: identity, total value, holdings and
@@ -24,7 +24,7 @@ async function copyAddress() {
 <template>
   <Drawer v-model:open="open" title="Wallet" description="Your balance and recent activity.">
     <div class="identity">
-      <span class="avatar" aria-hidden="true"></span>
+      <span class="avatar" aria-hidden="true">{{ contributor.name.slice(0, 1) }}</span>
       <div class="who">
         <span class="name">{{ contributor.name }}</span>
         <span class="handle">{{ contributor.handle }}</span>
@@ -50,8 +50,7 @@ async function copyAddress() {
         </div>
       </div>
       <div class="figure">
-        <span class="mono big">{{ formatAmount(total, quote) }}</span>
-        <span class="unit">{{ quote }}</span>
+        <span class="mono big">{{ formatMoney(total, quote) }}</span>
       </div>
       <div class="actions">
         <button class="btn primary" type="button">Send</button>
@@ -67,9 +66,9 @@ async function copyAddress() {
           <span class="token" :data-symbol="h.symbol">{{ h.symbol.slice(0, 1) }}</span>
           <span class="row-main">
             <span class="row-title">{{ h.name }}</span>
-            <span class="row-sub mono">{{ formatAmount(h.amount, h.symbol) }} {{ h.symbol }}</span>
+            <span class="row-sub">{{ formatMoney(h.amount, h.symbol) }}</span>
           </span>
-          <span class="row-value mono">{{ formatAmount(quoteValue(h.amount, h.symbol, quote), quote) }} <span class="unit">{{ quote }}</span></span>
+          <span class="row-value mono">{{ formatMoney(quoteValue(h.amount, h.symbol, quote), quote) }}</span>
         </li>
       </ul>
     </section>
@@ -86,7 +85,7 @@ async function copyAddress() {
             <span class="row-sub">{{ a.detail }} · {{ a.date }}</span>
           </span>
           <span class="row-value mono" :class="a.kind">
-            {{ a.amount > 0 ? '+' : '' }}{{ formatAmount(a.amount, a.symbol) }} <span class="unit">{{ a.symbol }}</span>
+            {{ formatMoney(a.amount, a.symbol, true) }}
           </span>
         </li>
       </ul>
@@ -105,7 +104,6 @@ async function copyAddress() {
 <style scoped>
 .caps { font-size: var(--text-xs); letter-spacing: var(--tracking-caps); text-transform: uppercase; }
 .mono { font-family: var(--font-mono); }
-.unit { font-family: var(--font-sans); font-size: var(--text-2xs); font-weight: 500; letter-spacing: 0.06em; color: var(--fg-muted); }
 .label { margin: 0; font-weight: 400; color: var(--fg-muted); }
 
 .identity {
@@ -114,7 +112,19 @@ async function copyAddress() {
   gap: var(--space-3);
   padding-bottom: var(--space-4);
 }
-.avatar { width: 36px; height: 36px; border-radius: 9px; background: var(--avatar); flex: none; }
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 9px;
+  background: var(--avatar);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.3), inset 0 -1px 0 rgb(0 0 0 / 0.2), 0 0 0 1px rgb(0 0 0 / 0.3);
+  color: var(--plum-1);
+  font-size: var(--text-md);
+  font-weight: 700;
+}
 .who { display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .name { font-weight: 600; color: var(--fg); }
 .handle { font-size: var(--text-sm); color: var(--fg-muted); }
@@ -132,7 +142,7 @@ async function copyAddress() {
   cursor: pointer;
 }
 .address:hover { border-color: var(--border-strong); }
-.copy-state { font-size: var(--text-2xs); letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg-muted); }
+.copy-state { font-size: var(--text-sm); color: var(--fg-muted); }
 
 .total {
   padding: var(--space-4);
@@ -153,9 +163,8 @@ async function copyAddress() {
   border-radius: 6px;
   background: none;
   color: var(--fg-muted);
-  font-size: var(--text-2xs);
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-size: var(--text-sm);
+  font-weight: 500;
   cursor: pointer;
 }
 .seg button:hover { color: var(--fg-2); }

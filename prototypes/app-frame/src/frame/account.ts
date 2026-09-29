@@ -17,7 +17,7 @@ export const holdings = [
 
 export const activity = [
   { id: 'a1', kind: 'in', label: 'Contribution reward', detail: 'From Arrow DAO treasury', amount: 400, symbol: 'ARROW', date: '27 Sep' },
-  { id: 'a2', kind: 'out', label: 'Swap', detail: 'ARROW to USDC', amount: -200, symbol: 'ARROW', date: '19 Sep' },
+  { id: 'a2', kind: 'out', label: 'Swap', detail: 'Arrow to USDC', amount: -200, symbol: 'ARROW', date: '19 Sep' },
   { id: 'a3', kind: 'in', label: 'Contribution reward', detail: 'From Arrow DAO treasury', amount: 640, symbol: 'ARROW', date: '30 Aug' },
   { id: 'a4', kind: 'in', label: 'Received', detail: 'From 0x9a3F…c21B', amount: 0.02, symbol: 'ETH', date: '12 Aug' },
 ] as const;
@@ -35,11 +35,14 @@ export function quoteValue(amount: number, symbol: string, q: Quote) {
   const usdc = amount * (USDC_PER[symbol] ?? 0);
   return q === 'USDC' ? usdc : usdc / USDC_PER_ETH;
 }
-export function formatAmount(n: number, q: Quote | string) {
-  return n.toLocaleString('en-US', { maximumFractionDigits: q === 'ETH' ? 4 : 2 });
-}
-export function formatQuote(arrow: number, q: Quote) {
-  return formatAmount(quoteValue(arrow, 'ARROW', q), q);
+// How amounts read on screen. No uppercase tickers: USDC shows as dollars,
+// ETH with the ether sign, and ARROW as the word "Arrow".
+export function formatMoney(n: number, symbol: string, signed = false) {
+  const sign = signed && n > 0 ? '+' : n < 0 ? '−' : '';
+  const abs = Math.abs(n);
+  if (symbol === 'USDC') return `${sign}$${abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  if (symbol === 'ETH') return `${sign}Ξ${abs.toLocaleString('en-US', { maximumFractionDigits: 4 })}`;
+  return `${sign}${abs.toLocaleString('en-US', { maximumFractionDigits: 2 })} Arrow`;
 }
 export const shortAddress = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
 

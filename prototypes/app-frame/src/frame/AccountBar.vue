@@ -4,15 +4,16 @@ import Icon from './Icon.vue';
 import Menu from './Menu.vue';
 import WalletDrawer from './WalletDrawer.vue';
 import logomark from '../assets/arrow-logomark-white.svg';
-import { contributor, formatQuote, quote, type Quote } from './account';
+import { contributor, formatMoney, quote, quoteValue, type Quote } from './account';
 
 // Top right: the dashboard button on its own, then a toolbar (after coss ui
 // Toolbar) holding the balance with its quote select, and the contributor,
 // which opens the wallet drawer.
 const arrow = computed(() => contributor.arrow.toLocaleString('en-US'));
-const value = computed(() => formatQuote(contributor.arrow, quote.value));
+const money = (q: Quote) => formatMoney(quoteValue(contributor.arrow, 'ARROW', q), q);
+const value = computed(() => money(quote.value));
 const quotes = computed(() =>
-  (['USDC', 'ETH'] as Quote[]).map((q) => ({ id: q, label: q, hint: formatQuote(contributor.arrow, q) })),
+  (['USDC', 'ETH'] as Quote[]).map((q) => ({ id: q, label: q, hint: money(q) })),
 );
 const walletOpen = ref(false);
 </script>
@@ -33,14 +34,12 @@ const walletOpen = ref(false);
             type="button"
             aria-haspopup="menu"
             :aria-expanded="open"
-            :aria-label="`${arrow} ARROW, worth about ${value} ${quote}. Change currency`"
+            :aria-label="`${arrow} Arrow, worth about ${value}. Change currency`"
             @click="toggle"
           >
             <span class="token" aria-hidden="true"><img :src="logomark" alt="" /></span>
-            <span class="stack">
-              <span class="line1"><span class="num">{{ arrow }}</span> <span class="unit">ARROW</span></span>
-              <span class="line2">≈ {{ value }} {{ quote }}</span>
-            </span>
+            <span class="amount"><span class="num">{{ arrow }}</span> Arrow</span>
+            <span class="approx">≈ <span class="num">{{ value }}</span></span>
             <svg class="chev-v" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5" /></svg>
           </button>
         </template>
@@ -72,8 +71,8 @@ const walletOpen = ref(false);
 .account { display: flex; align-items: center; gap: var(--space-2); }
 .dash { height: var(--control-height); padding-inline: 12px; border-radius: 10px; }
 
-/* Balance: token badge, amount over value, no inner box. */
-.balance { height: 28px; padding: 0 8px 0 4px; gap: 8px; }
+/* Balance: token badge, then amount and value on one line. */
+.balance { height: 28px; padding: 0 8px 0 4px; gap: 7px; }
 .token {
   display: grid;
   place-items: center;
@@ -84,11 +83,10 @@ const walletOpen = ref(false);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 0 0 1px rgb(0 0 0 / 0.3);
 }
 .token img { width: 11px; height: 12px; margin-top: -1px; }
-.stack { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.05; }
-.line1 { display: inline-flex; align-items: baseline; gap: 3px; }
+.amount { color: var(--fg-2); font-weight: 500; }
 .num { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--fg); }
-.unit { font-size: var(--text-2xs); font-weight: 500; letter-spacing: 0.06em; color: var(--fg-muted); }
-.line2 { font-family: var(--font-mono); font-size: 9.5px; color: var(--fg-muted); letter-spacing: 0.01em; }
+.approx { color: var(--fg-muted); font-weight: 400; }
+.approx .num { color: var(--fg-2); }
 
 /* Profile: avatar with initial and a connected dot. */
 .who { padding-left: 3px; gap: 8px; color: var(--fg); }
