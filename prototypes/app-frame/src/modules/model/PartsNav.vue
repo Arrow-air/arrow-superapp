@@ -180,7 +180,7 @@ button.crumb:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ri
 .tile:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
 .art {
   display: grid; place-items: center; aspect-ratio: 16 / 10; border-radius: 8px; overflow: hidden;
-  background: radial-gradient(ellipse at 50% 45%, var(--slate-a4), transparent 72%);
+  background: rgb(140 170 235 / 0.06); /* a quiet solid well for the render */
 }
 .art img { width: 100%; height: 100%; object-fit: contain; transition: transform 250ms cubic-bezier(0.23, 1, 0.32, 1); }
 .tile:hover .art img { transform: scale(1.05); }
@@ -188,7 +188,7 @@ button.crumb:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ri
 @keyframes pulse { 50% { opacity: 0.5; } }
 .tile .art { grid-row: 1 / 3; }
 .hero { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px; align-items: center; margin: 0 0 8px; }
-.hero .art { border: 1px solid var(--slate-a3); background-color: var(--slate-a2); }
+.hero .art { border: 1px solid rgb(140 170 235 / 0.08); }
 .hero .title { margin-bottom: 2px; }
 .name { grid-column: 2; align-self: end; display: flex; align-items: baseline; gap: 6px; min-width: 0; font-size: var(--text-nav); line-height: 1.3; color: var(--fg-2); }
 .name i { transform: translateY(-1px); }
