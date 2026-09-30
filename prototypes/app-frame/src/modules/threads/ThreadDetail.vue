@@ -173,8 +173,9 @@ const score = (id: string) => Math.round(tallyOf(id).weightedScore * 10) / 10;
       </div>
     </section>
 
-    <section class="block">
-      <div v-if="t.replies.length" class="block-head"><h2 class="label">Discussion</h2></div>
+    <!-- General discussion sits in its own panel, apart from the positions and the vote. -->
+    <section class="block talk">
+      <div class="block-head"><h2 class="label">Discussion</h2><span v-if="t.replies.length" class="legend">{{ t.replies.length }} {{ t.replies.length === 1 ? 'reply' : 'replies' }}</span></div>
       <div v-for="r in t.replies" :key="r.id" class="reply">
         <Avatar :id="r.authorId" :size="20" />
         <div>
@@ -238,6 +239,10 @@ const score = (id: string) => Math.round(tallyOf(id).weightedScore * 10) / 10;
 .note { margin: 8px 0 0; color: var(--fg-2); line-height: 1.55; font-size: var(--text-nav); }
 
 .block { margin-top: 28px; }
+.talk { padding: 14px 16px 16px; border: 1px solid var(--slate-a3); border-radius: 14px; background: var(--slate-2); }
+.talk .block-head { margin-bottom: 10px; }
+.talk .reply { background: var(--slate-a2); }
+.talk .composer { background: var(--slate-3); }
 .block-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
 .label { margin: 0; font-size: var(--text-sm); font-weight: 500; color: var(--fg-muted); }
 .legend { font-size: var(--text-sm); color: var(--fg-muted); }
