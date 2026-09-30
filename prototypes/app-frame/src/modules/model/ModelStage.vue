@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ModelViewer, { type ModelMeta, type Structure, type Thumbs } from './ModelViewer.vue';
 import PartsNav from './PartsNav.vue';
+import { cadThemes } from './cadThemes';
 import StatusIcon from '../threads/StatusIcon.vue';
 import { state, statusOf } from '../threads/store';
 import type { Thread } from '../threads/data';
@@ -17,6 +18,25 @@ import { groupNames, parseSelKey, provenance, selKey, selLabel, subsystemGroups,
 const props = defineProps<{ subsystem?: string; label: string }>();
 const route = useRoute();
 const router = useRouter();
+
+// Temporary: cycle background treatments for the viewer and inspector ([ and ]
+// keys, or the picker). The choice is remembered in this browser.
+const THEME_KEY = 'app-frame:cad-theme';
+const themeIndex = ref(0);
+try { themeIndex.value = Math.min(cadThemes.length - 1, Math.max(0, Number(localStorage.getItem(THEME_KEY)) || 0)); } catch {}
+const theme = computed(() => cadThemes[themeIndex.value]);
+function cycle(step: number) {
+  themeIndex.value = (themeIndex.value + step + cadThemes.length) % cadThemes.length;
+  try { localStorage.setItem(THEME_KEY, String(themeIndex.value)); } catch {}
+}
+function onThemeKey(e: KeyboardEvent) {
+  const el = e.target as HTMLElement | null;
+  if (el?.closest?.('input, textarea, [contenteditable]') || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === '[') cycle(-1);
+  else if (e.key === ']') cycle(1);
+}
+onMounted(() => window.addEventListener('keydown', onThemeKey));
+onBeforeUnmount(() => window.removeEventListener('keydown', onThemeKey));
 
 const lit = computed(() => (props.subsystem ? subsystemGroups[props.subsystem] ?? [] : null));
 const meta = ref<ModelMeta>();
@@ -70,8 +90,16 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
 </script>
 
 <template>
-  <div class="stage">
-    <ModelViewer class="view" :lit="lit" :hidden="hidden" :selection="selection" :discussed="discussed" @pick="pick" @ready="onReady" @thumbs="thumbs = $event" />
+  <div class="stage" :style="{ '--cad-viewer': theme.viewer, '--cad-panel': theme.panel }">
+    <div class="view">
+      <ModelViewer :lit="lit" :hidden="hidden" :selection="selection" :discussed="discussed" @pick="pick" @ready="onReady" @thumbs="thumbs = $event" />
+      <!-- Temporary background picker. -->
+      <div class="theme-picker" role="group" aria-label="Background">
+        <button type="button" aria-label="Previous background" @click="cycle(-1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg></button>
+        <span class="theme-name"><b>{{ themeIndex + 1 }}/{{ cadThemes.length }}</b> {{ theme.name }}</span>
+        <button type="button" aria-label="Next background" @click="cycle(1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5" /></svg></button>
+      </div>
+    </div>
 
     <aside class="panel" aria-label="Model">
       <PartsNav
@@ -161,13 +189,25 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
   --prov-recovered: var(--jade-11);
   display: grid; grid-template-columns: minmax(0, 1fr) 300px; height: 100%; min-height: 0;
 }
-.view { min-width: 0; }
+.view { position: relative; min-width: 0; min-height: 0; }
+.view > :first-child { position: absolute; inset: 0; }
+.theme-picker {
+  position: absolute; top: 12px; right: 12px; display: flex; align-items: center; gap: 2px; padding: 2px;
+  border-radius: 8px; background: rgb(0 0 0 / 0.35); backdrop-filter: blur(8px); font-size: var(--text-sm); color: var(--fg-2);
+}
+.theme-picker button {
+  display: grid; place-items: center; width: 24px; height: 24px; border: 0; border-radius: 6px; background: none; color: var(--fg-muted); cursor: pointer;
+}
+.theme-picker button:hover { background: var(--slate-a4); color: var(--fg); }
+.theme-picker svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.theme-name { min-width: 150px; padding: 0 4px; text-align: center; white-space: nowrap; }
+.theme-name b { margin-right: 4px; font-family: var(--font-mono); font-weight: 500; color: var(--fg-faint); }
 
 .panel {
   display: flex; flex-direction: column; min-height: 0; overflow-y: auto; padding: 16px 12px 12px;
   /* Same tone as the edge of the viewer's light pool, so viewer and inspector
      read as one CAD explorer, apart from the conversation below. */
-  border-left: 1px solid var(--border-soft); background: var(--slate-a3); scrollbar-width: thin;
+  border-left: 1px solid var(--border-soft); background: var(--cad-panel, var(--slate-a3)); scrollbar-width: thin;
 }
 .kicker { margin: 0 4px 4px; font-size: var(--text-sm); color: var(--fg-faint); }
 .title { margin: 0 4px 6px; font-size: var(--text-md); font-weight: 600; color: var(--fg); line-height: 1.35; }

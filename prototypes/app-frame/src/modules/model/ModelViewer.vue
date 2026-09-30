@@ -344,7 +344,7 @@ watch(() => props.lit, () => fit(), { deep: true });
 </template>
 
 <style scoped>
-.viewer { position: relative; height: 100%; min-height: 0; background: var(--thumb-bg); overflow: hidden; }
+.viewer { position: relative; height: 100%; min-height: 0; background: var(--cad-viewer, var(--thumb-bg)); overflow: hidden; }
 .canvas { position: absolute; inset: 0; }
 .canvas :deep(canvas) { display: block; cursor: grab; }
 .canvas :deep(canvas:active) { cursor: grabbing; }
