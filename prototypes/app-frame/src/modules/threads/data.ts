@@ -1,4 +1,5 @@
 import type { Kind, Role, Voter } from './weights';
+import type { Sel } from '../model/model';
 
 // Example threads for the module. People are the fictional example-workspace
 // cast from specs.arrowair.com; the questions are the real Spearhead ones.
@@ -20,6 +21,8 @@ export interface Thread {
   context: Context;
   system: string;
   anchor: { kind: 'model' | 'call'; label: string };
+  /** The part of the aircraft model this thread is about, when it is about one. */
+  part?: Sel;
   version: string;
   authorId: string;
   raised: string;
@@ -51,14 +54,14 @@ export const memberById = (id: string) => (id === 'me' ? { ...me, role: 'core' a
 
 export const threads: Thread[] = [
   {
-    id: 'ARW-18', title: 'Are the recovered rear landing gear bodies the current design?',
+    id: 'ARW-18', page: 'design/airframe', part: { group: 'restored_rear_landing_gear' }, title: 'Are the recovered rear landing gear bodies the current design?',
     body: 'The recovered gear bodies on the model look older than the PT1.5 build photos. If they are stale, the gear loads in the spec are off too.',
     kind: 'technical', type: 'question', context: 'design', system: 'airframe', anchor: { kind: 'model', label: 'Rear landing gear' }, version: 'PT 2.0',
     authorId: 'ravi', raised: 'Sep 28', active: '2h', positions: [], votes: [], objections: 0,
     replies: [{ id: 'r1', authorId: 'dev', text: 'I have the build photos from the Lisbon workshop, will post them tonight.', at: '1h' }],
   },
   {
-    id: 'ARW-16', title: 'Is the starboard outer wing really a mirror of port?',
+    id: 'ARW-16', page: 'design/wings-tail', part: { group: 'inferred_starboard_outer_wing' }, title: 'Is the starboard outer wing really a mirror of port?',
     body: 'The model mirrors the port outer wing, but the pitot only lives on port. Mirroring puts a pitot cutout in the starboard skin.',
     kind: 'technical', type: 'question', context: 'design', system: 'airframe', anchor: { kind: 'model', label: 'Starboard outer wing' }, version: 'PT 2.0',
     authorId: 'dev', raised: 'Sep 27', active: '1d',
@@ -73,7 +76,7 @@ export const threads: Thread[] = [
     objections: 1, replies: [],
   },
   {
-    id: 'ARW-14', title: 'Bulkhead STA2 needs a pass-through for the pusher battery harness',
+    id: 'ARW-14', page: 'design/airframe', part: { group: 'fuselage', component: 'fuselage:1+fuselage_body:1+bulkheads:1', part: 'sta2' }, title: 'Bulkhead STA2 needs a pass-through for the pusher battery harness',
     body: 'The pusher battery harness has no route past bulkhead STA2 in the PT2 layout. It needs a hole, and where it goes affects the longerons.',
     kind: 'technical', type: 'proposal', context: 'design', system: 'airframe', anchor: { kind: 'model', label: 'Fuselage › Bulkheads › STA2' }, version: 'PT 2.0',
     authorId: 'mara', raised: 'Sep 26', active: '2h',
@@ -92,7 +95,7 @@ export const threads: Thread[] = [
     ],
   },
   {
-    id: 'ARW-11', title: 'Confirm the main-board interfaces for both propulsion options',
+    id: 'ARW-11', page: 'design/avionics', title: 'Confirm the main-board interfaces for both propulsion options',
     body: 'Raised on the Sep 25 call: the main board has to serve both the electric and the hybrid pusher until PT2 freezes.',
     kind: 'technical', type: 'question', context: 'design', system: 'avionics', anchor: { kind: 'call', label: 'Sep 25 call' }, version: 'PT 2.0',
     authorId: 'mara', raised: 'Sep 25', active: '3h',
@@ -122,7 +125,7 @@ export const threads: Thread[] = [
     objections: 1, replies: [],
   },
   {
-    id: 'ARW-09', title: 'Carbon skin or Oracover for the next wings?',
+    id: 'ARW-09', page: 'design/wings-tail', part: { group: 'main_wing' }, title: 'Carbon skin or Oracover for the next wings?',
     body: 'Raised on the Sep 10 call. Weight, cost and repairability pull in different directions.',
     kind: 'technical', type: 'question', context: 'design', system: 'airframe', anchor: { kind: 'call', label: 'Sep 10 call' }, version: 'PT 2.0',
     authorId: 'dev', raised: 'Sep 10', active: 'Sep 25',
