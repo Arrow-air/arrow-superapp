@@ -45,22 +45,49 @@ const groupObjects = new Map<string, THREE.Object3D>();
 const isLit = (group: string) => !props.lit || props.lit.includes(group);
 const isOn = (group: string) => !props.hidden?.includes(group);
 
-function paint() {
+// Motion: camera moves and highlight changes ease over the same half second.
+// Both run inside the render loop that already draws every frame, so they cost
+// a few lerps per frame and nothing else. Reduced motion keeps the instant cut.
+const DURATION = 550;
+const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+// Where each part's look is heading; the loop eases the material toward it.
+const looks = new WeakMap<THREE.Mesh, { color: THREE.Color; opacity: number; emissive: THREE.Color }>();
+let fading = false;
+
+function paint(instant = false) {
   const sel = props.selection;
   for (const m of meshes) {
     const d = m.userData as Sel;
-    const mat = m.material as THREE.MeshStandardMaterial;
     const lit = isLit(d.group);
     const discussed = lit && props.discussed.some((a) => within(d, a) || within(a, d));
     const selected = !!sel && within(d, sel);
-    mat.color.set(!lit ? colors.ghost : selected ? colors.selected : discussed ? colors.discussed : colors[provenance(d.group)]);
-    mat.transparent = !lit;
-    mat.opacity = lit ? 1 : 0.07;
-    mat.depthWrite = lit;
-    mat.emissive.setHex(selected ? 0x1d2e62 : 0x000000);
-    mat.needsUpdate = true;
+    looks.set(m, {
+      color: new THREE.Color(!lit ? colors.ghost : selected ? colors.selected : discussed ? colors.discussed : colors[provenance(d.group)]),
+      opacity: lit ? 1 : 0.07,
+      emissive: new THREE.Color(selected ? 0x1d2e62 : 0x000000),
+    });
   }
   for (const [id, obj] of groupObjects) obj.visible = isOn(id);
+  if (instant || reduced()) settle(1); else fading = true;
+}
+/** Move every material a fraction `k` of the way to its look; true once all have arrived. */
+function settle(k: number) {
+  let done = true;
+  for (const m of meshes) {
+    const mat = m.material as THREE.MeshStandardMaterial;
+    const look = looks.get(m); if (!look) continue;
+    mat.color.lerp(look.color, k); mat.emissive.lerp(look.emissive, k);
+    mat.opacity += (look.opacity - mat.opacity) * k;
+    const near = (a: THREE.Color, b: THREE.Color) => Math.abs(a.r - b.r) + Math.abs(a.g - b.g) + Math.abs(a.b - b.b) < 0.006;
+    const arrived = k === 1 || (Math.abs(mat.opacity - look.opacity) < 0.004 && near(mat.color, look.color) && near(mat.emissive, look.emissive));
+    if (arrived) { mat.color.copy(look.color); mat.emissive.copy(look.emissive); mat.opacity = look.opacity; } else done = false;
+    // Solid parts write depth; anything see-through (or on its way) blends.
+    const solid = mat.opacity > 0.99;
+    if (mat.transparent === solid) { mat.transparent = !solid; mat.depthWrite = solid; mat.needsUpdate = true; }
+  }
+  return done;
 }
 
 function isShown(o: THREE.Object3D) { let p: THREE.Object3D | null = o; while (p) { if (!p.visible) return false; p = p.parent; } return true; }
@@ -73,23 +100,52 @@ const dirs: Record<View, THREE.Vector3> = {
   iso: new THREE.Vector3(-1.15, 0.95, 1.25), top: new THREE.Vector3(0, 1, 0.0001),
   front: new THREE.Vector3(-1, 0.0001, 0), side: new THREE.Vector3(0, 0.0001, 1),
 };
-function aim(b: THREE.Box3, dir: THREE.Vector3, margin: number) {
-  const center = b.getCenter(new THREE.Vector3());
+/** The camera shot that frames box `b` from direction `dir`. */
+function shot(b: THREE.Box3, dir: THREE.Vector3, margin: number) {
+  const target = b.getCenter(new THREE.Vector3());
   const radius = Math.max(b.getSize(new THREE.Vector3()).length() / 2, 0.05);
   const distance = (radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) / Math.min(camera.aspect, 1)) * margin;
-  camera.position.copy(center).add(dir.clone().normalize().multiplyScalar(distance));
-  controls.target.copy(center);
-  camera.near = Math.max(0.001, radius / 1000); camera.far = Math.max(100, distance * 10); camera.updateProjectionMatrix(); controls.update();
+  return { target, dir: dir.clone().normalize(), distance, near: Math.max(0.001, radius / 1000), far: Math.max(100, distance * 10) };
+}
+type Shot = ReturnType<typeof shot>;
+function place(s: Shot) {
+  camera.position.copy(s.target).addScaledVector(s.dir, s.distance);
+  controls.target.copy(s.target);
+  camera.near = s.near; camera.far = s.far; camera.updateProjectionMatrix(); controls.update();
+}
+function aim(b: THREE.Box3, dir: THREE.Vector3, margin: number) { place(shot(b, dir, margin)); }
+
+// A camera move in progress: the aim point slides, the view direction swings
+// around it (so Top to 3D arcs instead of cutting through the model), and the
+// distance eases in log space (so zooming feels even).
+let glide: { from: Shot; to: Shot; turn: THREE.Quaternion; start: number } | undefined;
+function glideTo(to: Shot) {
+  const offset = camera.position.clone().sub(controls.target);
+  const from: Shot = { target: controls.target.clone(), dir: offset.clone().normalize(), distance: offset.length(), near: Math.min(camera.near, to.near), far: Math.max(camera.far, to.far) };
+  if (reduced() || from.distance === 0) { place(to); return; }
+  glide = { from, to, turn: new THREE.Quaternion().setFromUnitVectors(from.dir, to.dir), start: performance.now() };
+  camera.near = from.near; camera.far = from.far; camera.updateProjectionMatrix();
+}
+function stepGlide(now: number) {
+  if (!glide) return;
+  const { from, to, turn, start } = glide;
+  const e = ease(Math.min(1, (now - start) / DURATION));
+  const dir = from.dir.clone().applyQuaternion(new THREE.Quaternion().slerp(turn, e));
+  const distance = Math.exp(Math.log(from.distance) + (Math.log(to.distance) - Math.log(from.distance)) * e);
+  controls.target.lerpVectors(from.target, to.target, e);
+  camera.position.copy(controls.target).addScaledVector(dir, distance);
+  if (e === 1) { place(to); glide = undefined; }
 }
 /** Frame the selection, else the lit groups, else the whole aircraft. */
-function fit(next: View = view.value) {
+function fit(next: View = view.value, instant = false) {
   if (!renderer || !meshes.length) return;
   view.value = next;
   const sel = props.selection;
   let b = sel ? box((d) => within(d, sel)) : new THREE.Box3();
   if (b.isEmpty() && props.lit?.length) b = box((d) => isLit(d.group));
   if (b.isEmpty()) b = box(() => true);
-  aim(b, dirs[next], sel ? 1.5 : 1.04);
+  const s = shot(b, dirs[next], sel ? 1.5 : 1.04);
+  if (instant) place(s); else glideTo(s);
 }
 
 /**
@@ -157,7 +213,7 @@ function snapshot(only: (d: Sel) => boolean, w = 240, h = 150) {
   r.setSize(size.x, size.y, false);
   camera.aspect = cam.aspect; camera.near = cam.near; camera.far = cam.far; camera.position.copy(cam.pos); controls.target.copy(cam.target);
   camera.updateProjectionMatrix(); controls.update();
-  paint();
+  paint(true);
   return url;
 }
 defineExpose({ fit });
@@ -196,8 +252,19 @@ onMounted(async () => {
     const hit = ray.intersectObjects(meshes.filter((m) => isShown(m) && isLit((m.userData as Sel).group)), false)[0];
     emit('pick', hit ? { ...(hit.object.userData as Sel) } : null);
   });
-  const animate = () => { frame = requestAnimationFrame(animate); controls.update(); renderer!.render(scene, camera); };
-  animate();
+  // Grabbing the view hands control back straight away.
+  controls.addEventListener('start', () => { glide = undefined; });
+  let last = performance.now();
+  const animate = (now: number) => {
+    frame = requestAnimationFrame(animate);
+    stepGlide(now);
+    // Fade: close ~99.9% of the gap over DURATION, whatever the frame rate.
+    if (fading) fading = !settle(1 - Math.pow(0.001, Math.min(now - last, 100) / DURATION));
+    last = now;
+    controls.update();
+    renderer!.render(scene, camera);
+  };
+  frame = requestAnimationFrame(animate);
 
   try {
     const base = import.meta.env.BASE_URL;
@@ -225,9 +292,11 @@ onMounted(async () => {
       });
     }
     scene.add(gltf.scene);
-    paint();
-    fit();
+    paint(true);
+    fit(view.value, true);
     status.value = 'ready';
+    // Read-only hook for browser checks: where the camera is, and whether it's moving.
+    (window as any).__arrowView = () => ({ at: camera.position.toArray().map((n) => +n.toFixed(3)), gliding: !!glide, fading });
     emit('ready', meta, structure);
     // Tiles for every group and every named component.
     const thumbs: Thumbs = {};
@@ -247,9 +316,10 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(frame); observer?.disconnect(); controls?.dispose();
   for (const m of meshes) { m.geometry.dispose(); (m.material as THREE.Material).dispose(); }
   renderer?.dispose(); renderer?.domElement.remove();
+  delete (window as any).__arrowView;
 });
 
-watch(() => [props.discussed, props.hidden, props.lit], paint, { deep: true });
+watch(() => [props.discussed, props.hidden, props.lit], () => paint(), { deep: true });
 watch(() => props.selection, (s, prev) => { paint(); if (s || prev) fit(); }, { deep: true });
 watch(() => props.lit, () => fit(), { deep: true });
 </script>
