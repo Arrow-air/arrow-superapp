@@ -285,8 +285,9 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .seg button { height: 20px; padding: 0 7px; border: 0; border-radius: 6px; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; }
 .seg button[aria-checked='true'] { background: var(--slate-a4); color: var(--fg); }
 
-.reply { display: flex; gap: 10px; padding: 12px 0; }
-.reply + .reply { border-top: 1px solid var(--slate-a3); }
+/* Each reply sits on a faint card so consecutive replies read as separate. */
+.reply { display: flex; gap: 10px; padding: 12px 14px; border-radius: var(--radius-lg); background: var(--slate-a2); }
+.reply + .reply { margin-top: 6px; }
 .reply-head { display: flex; gap: 8px; align-items: baseline; font-size: var(--text-sm); }
 .reply p { margin: 3px 0 0; color: var(--fg-2); line-height: 1.55; font-size: var(--text-nav); }
 
