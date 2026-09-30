@@ -27,8 +27,9 @@ const rawLeader = computed(() => [...tallies.value].sort((a, b) => b.rawScore - 
 const rawTie = computed(() => tallies.value.filter((x) => x.rawScore === rawLeader.value?.rawScore).length > 1);
 const letter = (id: string) => String.fromCharCode(65 + t.value.positions.findIndex((p) => p.id === id));
 const typeLabel = computed(() => ({ question: 'Question', proposal: 'Proposal', idea: 'Idea' })[t.value.type]);
+// Your weight shows where you use it: on hover over the vote buttons.
 const formula = computed(() =>
-  `(${mine.value.base} base + ${mine.value.token} token + ${mine.value.expertise} expertise + ${mine.value.builder} builder) × ${mine.value.roleMultiplier} ${mine.value.role} = ${mine.value.total}. Technical calls weigh role, verified expertise and intent to build more than holdings. No wallet is linked in the demo.`,
+  `Your vote counts ${mine.value.total}: (${mine.value.base} base + ${mine.value.token} token + ${mine.value.expertise} expertise + ${mine.value.builder} builder) × ${mine.value.roleMultiplier} ${mine.value.role}. Technical calls weigh role, verified expertise and intent to build more than holdings. No wallet is linked in the demo.`,
 );
 
 // Positions ordered by weighted score, so the leader reads first; ties keep
@@ -105,7 +106,6 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
     <section class="block">
       <div class="block-head">
         <h2 class="label">Positions</h2>
-        <span class="legend" :title="formula">Your vote counts <b class="mono">{{ mine.total }}</b></span>
       </div>
 
       <p v-if="!t.positions.length" class="empty">No positions yet. Add the first one.</p>
@@ -113,11 +113,11 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
       <div class="positions">
         <div v-for="p in ordered" :key="p.id" class="pos">
           <div class="vote" role="group" :aria-label="`Vote on position ${letter(p.id)}`" :class="{ locked: !!t.settled }">
-            <button class="v up" type="button" :aria-pressed="myVote(t, p.id) === 1" :disabled="!!t.settled" aria-label="Vote up" @click="vote(t, p.id, 1)">
+            <button class="v up" type="button" :aria-pressed="myVote(t, p.id) === 1" :disabled="!!t.settled" aria-label="Vote up" :title="formula" @click="vote(t, p.id, 1)">
               <svg viewBox="0 0 16 16"><path d="m4 10 4-4 4 4" /></svg>
             </button>
             <span class="n mono" :title="`Weighted. Raw ${fmt(tallyOf(p.id).rawScore)} from ${tallyOf(p.id).voters} ${tallyOf(p.id).voters === 1 ? 'vote' : 'votes'}`">{{ Math.round(tallyOf(p.id).weightedScore * 10) / 10 }}</span>
-            <button class="v down" type="button" :aria-pressed="myVote(t, p.id) === -1" :disabled="!!t.settled" aria-label="Vote down" @click="vote(t, p.id, -1)">
+            <button class="v down" type="button" :aria-pressed="myVote(t, p.id) === -1" :disabled="!!t.settled" aria-label="Vote down" :title="formula" @click="vote(t, p.id, -1)">
               <svg viewBox="0 0 16 16"><path d="m4 6 4 4 4-4" /></svg>
             </button>
           </div>
