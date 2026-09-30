@@ -58,12 +58,15 @@ function post() {
       </template>
     </header>
 
-    <input ref="titleEl" v-model="title" class="title" maxlength="160" :placeholder="type === 'proposal' ? 'What should change?' : type === 'idea' ? 'The idea, in a line' : 'What do you need to know?'" aria-label="Title" />
+
 
     <div class="composer">
       <div class="composer-body">
         <Avatar id="me" :size="28" />
-        <textarea
+        <div class="fields">
+          <!-- The title leads the post, where you start typing. -->
+          <input ref="titleEl" v-model="title" class="title" maxlength="160" :placeholder="type === 'proposal' ? 'What should change?' : type === 'idea' ? 'The idea, in a line' : 'What do you need to know?'" aria-label="Title" />
+          <textarea
           v-model="body"
           rows="5"
           placeholder="Context: what you see on the part, why it matters, what would settle it."
@@ -71,6 +74,7 @@ function post() {
           @keydown.meta.enter.prevent="post"
           @keydown.ctrl.enter.prevent="post"
         ></textarea>
+        </div>
       </div>
       <div class="composer-bar">
         <!-- What kind of thread, inside the box it describes. -->
@@ -112,18 +116,20 @@ function post() {
 .seg button:hover { color: var(--fg-2); }
 .seg button[aria-checked='true'] { background: var(--indigo-a4); color: var(--indigo-12); }
 
+.fields { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .title {
-  display: block; width: 100%; margin: 0; padding: 0; border: 0; background: none; outline: none;
-  color: var(--fg); font: inherit; font-size: 18px; font-weight: 600; letter-spacing: -0.01em;
+  display: block; width: 100%; margin: 0; padding: 3px 0 10px; border: 0; border-bottom: 1px solid var(--slate-a3); background: none; outline: none;
+  color: var(--fg); font: inherit; font-size: 16px; font-weight: 600; letter-spacing: -0.01em;
 }
-.title::placeholder { color: var(--fg-faint); font-weight: 500; }
+.title::placeholder { color: var(--fg-muted); font-weight: 500; }
+.title:focus { border-bottom-color: var(--indigo-a7); }
 
 .composer { margin-top: 14px; overflow: clip; border: 1px solid var(--slate-a4); border-radius: 12px; background: var(--slate-2); transition: border-color 150ms; }
 .composer:focus-within { border-color: var(--slate-a7); }
 .composer-body { display: flex; align-items: flex-start; gap: 12px; padding: 14px 14px 8px; }
 .composer-body .av { flex: none; }
 .composer textarea {
-  flex: 1; display: block; min-width: 0; min-height: 96px; padding: 4px 0 0; border: 0; background: none; resize: vertical;
+  display: block; width: 100%; min-height: 96px; padding: 10px 0 0; border: 0; background: none; resize: vertical;
   color: var(--fg); font: inherit; font-size: var(--text-nav); line-height: 1.5; outline: none;
 }
 .composer textarea::placeholder { color: var(--fg-faint); }
