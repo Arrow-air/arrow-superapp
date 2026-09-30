@@ -15,7 +15,6 @@ const props = defineProps<{ thread: Thread }>();
 defineEmits<{ back: [] }>();
 
 const t = computed(() => props.thread);
-const status = computed(() => statusOf(t.value));
 const tallies = computed(() => talliesOf(t.value));
 const tallyOf = (id: string) => tallies.value.find((x) => x.positionId === id)!;
 const leader = computed(() => leaderOf(t.value));
@@ -53,15 +52,11 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
   <article class="detail">
     <header class="head">
       <button class="tbtn back" type="button" @click="$emit('back')"><Icon name="chevron-right" :size="12" class="flip" /> Threads</button>
-      <div class="eyebrow">
-        <StatusIcon :status="status" :override="t.settled?.override" :size="12" />
-        <span class="mono">{{ t.id }}</span>
-        <span class="dot">·</span>
-        <span>{{ t.kind === 'funding' ? 'Funding, token-weighted' : 'Technical, signal-weighted' }}</span>
-      </div>
+      <!-- One quiet line under the title: who asked, when, about what. The page
+           already names the subsystem and the list already shows status. -->
       <h1 class="title">{{ t.title }}</h1>
       <p class="meta">
-        {{ t.system[0].toUpperCase() + t.system.slice(1) }}<span class="dot">·</span>{{ t.anchor.label }}<span class="dot">·</span><span class="mono">{{ t.version }}</span><span class="dot">·</span><Avatar :id="t.authorId" :size="16" /> {{ person(t.authorId)?.name }}, {{ t.raised }}
+        <Avatar :id="t.authorId" :size="16" /> {{ person(t.authorId)?.name }}, {{ t.raised }}<span class="dot">·</span>{{ t.anchor.label }}<span class="dot">·</span>{{ t.version }}<span class="id mono">{{ t.id }}</span>
       </p>
       <p class="body">{{ t.body }}</p>
     </header>
@@ -78,13 +73,15 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
       <p class="note">{{ t.settled.note }}</p>
     </section>
 
-    <section class="block">
+    <!-- No positions yet: nothing to show; the composer invites the first one. -->
+    <section v-if="t.positions.length" class="block">
       <div class="block-head">
         <h2 class="label">Positions</h2>
         <span class="legend">Your vote counts <b class="mono">{{ mine.total }}</b> <button class="ghost link" type="button" :aria-expanded="showWhy" @click="showWhy = !showWhy">{{ showWhy ? 'Hide' : 'Why' }}</button></span>
       </div>
 
       <div v-if="showWhy" class="why">
+        <p class="why-note first">{{ t.kind === 'funding' ? 'A funding call, so votes are token-weighted.' : 'A technical call, so votes are signal-weighted.' }}</p>
         <template v-if="mine.kind === 'technical'">
           <p class="formula mono">({{ mine.base }} base + {{ mine.token }} token + {{ mine.expertise }} expertise + {{ mine.builder }} builder) × {{ mine.roleMultiplier }} {{ mine.role }} = <b>{{ mine.total }}</b></p>
           <p class="why-note">Technical calls are signal-weighted: role, matching expertise{{ mine.matched.length ? ` (${mine.matched.join(', ')})` : '' }} and a declared intent to build count for more than holdings.</p>
@@ -96,7 +93,6 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         <p class="why-note">Scores below are weighted; hover a score for the raw headcount.</p>
       </div>
 
-      <p v-if="!t.positions.length" class="empty">No positions yet. Propose one below.</p>
 
       <div class="positions">
         <div v-for="p in ordered" :key="p.id" class="pos">
@@ -156,7 +152,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
     </section>
 
     <section class="block">
-      <div class="block-head"><h2 class="label">Discussion</h2><span class="legend">{{ t.replies.length }} {{ t.replies.length === 1 ? 'reply' : 'replies' }}</span></div>
+      <div v-if="t.replies.length" class="block-head"><h2 class="label">Discussion</h2></div>
       <div v-for="r in t.replies" :key="r.id" class="reply">
         <Avatar :id="r.authorId" :size="20" />
         <div>
@@ -192,11 +188,10 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 
 .back { display: none; margin: 0 0 12px -8px; }
 .flip { transform: rotate(180deg); }
-.eyebrow { display: flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--fg-muted); }
-.eyebrow .dot { margin: 0; }
-.title { margin: 10px 0 8px; font-size: 18px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; color: var(--fg); }
+.title { margin: 4px 0 8px; font-size: 18px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; color: var(--fg); }
 .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0; margin: 0; font-size: var(--text-sm); color: var(--fg-muted); }
 .meta .av { margin-right: 5px; }
+.meta .id { margin-left: auto; color: var(--fg-faint); }
 .body { margin: 16px 0 0; color: var(--fg-2); line-height: 1.6; font-size: var(--text-nav); }
 
 .tag {
@@ -222,12 +217,14 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .why { margin: 8px 0 4px; padding: 10px 12px; border-radius: 10px; background: var(--slate-a2); }
 .formula { margin: 0; font-size: var(--text-sm); color: var(--fg-2); }
 .formula b { color: var(--fg); }
+.why-note.first { margin: 0 0 6px; color: var(--fg-2); }
 .why-note { margin: 6px 0 0; font-size: var(--text-sm); color: var(--fg-muted); }
 
 /* Positions: neutral rows separated by hairlines. */
 .positions { margin-top: 4px; }
-.pos { display: flex; gap: 16px; padding: 16px 0; }
-.pos + .pos { border-top: 1px solid var(--slate-a3); }
+/* Positions and replies are people talking, so each sits on its own faint card. */
+.pos { display: flex; gap: 16px; padding: 14px 16px 14px 14px; border: 1px solid var(--slate-a3); border-radius: var(--radius-lg); background: var(--slate-a2); }
+.pos + .pos { margin-top: 8px; }
 
 /* Vote capsule */
 .vote {
@@ -259,7 +256,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .stack .av + .av { margin-left: -4px; }
 .settle-this { margin-left: auto; color: var(--fg-2); }
 
-.aside { display: flex; align-items: center; gap: 8px; margin: 4px 0 0; font-size: var(--text-sm); color: var(--fg-muted); }
+.aside { display: flex; align-items: center; gap: 8px; margin: 12px 0 0 2px; font-size: var(--text-sm); color: var(--fg-muted); }
 .pip { width: 6px; height: 6px; border-radius: 50%; background: var(--amber-9); }
 
 .settle { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--slate-a3); }
@@ -285,8 +282,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .seg button { height: 20px; padding: 0 7px; border: 0; border-radius: 6px; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; }
 .seg button[aria-checked='true'] { background: var(--slate-a4); color: var(--fg); }
 
-/* Each reply sits on a faint card so consecutive replies read as separate. */
-.reply { display: flex; gap: 10px; padding: 12px 14px; border-radius: var(--radius-lg); background: var(--slate-a2); }
+.reply { display: flex; gap: 10px; padding: 12px 14px; border: 1px solid var(--slate-a3); border-radius: var(--radius-lg); background: var(--slate-a2); }
 .reply + .reply { margin-top: 6px; }
 .reply-head { display: flex; gap: 8px; align-items: baseline; font-size: var(--text-sm); }
 .reply p { margin: 3px 0 0; color: var(--fg-2); line-height: 1.55; font-size: var(--text-nav); }
