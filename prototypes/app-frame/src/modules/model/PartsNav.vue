@@ -108,14 +108,14 @@ const heroKey = computed(() => selKey(level.value === 2 ? { group: group.value, 
           <span class="art" :class="{ loading: !thumbs[heroKey] }"><img v-if="thumbs[heroKey]" :src="thumbs[heroKey]" alt="" /></span>
           <div>
             <h3 class="title">{{ level === 2 ? componentName(component) : groupNames[group] ?? group }}</h3>
-            <p class="muted">{{ level === 2 ? plural(parts.length, 'solid') : plural(groupSolids, 'solid') }}</p>
+            <!-- One line: size, where it came from (explained in the model note), threads. -->
+            <p class="meta">
+              {{ level === 2 ? plural(parts.length, 'solid') : plural(groupSolids, 'solid') }}
+              <span v-if="provenance(group) !== 'modelled'" class="prov" :class="provenance(group)" :title="provNote(group)">{{ provenance(group) }}</span>
+            </p>
+            <p v-if="threadCount" class="threads"><span class="open">{{ threadCount }}</span>{{ threadCount === 1 ? 'thread' : 'threads' }} below</p>
           </div>
         </div>
-        <p v-if="provNote(group)" class="muted">{{ provNote(group) }}</p>
-        <p class="threads" :class="{ none: !threadCount }">
-          <span v-if="threadCount" class="open">{{ threadCount }}</span>
-          {{ threadCount ? `${threadCount === 1 ? 'thread' : 'threads'}, listed below` : 'No threads about this yet' }}
-        </p>
         <p v-if="looseSolid" class="muted">Selected solid: {{ looseSolid }}</p>
 
         <template v-if="level === 1 && componentTiles.length">
@@ -212,8 +212,11 @@ button.crumb:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ri
 .tile .open { grid-column: 3; grid-row: 1 / 3; }
 .go { grid-column: 4; grid-row: 1 / 3; width: 12px; height: 12px; fill: none; stroke: var(--fg-faint); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform 150ms cubic-bezier(0.23, 1, 0.32, 1), stroke 150ms; }
 .tile:hover .go { stroke: var(--fg-2); transform: translateX(2px); }
-.threads { display: flex; align-items: center; gap: 8px; margin: 6px 4px 0; font-size: var(--text-base); color: var(--fg-2); }
-.threads.none { color: var(--fg-faint); }
+.meta { display: flex; align-items: center; gap: 8px; margin: 0; font-size: var(--text-base); color: var(--fg-muted); }
+.prov { padding: 1px 6px; border-radius: 5px; font-size: var(--text-sm); cursor: help; }
+.prov.mirrored { background: var(--sky-a3); color: var(--sky-11); }
+.prov.recovered { background: var(--jade-a3); color: var(--jade-11); }
+.threads { display: flex; align-items: center; gap: 6px; margin: 6px 0 0; font-size: var(--text-base); color: var(--fg-2); }
 
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip {

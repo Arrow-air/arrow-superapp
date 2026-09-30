@@ -23,6 +23,7 @@ const meta = ref<ModelMeta>();
 const structure = ref<Structure>({});
 const thumbs = ref<Thumbs>({});
 function onReady(m: ModelMeta, s: Structure) { meta.value = m; structure.value = s; }
+const snapshotDate = computed(() => (meta.value ? new Date(meta.value.snapshot).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''));
 const groups = computed(() => (meta.value?.groups ?? []).filter((g) => !lit.value || lit.value.includes(g.id)));
 const solids = computed(() => groups.value.reduce((s, g) => s + g.solids, 0));
 
@@ -136,9 +137,19 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
         </template>
       </template>
 
-      <p class="source">
-        Fusion snapshot {{ meta?.snapshot ?? '' }}. Model from <a href="https://github.com/Arrow-air/project-spearhead/tree/hex/build123d-fusion-aircraft/src/design" target="_blank" rel="noopener">project-spearhead</a>, revision {{ meta?.revision ?? '' }}. A tessellated preview; the STEP files are exact.
-      </p>
+      <!-- The model's provenance in one quiet line; the detail sits behind the ⓘ. -->
+      <div class="source">
+        <span>Fusion · {{ snapshotDate }}</span><span class="dot">·</span>
+        <a href="https://github.com/Arrow-air/project-spearhead/tree/hex/build123d-fusion-aircraft/src/design" target="_blank" rel="noopener">project-spearhead ↗</a>
+        <span class="about" tabindex="0" aria-label="About this model">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2" /><path d="M8 7.2v3.6M8 5.2v.1" /></svg>
+          <span class="about-card" role="tooltip">
+            Revision {{ meta?.revision ?? '' }}, from the Fusion snapshot of {{ snapshotDate }}. A tessellated preview; the STEP files in the repository are exact.
+            <span class="about-row"><i class="mirrored"></i>Mirrored: copied from the port side, not modelled in Fusion.</span>
+            <span class="about-row"><i class="recovered"></i>Recovered: bodies that were hidden in the Fusion file.</span>
+          </span>
+        </span>
+      </div>
     </aside>
   </div>
 </template>
@@ -200,8 +211,24 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
 .rtitle { color: var(--fg-2); font-size: var(--text-nav); line-height: 1.45; }
 .rsub { font-size: var(--text-sm); color: var(--fg-faint); }
 
-.source { margin: auto 4px 0; padding-top: 20px; font-size: var(--text-sm); line-height: 1.5; color: var(--fg-faint); }
-.source a { color: var(--fg-muted); }
+.source { position: relative; display: flex; align-items: center; margin: auto 4px 0; padding-top: 16px; font-size: var(--text-sm); color: var(--fg-faint); white-space: nowrap; }
+.source .dot { margin: 0 6px; }
+.source a { color: var(--fg-muted); text-decoration: none; }
+.source a:hover { color: var(--fg-2); }
+.about { display: inline-grid; place-items: center; margin-left: auto; padding: 2px; border-radius: 50%; cursor: help; outline: none; }
+.about svg { width: 13px; height: 13px; fill: none; stroke: var(--fg-faint); stroke-width: 1.4; stroke-linecap: round; }
+.about:hover svg, .about:focus-visible svg { stroke: var(--fg-2); }
+.about-card {
+  position: absolute; right: 0; bottom: calc(100% + 6px); z-index: 2; width: 260px; padding: 10px 12px;
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--slate-2); box-shadow: 0 8px 24px rgb(0 0 0 / 0.4);
+  color: var(--fg-2); font-size: var(--text-sm); line-height: 1.5; white-space: normal;
+  opacity: 0; transform: translateY(4px); pointer-events: none; transition: opacity 150ms, transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.about:hover .about-card, .about:focus-visible .about-card { opacity: 1; transform: none; }
+.about-row { display: flex; align-items: baseline; gap: 7px; margin-top: 6px; color: var(--fg-muted); }
+.about-row i { flex: none; width: 6px; height: 6px; border-radius: 50%; transform: translateY(-1px); }
+.about-row i.mirrored { background: var(--sky-11); }
+.about-row i.recovered { background: var(--jade-11); }
 
 @media (max-width: 899px) {
   .stage { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(280px, 1fr) auto; }
