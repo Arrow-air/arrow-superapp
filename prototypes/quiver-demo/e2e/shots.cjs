@@ -8,6 +8,7 @@ const PORT = 4312;
 const exe = ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Chromium.app/Contents/MacOS/Chromium'].find((p) => fs.existsSync(p));
 const shots = [
   ['00-v1-1', '#/quiver/overview/v1-1'],
+  ['00b-model', '#/quiver/overview/model?part=3250'],
   ['01-summary', '#/quiver/overview/summary'],
   ['02-catalog', '#/quiver/attachments/catalog'],
   ['03-latch-zone', '#/quiver/attachments/payload-latch'],
@@ -26,7 +27,7 @@ const shots = [
 (async () => {
   const srv = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
   await new Promise((r) => setTimeout(r, 2000));
-  const b = await chromium.launch({ executablePath: exe });
+  const b = await chromium.launch({ executablePath: exe, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const errors = [];
   const p = await b.newPage({ viewport: { width: 1280, height: 800 } });
   p.on('pageerror', (e) => errors.push(String(e)));

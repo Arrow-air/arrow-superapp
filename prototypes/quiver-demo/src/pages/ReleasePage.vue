@@ -59,6 +59,7 @@ const letter = (t: Thread, id: string) => String.fromCharCode(65 + t.positions.f
         <span><b>{{ open.length }}</b> proposed</span>
         <span><b>{{ converging }}</b> converging</span>
         <span><b>{{ decided.length }}</b> decided</span>
+        <RouterLink to="/quiver/overview/model" class="model-link">Pick a part in the 3D model</RouterLink>
         <button v-if="!composing" class="new-btn" type="button" @click="proposeIn(V11_ZONES[0])">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" /></svg> Propose an improvement
         </button>
@@ -135,6 +136,9 @@ const letter = (t: Thread, id: string) => String.fromCharCode(65 + t.positions.f
   background: var(--indigo-9); color: #fff; font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer;
 }
 .new-btn:hover { background: var(--indigo-10); }
+.model-link { margin-left: auto; color: var(--indigo-11); font-size: var(--text-sm); text-decoration: none; }
+.model-link:hover { text-decoration: underline; }
+.model-link + .new-btn { margin-left: 0; }
 .new-btn svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 .new-form { display: grid; gap: 8px; margin-top: 16px; padding: 12px; border: 1px solid var(--slate-a5); border-radius: 12px; background: var(--slate-a2); }
 .where { display: inline-flex; align-items: center; gap: 8px; font-size: var(--text-sm); color: var(--fg-muted); }

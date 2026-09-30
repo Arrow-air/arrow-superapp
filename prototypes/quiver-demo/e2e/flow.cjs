@@ -14,7 +14,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
 (async () => {
   const srv = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
   await new Promise((r) => setTimeout(r, 2000));
-  const b = await chromium.launch({ executablePath: exe });
+  const b = await chromium.launch({ executablePath: exe, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const p = await b.newPage({ viewport: { width: 1280, height: 800 } });
   const errors = [];
   p.on('pageerror', (e) => errors.push(String(e)));
@@ -108,6 +108,33 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.locator('.sidebar a', { hasText: 'Power & battery' }).click();
   await p.waitForTimeout(400);
   check((await p.evaluate(() => document.querySelector('.slot').scrollTop)) === 0, 'next page starts at the top');
+
+  // The 3D model: click a part, propose a change for v1.1 anchored to it.
+  await p.goto(`${BASE}/quiver/overview/model`);
+  await p.waitForSelector('.viewer[data-ready="true"]', { timeout: 30000 });
+  await p.waitForTimeout(500);
+  const cv = await p.locator('.viewer canvas').boundingBox();
+  await p.mouse.click(cv.x + cv.width / 2, cv.y + cv.height / 2);
+  await p.waitForTimeout(400);
+  check(/part=\d{4}/.test(p.url()), 'clicking the model selects a part');
+  await p.getByRole('button', { name: '← All parts' }).click();
+  await p.getByRole('button', { name: /Power & battery/ }).click();
+  await p.locator('button.part[data-part="3410"]').click();
+  await p.waitForTimeout(300);
+  check((await p.locator('.p-name').innerText()).includes('Battery, Tattu'), 'parts list selects the battery and shows its BOM facts');
+  await p.getByRole('button', { name: /Propose a change for Dev Kit v1.1/ }).click();
+  await p.getByLabel('Proposed change').fill('Add a second retention strap to the battery');
+  await p.getByRole('button', { name: 'Propose', exact: true }).click();
+  await p.waitForTimeout(300);
+  const pt = await panel.innerText();
+  if (process.env.DEBUG) console.log('PANEL:', pt.slice(0, 300), '| HOME:', await panel.locator('.home').first().innerText());
+  check(/About\s+3410/.test(pt) && pt.includes('Dev Kit v1.1') && (await panel.locator('.home').first().innerText()) === 'Power & battery', 'proposal is anchored to the part, in its zone, for v1.1');
+  await p.keyboard.press('Escape');
+  await p.waitForTimeout(200);
+  check((await p.locator('aside.side').innerText()).includes('Add a second retention strap'), 'part card lists the new thread');
+  await p.goto(`${BASE}/quiver/overview/v1-1`);
+  await p.waitForTimeout(400);
+  check((await p.locator('.grp', { hasText: 'Power & battery' }).innerText()).includes('Add a second retention strap'), 'v1.1 page shows the part proposal under its zone');
 
   // Persistence and reset.
   await p.goto(`${BASE}/quiver/decisions/register`);

@@ -32,6 +32,8 @@ export interface Thread {
   id: string;
   /** The working zone this thread lives in. */
   zone: string;
+  /** BOM number of the part it is about, when it is about one (clickable in the 3D model). */
+  part?: string;
   title: string;
   body: string;
   kind: Kind;
@@ -97,7 +99,7 @@ export const threads: Thread[] = [
     votes: [], replies: [], objections: 0,
   },
   {
-    id: 'Q-4', zone: 'gps-rf', kind: 'technical', type: 'proposal', system: 'gps', version: NEXT,
+    id: 'Q-4', zone: 'gps-rf', part: '3250', kind: 'technical', type: 'proposal', system: 'gps', version: NEXT,
     title: 'Primary GPS: offer the Here4 and the Holybro NEO-F9P, retire the Wren Mini',
     body: 'PR #267 adds the CubePilot Here4 and the Holybro H-RTK NEO-F9P Rover as primary GPS options in the CAD and the BOM, and retires the Wren Mini. It is a draft, stacked on the mechanical sync in PR #266.',
     authorId: 'thomas', source: prSource(267), raisedAt: PR267, activeAt: PR267,
@@ -107,7 +109,7 @@ export const threads: Thread[] = [
     votes: [], replies: [], objections: 0,
   },
   {
-    id: 'Q-5', zone: 'interface', kind: 'technical', type: 'question', system: 'payload', version: NEXT,
+    id: 'Q-5', zone: 'interface', part: '3331', kind: 'technical', type: 'question', system: 'payload', version: NEXT,
     title: 'Attachment power: the 12 V payload rail is about 13 W, shared by three ports',
     body: 'The attachment interface is sized for logic-level payloads. Floodlights, spreaders, larger gimbals and heaters want 20 to 100 W or more, so each one grows its own battery pigtail today (#233). The issue asks for a direction for the next main PCB and attach PCB revision.',
     source: issueSource(234), raisedAt: I234, activeAt: I234,

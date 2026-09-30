@@ -7,6 +7,7 @@ import Placeholder from './Placeholder.vue';
 // context and threads) by default, or one of the views.
 const ZonePage = defineAsyncComponent(() => import('./ZonePage.vue'));
 const ReleasePage = defineAsyncComponent(() => import('./ReleasePage.vue'));
+const ModelPage = defineAsyncComponent(() => import('./ModelPage.vue'));
 const views = {
   summary: defineAsyncComponent(() => import('./SummaryPage.vue')),
   catalog: defineAsyncComponent(() => import('./CatalogPage.vue')),
@@ -27,6 +28,7 @@ const page = computed(() => item.value?.page ?? 'zone');
   <ZonePage v-if="item && page === 'zone'" :zone="item.id" />
   <ZonePage v-else-if="item && page === 'gate'" :zone="item.id" gate />
   <ReleasePage v-else-if="page === 'release'" />
+  <ModelPage v-else-if="page === 'model'" />
   <component :is="views[page as keyof typeof views]" v-else-if="page in views" />
   <Placeholder v-else />
 </template>

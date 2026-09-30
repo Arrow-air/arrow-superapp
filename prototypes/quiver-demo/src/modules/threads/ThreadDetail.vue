@@ -6,6 +6,7 @@ import Avatar from './Avatar.vue';
 import SourceChip from './SourceChip.vue';
 import StatusIcon from './StatusIcon.vue';
 import type { Thread } from './data';
+import { partById } from '../../data/quiver';
 import {
   changedWinner, day, leaderOf, myVote, person, propose, reopen, reply, settle, standing, state, talliesOf, vote, weightOf,
 } from './store';
@@ -84,6 +85,10 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         <span>{{ day(t.raisedAt) }}</span>
         <template v-if="t.source"><span class="dot"></span><SourceChip :source="t.source" /></template>
         <template v-if="t.version"><span class="dot">·</span><span class="mono ver" title="The version this thread is about">{{ t.version }}</span></template>
+      </p>
+      <p v-if="t.part" class="part">
+        About <span class="mono">{{ t.part }}</span> {{ partById(t.part)?.name }}
+        <RouterLink :to="{ path: '/quiver/overview/model', query: { part: t.part, thread: t.id } }">View in model</RouterLink>
       </p>
       <p class="state" :data-status="stand.status">
         <StatusIcon :status="stand.status" :override="t.settled?.override" :size="12" />
@@ -381,4 +386,8 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .choices button[aria-checked='true'] { background: var(--indigo-9); border-color: var(--indigo-9); color: #fff; }
 .hint-line { margin: 8px 0 0; font-size: var(--text-sm); color: var(--fg-muted); }
 .kind { color: var(--fg-2); font-weight: 500; }
+.part { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; margin: 8px 0 0; font-size: var(--text-sm); color: var(--fg-2); }
+.part .mono { color: var(--fg-muted); }
+.part a { color: var(--indigo-11); text-decoration: none; }
+.part a:hover { text-decoration: underline; }
 </style>

@@ -10,7 +10,7 @@
 import type { IconName } from './icons';
 
 /** What renders in the content slot. Zones get the zone page with its threads. */
-export type PageKind = 'zone' | 'gate' | 'release' | 'summary' | 'catalog' | 'bom' | 'work' | 'prs' | 'people' | 'sources' | 'threads' | 'suggested' | 'decisions';
+export type PageKind = 'zone' | 'gate' | 'release' | 'model' | 'summary' | 'catalog' | 'bom' | 'work' | 'prs' | 'people' | 'sources' | 'threads' | 'suggested' | 'decisions';
 
 export interface NavItem { id: string; label: string; icon: IconName; page?: PageKind }
 export interface NavGroup { id: string; label: string; sortable?: boolean; items: NavItem[] }
@@ -64,8 +64,10 @@ export const tabs: Tab[] = [
         label: 'Dev Kit v1.1',
         items: [
           item('v1-1', 'Improvements', 'flag', 'release'),
+          item('model', '3D model', 'hexagon', 'model'),
           item('airframe', 'Structure & enclosure', 'airframe'),
           item('gps-rf', 'GPS & RF', 'globe'),
+          item('propulsion', 'Propulsion', 'fan'),
           item('power', 'Power & battery', 'battery'),
           item('avionics', 'Avionics & network', 'harness'),
         ],

@@ -116,6 +116,11 @@ export const zones: Zone[] = [
     parts: ['3250', '3251', '2331', '3313'],
   },
   {
+    id: 'propulsion',
+    summary: 'Motors, ESCs and propellers: four Hobbywing X6 Plus units on folding arms, 24-inch props.',
+    parts: ['3111', '3112', '3122', '1411', '1412'],
+  },
+  {
     id: 'power',
     summary: 'The Tattu smart pack, its BMS, the power distribution, and the 12 V rails that feed avionics and payloads.',
     parts: ['3410', '3320', '3310'],
