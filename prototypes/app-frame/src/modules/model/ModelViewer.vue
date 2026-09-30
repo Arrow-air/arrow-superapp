@@ -46,6 +46,58 @@ const colors = { modelled: '#b0b4ba', mirrored: '#75c7f0', recovered: '#1fd8a4',
 
 // three.js objects stay outside Vue's reactivity.
 let renderer: THREE.WebGLRenderer | undefined, camera: THREE.PerspectiveCamera, controls: OrbitControls, frame = 0, observer: ResizeObserver | undefined;
+
+// Projection. `camera` is the rig the controls drive and all framing uses; what
+// gets drawn is a view of it. Perspective draws through `lens` (the rig with a
+// narrower lens, pulled back so the target plane stays the same size), and at
+// full flatness through `ortho`. Easing `flat` from 0 to 1 is the dolly-zoom
+// that turns perspective into orthographic without a jump.
+const FOV = 35, FLAT_FOV = 1.2;
+const lens = new THREE.PerspectiveCamera(FOV, 1, 0.01, 100);
+const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, -100, 100);
+const projection = ref<'persp' | 'ortho'>('persp');
+let flat = 0, flatFrom = 0, flatStart = 0;
+function setProjection(p: 'persp' | 'ortho') {
+  if (projection.value === p) return;
+  projection.value = p;
+  flatFrom = flat; flatStart = performance.now();
+  if (reduced()) flat = p === 'ortho' ? 1 : 0;
+}
+/** The camera to draw (and pick) through this frame. */
+function viewCamera(): THREE.Camera {
+  const offset = camera.position.clone().sub(controls.target);
+  const distance = offset.length();
+  const halfTan = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
+  if (flat >= 1) {
+    const h = distance * halfTan, w = h * camera.aspect;
+    ortho.left = -w; ortho.right = w; ortho.top = h; ortho.bottom = -h;
+    ortho.near = -camera.far; ortho.far = camera.far;
+    ortho.position.copy(camera.position); ortho.quaternion.copy(camera.quaternion);
+    ortho.updateProjectionMatrix();
+    return ortho;
+  }
+  if (flat <= 0) return camera;
+  const t = halfTan + (Math.tan(THREE.MathUtils.degToRad(FLAT_FOV / 2)) - halfTan) * flat;
+  const scale = halfTan / t;
+  lens.fov = THREE.MathUtils.radToDeg(2 * Math.atan(t)); lens.aspect = camera.aspect;
+  lens.near = camera.near * scale; lens.far = camera.far * scale + distance * scale;
+  lens.position.copy(controls.target).addScaledVector(offset, scale); lens.quaternion.copy(camera.quaternion);
+  lens.updateProjectionMatrix();
+  return lens;
+}
+function stepFlat(now: number) {
+  const goal = projection.value === 'ortho' ? 1 : 0;
+  if (flat === goal) return;
+  const e = ease(Math.min(1, (now - flatStart) / 450));
+  flat = flatFrom + (goal - flatFrom) * e;
+  if (e === 1) flat = goal;
+}
+/** The view buttons: flat views are orthographic, 3D is perspective, as in most CAD tools. */
+function pickView(v: View) {
+  setProjection(v === 'iso' ? 'persp' : 'ortho');
+  fit(v);
+}
+let lastView: THREE.Camera | undefined;
 const scene = new THREE.Scene();
 const meshes: THREE.Mesh[] = [];
 const groupObjects = new Map<string, THREE.Object3D>();
@@ -239,7 +291,7 @@ onMounted(async () => {
   for (const [pos, color, intensity] of [[[2, 5, 3], 0xffffff, 3], [[-3, 2, -4], 0xb9d5ff, 1.8], [[1, -2, 1], 0xffe4bf, 0.6]] as [number[], number, number][]) {
     const l = new THREE.DirectionalLight(color, intensity); l.position.set(pos[0], pos[1], pos[2]); scene.add(l);
   }
-  camera = new THREE.PerspectiveCamera(35, 1, 0.01, 100);
+  camera = new THREE.PerspectiveCamera(FOV, 1, 0.01, 100);
   controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.dampingFactor = 0.08;
   // Left orbits, middle and right pan, the wheel zooms (the CAD convention).
   controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.PAN, RIGHT: THREE.MOUSE.PAN };
@@ -256,7 +308,7 @@ onMounted(async () => {
     if (e.button !== 0 || !down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5) return;
     const rect = renderer!.domElement.getBoundingClientRect();
     mouse.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
-    ray.setFromCamera(mouse, camera);
+    ray.setFromCamera(mouse, lastView ?? camera);
     const hit = ray.intersectObjects(meshes.filter((m) => isShown(m) && isLit((m.userData as Sel).group)), false)[0];
     emit('pick', hit ? { ...(hit.object.userData as Sel) } : null);
   });
@@ -270,7 +322,9 @@ onMounted(async () => {
     if (fading) fading = !settle(1 - Math.pow(0.001, Math.min(now - last, 100) / DURATION));
     last = now;
     controls.update();
-    renderer!.render(scene, camera);
+    stepFlat(now);
+    lastView = viewCamera();
+    renderer!.render(scene, lastView);
   };
   frame = requestAnimationFrame(animate);
 
@@ -304,7 +358,7 @@ onMounted(async () => {
     fit(view.value, true);
     status.value = 'ready';
     // Read-only hook for browser checks: where the camera is, and whether it's moving.
-    (window as any).__arrowView = () => ({ at: camera.position.toArray().map((n) => +n.toFixed(3)), gliding: !!glide, fading });
+    (window as any).__arrowView = () => ({ at: camera.position.toArray().map((n) => +n.toFixed(3)), gliding: !!glide, fading, projection: projection.value, flat: +flat.toFixed(3) });
     emit('ready', meta, structure);
     // Tiles for every group and every named component.
     const thumbs: Thumbs = {};
@@ -338,10 +392,14 @@ watch(() => props.lit, () => fit(), { deep: true });
     <div ref="stage" class="canvas" :data-ready="status === 'ready'"></div>
     <div class="view-tools">
     <div class="seg views" role="radiogroup" aria-label="Camera">
-      <button v-for="v in (['iso', 'top', 'front', 'side'] as View[])" :key="v" type="button" role="radio" :aria-checked="view === v" @click="fit(v)">
+      <button v-for="v in (['iso', 'top', 'front', 'side'] as View[])" :key="v" type="button" role="radio" :aria-checked="view === v" @click="pickView(v)">
         {{ v === 'iso' ? '3D' : v[0].toUpperCase() + v.slice(1) }}
       </button>
     </div>
+    <button type="button" class="grid-toggle" :aria-pressed="projection === 'ortho'" :title="projection === 'ortho' ? 'Orthographic (click for perspective)' : 'Perspective (click for orthographic)'" @click="setProjection(projection === 'ortho' ? 'persp' : 'ortho')">
+      <svg v-if="projection === 'ortho'" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 5.5h8v8H3zM3 5.5 5.5 3h8L11 5.5M13.5 3v8L11 13.5" /></svg>
+      <svg v-else viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 5.5h7l1.5 8H3zM4.5 5.5 6 2.5h4l1.5 3" /></svg>
+    </button>
     <button type="button" class="grid-toggle" :aria-pressed="grid" :title="grid ? 'Hide grid' : 'Show grid'" @click="toggleGrid">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 2.5h11v11h-11zM6.2 2.5v11M9.8 2.5v11M2.5 6.2h11M2.5 9.8h11" /></svg>
     </button>
