@@ -11,7 +11,7 @@ import type { ThreadType } from './data';
 // Starting a thread about a place on the aircraft. The part picked on the model
 // is the default subject; the switch can widen it to its component or group.
 
-const props = defineProps<{ part?: Sel; pageLabel: string }>();
+const props = defineProps<{ part?: Sel; pageLabel: string; pageIcon?: IconName }>();
 const emit = defineEmits<{ post: [draft: { part?: Sel; type: ThreadType; title: string; body: string }]; cancel: [] }>();
 
 // From narrowest to widest: the solid, its component, its group.
@@ -48,13 +48,18 @@ function post() {
 
 <template>
   <form class="new" @submit.prevent="post" @keydown.esc="emit('cancel')">
-    <!-- One sentence: where it goes, and what it is about. -->
-    <div class="kicker">
-      <span>New thread on {{ pageLabel }}<template v-if="scopes.length"> about</template></span>
-      <div v-if="scopes.length" class="seg" role="radiogroup" aria-label="About">
-        <button v-for="s in scopes" :key="s.key" type="button" role="radio" :aria-checked="scope === s.key" @click="scope = s.key">{{ s.label }}</button>
-      </div>
-    </div>
+    <!-- Header strip, one sentence in three parts: what this is, where it goes, what it's about. -->
+    <header class="head">
+      <span class="what"><Icon name="comment" :size="13" />New thread</span>
+      <span class="joint">in</span>
+      <span class="where"><Icon v-if="pageIcon" :name="pageIcon" :size="13" />{{ pageLabel }}</span>
+      <template v-if="scopes.length">
+        <span class="joint">about</span>
+        <div class="seg" role="radiogroup" aria-label="About">
+          <button v-for="s in scopes" :key="s.key" type="button" role="radio" :aria-checked="scope === s.key" @click="scope = s.key">{{ s.label }}</button>
+        </div>
+      </template>
+    </header>
 
     <input ref="titleEl" v-model="title" class="title" maxlength="160" :placeholder="type === 'proposal' ? 'What should change?' : type === 'idea' ? 'The idea, in a line' : 'What do you need to know?'" aria-label="Title" />
 
@@ -89,7 +94,19 @@ function post() {
 
 <style scoped>
 .new { max-width: 720px; padding: 22px 32px 48px; }
-.kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 4px; font-size: var(--text-base); color: var(--fg-muted); }
+.head {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 18px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--slate-a3); font-size: var(--text-base);
+}
+.what { display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; color: var(--fg); font-weight: 600; }
+.what :deep(svg) { color: var(--indigo-11); }
+.joint { color: var(--fg-faint); }
+.where {
+  display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 8px;
+  background: var(--slate-a3); color: var(--fg-2); font-weight: 500;
+}
+.where :deep(svg) { color: var(--fg-muted); }
+.head .seg button { height: 24px; }
 .seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 2px; border-radius: 8px; background: var(--slate-a2); }
 .seg button {
   height: 24px; padding: 0 9px; border: 0; border-radius: 6px; background: none;
@@ -99,7 +116,7 @@ function post() {
 .seg button[aria-checked='true'] { background: var(--indigo-a4); color: var(--indigo-12); }
 
 .title {
-  display: block; width: 100%; margin: 16px 0 0; padding: 0; border: 0; background: none; outline: none;
+  display: block; width: 100%; margin: 0; padding: 0; border: 0; background: none; outline: none;
   color: var(--fg); font: inherit; font-size: 18px; font-weight: 600; letter-spacing: -0.01em;
 }
 .title::placeholder { color: var(--fg-faint); font-weight: 500; }

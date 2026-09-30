@@ -178,7 +178,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
     </section>
 
     <section class="detail-pane" aria-label="Thread">
-      <NewThread v-if="composing" :key="String(route.query.part)" :part="part" :page-label="item?.label ?? ''" @post="postThread" @cancel="cancelThread" />
+      <NewThread v-if="composing" :key="String(route.query.part)" :part="part" :page-label="item?.label ?? ''" :page-icon="item?.icon" @post="postThread" @cancel="cancelThread" />
       <ThreadDetail v-else-if="selected" :thread="selected" @back="mobileDetail = false" />
       <p v-else class="empty pad">Pick a thread.</p>
     </section>
