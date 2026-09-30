@@ -6,6 +6,7 @@ import { MOD } from '../../frame/shortcuts';
 import Avatar from './Avatar.vue';
 import StatusIcon from './StatusIcon.vue';
 import { threadTypes, typeStyle } from './types';
+import { useFreeze } from '../../frame/freeze';
 import type { Thread } from './data';
 import type { Role } from './weights';
 import {
@@ -13,6 +14,7 @@ import {
 } from './store';
 
 const props = defineProps<{ thread: Thread }>();
+const freeze = useFreeze();
 defineEmits<{ back: [] }>();
 
 const t = computed(() => props.thread);
@@ -62,6 +64,9 @@ const score = (id: string) => Math.round(tallyOf(id).weightedScore * 10) / 10;
       <h1 class="title">{{ t.title }}</h1>
       <p class="meta">
         <span class="type" :style="typeStyle(t.type)"><Icon :name="threadTypes[t.type].icon" :size="12" />{{ threadTypes[t.type].label }}</span>
+        <span v-if="!t.settled && t.version === freeze.version" class="due" :data-level="freeze.level.value" title="Open threads are settled, deferred or declined at the design freeze">
+          {{ freeze.frozen.value ? 'Due at freeze' : `Settles by freeze · ${freeze.label.value}` }}
+        </span>
         <Avatar :id="t.authorId" :size="16" /> {{ person(t.authorId)?.name }}, {{ t.raised }}<span class="dot">·</span>{{ t.anchor.label }}<span class="dot">·</span>{{ t.version }}<span class="id mono">{{ t.id }}</span>
       </p>
       <p class="body">{{ t.body }}</p>
@@ -212,6 +217,9 @@ const score = (id: string) => Math.round(tallyOf(id).weightedScore * 10) / 10;
 .title { margin: 4px 0 8px; font-size: 18px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; color: var(--fg); }
 .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0; margin: 0; font-size: var(--text-sm); color: var(--fg-muted); }
 .meta .av { margin-right: 5px; }
+.meta .due { display: inline-flex; align-items: center; height: 20px; margin-right: 10px; padding: 0 7px; border-radius: 6px; background: var(--slate-a3); color: var(--fg-2); font-weight: 500; font-variant-numeric: tabular-nums; }
+.meta .due[data-level='soon'] { background: var(--amber-a3); color: var(--amber-11); }
+.meta .due[data-level='urgent'], .meta .due[data-level='frozen'] { background: var(--red-a3); color: var(--red-11); }
 .meta .type { display: inline-flex; align-items: center; gap: 5px; height: 20px; margin-right: 10px; padding: 0 7px 0 6px; border-radius: 6px; background: var(--tbg); color: var(--tfg); font-weight: 500; }
 .meta .id { margin-left: auto; color: var(--fg-faint); }
 .body { margin: 16px 0 0; color: var(--fg-2); line-height: 1.6; font-size: var(--text-nav); }

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useFreeze } from './freeze';
+const freeze = useFreeze();
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Menu from './Menu.vue';
@@ -41,7 +43,7 @@ function switchProject(id: string) {
     <template v-if="project && version">
       <span class="tsep" aria-hidden="true"></span>
       <Menu
-        :items="project.versions.map((v) => ({ id: v.id, label: statusLabel[v.status], note: statusNote[v.status], hint: v.code, dot: dot(v.status) }))"
+        :items="project.versions.map((v) => ({ id: v.id, label: statusLabel[v.status], note: v.status === 'upcoming' && v.code === freeze.version ? (freeze.frozen.value ? 'Design frozen' : `Design freeze in ${freeze.label.value}`) : statusNote[v.status], hint: v.code, dot: dot(v.status) }))"
         :current="version.id"
         @select="versionId = $event"
       >

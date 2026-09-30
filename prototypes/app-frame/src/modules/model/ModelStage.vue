@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import ModelViewer, { type ModelMeta, type Structure, type Thumbs } from './ModelViewer.vue';
 import PartsNav from './PartsNav.vue';
 import { cadThemes } from './cadThemes';
+import { useFreeze } from '../../frame/freeze';
 import StatusIcon from '../threads/StatusIcon.vue';
 import { state, statusOf } from '../threads/store';
 import type { Thread } from '../threads/data';
@@ -21,6 +22,7 @@ const router = useRouter();
 
 // Temporary: cycle background treatments for the viewer and inspector ([ and ]
 // keys, or the picker). The choice is remembered in this browser.
+const freeze = useFreeze();
 const THEME_KEY = 'app-frame:cad-theme';
 const themeIndex = ref(0);
 try { themeIndex.value = Math.min(cadThemes.length - 1, Math.max(0, Number(localStorage.getItem(THEME_KEY)) || 0)); } catch {}
@@ -194,8 +196,14 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
       <div v-if="lit" class="cta-foot">
         <button type="button" class="cta" @click="startThread">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h10v7H7l-3 2.5v-2.5H3z" /></svg>
-          <span>Start a thread about <b>{{ subjectName }}</b></span>
+          <span v-if="!freeze.frozen.value">Start a thread about <b>{{ subjectName }}</b></span>
+          <span v-else>Start a {{ freeze.next }} thread about <b>{{ subjectName }}</b></span>
         </button>
+        <!-- The window this thread lands in, and how long it stays open. -->
+        <p class="window" :data-level="freeze.level.value">
+          <template v-if="!freeze.frozen.value">Open for {{ freeze.version }} until design freeze · <b>{{ freeze.label.value }}</b> left</template>
+          <template v-else>{{ freeze.version }} design frozen · discussion is open for {{ freeze.next }}</template>
+        </p>
       </div>
 
     </aside>
@@ -285,6 +293,10 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
   background: linear-gradient(to bottom, transparent, var(--cad-panel-solid, #0c1322) 40%);
 }
 .cta:hover { background: var(--indigo-10); }
+.window { margin: 8px 0 0; text-align: center; font-size: var(--text-sm); color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+.window b { font-weight: 600; color: var(--fg-2); }
+.window[data-level='soon'] b { color: var(--amber-11); }
+.window[data-level='urgent'] b, .window[data-level='frozen'] { color: var(--red-11); }
 .cta:active { transform: scale(0.98); }
 .cta:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
 .cta span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }

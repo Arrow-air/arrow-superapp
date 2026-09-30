@@ -1,6 +1,7 @@
 import { computed, reactive } from 'vue';
 import { me, members, threads as seed, type Member, type Thread, type ThreadType } from './data';
 import { selLabel, type Sel } from '../model/model';
+import { FREEZE } from '../../frame/freeze';
 import { tally, voteWeight, weightingChangedWinner, type Role, type Tally, type WeightBreakdown } from './weights';
 
 // Module state: the threads (cloned so edits stay in memory), who you are
@@ -78,7 +79,7 @@ export function createThread(d: { page?: string; system: string; part?: Sel; typ
   const t: Thread = {
     id: `ARW-${n}`, page: d.page, part: d.part, title: d.title, body: d.body,
     kind: 'technical', type: d.type, context: 'design', system: d.system,
-    anchor: { kind: 'model', label: d.part ? selLabel(d.part) : 'Page' }, version: 'PT 2.0',
+    anchor: { kind: 'model', label: d.part ? selLabel(d.part) : 'Page' }, version: Date.now() < FREEZE.at.getTime() ? FREEZE.version : FREEZE.next,
     authorId: 'me', raised: 'Today', active: 'now', positions: [], votes: [], replies: [], objections: 0,
   };
   state.threads.unshift(t);
