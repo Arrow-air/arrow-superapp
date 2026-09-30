@@ -71,15 +71,6 @@ export const tabs: Tab[] = [
         ],
       },
       {
-        id: 'testing',
-        label: 'Testing',
-        items: [
-          item('gps-interference', 'GPS interference', 'gauge'),
-          item('endurance', 'Endurance', 'plane'),
-          item('flight-campaign', 'Flight test campaign', 'flag'),
-        ],
-      },
-      {
         id: 'operating',
         label: 'Operating',
         items: [

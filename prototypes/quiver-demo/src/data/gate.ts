@@ -36,6 +36,6 @@ export const gate: GateItem[] = [
   {
     id: 'gps', title: 'GPS interference found and fixed', owners: ['julius', 'erick'], status: 'open', statusText: 'Diagnosing; fix not chosen',
     next: 'Julius flies the Ethernet build this week (T-13); Erick checks the switches with the spectrum analyzer. Then pick a fix.',
-    zone: 'gps-interference', thread: 'Q-3', tasks: ['T-13'], issues: [191], callItem: 'sep29-10',
+    zone: 'gps-rf', thread: 'Q-3', tasks: ['T-13'], issues: [191], callItem: 'sep29-10',
   },
 ];

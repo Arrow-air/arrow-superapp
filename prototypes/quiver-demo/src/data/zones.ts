@@ -92,9 +92,12 @@ export const zones: Zone[] = [
   },
   {
     id: 'flight-data',
-    summary: 'Flight logs, the tracking platform at flights.arrowair.com, and the reliability numbers built from them.',
-    tasks: ['T-14', 'T-17'],
-    links: [{ label: 'flights.arrowair.com', url: 'https://flights.arrowair.com' }],
+    summary: 'Flight logs and test campaigns: the tracking platform at flights.arrowair.com, the endurance study, the flight test campaign, and the reliability numbers built from them.',
+    tasks: ['T-14', 'T-17', 'T-03'],
+    links: [
+      { label: 'flights.arrowair.com', url: 'https://flights.arrowair.com' },
+      { label: '20-hour flight plan', url: `${PQ}/blob/main/flight-test/20hr-flight-plan.md` },
+    ],
   },
 
   // Aircraft
@@ -106,7 +109,7 @@ export const zones: Zone[] = [
   },
   {
     id: 'gps-rf',
-    summary: 'GNSS placement and everything that interferes with it. The M9N loses satellites with the Ethernet switches installed; the fix is open.',
+    summary: 'GNSS placement and everything that interferes with it. The M9N loses satellites with the Ethernet switches installed; diagnosing the cause (T-13, the spectrum analyzer) and choosing the fix both happen here.',
     tasks: ['T-13'],
     issues: [191],
     prs: [267],
@@ -122,23 +125,6 @@ export const zones: Zone[] = [
     summary: 'Flight controller, companion computer, Ethernet switches and the onboard network every device and attachment shares.',
     parts: ['3312', '3313', '3201'],
     prs: [235],
-  },
-  {
-    id: 'gps-interference',
-    summary: 'Is the Ethernet switch build the source of the M9N dropouts, and does a fix hold in flight? Diagnosis for the GPS & RF zone.',
-    tasks: ['T-13'],
-    issues: [191],
-  },
-  {
-    id: 'endurance',
-    summary: 'Six-flight endurance matrix: no payload, 5 kg and 7 kg, hover and circle.',
-    tasks: ['T-03'],
-  },
-  {
-    id: 'flight-campaign',
-    summary: 'The flight test campaign and how validated logs are paid.',
-    tasks: ['T-17'],
-    links: [{ label: '20-hour flight plan', url: `${PQ}/blob/main/flight-test/20hr-flight-plan.md` }],
   },
   {
     id: 'pilots-handbook',

@@ -45,8 +45,8 @@ export const calls: Call[] = [
 
       // GPS and RF
       { id: 'sep29-10', kind: 'question', who: ['thomas', 'erick'], zone: 'gps-rf', thread: 'Q-3', text: 'If the GPS issue needs a PCB revision, start it sooner rather than later (Thomas). Erick: the easiest revision is a longer cable and a new mounting spot and cradle for the M9N; shielding the switches plus standoffs is another option once the spectrum analyzer says whether they are the source.' },
-      { id: 'sep29-11', kind: 'update', who: ['erick'], zone: 'gps-interference', text: 'Bought a spectrum analyzer and is working through RF basics to find out whether the Ethernet switches are the source of the interference, and how to mitigate it.' },
-      { id: 'sep29-12', kind: 'update', who: ['julius', 'erick'], zone: 'gps-interference', text: 'Julius will fly Quiver or Kestrel this week with Ethernet and a remote Mission Planner connection (no telemetry radio), to see whether GPS is affected. His IP address assignment differs from Erick\'s setup; neither expects that to matter.' },
+      { id: 'sep29-11', kind: 'update', who: ['erick'], zone: 'gps-rf', text: 'Bought a spectrum analyzer and is working through RF basics to find out whether the Ethernet switches are the source of the interference, and how to mitigate it.' },
+      { id: 'sep29-12', kind: 'update', who: ['julius', 'erick'], zone: 'gps-rf', text: 'Julius will fly Quiver or Kestrel this week with Ethernet and a remote Mission Planner connection (no telemetry radio), to see whether GPS is affected. His IP address assignment differs from Erick\'s setup; neither expects that to matter.' },
 
       // Obstacle avoidance
       { id: 'sep29-13', kind: 'update', who: ['erick'], zone: 'autonomy', text: 'Found two test sites: a park with a large open field (waypoint tests with a ladder and poles) and a wide, quiet street for automated obstacle avoidance. Plans to test Thursday, early morning.' },

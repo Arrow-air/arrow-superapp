@@ -11,7 +11,7 @@ import { tabs, zoneLabel, zonePath } from '../frame/nav';
 // Quiver at a glance: what it is, the areas where the work is, what needs
 // input across all of them, and what was decided lately.
 const areas: { id: string; label?: string; blurb: string }[] = [
-  { id: 'overview', label: 'Dev Kit v1.1', blurb: 'The next Dev Kit revision: structure and enclosure, GPS and RF, power, avionics. Plus flight testing and operating the aircraft.' },
+  { id: 'overview', label: 'Dev Kit v1.1', blurb: 'The next Dev Kit revision: structure and enclosure, GPS and RF, power, avionics. Plus operating the aircraft and the reference CAD and BOM.' },
   { id: 'attachments', blurb: 'Payloads on the three quick-release ports, and the interface standard they build against.' },
   { id: 'software', blurb: 'The SDK, QuiverHub on the onboard computer, the ground station and remote, and autonomy.' },
   { id: 'build', blurb: 'Guides for building and configuring units, and bringing on more manufacturers.' },
