@@ -142,12 +142,6 @@ export const zones: Zone[] = [
     summary: 'Keeping units flying: inspections, wear parts, and repairs in the field.',
     links: [{ label: 'Maintenance guide', url: `${PQ}/blob/main/docs/Operations/Maintenance-Guide.md` }],
   },
-  {
-    id: 'cad',
-    summary: 'The build123d model is the source of truth for CAD. Recent Fusion changes still need to reach it.',
-    prs: [266, 225],
-    links: [{ label: 'CAD package (src/quiver)', url: `${PQ}/tree/main/src/quiver` }],
-  },
 
   // Build
   {

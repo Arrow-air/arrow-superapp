@@ -101,7 +101,7 @@ const ownerOf = (owner: string | null) => {
         </a>
       </li>
       <li v-for="x in parts" :key="x.id">
-        <RouterLink :to="{ path: '/quiver/overview/bom', query: { part: x.id } }" class="row">
+        <RouterLink :to="{ path: '/quiver/build/bom', query: { part: x.id } }" class="row">
           <span class="id mono">{{ x.id }}</span>
           <span class="txt">{{ x.p?.name ?? 'Part' }}</span>
           <span class="meta muted">BOM</span>

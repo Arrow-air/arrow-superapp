@@ -81,14 +81,6 @@ export const tabs: Tab[] = [
         ],
       },
       {
-        id: 'reference',
-        label: 'Reference',
-        items: [
-          item('cad', 'CAD model', 'layers'),
-          item('bom', 'Bill of materials', 'list', 'bom'),
-        ],
-      },
-      {
         id: 'quiver',
         label: 'Quiver',
         items: [
@@ -164,6 +156,7 @@ export const tabs: Tab[] = [
         id: 'guides',
         label: 'Build it',
         items: [
+          item('bom', 'Bill of materials', 'list', 'bom'),
           item('assembly', 'Assembly', 'wrench'),
           item('config-guide', 'Configuration guide', 'sliders'),
           item('case', 'Case & shipping', 'box'),

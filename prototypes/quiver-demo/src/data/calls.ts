@@ -63,7 +63,7 @@ export const calls: Call[] = [
 
       // Structure and CAD
       { id: 'sep29-20', kind: 'question', who: ['kbm', 'erick'], zone: 'airframe', thread: 'Q-11', text: 'KBM: is there a plan to improve the enclosure or the structure? He offered structural advice. Erick has no list yet and will bring easy wins to Thursday.' },
-      { id: 'sep29-21', kind: 'update', who: ['erick', 'thomas'], zone: 'cad', text: 'Keep the build123d model up to date with recent changes. PR #266 syncs the Fusion changes; Thomas will review it again and Erick will too, since he has moved parts in Fusion since.' },
+      { id: 'sep29-21', kind: 'update', who: ['erick', 'thomas'], zone: 'airframe', text: 'Keep the build123d model up to date with recent changes. PR #266 syncs the Fusion changes; Thomas will review it again and Erick will too, since he has moved parts in Fusion since.' },
     ],
   },
 ];

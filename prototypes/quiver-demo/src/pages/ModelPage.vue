@@ -117,7 +117,11 @@ const money = (n: number | null) => (n == null ? null : `$${n.toLocaleString('en
             </ul>
           </section>
         </div>
-        <p class="src">From the build123d CAD on project-quiver main. Fasteners are left out.</p>
+        <p class="src">
+          From the <a href="https://github.com/Arrow-air/project-quiver/tree/main/src/quiver" target="_blank" rel="noopener">build123d CAD</a> on project-quiver main; fasteners are left out.
+          Fusion changes waiting in <a href="https://github.com/Arrow-air/project-quiver/pull/266" target="_blank" rel="noopener">PR #266</a> appear once it merges.
+          <RouterLink to="/quiver/build/bom">Bill of materials</RouterLink>
+        </p>
       </template>
     </aside>
 
@@ -160,7 +164,9 @@ const money = (n: number | null) => (n == null ? null : `$${n.toLocaleString('en
 .part .mono { flex: none; font-size: var(--text-sm); color: var(--fg-muted); }
 .pn { flex: 1; min-width: 0; }
 .badge { flex: none; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--amber-a3); color: var(--amber-11); font-size: 11px; line-height: 16px; text-align: center; }
-.src { margin: 18px 0 0; font-size: var(--text-sm); color: var(--fg-faint); line-height: 1.5; }
+.src { margin: 18px 0 0; font-size: var(--text-sm); color: var(--fg-faint); line-height: 1.6; }
+.src a { color: var(--fg-muted); }
+.src a:hover { color: var(--fg); }
 .back { padding: 0; border: 0; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); cursor: pointer; }
 .back:hover { color: var(--fg); }
 .p-id { margin-top: 14px; font-size: var(--text-sm); color: var(--fg-muted); }
