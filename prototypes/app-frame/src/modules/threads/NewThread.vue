@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import Kbd from '../../frame/Kbd.vue';
 import Icon from '../../frame/Icon.vue';
+import Avatar from './Avatar.vue';
 import type { IconName } from '../../frame/icons';
 import { MOD } from '../../frame/shortcuts';
 import { componentName, partName, selLabel, type Sel } from '../model/model';
@@ -59,14 +60,17 @@ function post() {
     <input ref="titleEl" v-model="title" class="title" maxlength="160" :placeholder="type === 'proposal' ? 'What should change?' : type === 'idea' ? 'The idea, in a line' : 'What do you need to know?'" aria-label="Title" />
 
     <div class="composer">
-      <textarea
-        v-model="body"
-        rows="5"
-        placeholder="Context: what you see on the part, why it matters, what would settle it."
-        aria-label="Description"
-        @keydown.meta.enter.prevent="post"
-        @keydown.ctrl.enter.prevent="post"
-      ></textarea>
+      <div class="composer-body">
+        <Avatar id="me" :size="28" />
+        <textarea
+          v-model="body"
+          rows="5"
+          placeholder="Context: what you see on the part, why it matters, what would settle it."
+          aria-label="Description"
+          @keydown.meta.enter.prevent="post"
+          @keydown.ctrl.enter.prevent="post"
+        ></textarea>
+      </div>
       <div class="composer-bar">
         <!-- What kind of thread, inside the box it describes. -->
         <div class="seg types" role="radiogroup" aria-label="Type">
@@ -103,14 +107,20 @@ function post() {
 }
 .title::placeholder { color: var(--fg-faint); font-weight: 500; }
 
-.composer { margin-top: 14px; border: 1px solid var(--slate-a4); border-radius: 12px; background: var(--slate-a2); transition: border-color 150ms; }
+.composer { margin-top: 14px; overflow: clip; border: 1px solid var(--slate-a4); border-radius: 12px; background: var(--slate-2); transition: border-color 150ms; }
 .composer:focus-within { border-color: var(--slate-a7); }
+.composer-body { display: flex; align-items: flex-start; gap: 12px; padding: 14px 14px 8px; }
+.composer-body .av { flex: none; }
 .composer textarea {
-  display: block; width: 100%; min-height: 110px; padding: 12px 14px 4px; border: 0; background: none; resize: vertical;
+  flex: 1; display: block; min-width: 0; min-height: 96px; padding: 4px 0 0; border: 0; background: none; resize: vertical;
   color: var(--fg); font: inherit; font-size: var(--text-nav); line-height: 1.5; outline: none;
 }
 .composer textarea::placeholder { color: var(--fg-faint); }
-.composer-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px; }
+/* The utility bar: a darker strip under a hairline, apart from what you write. */
+.composer-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px;
+  border-top: 1px solid var(--slate-a3); background: rgb(0 0 0 / 0.25);
+}
 .types button { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px 0 8px; }
 .types button :deep(svg) { opacity: 0.8; }
 .types button[aria-checked='true'] :deep(svg) { opacity: 1; }

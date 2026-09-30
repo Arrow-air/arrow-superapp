@@ -163,13 +163,17 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 
       <!-- Composer: a real text area with a clear primary action. -->
       <form class="composer" @submit.prevent="send">
-        <textarea
-          v-model="draft"
-          rows="2"
-          placeholder="Write a reply, or propose a position…"
-          @keydown.meta.enter.prevent="send"
-          @keydown.ctrl.enter.prevent="send"
-        ></textarea>
+        <!-- You, speaking; the utility bar below is set apart. -->
+        <div class="composer-body">
+          <Avatar id="me" :size="28" />
+          <textarea
+            v-model="draft"
+            rows="2"
+            placeholder="Write a reply, or propose a position…"
+            @keydown.meta.enter.prevent="send"
+            @keydown.ctrl.enter.prevent="send"
+          ></textarea>
+        </div>
         <div class="composer-bar">
           <span class="hint"><Kbd :keys="[MOD, '↵']" outline /> to send</span>
           <button class="primary" type="submit" :disabled="!draft.trim()">Reply</button>
@@ -288,16 +292,22 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .reply p { margin: 3px 0 0; color: var(--fg-2); line-height: 1.55; font-size: var(--text-nav); }
 
 .composer {
-  margin-top: 12px; border: 1px solid var(--slate-a4); border-radius: 12px; background: var(--slate-a2);
+  margin-top: 12px; overflow: clip; border: 1px solid var(--slate-a4); border-radius: 12px; background: var(--slate-2);
   transition: border-color 150ms;
 }
 .composer:focus-within { border-color: var(--slate-a7); }
+.composer-body { display: flex; align-items: flex-start; gap: 12px; padding: 14px 14px 8px; }
+.composer-body .av { flex: none; }
 .composer textarea {
-  display: block; width: 100%; min-height: 64px; padding: 12px 14px 4px; border: 0; background: none; resize: vertical;
+  flex: 1; display: block; min-width: 0; min-height: 48px; padding: 4px 0 0; border: 0; background: none; resize: vertical;
   color: var(--fg); font: inherit; font-size: var(--text-nav); line-height: 1.5; outline: none;
 }
 .composer textarea::placeholder { color: var(--fg-faint); }
-.composer-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 8px 14px; }
+/* The utility bar: a darker strip under a hairline, apart from what you write. */
+.composer-bar {
+  display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 8px 14px;
+  border-top: 1px solid var(--slate-a3); background: rgb(0 0 0 / 0.25);
+}
 .hint { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--fg-faint); }
 
 @media (max-width: 899px) {
