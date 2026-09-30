@@ -177,14 +177,19 @@ onMounted(async () => {
   }
   camera = new THREE.PerspectiveCamera(35, 1, 0.01, 100);
   controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.dampingFactor = 0.08;
+  // Left orbits, middle and right pan, the wheel zooms (the CAD convention).
+  controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.PAN, RIGHT: THREE.MOUSE.PAN };
+  // Stop the browser's middle-click autoscroll from grabbing the pan.
+  renderer.domElement.addEventListener('mousedown', (e) => { if (e.button === 1) e.preventDefault(); });
   const resize = () => { const w = host.clientWidth, h = host.clientHeight; if (!w || !h) return; renderer!.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); };
   observer = new ResizeObserver(resize); observer.observe(host); resize();
 
   // A click (not a drag) picks the nearest lit part; empty space clears.
   const ray = new THREE.Raycaster(), mouse = new THREE.Vector2(); let down: [number, number] | undefined;
-  renderer.domElement.addEventListener('pointerdown', (e) => { down = [e.clientX, e.clientY]; });
+  renderer.domElement.addEventListener('pointerdown', (e) => { down = e.button === 0 ? [e.clientX, e.clientY] : undefined; });
   renderer.domElement.addEventListener('pointerup', (e) => {
-    if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5) return;
+    // Only a left click picks; panning with the other buttons never selects.
+    if (e.button !== 0 || !down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5) return;
     const rect = renderer!.domElement.getBoundingClientRect();
     mouse.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
     ray.setFromCamera(mouse, camera);
