@@ -48,11 +48,10 @@ function post() {
 
 <template>
   <form class="new" @submit.prevent="post" @keydown.esc="emit('cancel')">
-    <p class="kicker">New thread on {{ pageLabel }}</p>
-
-    <div v-if="scopes.length" class="row">
-      <span class="label">About</span>
-      <div class="seg" role="radiogroup" aria-label="About">
+    <!-- One sentence: where it goes, and what it is about. -->
+    <div class="kicker">
+      <span>New thread on {{ pageLabel }}<template v-if="scopes.length"> about</template></span>
+      <div v-if="scopes.length" class="seg" role="radiogroup" aria-label="About">
         <button v-for="s in scopes" :key="s.key" type="button" role="radio" :aria-checked="scope === s.key" @click="scope = s.key">{{ s.label }}</button>
       </div>
     </div>
@@ -90,9 +89,7 @@ function post() {
 
 <style scoped>
 .new { max-width: 720px; padding: 22px 32px 48px; }
-.kicker { margin: 0 0 14px; font-size: var(--text-sm); color: var(--fg-faint); }
-.row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-.label { width: 44px; font-size: var(--text-sm); color: var(--fg-muted); }
+.kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 4px; font-size: var(--text-base); color: var(--fg-muted); }
 .seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 2px; border-radius: 8px; background: var(--slate-a2); }
 .seg button {
   height: 24px; padding: 0 9px; border: 0; border-radius: 6px; background: none;
