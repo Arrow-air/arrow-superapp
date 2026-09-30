@@ -117,19 +117,19 @@ function post() {
 .seg button[aria-checked='true'] { background: var(--indigo-a4); color: var(--indigo-12); }
 
 .fields { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+/* Linear style: no rule between them; size and weight separate title from details. */
 .title {
-  display: block; width: 100%; margin: 0; padding: 3px 0 10px; border: 0; border-bottom: 1px solid var(--slate-a3); background: none; outline: none;
-  color: var(--fg); font: inherit; font-size: 16px; font-weight: 600; letter-spacing: -0.01em;
+  display: block; width: 100%; margin: 0; padding: 2px 0 0; border: 0; background: none; outline: none;
+  color: var(--fg); font: inherit; font-size: 17px; font-weight: 600; letter-spacing: -0.01em;
 }
-.title::placeholder { color: var(--fg-muted); font-weight: 500; }
-.title:focus { border-bottom-color: var(--indigo-a7); }
+.title::placeholder { color: var(--fg-muted); font-weight: 600; }
 
 .composer { margin-top: 14px; overflow: clip; border: 1px solid var(--slate-a4); border-radius: 12px; background: var(--slate-2); transition: border-color 150ms; }
 .composer:focus-within { border-color: var(--slate-a7); }
 .composer-body { display: flex; align-items: flex-start; gap: 12px; padding: 14px 14px 8px; }
 .composer-body .av { flex: none; }
 .composer textarea {
-  display: block; width: 100%; min-height: 96px; padding: 10px 0 0; border: 0; background: none; resize: vertical;
+  display: block; width: 100%; min-height: 96px; padding: 6px 0 0; color: var(--fg-2); border: 0; background: none; resize: vertical;
   color: var(--fg); font: inherit; font-size: var(--text-nav); line-height: 1.5; outline: none;
 }
 .composer textarea::placeholder { color: var(--fg-faint); }
