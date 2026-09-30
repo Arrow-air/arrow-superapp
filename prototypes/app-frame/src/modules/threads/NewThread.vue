@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import Kbd from '../../frame/Kbd.vue';
+import Icon from '../../frame/Icon.vue';
+import type { IconName } from '../../frame/icons';
 import { MOD } from '../../frame/shortcuts';
 import { componentName, partName, selLabel, type Sel } from '../model/model';
 import type { ThreadType } from './data';
@@ -25,10 +27,10 @@ const scope = ref('');
 watch(scopes, (s) => (scope.value = s[0]?.key ?? ''), { immediate: true });
 const about = computed(() => scopes.value.find((s) => s.key === scope.value)?.sel);
 
-const types: { id: ThreadType; label: string; hint: string }[] = [
-  { id: 'question', label: 'Question', hint: 'Something you need answered' },
-  { id: 'proposal', label: 'Proposal', hint: 'A change you want decided' },
-  { id: 'idea', label: 'Idea', hint: 'Worth exploring, no decision yet' },
+const types: { id: ThreadType; label: string; hint: string; icon: IconName }[] = [
+  { id: 'question', label: 'Question', hint: 'Something you need answered', icon: 'question' },
+  { id: 'proposal', label: 'Proposal', hint: 'A change you want decided', icon: 'branch' },
+  { id: 'idea', label: 'Idea', hint: 'Worth exploring, no decision yet', icon: 'bulb' },
 ];
 const type = ref<ThreadType>('question');
 const title = ref('');
@@ -54,13 +56,6 @@ function post() {
       </div>
     </div>
 
-    <div class="row">
-      <span class="label">Type</span>
-      <div class="seg" role="radiogroup" aria-label="Type">
-        <button v-for="t in types" :key="t.id" type="button" role="radio" :aria-checked="type === t.id" :title="t.hint" @click="type = t.id">{{ t.label }}</button>
-      </div>
-    </div>
-
     <input ref="titleEl" v-model="title" class="title" maxlength="160" :placeholder="type === 'proposal' ? 'What should change?' : type === 'idea' ? 'The idea, in a line' : 'What do you need to know?'" aria-label="Title" />
 
     <div class="composer">
@@ -73,8 +68,14 @@ function post() {
         @keydown.ctrl.enter.prevent="post"
       ></textarea>
       <div class="composer-bar">
-        <span class="hint"><Kbd :keys="[MOD, '↵']" outline /> to post</span>
+        <!-- What kind of thread, inside the box it describes. -->
+        <div class="seg types" role="radiogroup" aria-label="Type">
+          <button v-for="t in types" :key="t.id" type="button" role="radio" :aria-checked="type === t.id" :title="t.hint" @click="type = t.id">
+            <Icon :name="t.icon" :size="13" />{{ t.label }}
+          </button>
+        </div>
         <div class="actions">
+          <Kbd class="hint" :keys="[MOD, '↵']" outline />
           <button type="button" class="ghost" @click="emit('cancel')">Cancel</button>
           <button class="primary" type="submit" :disabled="!ready">Post thread</button>
         </div>
@@ -109,7 +110,10 @@ function post() {
   color: var(--fg); font: inherit; font-size: var(--text-nav); line-height: 1.5; outline: none;
 }
 .composer textarea::placeholder { color: var(--fg-faint); }
-.composer-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 8px 14px; }
+.composer-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px; }
+.types button { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px 0 8px; }
+.types button :deep(svg) { opacity: 0.8; }
+.types button[aria-checked='true'] :deep(svg) { opacity: 1; }
 .hint { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--fg-faint); }
 .actions { display: flex; align-items: center; gap: 10px; }
 .ghost { padding: 0 6px; border: 0; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-base); cursor: pointer; }
