@@ -63,13 +63,28 @@ const looseSolid = computed(() => {
 
 const provNote = (g: string) =>
   ({ mirrored: 'Mirrored from the port side; not modelled in Fusion.', recovered: 'Recovered from bodies hidden in the Fusion file.', modelled: '' })[provenance(g)];
-const back = () => emit('pick', level.value === 2 ? { group: group.value } : null);
-const backLabel = computed(() => (level.value === 2 ? groupNames[group.value] ?? group.value : props.label));
+// The path from the subsystem down to where you are; every step but the last is a way back up.
+const crumbs = computed(() => {
+  const sel = props.selection;
+  if (!sel) return [];
+  const path: { name: string; sel: Sel | null }[] = [{ name: props.label, sel: null }, { name: groupNames[sel.group] ?? sel.group, sel: { group: sel.group } }];
+  if (named(sel.component)) path.push({ name: componentName(sel.component), sel: { group: sel.group, component: sel.component } });
+  if (sel.part) path.push({ name: partName(sel.part), sel });
+  return path;
+});
 const heroKey = computed(() => selKey(level.value === 2 ? { group: group.value, component: component.value } : { group: group.value }));
 </script>
 
 <template>
   <div class="nav">
+    <!-- Stays put while the levels slide beneath it. -->
+    <nav v-if="crumbs.length" class="crumbs" aria-label="Part path">
+      <template v-for="(c, i) in crumbs" :key="i">
+        <svg v-if="i" class="sep" viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5" /></svg>
+        <button v-if="i < crumbs.length - 1" type="button" class="crumb" :title="c.name" @click="emit('pick', c.sel)">{{ c.name }}</button>
+        <span v-else class="crumb here" aria-current="location">{{ c.name }}</span>
+      </template>
+    </nav>
     <Transition :name="dir" mode="out-in">
       <!-- Level 0: the subsystem's groups -->
       <div v-if="level === 0" key="root" class="level">
@@ -88,9 +103,6 @@ const heroKey = computed(() => selKey(level.value === 2 ? { group: group.value, 
 
       <!-- Levels 1 and 2: one group, or one component in it -->
       <div v-else :key="levelKey" class="level">
-        <button type="button" class="back" @click="back">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>{{ backLabel }}
-        </button>
         <!-- The tile you picked, grown into this level's header. -->
         <div class="hero">
           <span class="art" :class="{ loading: !thumbs[heroKey] }"><img v-if="thumbs[heroKey]" :src="thumbs[heroKey]" alt="" /></span>
@@ -148,12 +160,18 @@ const heroKey = computed(() => selKey(level.value === 2 ? { group: group.value, 
 .muted.small { margin-top: 8px; font-size: var(--text-sm); color: var(--fg-faint); }
 .head { margin: 16px 4px 8px; font-size: var(--text-sm); font-weight: 500; color: var(--fg-faint); }
 
-.back {
-  display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; margin: 0 0 10px; padding: 3px 6px 3px 2px;
-  border: 0; border-radius: 6px; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); cursor: pointer;
+/* Path: ancestors shrink and ellipsize first, so where you are always stays readable. */
+.crumbs { display: flex; align-items: center; min-width: 0; margin: -4px 0 10px; }
+.crumb {
+  flex: 0 1 auto; min-width: 0; padding: 3px 5px; border: 0; border-radius: 6px; background: none;
+  color: var(--fg-muted); font: inherit; font-size: var(--text-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.back:hover { color: var(--fg-2); background: var(--slate-a2); }
-.back svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+button.crumb { cursor: pointer; transition: color 120ms, background-color 120ms; }
+button.crumb:hover { color: var(--fg); background: var(--slate-a3); }
+button.crumb:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
+.crumb:first-child { margin-left: -5px; }
+.crumb.here { flex: 0 0 auto; max-width: 60%; color: var(--fg); font-weight: 500; }
+.sep { flex: none; width: 10px; height: 10px; fill: none; stroke: var(--fg-faint); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 
 /* Tiles: each piece of the aircraft, cut out of the model, on a soft light pool. */
 .tiles { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
