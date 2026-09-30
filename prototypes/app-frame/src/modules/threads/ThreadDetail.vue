@@ -47,6 +47,10 @@ function send() {
 }
 const roles: Role[] = ['member', 'core', 'lead'];
 const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
+/** Each position's share of the positive weighted vote, for the poll bars. */
+const positive = computed(() => tallies.value.reduce((sum, x) => sum + Math.max(0, x.weightedScore), 0));
+const shareOf = (id: string) => (positive.value ? Math.round((Math.max(0, tallyOf(id).weightedScore) / positive.value) * 100) : 0);
+const score = (id: string) => Math.round(tallyOf(id).weightedScore * 10) / 10;
 </script>
 
 <template>
@@ -78,7 +82,10 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
     <!-- No positions yet: nothing to show; the composer invites the first one. -->
     <section v-if="t.positions.length" class="block">
       <div class="block-head">
-        <h2 class="label">Positions</h2>
+        <h2 class="label">
+          <template v-if="t.settled">{{ t.positions.length }} {{ t.positions.length === 1 ? 'position' : 'positions' }} · decided</template>
+          <template v-else>{{ t.positions.length }} competing {{ t.positions.length === 1 ? 'position' : 'positions' }} <span class="label-hint">· back the one you'd build</span></template>
+        </h2>
         <span class="legend">Your vote counts <b class="mono">{{ mine.total }}</b> <button class="ghost link" type="button" :aria-expanded="showWhy" @click="showWhy = !showWhy">{{ showWhy ? 'Hide' : 'Why' }}</button></span>
       </div>
 
@@ -98,16 +105,6 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 
       <div class="positions">
         <div v-for="p in ordered" :key="p.id" class="pos">
-          <!-- The vote capsule: obvious, one tap, solid when it's yours. -->
-          <div class="vote" role="group" :aria-label="`Vote on position ${letter(p.id)}`" :class="{ locked: !!t.settled }">
-            <button class="v up" type="button" :aria-pressed="myVote(t, p.id) === 1" :disabled="!!t.settled" aria-label="Vote up" @click="vote(t, p.id, 1)">
-              <svg viewBox="0 0 16 16"><path d="m4 10 4-4 4 4" /></svg>
-            </button>
-            <span class="n mono" :title="`Raw ${fmt(tallyOf(p.id).rawScore)} from ${tallyOf(p.id).voters} ${tallyOf(p.id).voters === 1 ? 'vote' : 'votes'}`">{{ Math.round(tallyOf(p.id).weightedScore * 10) / 10 }}</span>
-            <button class="v down" type="button" :aria-pressed="myVote(t, p.id) === -1" :disabled="!!t.settled" aria-label="Vote down" @click="vote(t, p.id, -1)">
-              <svg viewBox="0 0 16 16"><path d="m4 6 4 4 4-4" /></svg>
-            </button>
-          </div>
           <div class="pos-main">
             <div class="pos-top">
               <span class="letter">{{ letter(p.id) }}</span>
@@ -115,6 +112,11 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
               <span v-else-if="!t.settled && leader.top?.positionId === p.id && tallyOf(p.id).weightedScore > 0" class="tag">Leading</span>
             </div>
             <p class="pos-text">{{ p.text }}</p>
+            <!-- Poll bar: this position's share of the weighted vote. -->
+            <div class="share" :class="{ lead: (t.settled ? t.settled.positionId : leader.top?.positionId) === p.id }" :title="`Raw ${fmt(tallyOf(p.id).rawScore)} from ${tallyOf(p.id).voters} ${tallyOf(p.id).voters === 1 ? 'vote' : 'votes'}`">
+              <span class="bar"><i :style="{ width: `${shareOf(p.id)}%` }"></i></span>
+              <span class="pct mono">{{ shareOf(p.id) }}%</span>
+            </div>
             <div class="pos-meta">
               <span class="by"><Avatar :id="p.authorId" :size="14" /> {{ person(p.authorId)?.name }}</span>
               <span class="dot">·</span>
@@ -123,6 +125,19 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
               </span>
               <span class="muted">{{ tallyOf(p.id).voters }} {{ tallyOf(p.id).voters === 1 ? 'vote' : 'votes' }}</span>
               <button v-if="isLead && !t.settled" class="ghost settle-this" type="button" @click="doSettle(p.id)">Decide on {{ letter(p.id) }}</button>
+              <!-- The vote: say what it does, fill when it's yours. -->
+              <div class="votes" role="group" :aria-label="`Vote on position ${letter(p.id)}`">
+                <template v-if="!t.settled">
+                  <button class="vote-back" type="button" :aria-pressed="myVote(t, p.id) === 1" @click="vote(t, p.id, 1)">
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4" /></svg>
+                    {{ myVote(t, p.id) === 1 ? 'Backed' : 'Back this' }}<span class="n mono">{{ score(p.id) }}</span>
+                  </button>
+                  <button class="against" type="button" :aria-pressed="myVote(t, p.id) === -1" aria-label="Vote against" title="Vote against" @click="vote(t, p.id, -1)">
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+                  </button>
+                </template>
+                <span v-else class="final mono">{{ score(p.id) }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -254,6 +269,34 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .vote.locked .v { display: none; }
 
 .pos-main { flex: 1; min-width: 0; padding-top: 2px; }
+.label-hint { color: var(--fg-faint); font-weight: 400; }
+
+/* Poll bar */
+.share { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; }
+.bar { flex: 1; height: 6px; border-radius: 3px; background: var(--slate-a3); overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 3px; background: var(--slate-a8); transition: width 300ms cubic-bezier(0.23, 1, 0.32, 1); }
+.share.lead .bar i { background: var(--indigo-9); }
+.pct { width: 36px; text-align: right; font-size: var(--text-sm); color: var(--fg-muted); }
+.share.lead .pct { color: var(--indigo-11); }
+
+/* Vote buttons */
+.votes { display: flex; align-items: stretch; gap: 4px; margin-left: auto; }
+.vote-back, .against {
+  display: inline-flex; align-items: center; gap: 6px; box-sizing: border-box; height: 30px; border: 1px solid var(--slate-a5); border-radius: 8px;
+  background: var(--slate-a2); color: var(--fg-2); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer;
+  transition: background-color 120ms, border-color 120ms, color 120ms, transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.vote-back { padding: 0 6px 0 8px; }
+.against { justify-content: center; width: 30px; padding: 0; color: var(--fg-muted); }
+.vote-back:hover, .against:hover { background: var(--slate-a4); color: var(--fg); }
+.vote-back:active, .against:active { transform: scale(0.96); }
+.vote-back svg, .against svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.vote-back .n { min-width: 26px; padding: 1px 5px; border-radius: 5px; background: var(--slate-a3); color: var(--fg); text-align: center; }
+.vote-back[aria-pressed='true'] { border-color: transparent; background: var(--indigo-9); color: #fff; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2); }
+.vote-back[aria-pressed='true'] .n { background: rgb(255 255 255 / 0.18); color: #fff; }
+.against[aria-pressed='true'] { border-color: transparent; background: var(--red-9); color: #fff; }
+.vote-back:focus-visible, .against:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
+.final { font-size: var(--text-nav); font-weight: 600; color: var(--fg); }
 .pos-top { display: flex; align-items: center; gap: 8px; }
 .letter { font-size: var(--text-sm); font-weight: 600; color: var(--fg-muted); }
 .pos-text { margin: 6px 0 10px; color: var(--fg); line-height: 1.55; font-size: var(--text-nav); }
