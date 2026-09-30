@@ -90,7 +90,7 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
 </script>
 
 <template>
-  <div class="stage" :style="{ '--cad-viewer': theme.viewer, '--cad-panel': theme.panel }">
+  <div class="stage" :style="{ '--cad-viewer': theme.base, '--cad-grid': theme.grid, '--cad-panel': theme.panel }">
     <div class="view">
       <ModelViewer :lit="lit" :hidden="hidden" :selection="selection" :discussed="discussed" @pick="pick" @ready="onReady" @thumbs="thumbs = $event" />
       <!-- Temporary background picker. -->

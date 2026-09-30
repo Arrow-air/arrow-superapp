@@ -31,6 +31,14 @@ const stage = ref<HTMLDivElement>();
 const status = ref<'loading' | 'ready' | 'error'>('loading');
 const progress = ref(0);
 const view = ref<View>('iso');
+// Blueprint grid behind the model, on by default; remembered in this browser.
+const GRID_KEY = 'app-frame:viewer-grid';
+const grid = ref(true);
+try { grid.value = localStorage.getItem(GRID_KEY) !== 'off'; } catch {}
+function toggleGrid() {
+  grid.value = !grid.value;
+  try { localStorage.setItem(GRID_KEY, grid.value ? 'on' : 'off'); } catch {}
+}
 
 // Part colours. Neutral structure, with mirrored and recovered bodies tinted
 // the way the spec site marks them, on the frame's Radix steps.
@@ -326,11 +334,17 @@ watch(() => props.lit, () => fit(), { deep: true });
 
 <template>
   <div class="viewer">
+    <div class="grid" :class="{ on: grid }" aria-hidden="true"></div>
     <div ref="stage" class="canvas" :data-ready="status === 'ready'"></div>
+    <div class="toolbar">
     <div class="seg views" role="radiogroup" aria-label="Camera">
       <button v-for="v in (['iso', 'top', 'front', 'side'] as View[])" :key="v" type="button" role="radio" :aria-checked="view === v" @click="fit(v)">
         {{ v === 'iso' ? '3D' : v[0].toUpperCase() + v.slice(1) }}
       </button>
+    </div>
+    <button type="button" class="grid-toggle" :aria-pressed="grid" :title="grid ? 'Hide grid' : 'Show grid'" @click="toggleGrid">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 2.5h11v11h-11zM6.2 2.5v11M9.8 2.5v11M2.5 6.2h11M2.5 9.8h11" /></svg>
+    </button>
     </div>
     <p v-if="status === 'loading'" class="note center">Loading the aircraft<template v-if="progress"> · {{ progress }}%</template></p>
     <p v-else-if="status === 'error'" class="note center">The 3D model couldn't load in this browser.</p>
@@ -349,7 +363,17 @@ watch(() => props.lit, () => fit(), { deep: true });
 .canvas :deep(canvas) { display: block; cursor: grab; }
 .canvas :deep(canvas:active) { cursor: grabbing; }
 
-.seg { position: absolute; top: 12px; left: 12px; display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--slate-a3); backdrop-filter: blur(8px); }
+.toolbar { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; }
+.grid { position: absolute; inset: 0; background: var(--cad-grid, none); opacity: 0; transition: opacity 200ms ease-out; pointer-events: none; }
+.grid.on { opacity: 1; }
+.grid-toggle {
+  display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 8px;
+  background: var(--slate-a3); backdrop-filter: blur(8px); color: var(--fg-muted); cursor: pointer; transition: color 120ms, background-color 120ms;
+}
+.grid-toggle:hover { color: var(--fg-2); }
+.grid-toggle[aria-pressed='true'] { background: var(--slate-a5); color: var(--fg); }
+.grid-toggle svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linejoin: round; }
+.seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--slate-a3); backdrop-filter: blur(8px); }
 .seg button {
   height: 24px; padding: 0 9px; border: 0; border-radius: 6px; background: none;
   color: var(--fg-muted); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer;
