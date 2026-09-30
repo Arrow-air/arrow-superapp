@@ -239,7 +239,13 @@ const score = (id: string) => Math.round(tallyOf(id).weightedScore * 10) / 10;
 .note { margin: 8px 0 0; color: var(--fg-2); line-height: 1.55; font-size: var(--text-nav); }
 
 .block { margin-top: 28px; }
-.talk { padding: 14px 16px 16px; border: 1px solid var(--slate-a3); border-radius: 14px; background: var(--slate-2); }
+/* Full-bleed band: the background runs edge to edge of the pane and down to its
+   foot (a spread shadow, clipped by the card), while the content keeps its column. */
+.talk {
+  margin-bottom: -48px; padding: 20px 0 48px; background: var(--slate-2);
+  box-shadow: 0 0 0 100vmax var(--slate-2), 0 -1px 0 100vmax var(--slate-a3);
+  clip-path: inset(-1px -100vmax -100vmax -100vmax);
+}
 .talk .block-head { margin-bottom: 10px; }
 .talk .reply { background: var(--slate-a2); }
 .talk .composer { background: var(--slate-3); }
