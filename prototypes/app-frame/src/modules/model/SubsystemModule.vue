@@ -21,7 +21,7 @@ const hasThreads = computed(() => state.threads.some((t) => t.page === props.pag
 
 <style scoped>
 /* Both cards sit inset inside the page's own box. */
-.subsystem { display: grid; grid-template-rows: clamp(300px, 42vh, 440px) auto; gap: 12px; min-height: 100%; padding: 12px; }
+.subsystem { display: grid; grid-template-rows: clamp(300px, 42vh, 440px) auto; gap: 12px; min-height: 100%; padding: 6px; }
 /* clip, not hidden: rounds the corners without becoming a scroll box, so the
    thread list can still stick while the page scrolls. */
 .card { min-height: 0; border: 1px solid var(--border-soft); border-radius: var(--radius); background: var(--surface); overflow: clip; }
