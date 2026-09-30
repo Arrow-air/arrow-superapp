@@ -9,8 +9,9 @@ import { groupNames, parseSelKey, provenance, selKey, selLabel, subsystemGroups,
 
 // The model with a panel beside it. On a subsystem page its groups are lit and
 // the rest ghosted; on the whole-aircraft page everything is lit and the panel
-// carries the layer switches. The selection lives in the URL (?part=…), and
-// picking a part also opens its first thread in the list below (?thread=…).
+// carries the layer switches. The selection lives in the URL (?part=…). On a
+// subsystem page the thread list below filters to it, so the panel stays about
+// parts; on the whole aircraft there is no list, so the panel lists the threads.
 
 const props = defineProps<{ subsystem?: string; label: string }>();
 const route = useRoute();
@@ -32,6 +33,8 @@ const selection = computed<Sel | null>(() => {
   return t ? t.part : null;
 });
 const about = computed(() => (selection.value ? anchored.value.filter((t) => touches(t.part, selection.value!)) : []));
+const openCount = (sel: Sel) => anchored.value.filter((t) => statusOf(t) !== 'settled' && touches(t.part, sel)).length;
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
 function pick(sel: Sel | null) {
   const query = { ...route.query };
@@ -72,9 +75,10 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
         </button>
         <h3 class="title">{{ selLabel(selection) }}</h3>
         <p v-if="provNote(selection.group)" class="muted">{{ provNote(selection.group) }}</p>
-        <h4 class="head">Threads about this</h4>
-        <p v-if="!about.length" class="muted">None yet.</p>
-        <button v-for="t in about" :key="t.id" type="button" class="row" :aria-current="route.query.thread === t.id ? 'true' : undefined" @click="open(t)">
+        <p v-if="lit" class="muted">{{ about.length ? `${plural(about.length, 'thread')}, listed below.` : 'No threads about this yet.' }}</p>
+        <h4 v-if="!lit" class="head">Threads about this</h4>
+        <p v-if="!lit && !about.length" class="muted">None yet.</p>
+        <button v-for="t in lit ? [] : about" :key="t.id" type="button" class="row" :aria-current="route.query.thread === t.id ? 'true' : undefined" @click="open(t)">
           <StatusIcon :status="statusOf(t)" :override="t.settled?.override" :size="13" />
           <span class="rtitle">{{ t.title }}</span>
         </button>
@@ -97,11 +101,13 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
             <button type="button" class="lname" @click="pick({ group: g.id })">
               <i :style="{ background: dot(g.id) }"></i>{{ groupNames[g.id] ?? g.id }}
             </button>
+            <span v-if="lit && openCount({ group: g.id })" class="open" :title="plural(openCount({ group: g.id }), 'open thread')">{{ openCount({ group: g.id }) }}</span>
             <span class="count">{{ g.solids }}</span>
             <button v-if="!lit" type="button" class="solo" @click="solo(g.id)">Solo</button>
           </div>
           <button v-if="!lit && hidden.length" type="button" class="link" @click="hidden = []">Show all</button>
 
+          <template v-if="!lit">
           <h4 class="head">Parts under discussion · {{ anchored.length }}</h4>
           <p v-if="!anchored.length" class="muted">No threads are attached to parts here yet.</p>
           <button v-for="t in anchored" :key="t.id" type="button" class="row" @click="open(t)">
@@ -111,6 +117,7 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
               <span class="rsub">{{ selLabel(t.part) }}</span>
             </span>
           </button>
+          </template>
         </template>
       </template>
 
@@ -155,6 +162,10 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
   color: var(--fg-2); font: inherit; font-size: var(--text-nav); text-align: left; cursor: pointer;
 }
 .lname i, .legend i { flex: none; width: 7px; height: 7px; border-radius: 50%; }
+.open {
+  min-width: 18px; padding: 1px 5px; border-radius: 5px; background: var(--amber-a3); color: var(--amber-11);
+  font-family: var(--font-mono); font-size: var(--text-sm); text-align: center;
+}
 .count { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--fg-faint); }
 .solo, .link { border: 0; background: none; color: var(--fg-faint); font: inherit; font-size: var(--text-sm); cursor: pointer; padding: 2px 4px; }
 .solo { opacity: 0; }

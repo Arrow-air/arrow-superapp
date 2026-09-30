@@ -6,6 +6,7 @@ import StatusIcon from './StatusIcon.vue';
 import ThreadDetail from './ThreadDetail.vue';
 import type { Thread } from './data';
 import { state, statusOf, type Status } from './store';
+import { parseSelKey, selLabel, touches } from '../model/model';
 
 // Community decisions, Linear-style but minimal: the list is only for finding
 // a thread (status, title, time). Everything else is in the thread itself. Votes are weighted
@@ -29,6 +30,13 @@ const views: Record<string, (t: Thread) => boolean> = {
 // Discussion tab, the sidebar item picks the view.
 const props = defineProps<{ page?: string }>();
 const viewFilter = computed(() => (props.page ? (t: Thread) => t.page === props.page : views[String(route.params.item)] ?? views.all));
+// A part picked on the model (?part=…) narrows a page's list to threads about it.
+const part = computed(() => (props.page ? parseSelKey(route.query.part) : undefined));
+function clearPart() {
+  const query = { ...route.query };
+  delete query.part;
+  router.replace({ query });
+}
 
 type Scope = 'open' | 'settled' | 'all';
 const scope = ref<Scope>(route.params.item === 'decisions' ? 'all' : 'open');
@@ -43,6 +51,7 @@ const visible = computed(() =>
     if (scope.value === 'settled' && st !== 'settled') return false;
     const q = query.value.trim().toLowerCase();
     if (q && !`${t.id} ${t.title} ${t.anchor.label} ${t.system}`.toLowerCase().includes(q)) return false;
+    if (part.value && !(t.part && touches(t.part, part.value))) return false;
     return viewFilter.value(t);
   }),
 );
@@ -98,8 +107,15 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
         </div>
       </div>
 
+      <div v-if="part" class="filter">
+        <button type="button" class="chip" :title="`Show every thread on this page`" @click="clearPart">
+          {{ selLabel(part) }}
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 4.5 7 7m0-7-7 7" /></svg>
+        </button>
+      </div>
+
       <div class="list">
-        <p v-if="!flat.length" class="empty">Nothing here.</p>
+        <p v-if="!flat.length" class="empty">{{ part ? 'No threads about this part yet.' : 'Nothing here.' }}</p>
         <section v-for="g in groups" :key="g.id" class="group">
           <h3 class="group-head">{{ g.label }}</h3>
           <button
@@ -113,7 +129,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
             @click="select(t.id)"
           >
             <StatusIcon :status="statusOf(t)" :override="t.settled?.override" :size="13" />
-            <span class="rtitle">{{ t.title }}</span>
+            <span class="rbody">
+              <span class="rtitle">{{ t.title }}</span>
+              <span v-if="t.part" class="rpart">{{ selLabel(t.part) }}</span>
+            </span>
             <span class="rtime">{{ t.active }}</span>
           </button>
         </section>
@@ -177,8 +196,18 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 .row:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
 .row :deep(.st) { margin-top: 3px; }
 /* Up to two lines, so titles stay findable without widening the list. */
+.rbody { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.rpart { font-size: var(--text-sm); color: var(--fg-faint); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.filter { padding: 0 12px 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; max-width: 100%; height: 24px; padding: 0 6px 0 9px;
+  border: 0; border-radius: 6px; background: var(--indigo-a3); color: var(--indigo-11);
+  font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; transition: background-color 120ms;
+}
+.chip:hover { background: var(--indigo-a4); }
+.chip svg { flex: none; width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 .rtitle {
-  flex: 1; min-width: 0; overflow: hidden; color: var(--fg-2); font-size: var(--text-nav); line-height: 1.45;
+  min-width: 0; overflow: hidden; color: var(--fg-2); font-size: var(--text-nav); line-height: 1.45;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
 }
 .row[aria-current='true'] .rtitle { color: var(--fg); }
