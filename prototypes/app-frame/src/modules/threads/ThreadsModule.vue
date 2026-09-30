@@ -28,7 +28,9 @@ const views: Record<string, (t: Thread) => boolean> = {
 };
 // On an ordinary page, show only the threads that live on it; in the
 // Discussion tab, the sidebar item picks the view.
-const props = defineProps<{ page?: string }>();
+// `flow`: the list and thread take part in the page's own scroll instead of
+// scrolling inside a fixed box (used under the model on subsystem pages).
+const props = defineProps<{ page?: string; flow?: boolean }>();
 const viewFilter = computed(() => (props.page ? (t: Thread) => t.page === props.page : views[String(route.params.item)] ?? views.all));
 // A part picked on the model (?part=…) narrows a page's list to threads about it.
 const part = computed(() => (props.page ? parseSelKey(route.query.part) : undefined));
@@ -93,8 +95,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 </script>
 
 <template>
-  <div class="threads" :class="{ 'show-detail': mobileDetail }">
+  <div class="threads" :class="{ 'show-detail': mobileDetail, flow }">
     <section class="list-pane" aria-label="Threads">
+      <div class="pane-inner">
       <div class="top">
         <div class="find">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
@@ -136,6 +139,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
             <span class="rtime">{{ t.active }}</span>
           </button>
         </section>
+      </div>
       </div>
     </section>
 
@@ -214,6 +218,15 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 .rtime { flex: none; margin-top: 2px; font-size: var(--text-sm); color: var(--fg-faint); }
 
 .detail-pane { min-height: 0; overflow-y: auto; background: var(--thread-bg); }
+.pane-inner { display: contents; }
+
+/* Page flow: the thread grows to its own height and the page scrolls; the list
+   stays pinned in view (sticky within the slot) so switching threads never
+   means scrolling back up. */
+.threads.flow { height: auto; min-height: max(1100px, 135vh); }
+.flow .list-pane { display: block; }
+.flow .pane-inner { position: sticky; top: 0; display: flex; flex-direction: column; max-height: calc(100dvh - 230px); }
+.flow .detail-pane { overflow: visible; }
 .empty { margin: 0; padding: 24px 8px; text-align: center; color: var(--fg-muted); }
 .empty.pad { padding: 48px; }
 
