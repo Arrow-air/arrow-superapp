@@ -9,6 +9,7 @@ const ZonePage = defineAsyncComponent(() => import('./ZonePage.vue'));
 const ReleasePage = defineAsyncComponent(() => import('./ReleasePage.vue'));
 const ModelPage = defineAsyncComponent(() => import('./ModelPage.vue'));
 const views = {
+  grants: defineAsyncComponent(() => import('./GrantsPage.vue')),
   summary: defineAsyncComponent(() => import('./SummaryPage.vue')),
   catalog: defineAsyncComponent(() => import('./CatalogPage.vue')),
   threads: defineAsyncComponent(() => import('./ThreadsIndex.vue')),

@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
 import StatusIcon from '../modules/threads/StatusIcon.vue';
-import { areaOf, byActivity, day, standing, state } from '../modules/threads/store';
+import { areaOf, byActivity, day, isOpen, state } from '../modules/threads/store';
 import { attachments } from '../data/attachments';
 import { gate } from '../data/gate';
 import { tasks, prs, REPO } from '../data/quiver';
@@ -17,12 +17,12 @@ const areas: { id: string; label?: string; blurb: string }[] = [
   { id: 'build', blurb: 'Guides for building and configuring units, and bringing on more manufacturers.' },
   { id: 'selling', blurb: 'Getting Quiver to customers: channels, pricing, the sales page, and what goes back to the DAO.' },
 ];
-const openIn = (area: string) => state.threads.filter((t) => areaOf(t) === area && !t.settled).length;
+const openIn = (area: string) => state.threads.filter((t) => areaOf(t) === area && isOpen(t)).length;
 const firstZone = (area: string) => tabs.find((t) => t.id === area)?.groups[0].items[0].id ?? '';
 const zonesIn = (area: string) => tabs.find((t) => t.id === area)?.groups.flatMap((g) => g.items).filter((i) => !i.page || i.page === 'zone' || i.page === 'gate').slice(0, 4) ?? [];
 const areaLabel = (id: string) => tabs.find((t) => t.id === id)?.label;
 
-const needs = computed(() => state.threads.filter((t) => !t.settled).sort(byActivity).slice(0, 8));
+const needs = computed(() => state.threads.filter(isOpen).sort(byActivity).slice(0, 8));
 const recent = computed(() => state.threads.filter((t) => t.settled).sort((a, b) => b.settled!.at.localeCompare(a.settled!.at)).slice(0, 5));
 const flown = attachments.filter((a) => a.status === 'flown').length;
 const concepts = attachments.filter((a) => a.status === 'defined').length;
@@ -42,7 +42,7 @@ const claimable = tasks.filter((t) => t.claimable).length;
     </div>
 
     <div class="stats">
-      <RouterLink to="/quiver/discussion/all" class="stat"><b>{{ state.threads.filter((t) => !t.settled).length }}</b> open threads</RouterLink>
+      <RouterLink to="/quiver/discussion/all" class="stat"><b>{{ state.threads.filter(isOpen).length }}</b> open threads</RouterLink>
       <RouterLink to="/quiver/attachments/catalog" class="stat"><b>{{ flown }}</b> attachments flown · <b>{{ concepts }}</b> ready for contributors</RouterLink>
       <RouterLink to="/quiver/work/tasks" class="stat"><b>{{ claimable }}</b> claimable tasks · <b>{{ prs.length }}</b> open PRs</RouterLink>
     </div>

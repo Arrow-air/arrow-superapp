@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
-import { areaOf, byActivity, state } from '../modules/threads/store';
+import { areaOf, byActivity, isOpen, state } from '../modules/threads/store';
 import { tabs, zoneLabel } from '../frame/nav';
 
 // Every thread in one list, the same rows as the zones, opening the same
@@ -18,7 +18,7 @@ const query = ref('');
 const visible = computed(() =>
   state.threads
     .filter((t) => (area.value ? areaOf(t) === area.value : true))
-    .filter((t) => (scope.value === 'open' ? !t.settled : scope.value === 'settled' ? !!t.settled : true))
+    .filter((t) => (scope.value === 'open' ? isOpen(t) : scope.value === 'settled' ? !isOpen(t) : true))
     .filter((t) => {
       const q = query.value.trim().toLowerCase();
       return !q || `${t.id} ${t.title} ${zoneLabel(t.zone)} ${t.body}`.toLowerCase().includes(q);
@@ -49,7 +49,7 @@ const groups = computed(() => {
       </div>
       <div class="vseg" role="radiogroup" aria-label="Scope">
         <button v-for="s in (['open', 'settled', 'all'] as Scope[])" :key="s" type="button" role="radio" :aria-checked="scope === s" @click="scope = s">
-          {{ s === 'open' ? 'Open' : s === 'settled' ? 'Decided' : 'All' }}
+          {{ s === 'open' ? 'Open' : s === 'settled' ? 'Closed' : 'All' }}
         </button>
       </div>
     </div>

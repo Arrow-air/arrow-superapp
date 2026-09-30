@@ -28,6 +28,11 @@ export interface Settled {
   decision: string;
 }
 
+/** Closed without adopting anything, with the lead's reason. Still counts toward the retro split. */
+export interface Declined { byId: string; at: string; note: string }
+/** Pushed to a later version; the thread stays open there. */
+export interface Deferral { from: string; to: string; byId: string; at: string; note?: string }
+
 export interface Thread {
   id: string;
   /** The working zone this thread lives in. */
@@ -50,6 +55,8 @@ export interface Thread {
   replies: Reply[];
   objections: number;
   settled?: Settled;
+  declined?: Declined;
+  deferrals?: Deferral[];
 }
 
 export const callSource = (ref: string): SourceRef => ({ kind: 'call', ref, label: 'Sep 29 call' });
@@ -65,8 +72,9 @@ const I234 = '2026-07-09T21:38:00-05:00';
 const I248 = '2026-09-09T15:59:00-05:00';
 const NOTES = '2026-09-17T12:00:00-05:00';
 const T12 = '2026-09-09T15:59:00-05:00';
-/** The next Dev Kit revision (working name). */
+/** The next Dev Kit revision (working name), and the one after it, for deferrals. */
 export const NEXT = 'Dev Kit v1.1';
+export const LATER = 'Dev Kit v1.2';
 
 export const threads: Thread[] = [
   {

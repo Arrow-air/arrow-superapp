@@ -43,9 +43,32 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.waitForTimeout(200);
   check((await panel.innerText()).includes('D-001'), 'decision gets D-001');
 
+  // Decision → bounty: fund it, publish, claim, submit, accept; proposer award held until confirmed.
+  await panel.getByRole('button', { name: 'Fund it as a bounty or grant' }).click();
+  await panel.getByLabel('Acceptance').fill('Relocated M9N holds 15+ satellites with both switches powered, over a 10 minute hover log.');
+  await panel.getByLabel('Reward in ARROW').fill('800');
+  check((await panel.innerText()).includes('Proposer award 25%: 200 ARROW to Erick'), 'draft previews the proposer award to the idea\'s author');
+  await panel.getByRole('button', { name: 'Draft bounty' }).click();
+  await p.waitForTimeout(200);
+  check((await panel.locator('.wc .stage').innerText()) === 'Draft' && /W-1/.test(await panel.locator('.pipe').innerText()), 'bounty W-1 drafted and shown in the pipeline');
+  check(/held until a lead confirms/i.test(await panel.locator('.wc').innerText()), 'proposer award is held for a person named in the notes');
+  await panel.getByRole('button', { name: 'Confirm' }).click();
+  await panel.getByRole('button', { name: 'Publish bounty' }).click();
+  await panel.getByRole('button', { name: 'Claim this bounty' }).click();
+  await panel.getByLabel('Evidence').fill('https://github.com/Arrow-air/project-quiver/pull/999');
+  await panel.getByRole('button', { name: 'Submit for review' }).click();
+  await panel.getByRole('button', { name: 'Accept', exact: true }).click();
+  await p.waitForTimeout(200);
+  const wc = await panel.locator('.wc').innerText();
+  check(wc.includes('Accepted') && wc.includes('confirmed by You'), 'bounty goes draft → open → claimed → review → accepted');
+  await p.goto(`${BASE}/quiver/work/grants`);
+  await p.waitForTimeout(400);
+  check((await text()).includes('W-1') && (await text()).includes('Accepted'), 'grants page lists the accepted bounty');
+
   await p.goto(`${BASE}/quiver/overview/v1-1`);
   await p.waitForTimeout(500);
-  check((await p.locator('.changes').innerText()).includes('D-001'), 'v1.1 page lists the decision in its change list');
+  const spec = await p.locator('.changes').innerText();
+  check(spec.includes('D-001') && spec.includes('W-1') && spec.includes('Accepted'), 'v1.1 spec lists the decision with its bounty');
   await p.getByRole('button', { name: 'Propose an improvement' }).click();
   await p.getByLabel('Where the change is').selectOption('power');
   await p.getByLabel('Improvement').fill('Add a battery strap retention check');
@@ -135,6 +158,29 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.goto(`${BASE}/quiver/overview/v1-1`);
   await p.waitForTimeout(400);
   check((await p.locator('.grp', { hasText: 'Power & battery' }).innerText()).includes('Add a second retention strap'), 'v1.1 page shows the part proposal under its zone');
+
+  // Retro pool, decline, defer the rest, freeze.
+  await p.goto(`${BASE}/quiver/overview/gps-rf?thread=Q-4`);
+  await p.waitForTimeout(400);
+  await panel.getByRole('radio', { name: 'Decline' }).click();
+  await panel.getByLabel('Decline reason').fill('Waiting on the Fusion sync in PR #266 before choosing parts.');
+  await panel.getByRole('button', { name: 'Decline', exact: true }).click();
+  await p.waitForTimeout(200);
+  check((await panel.locator('.state').innerText()).includes('Declined'), 'lead can decline with a reason');
+  await p.goto(`${BASE}/quiver/overview/v1-1`);
+  await p.waitForTimeout(400);
+  await p.getByLabel('Retro pool in ARROW').fill('1000');
+  await p.getByRole('button', { name: 'Save plan' }).click();
+  await p.waitForTimeout(200);
+  const pre = await p.locator('.alloc').innerText();
+  check(pre.includes('If it froze now') && pre.includes('Erick') && pre.includes('held until a lead confirms'), 'retro preview splits the pool by support, holding shares for people named in notes');
+  check(!(await p.getByRole('button', { name: 'Freeze Dev Kit v1.1' }).isEnabled()), 'freeze is blocked while threads are open');
+  await p.getByRole('button', { name: 'Defer the rest to Dev Kit v1.2' }).click();
+  await p.waitForTimeout(200);
+  await p.getByRole('button', { name: 'Freeze Dev Kit v1.1' }).click();
+  await p.waitForTimeout(300);
+  const after = await text();
+  check(after.includes('Frozen') && after.includes('Recorded split'), 'freeze records the retro split and locks the spec');
 
   // Persistence and reset.
   await p.goto(`${BASE}/quiver/decisions/register`);

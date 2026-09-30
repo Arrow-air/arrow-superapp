@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import QuiverModel from '../modules/model/QuiverModel.vue';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
 import { NEXT } from '../modules/threads/data';
-import { V11_ZONES, startThread, state, threadsOnPart } from '../modules/threads/store';
+import { V11_ZONES, isOpen, startThread, state, threadsOnPart } from '../modules/threads/store';
 import { bom, partById } from '../data/quiver';
 import { zoneForPart } from '../data/model';
 import { zoneLabel, zonePath } from '../frame/nav';
@@ -28,7 +28,7 @@ const explode = ref(0);
 const labels = computed(() => Object.fromEntries(bom.flatMap((g) => g.items.map((i) => [i.id, i.name]))));
 const part = computed(() => (selected.value ? partById(selected.value) : undefined));
 const threads = computed(() => (selected.value ? threadsOnPart(selected.value) : []));
-const openOn = (id: string) => state.threads.filter((t) => t.part === id && !t.settled).length;
+const openOn = (id: string) => state.threads.filter((t) => t.part === id && isOpen(t)).length;
 const marked = computed(() => inModel.value.filter((id) => openOn(id) > 0));
 
 // The parts list, grouped by the zone a change would be discussed in.

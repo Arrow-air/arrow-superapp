@@ -3,7 +3,7 @@ import Icon from './Icon.vue';
 import { computed } from 'vue';
 import { formatMoney, network, quote, quoteValue, type Quote } from './account';
 import { generatedAt, shortDate, tasks } from '../data/quiver';
-import { state } from '../modules/threads/store';
+import { isOpen, state } from '../modules/threads/store';
 import DemoMenu from './DemoMenu.vue';
 import { socials } from './links';
 import logomark from '../assets/arrow-logomark-white.svg';
@@ -21,7 +21,7 @@ const themes: { id: Theme; label: string; icon: IconName }[] = [
 // quote currency on the right. The currency switch shares state with the
 // wallet toolbar.
 const SITE = 'https://arrowair.com';
-const openThreads = computed(() => state.threads.filter((t) => !t.settled).length);
+const openThreads = computed(() => state.threads.filter(isOpen).length);
 const claimable = tasks.filter((t) => t.claimable).length;
 
 </script>

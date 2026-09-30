@@ -20,6 +20,10 @@ defineProps<{ status: Status; override?: boolean; size?: number }>();
       <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6" />
       <path d="M8 4a4 4 0 0 1 0 8Z" fill="currentColor" />
     </template>
+    <template v-else-if="status === 'declined'">
+      <circle cx="8" cy="8" r="7" fill="currentColor" />
+      <path d="m5.6 5.6 4.8 4.8m0-4.8-4.8 4.8" fill="none" stroke="var(--slate-1)" stroke-width="1.6" stroke-linecap="round" />
+    </template>
     <template v-else>
       <circle cx="8" cy="8" r="7" fill="currentColor" />
       <path d="m5 8.2 2 2 4-4.2" fill="none" stroke="var(--slate-1)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
@@ -33,4 +37,5 @@ defineProps<{ status: Status; override?: boolean; size?: number }>();
 .converging { color: var(--indigo-11); }
 .settled { color: var(--jade-9); }
 .settled.override { color: var(--amber-9); }
+.declined { color: var(--slate-9); }
 </style>

@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import StatusIcon from '../modules/threads/StatusIcon.vue';
 import SourceChip from '../modules/threads/SourceChip.vue';
-import { day, person, state } from '../modules/threads/store';
+import { day, person, state, workFor } from '../modules/threads/store';
 import { taskById } from '../data/quiver';
 import { zoneLabel } from '../frame/nav';
 
@@ -51,6 +51,8 @@ const nameOf = (id?: string) => (id === 'me' ? 'You' : person(id)?.name);
             <div class="sub">
               <span v-if="r.s.override" class="chip amber">Override of the weighted leader</span>
               <SourceChip v-if="r.p?.source" :source="r.p.source" />
+              <span v-if="workFor(r.t)" class="chip jade">{{ workFor(r.t)!.id }} · {{ workFor(r.t)!.kind }} · {{ workFor(r.t)!.stage.replace('_', ' ') }}</span>
+              <span v-else class="chip">Not funded</span>
             </div>
           </td>
           <td class="hide-sm muted">{{ zoneLabel(r.t.zone) }}</td>

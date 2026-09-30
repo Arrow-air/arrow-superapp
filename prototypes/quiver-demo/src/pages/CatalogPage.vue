@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import Avatar from '../modules/threads/Avatar.vue';
 import { attachments, statusLabel, type AttachmentStatus } from '../data/attachments';
 import { personById } from '../data/people';
-import { state } from '../modules/threads/store';
+import { isOpen, state } from '../modules/threads/store';
 import { zonePath } from '../frame/nav';
 
 // Every attachment Quiver has, by how far along it is: flown, prototyped,
@@ -16,7 +16,7 @@ const heading: Record<AttachmentStatus, string> = {
   defined: 'Ready for contributors: requirements written',
 };
 const groups = computed(() => order.map((s) => ({ s, items: attachments.filter((a) => a.status === s) })).filter((g) => g.items.length));
-const openThreads = (zone?: string) => (zone ? state.threads.filter((t) => t.zone === zone && !t.settled).length : 0);
+const openThreads = (zone?: string) => (zone ? state.threads.filter((t) => t.zone === zone && isOpen(t)).length : 0);
 </script>
 
 <template>

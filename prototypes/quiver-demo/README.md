@@ -13,6 +13,8 @@ Forked from `prototypes/app-frame` on `sl33ty/explore/app-frame` at `31d499a` (G
 - **A thread is a side panel, the same everywhere.** Rows in a zone, the Discussion index, the decision register, the Road to selling cards, call notes and People all open the same panel over the page (`?thread=Q-3`). Esc or ✕ closes it; ⤢ expands it. Nothing opens on its own.
 - **Inside a thread, one order:** the question, positions to vote on, "Add a position", the lead's decision (one control, a required note, an override warning), then replies.
 - **Demo scaffolding lives in one footer menu:** view as member, core or lead; intent to build; reset.
+- **Discussion → spec → funded work** (ported from `spec-threads`). A lead gives each thread an outcome: adopt a position into the spec (a D-number, a required note, an override warning), decline it with a reason, or defer it to Dev Kit v1.2. A decision can then be funded as a bounty (a fixed deliverable anyone claims) or a grant (scoped work someone takes on), with acceptance criteria and an ARROW reward. Work moves draft → open → claimed → in review → accepted. The adopted idea's author gets a 25% proposer award; when the notes are the only evidence of who raised it, the award is held until a lead confirms. The thread panel shows where each thread is: Discussion → Decided → Bounty/Grant. Work › Grants & bounties lists them all.
+- **Retro pool and freeze** (DECISIONS 2026-09-23). A lead sets a retro pool and freeze date for v1.1. The pool splits across every position on a v1.1 thread by weighted net support, adopted or not (`modules/threads/retro.ts`, whole tokens, largest remainders); the v1.1 page previews it from the votes in the browser. Freezing needs every v1.1 thread settled (adopt, decline, or defer; "defer the rest" clears the way), then records the split and locks the spec. Nothing is paid from the app.
 - **Dev Kit v1.1 and the 3D model.** Overview opens on the v1.1 improvements page: every thread aimed at the next revision, grouped by structure, GPS and RF, propulsion, power and avionics, with the decided change list. The 3D model (Overview › 3D model) is the Dev Kit assembly; click any part, or pick it from the parts list, to see its threads or propose a change for v1.1. The thread is anchored to the part's BOM number and lands in the zone that part belongs to (`src/data/model.ts`).
 
 ## What is real
@@ -69,6 +71,6 @@ Checks, against a build:
 ```
 npm run build
 npm run typecheck
-node e2e/flow.cjs    # zone → panel, vote, decide as lead, register, new thread, position, reply, suggestion, cross-zone link, Esc, scroll reset, reload, reset
+node e2e/flow.cjs    # zone → panel, vote, decide, fund → claim → accept, v1.1 spec, 3D model part proposals, retro pool, decline, defer, freeze, reload, reset
 node e2e/shots.cjs   # screenshots of the main screens to /tmp/quiver-demo-shots
 ```

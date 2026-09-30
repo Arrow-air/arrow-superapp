@@ -3,8 +3,10 @@ import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
 import StatusIcon from '../modules/threads/StatusIcon.vue';
-import { NEXT, type Thread } from '../modules/threads/data';
-import { V11_ZONES, byActivity, day, startThread, state, statusOf } from '../modules/threads/store';
+import { LATER, NEXT, type Thread } from '../modules/threads/data';
+import {
+  V11_ZONES, byActivity, day, deferOpen, freezeRelease, isOpen, person, retroPreview, setReleasePlan, startThread, state, statusOf, workFor,
+} from '../modules/threads/store';
 import { callItems } from '../data/calls';
 import { zoneLabel, zonePath } from '../frame/nav';
 
@@ -15,7 +17,10 @@ const route = useRoute();
 const router = useRouter();
 
 const v11 = computed(() => state.threads.filter((t) => t.version === NEXT));
-const open = computed(() => v11.value.filter((t) => !t.settled));
+const open = computed(() => v11.value.filter(isOpen));
+const declined = computed(() => v11.value.filter((t) => t.declined));
+const deferred = computed(() => state.threads.filter((t) => t.deferrals?.some((d) => d.from === NEXT)));
+const showDeclined = ref(false);
 const decided = computed(() => v11.value.filter((t) => t.settled).sort((a, b) => a.settled!.decision.localeCompare(b.settled!.decision)));
 const converging = computed(() => open.value.filter((t) => statusOf(t) === 'converging').length);
 
@@ -45,6 +50,27 @@ function create() {
   router.replace({ query: { ...route.query, thread: t.id } });
 }
 const letter = (t: Thread, id: string) => String.fromCharCode(65 + t.positions.findIndex((p) => p.id === id));
+const stageLabel = { draft: 'Draft', open: 'Open', in_progress: 'In progress', in_review: 'In review', completed: 'Accepted' } as const;
+
+// Freeze and retro pool, as the spec workspace does it.
+const isLead = computed(() => state.role === 'lead');
+const frozen = computed(() => !!state.release.frozenAt);
+const plan = ref({ pool: state.release.pool ?? ('' as number | ''), date: state.release.freezeTarget ?? '' });
+const savePlan = () => setReleasePlan({ pool: plan.value.pool === '' ? undefined : Number(plan.value.pool), freezeTarget: plan.value.date || undefined });
+const retro = computed(() => retroPreview());
+// Who a retro line pays: you, a person named in the notes (held until a lead
+// confirms), or a document with no person named (held).
+function recipient(r: string) {
+  if (r === 'me') return { name: 'You', held: false, note: '' };
+  if (r.startsWith('source:')) return { name: `From ${r.slice(7)}`, held: true, note: 'no person named' };
+  return { name: person(r)?.name ?? r, held: true, note: 'named in the notes' };
+}
+function freeze() {
+  if (confirm(`Freeze ${NEXT}? The spec locks, the retro split is recorded, and new proposals go to ${LATER}.`)) freezeRelease();
+}
+function deferRest() {
+  if (confirm(`Defer all ${open.value.length} open ${NEXT} threads to ${LATER}?`)) deferOpen(`Not settled before the ${NEXT} freeze.`);
+}
 </script>
 
 <template>
@@ -55,7 +81,10 @@ const letter = (t: Thread, id: string) => String.fromCharCode(65 + t.positions.f
         The next revision of the Quiver Dev Kit. Every improvement proposed for it is collected here, by where it changes the aircraft.
         Each one is weighed and decided in its own thread; the decided ones make up the v1.1 change list.
       </p>
+      <p v-if="frozen" class="frozen">Frozen {{ day(state.release.frozenAt!) }} by {{ state.release.frozenBy === 'me' ? 'you' : state.release.frozenBy }}. The spec below is locked and the retro split is recorded; new proposals go to {{ LATER }}.</p>
       <div class="stats">
+        <span v-if="state.release.pool"><b>{{ state.release.pool.toLocaleString('en-US') }}</b> ARROW retro pool</span>
+        <span v-if="state.release.freezeTarget">freeze <b>{{ day(state.release.freezeTarget) }}</b></span>
         <span><b>{{ open.length }}</b> proposed</span>
         <span><b>{{ converging }}</b> converging</span>
         <span><b>{{ decided.length }}</b> decided</span>
@@ -105,7 +134,7 @@ const letter = (t: Thread, id: string) => String.fromCharCode(65 + t.positions.f
     </section>
 
     <section class="grp">
-      <h2 class="sec-h">Decided for {{ NEXT }}</h2>
+      <h2 class="sec-h">The {{ NEXT }} spec: decided</h2>
       <ol v-if="decided.length" class="changes">
         <li v-for="t in decided" :key="t.id">
           <button type="button" class="change" @click="router.replace({ query: { ...route.query, thread: t.id } })">
@@ -114,12 +143,57 @@ const letter = (t: Thread, id: string) => String.fromCharCode(65 + t.positions.f
             <span class="c-main">
               <span class="c-title">{{ t.title }}</span>
               <span class="c-choice">{{ letter(t, t.settled!.positionId) }}: {{ t.positions.find((p) => p.id === t.settled!.positionId)?.text }}</span>
+              <span class="c-work">
+                <template v-if="workFor(t)">{{ workFor(t)!.id }} · {{ workFor(t)!.kind === 'bounty' ? 'Bounty' : 'Grant' }} · {{ stageLabel[workFor(t)!.stage] }} · {{ workFor(t)!.reward.toLocaleString('en-US') }} ARROW</template>
+                <template v-else>Not funded yet</template>
+              </span>
             </span>
             <span class="muted">{{ zoneLabel(t.zone) }} · {{ day(t.settled!.at) }}</span>
           </button>
         </li>
       </ol>
-      <p v-else class="none">No improvements decided yet. A lead's decision on any thread above lands here.</p>
+      <p v-else class="none">Nothing decided yet. When a lead adopts a position on any thread above, it lands here; from here it can be funded as a bounty or grant.</p>
+      <p v-if="declined.length || deferred.length" class="aside">
+        <button v-if="declined.length" class="add" type="button" @click="showDeclined = !showDeclined">{{ declined.length }} declined</button>
+        <span v-if="deferred.length" class="muted">{{ deferred.length }} deferred to {{ LATER }}</span>
+      </p>
+      <div v-if="showDeclined" class="list"><ThreadRows :threads="declined" /></div>
+    </section>
+
+    <section class="grp retro">
+      <h2 class="sec-h">Retro pool and freeze</h2>
+      <p class="expl">
+        A pool of ARROW set aside for this version's discussion. At the freeze it is split across every position on a {{ NEXT }} thread by weighted net support, adopted or not, so good ideas that lost still earn. Nothing is paid from the app.
+      </p>
+      <form v-if="isLead && !frozen" class="plan" @submit.prevent="savePlan">
+        <label>Pool <input v-model.number="plan.pool" type="number" min="0" step="100" placeholder="ARROW" aria-label="Retro pool in ARROW" /> ARROW</label>
+        <label>Freeze on <input v-model="plan.date" type="date" aria-label="Freeze date" /></label>
+        <button class="secondary" type="submit">Save plan</button>
+      </form>
+      <p v-else-if="!state.release.pool" class="none">No retro pool set yet. A lead sets the pool and the freeze date.</p>
+
+      <div v-if="state.release.pool" class="alloc">
+        <p class="alloc-h">{{ frozen ? 'Recorded split' : 'If it froze now' }}<span class="muted"> · {{ retro.amount.toLocaleString('en-US') }} ARROW{{ frozen ? '' : ', from the votes in this browser' }}</span></p>
+        <table v-if="retro.lines.length" class="vt">
+          <tbody>
+            <tr v-for="l in retro.lines" :key="l.recipient">
+              <td>{{ recipient(l.recipient).name }}<span v-if="recipient(l.recipient).held" class="held"> · {{ recipient(l.recipient).note }}, held until a lead confirms</span></td>
+              <td class="muted">{{ l.items.length }} {{ l.items.length === 1 ? 'position' : 'positions' }}</td>
+              <td class="num"><b>{{ l.amount.toLocaleString('en-US') }}</b></td>
+            </tr>
+          </tbody>
+        </table>
+        <p v-else class="none">No position on a {{ NEXT }} thread has net support yet, so nothing would be split.</p>
+        <p v-if="retro.lines.length && retro.unallocated" class="muted small">{{ retro.unallocated }} ARROW unallocated.</p>
+      </div>
+
+      <div v-if="isLead && !frozen" class="freeze">
+        <p v-if="open.length" class="expl">
+          To freeze, every {{ NEXT }} thread needs an outcome: adopted, declined, or deferred to {{ LATER }}. {{ open.length }} still open.
+          <button class="add" type="button" @click="deferRest">Defer the rest to {{ LATER }}</button>
+        </p>
+        <button class="primary" type="button" :disabled="open.length > 0" @click="freeze">Freeze {{ NEXT }}</button>
+      </div>
     </section>
   </div>
 </template>
@@ -177,5 +251,21 @@ const letter = (t: Thread, id: string) => String.fromCharCode(65 + t.positions.f
 .c-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .c-title { color: var(--fg); font-size: var(--text-nav); font-weight: 500; }
 .c-choice { color: var(--jade-11); font-size: var(--text-base); }
+.c-work { color: var(--fg-muted); font-size: var(--text-sm); }
+.frozen { margin: 10px 0 0; padding: 8px 12px; border: 1px solid var(--jade-a5); border-radius: 10px; background: var(--jade-a2, transparent); color: var(--jade-11); font-size: var(--text-base); }
+.aside { display: flex; gap: 14px; margin: 8px 0 0; font-size: var(--text-sm); }
+.aside .add { margin-left: 0; }
+.retro .expl { margin: 0 0 10px; max-width: 720px; color: var(--fg-2); font-size: var(--text-base); line-height: 1.55; }
+.retro .expl .add { margin-left: 6px; }
+.plan { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: var(--text-sm); color: var(--fg-muted); }
+.plan label { display: inline-flex; align-items: center; gap: 6px; }
+.plan input { height: 28px; padding: 0 8px; border: 1px solid var(--slate-a5); border-radius: 7px; background: var(--slate-a2); color: var(--fg); font: inherit; font-size: var(--text-base); }
+.plan input[type='number'] { width: 110px; }
+.secondary { height: 28px; padding: 0 12px; border: 1px solid var(--slate-a5); border-radius: 7px; background: none; color: var(--fg-2); font: inherit; font-size: var(--text-sm); cursor: pointer; }
+.alloc { margin-top: 14px; }
+.alloc-h { margin: 0 0 6px; font-size: var(--text-base); color: var(--fg); font-weight: 500; }
+.held { color: var(--amber-11); font-size: var(--text-sm); }
+.freeze { margin-top: 16px; }
+.small { font-size: var(--text-sm); }
 @media (max-width: 767px) { .zp { padding: 16px; } .new-btn { margin-left: 0; } }
 </style>

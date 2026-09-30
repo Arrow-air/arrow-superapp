@@ -1,5 +1,6 @@
 import { computed, reactive, watch } from 'vue';
-import { NEXT, threads as seed, type Position, type Thread } from './data';
+import { LATER, NEXT, threads as seed, type Position, type SourceRef, type Thread } from './data';
+import { allocateRetro, proposerAward, type RetroAllocation, type Scored } from './retro';
 import { tally, voteWeight, weightingChangedWinner, type Role, type Tally, type Voter, type WeightBreakdown } from './weights';
 import { personById, type Person } from '../../data/people';
 import { zoneTab } from '../../frame/nav';
@@ -7,17 +8,63 @@ import { zoneTab } from '../../frame/nav';
 // Module state: the threads, who you are voting as, and the derived tallies
 // and statuses. A demo with no backend: everything you do is kept in this
 // browser's localStorage, and "Reset demo" puts the seed back.
-const KEY = 'quiver-demo.threads.v4';
+const KEY = 'quiver-demo.threads.v5';
 /** The zones that make up the next Dev Kit revision, in page order. */
 export const V11_ZONES = ['airframe', 'gps-rf', 'propulsion', 'power', 'avionics'];
 
-interface Saved { threads: Thread[]; role: Role; builder: boolean; nextThread: number; nextDecision: number }
+// Work drafted from a decision: a bounty (a fixed deliverable anyone can
+// claim) or a grant (scoped work for someone to take on). Carries the
+// proposer award, 25% of the reward to whoever wrote the adopted idea.
+export type WorkKind = 'bounty' | 'grant';
+export type WorkStage = 'draft' | 'open' | 'in_progress' | 'in_review' | 'completed';
+export interface Proposer {
+  /** 'me' for the visitor; a person named in notes; absent when only a document is the source. */
+  personId?: string;
+  source?: SourceRef;
+  /** Named in notes is not proof of who raised it: the award is held until a lead confirms. */
+  confirmedBy?: string;
+}
+export interface Work {
+  id: string;
+  threadId: string;
+  decision: string;
+  positionId: string;
+  kind: WorkKind;
+  title: string;
+  scope: string;
+  acceptance: string;
+  /** In $ARROW. A record only: nothing is paid from the app. */
+  reward: number;
+  proposerShare: number;
+  proposer: Proposer;
+  stage: WorkStage;
+  ownerId?: string;
+  evidence?: string;
+  history: { at: string; byId: string; note: string }[];
+  createdAt: string;
+}
+/** The next version's plan: freeze date and retro pool, then the recorded freeze. */
+export interface Release {
+  pool?: number;
+  freezeTarget?: string;
+  frozenAt?: string;
+  frozenBy?: string;
+  allocation?: RetroAllocation;
+}
+
+interface Saved {
+  threads: Thread[]; role: Role; builder: boolean; nextThread: number; nextDecision: number;
+  work: Work[]; nextWork: number; release: Release;
+}
 const fresh = (): Saved => ({
   threads: structuredClone(seed),
   role: 'member',
   builder: false,
   nextThread: seed.length + 1,
   nextDecision: 1,
+  work: [],
+  nextWork: 1,
+  release: {},
 });
 function load(): Saved {
   try {
@@ -34,7 +81,7 @@ export function resetDemo() {
   Object.assign(state, fresh());
 }
 /** True once anything differs from the seed, so the reset control can show. */
-export const touched = computed(() => JSON.stringify(state.threads) !== JSON.stringify(seed) || state.role !== 'member');
+export const touched = computed(() => JSON.stringify(state.threads) !== JSON.stringify(seed) || state.role !== 'member' || state.work.length > 0 || Object.keys(state.release).length > 0);
 
 // People: the visitor votes; everyone else is shown, never scored. Nobody in
 // the notes has a role, holdings or verified expertise recorded yet.
@@ -55,7 +102,7 @@ export function talliesOf(thread: Thread): Tally[] {
   );
 }
 
-export type Status = 'needs' | 'converging' | 'settled';
+export type Status = 'needs' | 'converging' | 'settled' | 'declined';
 /** Converging: the weighted leader holds this share of the positive weighted vote… */
 export const CONVERGE_SHARE = 0.65;
 /** …and is at least this many weighted points ahead of the runner-up. */
@@ -72,6 +119,7 @@ export function leaderOf(thread: Thread) {
 
 export function statusOf(thread: Thread): Status {
   if (thread.settled) return 'settled';
+  if (thread.declined) return 'declined';
   const { top, margin, share } = leaderOf(thread);
   return top && top.weightedScore > 0 && share >= CONVERGE_SHARE && margin >= CONVERGE_MARGIN ? 'converging' : 'needs';
 }
@@ -99,7 +147,80 @@ export function settle(thread: Thread, positionId: string, note: string) {
   thread.settled = { positionId, byId: 'me', at: now(), override: positionId !== top?.positionId, note, decision };
   thread.activeAt = now();
 }
-export const reopen = (thread: Thread) => { thread.settled = undefined; thread.activeAt = now(); };
+export const reopen = (thread: Thread) => { thread.settled = undefined; thread.declined = undefined; thread.activeAt = now(); };
+
+/** Open: neither adopted nor declined. Deferred threads stay open in their new version. */
+export const isOpen = (t: Thread) => !t.settled && !t.declined;
+/** A frozen version's outcomes are locked. */
+export const locked = (t: Thread) => t.version === NEXT && !!state.release.frozenAt;
+
+/** Lead only. Close without adopting anything; the reason is required. */
+export function decline(thread: Thread, note: string) {
+  thread.declined = { byId: 'me', at: now(), note };
+  thread.activeAt = now();
+}
+/** Lead only. Push to the version after v1.1; it stays open there. */
+export function defer(thread: Thread, note?: string) {
+  (thread.deferrals ??= []).push({ from: thread.version, to: LATER, byId: 'me', at: now(), note });
+  thread.version = LATER;
+  thread.activeAt = now();
+}
+
+// Work drafted from decisions.
+export const workFor = (t: Thread) => state.work.find((w) => w.threadId === t.id);
+export function draftWork(t: Thread, input: { kind: WorkKind; title: string; scope: string; acceptance: string; reward: number }): Work {
+  const p = t.positions.find((x) => x.id === t.settled!.positionId);
+  const w: Work = {
+    id: `W-${state.nextWork++}`,
+    threadId: t.id,
+    decision: t.settled!.decision,
+    positionId: t.settled!.positionId,
+    ...input,
+    proposerShare: 0.25,
+    proposer: { personId: p?.authorId, source: p?.source, confirmedBy: p?.authorId === 'me' ? 'me' : undefined },
+    stage: 'draft',
+    history: [{ at: now(), byId: 'me', note: `Drafted from ${t.settled!.decision}` }],
+    createdAt: now(),
+  };
+  state.work.push(w);
+  t.activeAt = now();
+  return w;
+}
+const move = (w: Work, stage: WorkStage, note: string) => { w.stage = stage; w.history.push({ at: now(), byId: 'me', note }); };
+export const publishWork = (w: Work) => move(w, 'open', `Published as an open ${w.kind}`);
+export const claimWork = (w: Work) => { w.ownerId = 'me'; move(w, 'in_progress', 'Claimed'); };
+export const submitWork = (w: Work, evidence: string) => { w.evidence = evidence; move(w, 'in_review', 'Submitted for review'); };
+export const acceptWork = (w: Work) => move(w, 'completed', 'Accepted by the lead');
+export const requestChanges = (w: Work, note: string) => move(w, 'in_progress', `Changes requested: ${note}`);
+export const confirmProposer = (w: Work) => { w.proposer.confirmedBy = 'me'; w.history.push({ at: now(), byId: 'me', note: 'Confirmed the proposer award' }); };
+export const awardOf = (w: Work) => proposerAward(w.reward, w.proposerShare);
+
+// The v1.1 retro pool: every position on a v1.1 thread, adopted or not,
+// scored by weighted net support. Recipients are the person the position is
+// attributed to ('me' for the visitor), or its source when no person is named.
+export function retroContributions(): Scored[] {
+  return state.threads
+    .filter((t) => t.version === NEXT)
+    .flatMap((t) => {
+      const tallies = talliesOf(t);
+      return t.positions.map((p) => ({
+        positionId: p.id,
+        threadId: t.id,
+        recipient: p.authorId ?? `source:${p.source?.label ?? 'unattributed'}`,
+        score: Math.max(0, tallies.find((x) => x.positionId === p.id)?.weightedScore ?? 0),
+      }));
+    });
+}
+export const retroPreview = () => (state.release.allocation ?? allocateRetro(state.release.pool ?? 0, retroContributions()));
+export const setReleasePlan = (plan: { pool?: number; freezeTarget?: string }) => Object.assign(state.release, plan);
+/** Lead only, once every v1.1 thread is adopted, declined or deferred. */
+export function freezeRelease() {
+  state.release.allocation = { ...allocateRetro(state.release.pool ?? 0, retroContributions()), at: now() };
+  state.release.frozenAt = now();
+  state.release.frozenBy = 'me';
+}
+/** Deferring what is left is how a lead clears the way to the freeze. */
+export const deferOpen = (note: string) => state.threads.filter((t) => t.version === NEXT && isOpen(t)).forEach((t) => defer(t, note));
 
 export function reply(thread: Thread, text: string) {
   thread.replies.push({ id: `r${Date.now()}`, authorId: 'me', text, at: now() });
@@ -123,8 +244,12 @@ export function startThread(input: { zone: string; title: string; body: string; 
     kind: 'technical',
     type: input.type ?? 'question',
     system: input.zone,
-    // Threads in the next-revision zones are about v1.1 unless said otherwise.
-    version: input.version ?? (V11_ZONES.includes(input.zone) ? NEXT : ''),
+    // Threads in the next-revision zones are about v1.1 unless said otherwise;
+    // once v1.1 is frozen, new proposals go to the version after it.
+    version: (() => {
+      const v = input.version ?? (V11_ZONES.includes(input.zone) ? NEXT : '');
+      return v === NEXT && state.release.frozenAt ? LATER : v;
+    })(),
     authorId: 'me',
     source: input.fromCall ? { kind: 'call', ref: input.fromCall, label: 'Sep 29 call' } : undefined,
     raisedAt: now(),
@@ -161,7 +286,12 @@ export const byActivity = (a: Thread, b: Thread) => b.activeAt.localeCompare(a.a
 /** One line on where a thread stands, for rows and the panel. */
 export function standing(t: Thread) {
   const letter = (id: string) => String.fromCharCode(65 + t.positions.findIndex((p) => p.id === id));
-  if (t.settled) return { status: 'settled' as Status, text: `Decided: ${letter(t.settled.positionId)} · ${t.settled.decision}` };
+  if (t.settled) {
+    const w = workFor(t);
+    const work = w ? ` · ${w.id} ${w.stage === 'completed' ? 'done' : w.stage.replace('_', ' ')}` : '';
+    return { status: 'settled' as Status, text: `Decided: ${letter(t.settled.positionId)} · ${t.settled.decision}${work}` };
+  }
+  if (t.declined) return { status: 'declined' as Status, text: 'Declined' };
   const n = t.positions.length;
   if (!n) return { status: 'needs' as Status, text: 'No positions yet' };
   const votes = t.votes.length;
@@ -170,4 +300,4 @@ export function standing(t: Thread) {
   if (!votes || !top || top.weightedScore <= 0) return { status: statusOf(t), text: `${pos} · no votes yet` };
   return { status: statusOf(t), text: `${pos} · ${letter(top.positionId)} leads with ${Math.round(share * 100)}%` };
 }
-export const openIn = (zone: string) => threadsInZone(zone).filter((t) => !t.settled).length;
+export const openIn = (zone: string) => threadsInZone(zone).filter(isOpen).length;

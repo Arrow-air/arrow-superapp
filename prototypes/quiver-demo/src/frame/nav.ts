@@ -10,7 +10,7 @@
 import type { IconName } from './icons';
 
 /** What renders in the content slot. Zones get the zone page with its threads. */
-export type PageKind = 'zone' | 'gate' | 'release' | 'model' | 'summary' | 'catalog' | 'bom' | 'work' | 'prs' | 'people' | 'sources' | 'threads' | 'suggested' | 'decisions';
+export type PageKind = 'zone' | 'gate' | 'release' | 'model' | 'grants' | 'summary' | 'catalog' | 'bom' | 'work' | 'prs' | 'people' | 'sources' | 'threads' | 'suggested' | 'decisions';
 
 export interface NavItem { id: string; label: string; icon: IconName; page?: PageKind }
 export interface NavGroup { id: string; label: string; sortable?: boolean; items: NavItem[] }
@@ -233,6 +233,11 @@ export const tabs: Tab[] = [
     label: 'Work',
     view: true,
     groups: [
+      {
+        id: 'funded',
+        label: 'From decisions',
+        items: [item('grants', 'Grants & bounties', 'coin', 'grants')],
+      },
       {
         id: 'board',
         label: 'From GitHub',

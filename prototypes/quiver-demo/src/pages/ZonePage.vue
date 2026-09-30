@@ -6,7 +6,7 @@ import ZoneSections from '../modules/zone/ZoneSections.vue';
 import GateList from '../modules/zone/GateList.vue';
 import AttachmentCard from '../modules/zone/AttachmentCard.vue';
 import type { Thread } from '../modules/threads/data';
-import { byActivity, startThread, threadsInZone } from '../modules/threads/store';
+import { byActivity, isOpen, startThread, threadsInZone } from '../modules/threads/store';
 import { zoneById } from '../data/zones';
 import { zoneLabel } from '../frame/nav';
 
@@ -19,8 +19,8 @@ const router = useRouter();
 const z = computed(() => zoneById(props.zone));
 
 const all = computed(() => threadsInZone(props.zone));
-const open = computed(() => all.value.filter((t) => !t.settled).sort(byActivity));
-const decided = computed(() => all.value.filter((t) => t.settled).sort(byActivity));
+const open = computed(() => all.value.filter(isOpen).sort(byActivity));
+const decided = computed(() => all.value.filter((t) => !isOpen(t)).sort(byActivity));
 const showDecided = ref(false);
 
 const composing = ref(false);
@@ -82,7 +82,7 @@ function create() {
       <div v-if="decided.length" class="decided">
         <button class="toggle" type="button" :aria-expanded="showDecided" @click="showDecided = !showDecided">
           <svg viewBox="0 0 16 16" aria-hidden="true" :class="{ open: showDecided }"><path d="m6 4 4 4-4 4" /></svg>
-          Decided ({{ decided.length }})
+          Closed ({{ decided.length }})
         </button>
         <div v-if="showDecided" class="list"><ThreadRows :threads="decided" /></div>
       </div>
