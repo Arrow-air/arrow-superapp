@@ -146,7 +146,7 @@ const heroKey = computed(() => selKey(level.value === 2 ? { group: group.value, 
 </template>
 
 <style scoped>
-.nav { overflow-x: hidden; }
+.nav { flex: none; overflow-x: clip; }
 .level { display: flex; flex-direction: column; }
 .title { margin: 0 4px 4px; font-size: var(--text-md); font-weight: 600; color: var(--fg); line-height: 1.35; }
 .muted { margin: 0 4px 4px; font-size: var(--text-base); line-height: 1.5; color: var(--fg-muted); }

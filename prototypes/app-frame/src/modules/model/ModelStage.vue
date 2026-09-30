@@ -102,9 +102,23 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
 </script>
 
 <template>
-  <div class="stage" :style="{ '--cad-viewer': theme.base, '--cad-grid': theme.grid, '--cad-panel': theme.panel }">
+  <div class="stage" :style="{ '--cad-viewer': theme.base, '--cad-grid': theme.grid, '--cad-panel': theme.panel, '--cad-panel-solid': theme.panel.split(',').at(-1)!.trim() }">
     <div class="view">
       <ModelViewer :lit="lit" :hidden="hidden" :selection="selection" :discussed="discussed" @pick="pick" @ready="onReady" @thumbs="thumbs = $event" />
+      <!-- The model's provenance, as a chip in the viewer's corner; the detail sits behind the ⓘ. -->
+      <div class="source">
+        <span>Fusion · {{ snapshotDate }}</span>
+        <span class="about" tabindex="0" aria-label="About this model">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2" /><path d="M8 7.2v3.6M8 5.2v.1" /></svg>
+          <span class="about-card" role="tooltip">
+            Revision {{ meta?.revision ?? '' }}, from the Fusion snapshot of {{ snapshotDate }}, in
+            <a href="https://github.com/Arrow-air/project-spearhead/tree/hex/build123d-fusion-aircraft/src/design" target="_blank" rel="noopener">project-spearhead ↗</a>.
+            A tessellated preview; the STEP files in the repository are exact.
+            <span class="about-row"><i class="mirrored"></i>Mirrored: copied from the port side, not modelled in Fusion.</span>
+            <span class="about-row"><i class="recovered"></i>Recovered: bodies that were hidden in the Fusion file.</span>
+          </span>
+        </span>
+      </div>
       <!-- Temporary background picker. -->
       <div class="theme-picker" role="group" aria-label="Background">
         <button type="button" aria-label="Previous background" @click="cycle(-1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg></button>
@@ -177,23 +191,13 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
         </template>
       </template>
 
-      <button v-if="lit" type="button" class="cta" @click="startThread">
-        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h10v7H7l-3 2.5v-2.5H3z" /></svg>
-        <span>Start a thread about <b>{{ subjectName }}</b></span>
-      </button>
-      <!-- The model's provenance in one quiet line; the detail sits behind the ⓘ. -->
-      <div class="source">
-        <span>Fusion · {{ snapshotDate }}</span><span class="dot">·</span>
-        <a href="https://github.com/Arrow-air/project-spearhead/tree/hex/build123d-fusion-aircraft/src/design" target="_blank" rel="noopener">project-spearhead ↗</a>
-        <span class="about" tabindex="0" aria-label="About this model">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2" /><path d="M8 7.2v3.6M8 5.2v.1" /></svg>
-          <span class="about-card" role="tooltip">
-            Revision {{ meta?.revision ?? '' }}, from the Fusion snapshot of {{ snapshotDate }}. A tessellated preview; the STEP files in the repository are exact.
-            <span class="about-row"><i class="mirrored"></i>Mirrored: copied from the port side, not modelled in Fusion.</span>
-            <span class="about-row"><i class="recovered"></i>Recovered: bodies that were hidden in the Fusion file.</span>
-          </span>
-        </span>
+      <div v-if="lit" class="cta-foot">
+        <button type="button" class="cta" @click="startThread">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h10v7H7l-3 2.5v-2.5H3z" /></svg>
+          <span>Start a thread about <b>{{ subjectName }}</b></span>
+        </button>
       </div>
+
     </aside>
   </div>
 </template>
@@ -270,10 +274,15 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
 .rsub { font-size: var(--text-sm); color: var(--fg-faint); }
 
 .cta {
-  display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 36px; margin-top: auto; padding: 0 12px;
+  display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 36px; padding: 0 12px;
   border: 0; border-radius: 9px; background: var(--indigo-9); color: #fff; font: inherit; font-size: var(--text-base); font-weight: 500; cursor: pointer;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), 0 1px 2px rgb(0 0 0 / 0.3);
   transition: background-color 120ms, transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+/* Pinned to the panel's foot; tiles scroll under it behind a short fade. */
+.cta-foot {
+  position: sticky; bottom: -12px; flex: none; margin: auto -12px -12px; padding: 28px 12px 12px;
+  background: linear-gradient(to bottom, transparent, var(--cad-panel-solid, #0c1322) 40%);
 }
 .cta:hover { background: var(--indigo-10); }
 .cta:active { transform: scale(0.98); }
@@ -281,21 +290,23 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
 .cta span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .cta b { font-weight: 600; }
 .cta svg { flex: none; width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; }
-.cta + .source { margin-top: 0; padding-top: 12px; }
-.source { position: relative; display: flex; align-items: center; margin: auto 4px 0; padding-top: 16px; font-size: var(--text-sm); color: var(--fg-faint); white-space: nowrap; }
-.source .dot { margin: 0 6px; }
-.source a { color: var(--fg-muted); text-decoration: none; }
-.source a:hover { color: var(--fg-2); }
-.about { display: inline-grid; place-items: center; margin-left: auto; padding: 2px; border-radius: 50%; cursor: help; outline: none; }
+.source {
+  position: absolute; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 6px; padding: 4px 6px 4px 10px;
+  border-radius: 8px; background: rgb(140 170 235 / 0.08); backdrop-filter: blur(8px);
+  font-size: var(--text-sm); color: var(--fg-muted); white-space: nowrap;
+}
+.about-card a { color: var(--indigo-11); text-decoration: none; }
+.about-card a:hover { text-decoration: underline; }
+.about { display: inline-grid; place-items: center; padding: 2px; border-radius: 50%; cursor: help; outline: none; }
 .about svg { width: 13px; height: 13px; fill: none; stroke: var(--fg-faint); stroke-width: 1.4; stroke-linecap: round; }
 .about:hover svg, .about:focus-visible svg { stroke: var(--fg-2); }
 .about-card {
-  position: absolute; right: 0; bottom: calc(100% + 6px); z-index: 2; width: 260px; padding: 10px 12px;
+  position: absolute; right: 0; bottom: calc(100% + 8px); z-index: 2; width: 260px; padding: 10px 12px;
   border: 1px solid var(--border); border-radius: var(--radius); background: var(--slate-2); box-shadow: 0 8px 24px rgb(0 0 0 / 0.4);
   color: var(--fg-2); font-size: var(--text-sm); line-height: 1.5; white-space: normal;
   opacity: 0; transform: translateY(4px); pointer-events: none; transition: opacity 150ms, transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
 }
-.about:hover .about-card, .about:focus-visible .about-card { opacity: 1; transform: none; }
+.about:hover .about-card, .about:focus-visible .about-card, .about-card:hover { opacity: 1; transform: none; pointer-events: auto; }
 .about-row { display: flex; align-items: baseline; gap: 7px; margin-top: 6px; color: var(--fg-muted); }
 .about-row i { flex: none; width: 6px; height: 6px; border-radius: 50%; transform: translateY(-1px); }
 .about-row i.mirrored { background: var(--sky-11); }
