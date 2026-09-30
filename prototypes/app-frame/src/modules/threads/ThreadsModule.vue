@@ -5,6 +5,7 @@ import Icon from '../../frame/Icon.vue';
 import StatusIcon from './StatusIcon.vue';
 import ThreadDetail from './ThreadDetail.vue';
 import NewThread from './NewThread.vue';
+import { threadTypes, typeStyle } from './types';
 import { useWorkspace } from '../../frame/useWorkspace';
 import type { Thread } from './data';
 import { createThread, state, statusOf, type Status } from './store';
@@ -168,7 +169,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
             <StatusIcon :status="statusOf(t)" :override="t.settled?.override" :size="13" />
             <span class="rbody">
               <span class="rtitle">{{ t.title }}</span>
-              <span v-if="t.part" class="rpart">{{ selLabel(t.part) }}</span>
+              <span class="rpart" :style="typeStyle(t.type)"><Icon :name="threadTypes[t.type].icon" :size="11" />{{ t.part ? selLabel(t.part) : threadTypes[t.type].label }}</span>
             </span>
             <span class="rtime">{{ t.active }}</span>
           </button>
@@ -236,7 +237,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 .row :deep(.st) { margin-top: 3px; }
 /* Up to two lines, so titles stay findable without widening the list. */
 .rbody { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-.rpart { font-size: var(--text-sm); color: var(--fg-faint); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.rpart { display: flex; align-items: center; gap: 5px; font-size: var(--text-sm); color: var(--fg-faint); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.rpart :deep(svg) { flex: none; color: var(--tfg); }
 .filter { padding: 0 12px 8px; }
 .chip {
   display: inline-flex; align-items: center; gap: 6px; max-width: 100%; height: 24px; padding: 0 6px 0 9px;

@@ -4,6 +4,7 @@ import Kbd from '../../frame/Kbd.vue';
 import Icon from '../../frame/Icon.vue';
 import Avatar from './Avatar.vue';
 import type { IconName } from '../../frame/icons';
+import { threadTypes, typeStyle } from './types';
 import { MOD } from '../../frame/shortcuts';
 import { componentName, partName, selLabel, type Sel } from '../model/model';
 import type { ThreadType } from './data';
@@ -28,11 +29,7 @@ const scope = ref('');
 watch(scopes, (s) => (scope.value = s[0]?.key ?? ''), { immediate: true });
 const about = computed(() => scopes.value.find((s) => s.key === scope.value)?.sel);
 
-const types: { id: ThreadType; label: string; hint: string; icon: IconName }[] = [
-  { id: 'question', label: 'Question', hint: 'Something you need answered', icon: 'question' },
-  { id: 'proposal', label: 'Proposal', hint: 'A change you want decided', icon: 'branch' },
-  { id: 'idea', label: 'Idea', hint: 'Worth exploring, no decision yet', icon: 'bulb' },
-];
+const types = (Object.keys(threadTypes) as ThreadType[]).map((id) => ({ id, ...threadTypes[id] }));
 const type = ref<ThreadType>('question');
 const title = ref('');
 const body = ref('');
@@ -78,7 +75,7 @@ function post() {
       <div class="composer-bar">
         <!-- What kind of thread, inside the box it describes. -->
         <div class="seg types" role="radiogroup" aria-label="Type">
-          <button v-for="t in types" :key="t.id" type="button" role="radio" :aria-checked="type === t.id" :title="t.hint" @click="type = t.id">
+          <button v-for="t in types" :key="t.id" type="button" role="radio" :aria-checked="type === t.id" :title="t.hint" :style="typeStyle(t.id)" @click="type = t.id">
             <Icon :name="t.icon" :size="13" />{{ t.label }}
           </button>
         </div>
@@ -136,7 +133,8 @@ function post() {
   border-top: 1px solid var(--slate-a3); background: rgb(0 0 0 / 0.25);
 }
 .types button { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px 0 8px; }
-.types button :deep(svg) { opacity: 0.8; }
+.types button :deep(svg) { color: var(--tfg); opacity: 0.75; }
+.types button[aria-checked='true'] { background: var(--tbg); color: var(--tfg); }
 .types button[aria-checked='true'] :deep(svg) { opacity: 1; }
 .hint { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--fg-faint); }
 .actions { display: flex; align-items: center; gap: 10px; }
