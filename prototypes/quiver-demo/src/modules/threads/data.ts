@@ -63,7 +63,8 @@ const I234 = '2026-07-09T21:38:00-05:00';
 const I248 = '2026-09-09T15:59:00-05:00';
 const NOTES = '2026-09-17T12:00:00-05:00';
 const T12 = '2026-09-09T15:59:00-05:00';
-const NEXT = 'Next';
+/** The next Dev Kit revision (working name). */
+export const NEXT = 'Dev Kit v1.1';
 
 export const threads: Thread[] = [
   {
@@ -181,7 +182,7 @@ export const threads: Thread[] = [
   {
     id: 'Q-11', zone: 'airframe', kind: 'technical', type: 'question', system: 'structure', version: NEXT,
     title: 'Structure and enclosure: what should the next revision change?',
-    body: 'KBM asked whether there is a plan to improve the enclosure or the structure, and offered structural advice. There is no list yet. Erick is preparing easy wins for the Thursday call, and what it takes to make them. Add candidates here as positions.',
+    body: 'KBM asked whether there is a plan to improve the enclosure or the structure, and offered structural advice. There is no list yet. Erick is preparing easy wins for the Thursday call, and what it takes to make them. Propose each change as its own Dev Kit v1.1 improvement so it can be weighed and decided on its own; use this thread for the overall direction.',
     authorId: 'kbm', source: callSource('sep29-20'), raisedAt: CALL, activeAt: CALL,
     positions: [], votes: [], replies: [], objections: 0,
   },
@@ -244,7 +245,7 @@ export const threads: Thread[] = [
     votes: [], replies: [], objections: 0,
   },
   {
-    id: 'Q-17', zone: 'quiverhub', kind: 'technical', type: 'question', system: 'software', version: NEXT,
+    id: 'Q-17', zone: 'quiverhub', kind: 'technical', type: 'question', system: 'software', version: '',
     title: 'What should QuiverHub do next?',
     body: 'QuiverHub V1 shipped (milestones M1 to M3). The M4 and M5 named back then were never scoped, and nobody can say today what they meant. T-12 asks Alex to write the next scope after running V1 on the Houston unit (T-18), for the Project Lead to accept and the October checkpoint to fund. These are the needs T-12 lists; vote on what matters to you.',
     source: issueSource(258), raisedAt: T12, activeAt: T12,

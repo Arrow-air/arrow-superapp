@@ -6,6 +6,7 @@ import Placeholder from './Placeholder.vue';
 // Picks what renders in the slot from the sidebar item: a working zone (its
 // context and threads) by default, or one of the views.
 const ZonePage = defineAsyncComponent(() => import('./ZonePage.vue'));
+const ReleasePage = defineAsyncComponent(() => import('./ReleasePage.vue'));
 const views = {
   summary: defineAsyncComponent(() => import('./SummaryPage.vue')),
   catalog: defineAsyncComponent(() => import('./CatalogPage.vue')),
@@ -25,6 +26,7 @@ const page = computed(() => item.value?.page ?? 'zone');
 <template>
   <ZonePage v-if="item && page === 'zone'" :zone="item.id" />
   <ZonePage v-else-if="item && page === 'gate'" :zone="item.id" gate />
+  <ReleasePage v-else-if="page === 'release'" />
   <component :is="views[page as keyof typeof views]" v-else-if="page in views" />
   <Placeholder v-else />
 </template>

@@ -83,7 +83,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         <template v-if="t.authorId"><Avatar :id="t.authorId" :size="16" /> {{ nameOf(t.authorId) }}<span class="dot">·</span></template>
         <span>{{ day(t.raisedAt) }}</span>
         <template v-if="t.source"><span class="dot"></span><SourceChip :source="t.source" /></template>
-        <span class="dot">·</span><span class="mono ver" title="The version this thread is about">{{ t.version }}</span>
+        <template v-if="t.version"><span class="dot">·</span><span class="mono ver" title="The version this thread is about">{{ t.version }}</span></template>
       </p>
       <p class="state" :data-status="stand.status">
         <StatusIcon :status="stand.status" :override="t.settled?.override" :size="12" />

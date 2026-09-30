@@ -7,13 +7,14 @@ fs.mkdirSync(out, { recursive: true });
 const PORT = 4312;
 const exe = ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Chromium.app/Contents/MacOS/Chromium'].find((p) => fs.existsSync(p));
 const shots = [
+  ['00-v1-1', '#/quiver/overview/v1-1'],
   ['01-summary', '#/quiver/overview/summary'],
   ['02-catalog', '#/quiver/attachments/catalog'],
   ['03-latch-zone', '#/quiver/attachments/payload-latch'],
   ['04-latch-thread', '#/quiver/attachments/payload-latch?thread=Q-13'],
   ['05-quiverhub-thread', '#/quiver/software/quiverhub?thread=Q-17'],
   ['06-ground-station', '#/quiver/software/ground-station'],
-  ['07-gps-rf', '#/quiver/aircraft/gps-rf'],
+  ['07-gps-rf', '#/quiver/overview/gps-rf'],
   ['08-road-to-selling', '#/quiver/selling/road-to-selling'],
   ['09-discussion-all', '#/quiver/discussion/all'],
   ['10-suggested', '#/quiver/discussion/suggested'],

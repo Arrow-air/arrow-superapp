@@ -10,10 +10,10 @@ import { tabs, zoneLabel, zonePath } from '../frame/nav';
 
 // Quiver at a glance: what it is, the areas where the work is, what needs
 // input across all of them, and what was decided lately.
-const areas = [
+const areas: { id: string; label?: string; blurb: string }[] = [
+  { id: 'overview', label: 'Dev Kit v1.1', blurb: 'The next Dev Kit revision: structure and enclosure, GPS and RF, power, avionics. Plus flight testing and operating the aircraft.' },
   { id: 'attachments', blurb: 'Payloads on the three quick-release ports, and the interface standard they build against.' },
   { id: 'software', blurb: 'The SDK, QuiverHub on the onboard computer, the ground station and remote, and autonomy.' },
-  { id: 'aircraft', blurb: 'The next hardware revision, flight testing, and operating the aircraft.' },
   { id: 'build', blurb: 'Guides for building and configuring units, and bringing on more manufacturers.' },
   { id: 'selling', blurb: 'Getting Quiver to customers: channels, pricing, the sales page, and what goes back to the DAO.' },
 ];
@@ -51,7 +51,7 @@ const claimable = tasks.filter((t) => t.claimable).length;
       <h2>Areas</h2>
       <div class="areas">
         <RouterLink v-for="a in areas" :key="a.id" :to="`/quiver/${a.id}/${firstZone(a.id)}`" class="area">
-          <span class="a-top"><span class="a-name">{{ areaLabel(a.id) }}</span><span class="a-count">{{ openIn(a.id) }} open</span></span>
+          <span class="a-top"><span class="a-name">{{ a.label ?? areaLabel(a.id) }}</span><span class="a-count">{{ openIn(a.id) }} open</span></span>
           <span class="a-blurb">{{ a.blurb }}</span>
           <span class="a-zones">{{ zonesIn(a.id).map((z) => z.label).join(' · ') }}</span>
         </RouterLink>

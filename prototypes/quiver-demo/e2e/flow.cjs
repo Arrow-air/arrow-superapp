@@ -23,7 +23,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   const panel = p.locator('aside.panel');
 
   // A zone opens on its page, not on a thread.
-  await p.goto(`${BASE}/quiver/aircraft/gps-rf`);
+  await p.goto(`${BASE}/quiver/overview/gps-rf`);
   await p.waitForTimeout(600);
   check(!(await panel.count()), 'zone page opens with no thread open');
   await p.locator('.row[data-thread="Q-3"]').click();
@@ -42,6 +42,17 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await panel.getByRole('button', { name: 'Record decision' }).click();
   await p.waitForTimeout(200);
   check((await panel.innerText()).includes('D-001'), 'decision gets D-001');
+
+  await p.goto(`${BASE}/quiver/overview/v1-1`);
+  await p.waitForTimeout(500);
+  check((await p.locator('.changes').innerText()).includes('D-001'), 'v1.1 page lists the decision in its change list');
+  await p.getByRole('button', { name: 'Propose an improvement' }).click();
+  await p.getByLabel('Where the change is').selectOption('power');
+  await p.getByLabel('Improvement').fill('Add a battery strap retention check');
+  await p.getByRole('button', { name: 'Propose', exact: true }).click();
+  await p.waitForTimeout(300);
+  check((await panel.innerText()).includes('Dev Kit v1.1') && (await panel.locator('a.home, .home').first().innerText()) === 'Power & battery', 'proposal opens as a v1.1 thread in its zone');
+  check((await p.locator('.grp', { hasText: 'Power & battery' }).innerText()).includes('Add a battery strap retention check'), 'proposal shows under its zone on the v1.1 page');
 
   await p.goto(`${BASE}/quiver/decisions/register`);
   await p.waitForTimeout(500);
@@ -91,7 +102,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   check(!(await panel.count()), 'Esc closes the panel');
 
   // Scroll does not carry between pages.
-  await p.goto(`${BASE}/quiver/aircraft/gps-rf`);
+  await p.goto(`${BASE}/quiver/overview/gps-rf`);
   await p.waitForTimeout(400);
   await p.evaluate(() => document.querySelector('.slot').scrollTo(0, 9999));
   await p.locator('.sidebar a', { hasText: 'Power & battery' }).click();

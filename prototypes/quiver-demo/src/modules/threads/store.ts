@@ -1,5 +1,5 @@
 import { computed, reactive, watch } from 'vue';
-import { threads as seed, type Position, type Thread } from './data';
+import { NEXT, threads as seed, type Position, type Thread } from './data';
 import { tally, voteWeight, weightingChangedWinner, type Role, type Tally, type Voter, type WeightBreakdown } from './weights';
 import { personById, type Person } from '../../data/people';
 import { zoneTab } from '../../frame/nav';
@@ -7,7 +7,9 @@ import { zoneTab } from '../../frame/nav';
 // Module state: the threads, who you are voting as, and the derived tallies
 // and statuses. A demo with no backend: everything you do is kept in this
 // browser's localStorage, and "Reset demo" puts the seed back.
-const KEY = 'quiver-demo.threads.v2';
+const KEY = 'quiver-demo.threads.v3';
+/** The zones that make up the next Dev Kit revision, in page order. */
+export const V11_ZONES = ['airframe', 'gps-rf', 'power', 'avionics'];
 
 interface Saved { threads: Thread[]; role: Role; builder: boolean; nextThread: number; nextDecision: number }
 const fresh = (): Saved => ({
@@ -111,7 +113,7 @@ export function propose(thread: Thread, text: string): Position {
   return p;
 }
 
-export function startThread(input: { zone: string; title: string; body: string; type?: Thread['type']; fromCall?: string }): Thread {
+export function startThread(input: { zone: string; title: string; body: string; type?: Thread['type']; fromCall?: string; version?: string }): Thread {
   const t: Thread = {
     id: `Q-${state.nextThread++}`,
     zone: input.zone,
@@ -120,7 +122,8 @@ export function startThread(input: { zone: string; title: string; body: string; 
     kind: 'technical',
     type: input.type ?? 'question',
     system: input.zone,
-    version: 'Next',
+    // Threads in the next-revision zones are about v1.1 unless said otherwise.
+    version: input.version ?? (V11_ZONES.includes(input.zone) ? NEXT : ''),
     authorId: 'me',
     source: input.fromCall ? { kind: 'call', ref: input.fromCall, label: 'Sep 29 call' } : undefined,
     raisedAt: now(),

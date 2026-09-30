@@ -10,7 +10,7 @@
 import type { IconName } from './icons';
 
 /** What renders in the content slot. Zones get the zone page with its threads. */
-export type PageKind = 'zone' | 'gate' | 'summary' | 'catalog' | 'bom' | 'work' | 'prs' | 'people' | 'sources' | 'threads' | 'suggested' | 'decisions';
+export type PageKind = 'zone' | 'gate' | 'release' | 'summary' | 'catalog' | 'bom' | 'work' | 'prs' | 'people' | 'sources' | 'threads' | 'suggested' | 'decisions';
 
 export interface NavItem { id: string; label: string; icon: IconName; page?: PageKind }
 export interface NavGroup { id: string; label: string; sortable?: boolean; items: NavItem[] }
@@ -26,7 +26,7 @@ export const statusLabel: Record<VersionStatus, string> = {
   unmaintained: 'Unmaintained',
 };
 export const statusNote: Record<VersionStatus, string> = {
-  upcoming: 'Under discussion, not named yet',
+  upcoming: 'Next version, improvements under discussion',
   current: 'Latest release',
   previous: 'Older, still supported',
   unmaintained: 'No longer maintained',
@@ -38,7 +38,7 @@ export const projects: Project[] = [
     id: 'quiver',
     label: 'Quiver',
     versions: [
-      { id: 'next', code: 'Next', status: 'upcoming' },
+      { id: 'v1-1', code: 'Dev Kit v1.1', status: 'upcoming' },
       { id: 'dev-kit', code: 'Dev Kit', status: 'current' },
       { id: 'pt3', code: 'PT3', status: 'previous' },
       { id: 'pt2', code: 'PT2', status: 'unmaintained' },
@@ -60,10 +60,46 @@ export const tabs: Tab[] = [
     label: 'Overview',
     groups: [
       {
+        id: 'v1-1',
+        label: 'Dev Kit v1.1',
+        items: [
+          item('v1-1', 'Improvements', 'flag', 'release'),
+          item('airframe', 'Structure & enclosure', 'airframe'),
+          item('gps-rf', 'GPS & RF', 'globe'),
+          item('power', 'Power & battery', 'battery'),
+          item('avionics', 'Avionics & network', 'harness'),
+        ],
+      },
+      {
+        id: 'testing',
+        label: 'Testing',
+        items: [
+          item('gps-interference', 'GPS interference', 'gauge'),
+          item('endurance', 'Endurance', 'plane'),
+          item('flight-campaign', 'Flight test campaign', 'flag'),
+        ],
+      },
+      {
+        id: 'operating',
+        label: 'Operating',
+        items: [
+          item('pilots-handbook', 'Pilot\'s handbook', 'book'),
+          item('maintenance', 'Maintenance', 'wrench'),
+        ],
+      },
+      {
+        id: 'reference',
+        label: 'Reference',
+        items: [
+          item('cad', 'CAD model', 'layers'),
+          item('bom', 'Bill of materials', 'list', 'bom'),
+        ],
+      },
+      {
         id: 'quiver',
         label: 'Quiver',
         items: [
-          item('summary', 'Summary', 'grid', 'summary'),
+          item('summary', 'At a glance', 'grid', 'summary'),
           item('people', 'People', 'people', 'people'),
           item('calls', 'Call notes', 'log', 'sources'),
         ],
@@ -123,47 +159,6 @@ export const tabs: Tab[] = [
           item('autonomy', 'Autonomy & obstacle avoidance', 'alert'),
           item('parameters', 'Parameters & failsafes', 'sliders'),
           item('flight-data', 'Flight logs & data', 'chart'),
-        ],
-      },
-    ],
-  },
-  {
-    id: 'aircraft',
-    label: 'Aircraft',
-    groups: [
-      {
-        id: 'next-revision',
-        label: 'Next revision',
-        items: [
-          item('airframe', 'Structure & enclosure', 'airframe'),
-          item('gps-rf', 'GPS & RF', 'globe'),
-          item('power', 'Power & battery', 'battery'),
-          item('avionics', 'Avionics & network', 'harness'),
-        ],
-      },
-      {
-        id: 'testing',
-        label: 'Testing',
-        items: [
-          item('gps-interference', 'GPS interference', 'gauge'),
-          item('endurance', 'Endurance', 'plane'),
-          item('flight-campaign', 'Flight test campaign', 'flag'),
-        ],
-      },
-      {
-        id: 'operating',
-        label: 'Operating',
-        items: [
-          item('pilots-handbook', 'Pilot\'s handbook', 'book'),
-          item('maintenance', 'Maintenance', 'wrench'),
-        ],
-      },
-      {
-        id: 'reference',
-        label: 'Reference',
-        items: [
-          item('cad', 'CAD model', 'layers'),
-          item('bom', 'Bill of materials', 'list', 'bom'),
         ],
       },
     ],
@@ -232,7 +227,7 @@ export const tabs: Tab[] = [
         items: [
           item('area-attachments', 'Attachments', 'box', 'threads'),
           item('area-software', 'Software', 'chip', 'threads'),
-          item('area-aircraft', 'Aircraft', 'airframe', 'threads'),
+          item('area-overview', 'Overview', 'flag', 'threads'),
           item('area-build', 'Build', 'wrench', 'threads'),
           item('area-selling', 'Selling', 'store', 'threads'),
         ],
