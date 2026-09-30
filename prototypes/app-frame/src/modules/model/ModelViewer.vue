@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
-import { MODEL_META_URL, MODEL_URL, provenance, within, type Sel } from './model';
+import { MODEL_META_URL, MODEL_URL, componentName, provenance, selKey, within, type Sel } from './model';
 
 // The Spearhead model on a canvas. It only draws: which groups are lit, what is
 // selected and what is under discussion all come in as props, and a click on a
@@ -19,8 +19,12 @@ const props = defineProps<{
   /** Places with an open thread; their parts take the discussion colour. */
   discussed: Sel[];
 }>();
-const emit = defineEmits<{ pick: [sel: Sel | null]; ready: [meta: ModelMeta] }>();
+const emit = defineEmits<{ pick: [sel: Sel | null]; ready: [meta: ModelMeta, structure: Structure]; thumbs: [thumbs: Thumbs] }>();
 export interface ModelMeta { solids: number; revision: string; snapshot: string; span_m: number; groups: { id: string; solids: number }[] }
+/** group → component ('' for loose solids) → solid names, as the model file has them. */
+export type Structure = Record<string, Record<string, string[]>>;
+/** selKey of a group or component → a small transparent render of just that piece. */
+export type Thumbs = Record<string, string>;
 
 type View = 'iso' | 'top' | 'front' | 'side';
 const stage = ref<HTMLDivElement>();
@@ -69,6 +73,14 @@ const dirs: Record<View, THREE.Vector3> = {
   iso: new THREE.Vector3(-1.15, 0.95, 1.25), top: new THREE.Vector3(0, 1, 0.0001),
   front: new THREE.Vector3(-1, 0.0001, 0), side: new THREE.Vector3(0, 0.0001, 1),
 };
+function aim(b: THREE.Box3, dir: THREE.Vector3, margin: number) {
+  const center = b.getCenter(new THREE.Vector3());
+  const radius = Math.max(b.getSize(new THREE.Vector3()).length() / 2, 0.05);
+  const distance = (radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) / Math.min(camera.aspect, 1)) * margin;
+  camera.position.copy(center).add(dir.clone().normalize().multiplyScalar(distance));
+  controls.target.copy(center);
+  camera.near = Math.max(0.001, radius / 1000); camera.far = Math.max(100, distance * 10); camera.updateProjectionMatrix(); controls.update();
+}
 /** Frame the selection, else the lit groups, else the whole aircraft. */
 function fit(next: View = view.value) {
   if (!renderer || !meshes.length) return;
@@ -77,12 +89,76 @@ function fit(next: View = view.value) {
   let b = sel ? box((d) => within(d, sel)) : new THREE.Box3();
   if (b.isEmpty() && props.lit?.length) b = box((d) => isLit(d.group));
   if (b.isEmpty()) b = box(() => true);
-  const center = b.getCenter(new THREE.Vector3());
-  const radius = Math.max(b.getSize(new THREE.Vector3()).length() / 2, 0.05);
-  const distance = (radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) / Math.min(camera.aspect, 1)) * (sel ? 1.5 : 1.04);
-  camera.position.copy(center).add(dirs[next].clone().normalize().multiplyScalar(distance));
-  controls.target.copy(center);
-  camera.near = Math.max(0.001, radius / 1000); camera.far = Math.max(100, distance * 10); camera.updateProjectionMatrix(); controls.update();
+  aim(b, dirs[next], sel ? 1.5 : 1.04);
+}
+
+/**
+ * Render one piece of the aircraft on its own into a small transparent image,
+ * for the panel's tiles. Uses the live renderer for a moment and puts
+ * everything back in the same task, so the canvas never shows it.
+ */
+/** Box around the heart of a piece: the 80% of its solids whose centres sit
+    nearest its median centre, padded a little. Long spars and scattered
+    fasteners that belong to a group don't shrink the render of it. */
+function coreBox(only: (d: Sel) => boolean) {
+  const items = meshes.filter((m) => only(m.userData as Sel)).map((m) => new THREE.Box3().setFromObject(m));
+  if (items.length < 5) return box(only);
+  const centers = items.map((b) => b.getCenter(new THREE.Vector3()));
+  const median = (axis: 'x' | 'y' | 'z') => { const v = centers.map((c) => c[axis]).sort((a, b) => a - b); return v[Math.floor(v.length / 2)]; };
+  const mid = new THREE.Vector3(median('x'), median('y'), median('z'));
+  const near = centers.map((c, i) => ({ c, i, d: c.distanceTo(mid) })).sort((a, b) => a.d - b.d).slice(0, Math.ceil(items.length * 0.8));
+  const core = new THREE.Box3();
+  for (const n of near) core.expandByPoint(n.c);
+  // Pad by the typical solid's size so the pieces at the edge aren't cut in half.
+  const sizes = near.map((n) => items[n.i].getSize(new THREE.Vector3()).length()).sort((a, b) => a - b);
+  core.expandByScalar(sizes[Math.floor(sizes.length / 2)] / 2);
+  return core;
+}
+
+/** The canvas as an image, trimmed to its drawn pixels plus a small margin. */
+function cropped(src: HTMLCanvasElement) {
+  const c = document.createElement('canvas');
+  c.width = src.width; c.height = src.height;
+  const ctx = c.getContext('2d', { willReadFrequently: true })!;
+  ctx.drawImage(src, 0, 0);
+  const { data, width, height } = ctx.getImageData(0, 0, c.width, c.height);
+  let x0 = width, y0 = height, x1 = -1, y1 = -1;
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+    if (data[(y * width + x) * 4 + 3] > 8) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  }
+  if (x1 < 0) return c.toDataURL('image/png');
+  const pad = Math.round(Math.max(x1 - x0, y1 - y0) * 0.06);
+  x0 = Math.max(0, x0 - pad); y0 = Math.max(0, y0 - pad); x1 = Math.min(width - 1, x1 + pad); y1 = Math.min(height - 1, y1 + pad);
+  const out = document.createElement('canvas');
+  out.width = x1 - x0 + 1; out.height = y1 - y0 + 1;
+  out.getContext('2d')!.drawImage(c, x0, y0, out.width, out.height, 0, 0, out.width, out.height);
+  return out.toDataURL('image/png');
+}
+
+function snapshot(only: (d: Sel) => boolean, w = 240, h = 150) {
+  const r = renderer!;
+  const size = r.getSize(new THREE.Vector2());
+  const cam = { pos: camera.position.clone(), target: controls.target.clone(), aspect: camera.aspect, near: camera.near, far: camera.far };
+  const groupsOn = [...groupObjects.values()].map((o) => [o, o.visible] as const);
+  for (const [o] of groupsOn) o.visible = true;
+  for (const m of meshes) {
+    const d = m.userData as Sel;
+    const mat = m.material as THREE.MeshStandardMaterial;
+    m.visible = only(d);
+    mat.color.set(colors[provenance(d.group)]); mat.opacity = 1; mat.transparent = false; mat.depthWrite = true; mat.emissive.setHex(0);
+  }
+  r.setSize(w, h, false);
+  camera.aspect = w / h;
+  aim(coreBox(only), dirs.iso, 1.08);
+  r.render(scene, camera);
+  const url = cropped(r.domElement);
+  for (const m of meshes) m.visible = true;
+  for (const [o, v] of groupsOn) o.visible = v;
+  r.setSize(size.x, size.y, false);
+  camera.aspect = cam.aspect; camera.near = cam.near; camera.far = cam.far; camera.position.copy(cam.pos); controls.target.copy(cam.target);
+  camera.updateProjectionMatrix(); controls.update();
+  paint();
+  return url;
 }
 defineExpose({ fit });
 
@@ -126,6 +202,7 @@ onMounted(async () => {
     const json = gltf.parser.json as { nodes: { name?: string }[] };
     // Names as written in the model file (three.js sanitizes object names).
     const original = (o: THREE.Object3D) => { const i = gltf.parser.associations.get(o)?.nodes; return i !== undefined ? json.nodes[i]?.name ?? o.name : o.name; };
+    const structure: Structure = {};
     for (const entry of meta.groups) {
       const obj = gltf.scene.getObjectByName(entry.id);
       if (!obj) continue;
@@ -137,6 +214,7 @@ onMounted(async () => {
         while (child.parent && child.parent !== obj) child = child.parent;
         const component = child !== mesh ? original(child) : undefined;
         mesh.userData = { group: entry.id, component, part: original(mesh) } satisfies Sel;
+        ((structure[entry.id] ??= {})[component ?? ''] ??= []).push(original(mesh));
         mesh.material = new THREE.MeshStandardMaterial({ metalness: 0.05, roughness: 0.7, side: THREE.DoubleSide });
         meshes.push(mesh);
       });
@@ -145,7 +223,16 @@ onMounted(async () => {
     paint();
     fit();
     status.value = 'ready';
-    emit('ready', meta);
+    emit('ready', meta, structure);
+    // Tiles for every group and every named component.
+    const thumbs: Thumbs = {};
+    for (const [group, comps] of Object.entries(structure)) {
+      thumbs[selKey({ group })] = snapshot((d) => d.group === group);
+      for (const component of Object.keys(comps)) {
+        if (componentName(component)) thumbs[selKey({ group, component })] = snapshot((d) => d.group === group && d.component === component);
+      }
+    }
+    emit('thumbs', thumbs);
   } catch (e) {
     console.warn('Model failed to load', e);
     status.value = 'error';

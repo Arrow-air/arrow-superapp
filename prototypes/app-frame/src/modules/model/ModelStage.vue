@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import ModelViewer, { type ModelMeta } from './ModelViewer.vue';
+import ModelViewer, { type ModelMeta, type Structure, type Thumbs } from './ModelViewer.vue';
+import PartsNav from './PartsNav.vue';
 import StatusIcon from '../threads/StatusIcon.vue';
 import { state, statusOf } from '../threads/store';
 import type { Thread } from '../threads/data';
@@ -19,6 +20,9 @@ const router = useRouter();
 
 const lit = computed(() => (props.subsystem ? subsystemGroups[props.subsystem] ?? [] : null));
 const meta = ref<ModelMeta>();
+const structure = ref<Structure>({});
+const thumbs = ref<Thumbs>({});
+function onReady(m: ModelMeta, s: Structure) { meta.value = m; structure.value = s; }
 const groups = computed(() => (meta.value?.groups ?? []).filter((g) => !lit.value || lit.value.includes(g.id)));
 const solids = computed(() => groups.value.reduce((s, g) => s + g.solids, 0));
 
@@ -66,10 +70,21 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
 
 <template>
   <div class="stage">
-    <ModelViewer class="view" :lit="lit" :hidden="hidden" :selection="selection" :discussed="discussed" @pick="pick" @ready="meta = $event" />
+    <ModelViewer class="view" :lit="lit" :hidden="hidden" :selection="selection" :discussed="discussed" @pick="pick" @ready="onReady" @thumbs="thumbs = $event" />
 
     <aside class="panel" aria-label="Model">
-      <template v-if="selection">
+      <PartsNav
+        v-if="lit?.length"
+        :label="label"
+        :groups="groups"
+        :structure="structure"
+        :thumbs="thumbs"
+        :selection="selection"
+        :open-count="openCount"
+        :thread-count="about.length"
+        @pick="pick"
+      />
+      <template v-else-if="selection">
         <button type="button" class="back" @click="pick(null)">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>{{ label }}
         </button>
@@ -122,7 +137,7 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
       </template>
 
       <p class="source">
-        Model from <a href="https://github.com/Arrow-air/project-spearhead/tree/hex/build123d-fusion-aircraft/src/design" target="_blank" rel="noopener">project-spearhead</a>, revision {{ meta?.revision ?? '' }}. A tessellated preview; the STEP files are exact.
+        Fusion snapshot {{ meta?.snapshot ?? '' }}. Model from <a href="https://github.com/Arrow-air/project-spearhead/tree/hex/build123d-fusion-aircraft/src/design" target="_blank" rel="noopener">project-spearhead</a>, revision {{ meta?.revision ?? '' }}. A tessellated preview; the STEP files are exact.
       </p>
     </aside>
   </div>
