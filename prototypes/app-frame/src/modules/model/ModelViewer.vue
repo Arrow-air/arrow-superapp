@@ -336,7 +336,7 @@ watch(() => props.lit, () => fit(), { deep: true });
   <div class="viewer">
     <div class="grid" :class="{ on: grid }" aria-hidden="true"></div>
     <div ref="stage" class="canvas" :data-ready="status === 'ready'"></div>
-    <div class="toolbar">
+    <div class="view-tools">
     <div class="seg views" role="radiogroup" aria-label="Camera">
       <button v-for="v in (['iso', 'top', 'front', 'side'] as View[])" :key="v" type="button" role="radio" :aria-checked="view === v" @click="fit(v)">
         {{ v === 'iso' ? '3D' : v[0].toUpperCase() + v.slice(1) }}
@@ -363,27 +363,33 @@ watch(() => props.lit, () => fit(), { deep: true });
 .canvas :deep(canvas) { display: block; cursor: grab; }
 .canvas :deep(canvas:active) { cursor: grabbing; }
 
-.toolbar { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; }
+.viewer {
+  /* Controls over the model: a translucent blueprint tint, not the frame's grey. */
+  --chip-bg: rgb(140 170 235 / 0.08);
+  --chip-hover: rgb(140 170 235 / 0.14);
+  --chip-active: rgb(140 170 235 / 0.2);
+}
+.view-tools { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; }
 .grid { position: absolute; inset: 0; background: var(--cad-grid, none); opacity: 0; transition: opacity 200ms ease-out; pointer-events: none; }
 .grid.on { opacity: 1; }
 .grid-toggle {
   display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 8px;
-  background: var(--slate-a3); backdrop-filter: blur(8px); color: var(--fg-muted); cursor: pointer; transition: color 120ms, background-color 120ms;
+  background: var(--chip-bg); backdrop-filter: blur(8px); color: var(--fg-muted); cursor: pointer; transition: color 120ms, background-color 120ms;
 }
-.grid-toggle:hover { color: var(--fg-2); }
-.grid-toggle[aria-pressed='true'] { background: var(--slate-a5); color: var(--fg); }
+.grid-toggle:hover { color: var(--fg-2); background: var(--chip-hover); }
+.grid-toggle[aria-pressed='true'] { background: var(--chip-active); color: var(--fg); }
 .grid-toggle svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linejoin: round; }
-.seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--slate-a3); backdrop-filter: blur(8px); }
+.seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--chip-bg); backdrop-filter: blur(8px); }
 .seg button {
   height: 24px; padding: 0 9px; border: 0; border-radius: 6px; background: none;
   color: var(--fg-muted); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer;
 }
 .seg button:hover { color: var(--fg-2); }
-.seg button[aria-checked='true'] { background: var(--slate-a5); color: var(--fg); }
+.seg button[aria-checked='true'] { background: var(--chip-active); color: var(--fg); }
 
 .note { position: absolute; margin: 0; font-size: var(--text-sm); color: var(--fg-muted); pointer-events: none; }
 .center { inset: 0; display: grid; place-items: center; }
-.legend { left: 12px; bottom: 12px; display: flex; gap: 12px; padding: 5px 10px; border-radius: 8px; background: var(--slate-a3); backdrop-filter: blur(8px); }
+.legend { left: 12px; bottom: 12px; display: flex; gap: 12px; padding: 5px 10px; border-radius: 8px; background: var(--chip-bg); backdrop-filter: blur(8px); }
 .legend span { display: inline-flex; align-items: center; gap: 5px; }
 .legend i { width: 7px; height: 7px; border-radius: 50%; }
 </style>
