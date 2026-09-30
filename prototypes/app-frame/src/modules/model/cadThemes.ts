@@ -6,71 +6,50 @@
 export interface CadTheme { name: string; viewer: string; panel: string }
 
 export const cadThemes: CadTheme[] = [
+  // Round two: the blueprint family (the first round's 7 and 8 were the favourites).
   {
-    name: 'Slate pool (current)',
-    viewer: 'radial-gradient(ellipse at 50% 40%, var(--slate-a7), var(--slate-a3) 70%)',
-    panel: 'var(--slate-a3)',
-  },
-  {
-    name: 'Flat graphite',
-    viewer: '#1d1e21',
-    panel: '#1d1e21',
-  },
-  {
-    name: 'Soft graphite pool',
-    viewer: 'radial-gradient(ellipse at 50% 45%, #2b2d31, #1b1c1f 75%)',
-    panel: '#1b1c1f',
-  },
-  {
-    name: 'Studio grey',
-    viewer: 'radial-gradient(ellipse at 50% 40%, #44484f, #2a2c31 72%)',
-    panel: '#2a2c31',
-  },
-  {
-    name: 'Fusion fade',
-    viewer: 'linear-gradient(180deg, #34373d 0%, #1c1d21 100%)',
-    panel: 'linear-gradient(180deg, #2b2e33 0%, #1c1d21 100%)',
-  },
-  {
-    name: 'Near black spotlight',
-    viewer: 'radial-gradient(ellipse at 50% 42%, #26282c, #0e0e10 68%)',
-    panel: '#101012',
-  },
-  {
-    name: 'Night blueprint',
+    name: 'Night blueprint (7)',
     viewer: 'radial-gradient(ellipse at 50% 40%, #1d2c48, #0f1627 72%)',
     panel: '#111a2d',
   },
   {
-    name: 'Blueprint grid',
-    viewer:
-      'linear-gradient(rgb(120 150 220 / 0.07) 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(90deg, rgb(120 150 220 / 0.07) 1px, transparent 1px) 0 0 / 28px 28px, radial-gradient(ellipse at 50% 40%, #1b2a45, #0e1526 75%)',
+    name: 'Blueprint grid (8)',
+    viewer: 'linear-gradient(rgb(120 150 220 / 0.07) 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(90deg, rgb(120 150 220 / 0.07) 1px, transparent 1px) 0 0 / 28px 28px, radial-gradient(ellipse at 50% 40%, #1b2a45, #0e1526 75%)',
     panel: '#101829',
   },
   {
-    name: 'Indigo haze',
-    viewer: 'radial-gradient(ellipse at 50% 40%, var(--indigo-4), var(--indigo-2) 72%)',
-    panel: 'var(--indigo-2)',
+    name: 'Fine faint grid',
+    viewer: 'linear-gradient(rgb(120 150 220 / 0.045) 1px, transparent 1px) 0 0 / 16px 16px, linear-gradient(90deg, rgb(120 150 220 / 0.045) 1px, transparent 1px) 0 0 / 16px 16px, radial-gradient(ellipse at 50% 40%, #1b2a45, #0e1526 75%)',
+    panel: '#101829',
   },
   {
-    name: 'Workshop teal',
-    viewer: 'radial-gradient(ellipse at 50% 40%, #213234, #131c1d 72%)',
-    panel: '#152021',
+    name: 'Drafting grid (major + minor)',
+    viewer: 'linear-gradient(rgb(120 150 220 / 0.09) 1px, transparent 1px) 0 0 / 80px 80px, linear-gradient(90deg, rgb(120 150 220 / 0.09) 1px, transparent 1px) 0 0 / 80px 80px, linear-gradient(rgb(120 150 220 / 0.04) 1px, transparent 1px) 0 0 / 16px 16px, linear-gradient(90deg, rgb(120 150 220 / 0.04) 1px, transparent 1px) 0 0 / 16px 16px, radial-gradient(ellipse at 50% 40%, #1b2a45, #0e1526 75%)',
+    panel: '#101829',
   },
   {
-    name: 'Warm charcoal',
-    viewer: 'radial-gradient(ellipse at 50% 40%, #33302c, #1b1917 72%)',
-    panel: '#1d1b19',
+    name: 'Grid fading to the edges',
+    viewer: 'radial-gradient(ellipse at 50% 42%, transparent 35%, #0e1526 85%), linear-gradient(rgb(120 150 220 / 0.08) 1px, transparent 1px) 0 0 / 24px 24px, linear-gradient(90deg, rgb(120 150 220 / 0.08) 1px, transparent 1px) 0 0 / 24px 24px, radial-gradient(ellipse at 50% 40%, #1b2a45, #0e1526 75%)',
+    panel: '#0f1628',
   },
   {
-    name: 'Graph paper',
-    viewer:
-      'linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px) 0 0 / 24px 24px, linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px) 0 0 / 24px 24px, radial-gradient(ellipse at 50% 40%, #2c2e33, #18191c 75%)',
-    panel: '#1a1b1e',
+    name: 'Deep ink grid',
+    viewer: 'linear-gradient(rgb(120 150 220 / 0.06) 1px, transparent 1px) 0 0 / 24px 24px, linear-gradient(90deg, rgb(120 150 220 / 0.06) 1px, transparent 1px) 0 0 / 24px 24px, radial-gradient(ellipse at 50% 40%, #152139, #090e1a 75%)',
+    panel: '#0b1120',
   },
   {
-    name: 'Horizon floor',
-    viewer: 'linear-gradient(180deg, #2a2d33 0%, #22252a 55%, #16171a 56%, #111214 100%)',
-    panel: '#1a1b1e',
+    name: 'Bright blueprint',
+    viewer: 'linear-gradient(rgb(120 150 220 / 0.08) 1px, transparent 1px) 0 0 / 24px 24px, linear-gradient(90deg, rgb(120 150 220 / 0.08) 1px, transparent 1px) 0 0 / 24px 24px, radial-gradient(ellipse at 50% 40%, #24395f, #13213b 75%)',
+    panel: '#15233d',
+  },
+  {
+    name: 'Blueprint, grid on the panel too',
+    viewer: 'linear-gradient(rgb(120 150 220 / 0.07) 1px, transparent 1px) 0 0 / 24px 24px, linear-gradient(90deg, rgb(120 150 220 / 0.07) 1px, transparent 1px) 0 0 / 24px 24px, radial-gradient(ellipse at 50% 40%, #1b2a45, #0e1526 75%)',
+    panel: 'linear-gradient(rgb(120 150 220 / 0.05) 1px, transparent 1px) 0 0 / 24px 24px, linear-gradient(90deg, rgb(120 150 220 / 0.05) 1px, transparent 1px) 0 0 / 24px 24px, #101829',
+  },
+  {
+    name: 'Dot grid',
+    viewer: 'radial-gradient(rgb(140 170 235 / 0.16) 1px, transparent 1.5px) 0 0 / 20px 20px, radial-gradient(ellipse at 50% 40%, #1b2a45, #0e1526 75%)',
+    panel: '#101829',
   },
 ];
