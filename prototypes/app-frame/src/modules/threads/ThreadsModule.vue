@@ -6,7 +6,7 @@ import StatusIcon from './StatusIcon.vue';
 import ThreadDetail from './ThreadDetail.vue';
 import type { Thread } from './data';
 import { state, statusOf, type Status } from './store';
-import { parseSelKey, selLabel, touches } from '../model/model';
+import { parseSelKey, selKey, selLabel, touches } from '../model/model';
 
 // Community decisions, Linear-style but minimal: the list is only for finding
 // a thread (status, title, time). Everything else is in the thread itself. Votes are weighted
@@ -43,20 +43,26 @@ function clearPart() {
 type Scope = 'open' | 'settled' | 'all';
 const scope = ref<Scope>(route.params.item === 'decisions' ? 'all' : 'open');
 watch(() => route.params.item, (i) => (scope.value = i === 'decisions' ? 'all' : 'open'));
+// Looking at one part means wanting all of its history, settled calls included.
+watch(() => part.value && selKey(part.value), (k, before) => { if (!!k !== !!before) scope.value = k ? 'all' : 'open'; }, { immediate: true });
 const query = ref('');
 const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
 
-const visible = computed(() =>
+const inScope = (t: Thread) => {
+  const st = statusOf(t);
+  return scope.value === 'all' || (scope.value === 'open' ? st !== 'settled' : st === 'settled');
+};
+const matching = computed(() =>
   state.threads.filter((t) => {
-    const st = statusOf(t);
-    if (scope.value === 'open' && st === 'settled') return false;
-    if (scope.value === 'settled' && st !== 'settled') return false;
     const q = query.value.trim().toLowerCase();
     if (q && !`${t.id} ${t.title} ${t.anchor.label} ${t.system}`.toLowerCase().includes(q)) return false;
     if (part.value && !(t.part && touches(t.part, part.value))) return false;
     return viewFilter.value(t);
   }),
 );
+const visible = computed(() => matching.value.filter(inScope));
+/** Threads the scope switch is hiding, so an empty list can say so instead of looking empty. */
+const hidden = computed(() => matching.value.length - visible.value.length);
 
 const groupsDef: { id: Status; label: string }[] = [
   { id: 'needs', label: 'Needs input' },
@@ -118,7 +124,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
       </div>
 
       <div class="list">
-        <p v-if="!flat.length" class="empty">{{ part ? 'No threads about this part yet.' : 'Nothing here.' }}</p>
+        <p v-if="!flat.length && hidden" class="empty">
+          {{ hidden }} {{ scope === 'open' ? 'settled' : 'open' }} {{ hidden === 1 ? 'thread' : 'threads' }} hidden.
+          <button type="button" class="show-all" @click="scope = 'all'">Show all</button>
+        </p>
+        <p v-else-if="!flat.length" class="empty">{{ part ? 'No threads about this part yet.' : 'Nothing here.' }}</p>
         <section v-for="g in groups" :key="g.id" class="group">
           <h3 class="group-head">{{ g.label }}</h3>
           <button
@@ -229,6 +239,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 .flow .detail-pane { overflow: visible; }
 .empty { margin: 0; padding: 24px 8px; text-align: center; color: var(--fg-muted); }
 .empty.pad { padding: 48px; }
+.show-all { padding: 0; border: 0; background: none; color: var(--indigo-11); font: inherit; cursor: pointer; }
+.show-all:hover { text-decoration: underline; }
 
 @media (max-width: 899px) {
   .threads { grid-template-columns: minmax(0, 1fr); }

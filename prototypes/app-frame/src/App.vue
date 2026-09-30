@@ -100,6 +100,9 @@ watch(
   overflow: auto;
 }
 
+/* Pages that bring their own cards (Design subsystems) sit straight on the page. */
+.slot:has(> .subsystem), .slot:has(> * > .subsystem) { background: none; border-color: transparent; }
+
 @media (max-width: 767px) {
   .shell { height: auto; overflow: visible; }
   .frame { height: auto; min-height: 100dvh; }

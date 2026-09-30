@@ -55,12 +55,6 @@ const groupSolids = computed(() => props.groups.find((g) => g.id === group.value
 const parts = computed(() => (props.structure[group.value]?.[component.value] ?? []));
 const namedParts = computed(() => parts.value.filter(isNamed).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })));
 const unnamed = computed(() => parts.value.length - namedParts.value.length);
-/** A solid picked on the model that has no tile of its own (e.g. "Body65"). */
-const looseSolid = computed(() => {
-  const p = props.selection?.part;
-  return p && (level.value === 1 || !isNamed(p)) ? partName(p) : '';
-});
-
 const provNote = (g: string) =>
   ({ mirrored: 'Mirrored from the port side; not modelled in Fusion.', recovered: 'Recovered from bodies hidden in the Fusion file.', modelled: '' })[provenance(g)];
 // The path from the subsystem down to where you are; every step but the last is a way back up.
@@ -116,7 +110,6 @@ const heroKey = computed(() => selKey(level.value === 2 ? { group: group.value, 
             <p v-if="threadCount" class="threads"><span class="open">{{ threadCount }}</span>{{ threadCount === 1 ? 'thread' : 'threads' }} below</p>
           </div>
         </div>
-        <p v-if="looseSolid" class="muted">Selected solid: {{ looseSolid }}</p>
 
         <template v-if="level === 1 && componentTiles.length">
           <h4 class="head">Components</h4>
