@@ -165,7 +165,9 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
 
 .panel {
   display: flex; flex-direction: column; min-height: 0; overflow-y: auto; padding: 16px 12px 12px;
-  border-left: 1px solid var(--border-soft); background: var(--slot-bg); scrollbar-width: thin;
+  /* Same tone as the edge of the viewer's light pool, so viewer and inspector
+     read as one CAD explorer, apart from the conversation below. */
+  border-left: 1px solid var(--border-soft); background: var(--slate-a3); scrollbar-width: thin;
 }
 .kicker { margin: 0 4px 4px; font-size: var(--text-sm); color: var(--fg-faint); }
 .title { margin: 0 4px 6px; font-size: var(--text-md); font-weight: 600; color: var(--fg); line-height: 1.35; }
