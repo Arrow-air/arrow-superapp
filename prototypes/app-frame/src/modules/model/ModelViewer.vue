@@ -396,9 +396,8 @@ watch(() => props.lit, () => fit(), { deep: true });
         {{ v === 'iso' ? '3D' : v[0].toUpperCase() + v.slice(1) }}
       </button>
     </div>
-    <button type="button" class="grid-toggle" :aria-pressed="projection === 'ortho'" :title="projection === 'ortho' ? 'Orthographic (click for perspective)' : 'Perspective (click for orthographic)'" @click="setProjection(projection === 'ortho' ? 'persp' : 'ortho')">
-      <svg v-if="projection === 'ortho'" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 5.5h8v8H3zM3 5.5 5.5 3h8L11 5.5M13.5 3v8L11 13.5" /></svg>
-      <svg v-else viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 5.5h7l1.5 8H3zM4.5 5.5 6 2.5h4l1.5 3" /></svg>
+    <button type="button" class="proj-toggle" :title="projection === 'ortho' ? 'Orthographic: click for perspective' : 'Perspective: click for orthographic'" @click="setProjection(projection === 'ortho' ? 'persp' : 'ortho')">
+      {{ projection === 'ortho' ? 'Ortho' : 'Persp' }}
     </button>
     <button type="button" class="grid-toggle" :aria-pressed="grid" :title="grid ? 'Hide grid' : 'Show grid'" @click="toggleGrid">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 2.5h11v11h-11zM6.2 2.5v11M9.8 2.5v11M2.5 6.2h11M2.5 9.8h11" /></svg>
@@ -436,6 +435,12 @@ watch(() => props.lit, () => fit(), { deep: true });
 }
 .grid-toggle:hover { color: var(--fg-2); background: var(--chip-hover); }
 .grid-toggle[aria-pressed='true'] { background: var(--chip-active); color: var(--fg); }
+.proj-toggle {
+  height: 28px; min-width: 52px; padding: 0 10px; border: 0; border-radius: 8px; background: var(--chip-bg); backdrop-filter: blur(8px);
+  color: var(--fg-2); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; transition: color 120ms, background-color 120ms;
+}
+.proj-toggle:hover { color: var(--fg); background: var(--chip-hover); }
+.proj-toggle:focus-visible, .grid-toggle:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
 .grid-toggle svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linejoin: round; }
 .seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--chip-bg); backdrop-filter: blur(8px); }
 .seg button {

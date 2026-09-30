@@ -7,7 +7,7 @@ import { cadThemes } from './cadThemes';
 import StatusIcon from '../threads/StatusIcon.vue';
 import { state, statusOf } from '../threads/store';
 import type { Thread } from '../threads/data';
-import { groupNames, parseSelKey, provenance, selKey, selLabel, subsystemGroups, touches, type Sel } from './model';
+import { componentName, groupNames, parseSelKey, partName, provenance, selKey, selLabel, subsystemGroups, touches, type Sel } from './model';
 
 // The model with a panel beside it. On a subsystem page its groups are lit and
 // the rest ghosted; on the whole-aircraft page everything is lit and the panel
@@ -77,6 +77,18 @@ const pagePath = computed(() => `${route.params.tab}/${route.params.item}`);
 function open(t: Thread & { part: Sel }) {
   if (t.page === pagePath.value || !t.page) router.replace({ query: { ...route.query, part: selKey(t.part), thread: t.id } });
   else router.push({ path: `/${route.params.project}/${t.page}`, query: { part: selKey(t.part), thread: t.id } });
+}
+
+// The call to action: start a thread about whatever is selected (or the
+// subsystem), then bring the compose form below into view.
+const subjectName = computed(() => {
+  const s = selection.value;
+  if (!s) return props.label;
+  return partName(s.part) || componentName(s.component) || groupNames[s.group] || s.group;
+});
+function startThread() {
+  router.replace({ query: { ...route.query, new: '1' } });
+  requestAnimationFrame(() => document.querySelector('.threads.flow')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
 }
 
 // Layer switches (whole aircraft only).
@@ -165,6 +177,10 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
         </template>
       </template>
 
+      <button v-if="lit" type="button" class="cta" @click="startThread">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h10v7H7l-3 2.5v-2.5H3z" /></svg>
+        <span>Start a thread about <b>{{ subjectName }}</b></span>
+      </button>
       <!-- The model's provenance in one quiet line; the detail sits behind the ⓘ. -->
       <div class="source">
         <span>Fusion · {{ snapshotDate }}</span><span class="dot">·</span>
@@ -253,6 +269,19 @@ const dot = (group: string) => `var(--prov-${provenance(group)})`;
 .rtitle { color: var(--fg-2); font-size: var(--text-nav); line-height: 1.45; }
 .rsub { font-size: var(--text-sm); color: var(--fg-faint); }
 
+.cta {
+  display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 36px; margin-top: auto; padding: 0 12px;
+  border: 0; border-radius: 9px; background: var(--indigo-9); color: #fff; font: inherit; font-size: var(--text-base); font-weight: 500; cursor: pointer;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), 0 1px 2px rgb(0 0 0 / 0.3);
+  transition: background-color 120ms, transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.cta:hover { background: var(--indigo-10); }
+.cta:active { transform: scale(0.98); }
+.cta:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
+.cta span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cta b { font-weight: 600; }
+.cta svg { flex: none; width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; }
+.cta + .source { margin-top: 0; padding-top: 12px; }
 .source { position: relative; display: flex; align-items: center; margin: auto 4px 0; padding-top: 16px; font-size: var(--text-sm); color: var(--fg-faint); white-space: nowrap; }
 .source .dot { margin: 0 6px; }
 .source a { color: var(--fg-muted); text-decoration: none; }

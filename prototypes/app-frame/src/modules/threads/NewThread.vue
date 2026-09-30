@@ -1,0 +1,125 @@
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
+import Kbd from '../../frame/Kbd.vue';
+import { MOD } from '../../frame/shortcuts';
+import { componentName, partName, selLabel, type Sel } from '../model/model';
+import type { ThreadType } from './data';
+
+// Starting a thread about a place on the aircraft. The part picked on the model
+// is the default subject; the switch can widen it to its component or group.
+
+const props = defineProps<{ part?: Sel; pageLabel: string }>();
+const emit = defineEmits<{ post: [draft: { part?: Sel; type: ThreadType; title: string; body: string }]; cancel: [] }>();
+
+// From narrowest to widest: the solid, its component, its group.
+const scopes = computed(() => {
+  const p = props.part;
+  if (!p) return [];
+  const out: { key: string; label: string; sel: Sel }[] = [];
+  if (p.part) out.push({ key: 'part', label: partName(p.part), sel: { ...p } });
+  if (componentName(p.component)) out.push({ key: 'component', label: componentName(p.component), sel: { group: p.group, component: p.component } });
+  out.push({ key: 'group', label: selLabel({ group: p.group }), sel: { group: p.group } });
+  return out;
+});
+const scope = ref('');
+watch(scopes, (s) => (scope.value = s[0]?.key ?? ''), { immediate: true });
+const about = computed(() => scopes.value.find((s) => s.key === scope.value)?.sel);
+
+const types: { id: ThreadType; label: string; hint: string }[] = [
+  { id: 'question', label: 'Question', hint: 'Something you need answered' },
+  { id: 'proposal', label: 'Proposal', hint: 'A change you want decided' },
+  { id: 'idea', label: 'Idea', hint: 'Worth exploring, no decision yet' },
+];
+const type = ref<ThreadType>('question');
+const title = ref('');
+const body = ref('');
+const titleEl = ref<HTMLInputElement>();
+onMounted(() => titleEl.value?.focus());
+
+const ready = computed(() => title.value.trim().length > 3);
+function post() {
+  if (!ready.value) return;
+  emit('post', { part: about.value, type: type.value, title: title.value.trim(), body: body.value.trim() });
+}
+</script>
+
+<template>
+  <form class="new" @submit.prevent="post" @keydown.esc="emit('cancel')">
+    <p class="kicker">New thread on {{ pageLabel }}</p>
+
+    <div v-if="scopes.length" class="row">
+      <span class="label">About</span>
+      <div class="seg" role="radiogroup" aria-label="About">
+        <button v-for="s in scopes" :key="s.key" type="button" role="radio" :aria-checked="scope === s.key" @click="scope = s.key">{{ s.label }}</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <span class="label">Type</span>
+      <div class="seg" role="radiogroup" aria-label="Type">
+        <button v-for="t in types" :key="t.id" type="button" role="radio" :aria-checked="type === t.id" :title="t.hint" @click="type = t.id">{{ t.label }}</button>
+      </div>
+    </div>
+
+    <input ref="titleEl" v-model="title" class="title" maxlength="160" :placeholder="type === 'proposal' ? 'What should change?' : type === 'idea' ? 'The idea, in a line' : 'What do you need to know?'" aria-label="Title" />
+
+    <div class="composer">
+      <textarea
+        v-model="body"
+        rows="5"
+        placeholder="Context: what you see on the part, why it matters, what would settle it."
+        aria-label="Description"
+        @keydown.meta.enter.prevent="post"
+        @keydown.ctrl.enter.prevent="post"
+      ></textarea>
+      <div class="composer-bar">
+        <span class="hint"><Kbd :keys="[MOD, '↵']" outline /> to post</span>
+        <div class="actions">
+          <button type="button" class="ghost" @click="emit('cancel')">Cancel</button>
+          <button class="primary" type="submit" :disabled="!ready">Post thread</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</template>
+
+<style scoped>
+.new { max-width: 720px; padding: 22px 32px 48px; }
+.kicker { margin: 0 0 14px; font-size: var(--text-sm); color: var(--fg-faint); }
+.row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.label { width: 44px; font-size: var(--text-sm); color: var(--fg-muted); }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 2px; border-radius: 8px; background: var(--slate-a2); }
+.seg button {
+  height: 24px; padding: 0 9px; border: 0; border-radius: 6px; background: none;
+  color: var(--fg-muted); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer;
+}
+.seg button:hover { color: var(--fg-2); }
+.seg button[aria-checked='true'] { background: var(--indigo-a4); color: var(--indigo-12); }
+
+.title {
+  display: block; width: 100%; margin: 16px 0 0; padding: 0; border: 0; background: none; outline: none;
+  color: var(--fg); font: inherit; font-size: 18px; font-weight: 600; letter-spacing: -0.01em;
+}
+.title::placeholder { color: var(--fg-faint); font-weight: 500; }
+
+.composer { margin-top: 14px; border: 1px solid var(--slate-a4); border-radius: 12px; background: var(--slate-a2); transition: border-color 150ms; }
+.composer:focus-within { border-color: var(--slate-a7); }
+.composer textarea {
+  display: block; width: 100%; min-height: 110px; padding: 12px 14px 4px; border: 0; background: none; resize: vertical;
+  color: var(--fg); font: inherit; font-size: var(--text-nav); line-height: 1.5; outline: none;
+}
+.composer textarea::placeholder { color: var(--fg-faint); }
+.composer-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 8px 14px; }
+.hint { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--fg-faint); }
+.actions { display: flex; align-items: center; gap: 10px; }
+.ghost { padding: 0 6px; border: 0; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-base); cursor: pointer; }
+.ghost:hover { color: var(--fg); }
+.primary {
+  height: 32px; padding: 0 14px; border: 0; border-radius: 9px; background: var(--indigo-9); color: #fff;
+  font: inherit; font-size: var(--text-base); font-weight: 500; cursor: pointer;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), 0 1px 2px rgb(0 0 0 / 0.3); transition: background-color 120ms, opacity 120ms;
+}
+.primary:hover:not(:disabled) { background: var(--indigo-10); }
+.primary:disabled { opacity: 0.4; cursor: default; }
+.primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
+</style>

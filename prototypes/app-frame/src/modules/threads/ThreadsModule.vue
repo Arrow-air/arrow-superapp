@@ -4,8 +4,10 @@ import { useRoute, useRouter } from 'vue-router';
 import Icon from '../../frame/Icon.vue';
 import StatusIcon from './StatusIcon.vue';
 import ThreadDetail from './ThreadDetail.vue';
+import NewThread from './NewThread.vue';
+import { useWorkspace } from '../../frame/useWorkspace';
 import type { Thread } from './data';
-import { state, statusOf, type Status } from './store';
+import { createThread, state, statusOf, type Status } from './store';
 import { parseSelKey, selKey, selLabel, touches } from '../model/model';
 
 // Community decisions, Linear-style but minimal: the list is only for finding
@@ -34,6 +36,25 @@ const props = defineProps<{ page?: string; flow?: boolean }>();
 const viewFilter = computed(() => (props.page ? (t: Thread) => t.page === props.page : views[String(route.params.item)] ?? views.all));
 // A part picked on the model (?part=…) narrows a page's list to threads about it.
 const part = computed(() => (props.page ? parseSelKey(route.query.part) : undefined));
+// Starting a thread: ?new=1 swaps the thread pane for the compose form.
+const { item } = useWorkspace();
+const composing = computed(() => !!props.page && route.query.new === '1');
+function startThread() {
+  router.replace({ query: { ...route.query, new: '1' } });
+  mobileDetail.value = true;
+}
+function cancelThread() {
+  const query = { ...route.query };
+  delete query.new;
+  router.replace({ query });
+}
+function postThread(d: { part?: import('../model/model').Sel; type: import('./data').ThreadType; title: string; body: string }) {
+  const t = createThread({ ...d, page: props.page, system: String(route.params.item) });
+  const query = { ...route.query, thread: t.id } as Record<string, string>;
+  delete query.new;
+  if (d.part) query.part = selKey(d.part);
+  router.replace({ query });
+}
 function clearPart() {
   const query = { ...route.query };
   delete query.part;
@@ -128,7 +149,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
           {{ hidden }} {{ scope === 'open' ? 'settled' : 'open' }} {{ hidden === 1 ? 'thread' : 'threads' }} hidden.
           <button type="button" class="show-all" @click="scope = 'all'">Show all</button>
         </p>
-        <p v-else-if="!flat.length" class="empty">{{ part ? 'No threads about this part yet.' : 'Nothing here.' }}</p>
+        <p v-else-if="!flat.length" class="empty">
+          {{ part ? 'No threads about this part yet.' : 'Nothing here.' }}
+          <button v-if="page" type="button" class="show-all" @click="startThread">Start one</button>
+        </p>
         <section v-for="g in groups" :key="g.id" class="group">
           <h3 class="group-head">{{ g.label }}</h3>
           <button
@@ -154,7 +178,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
     </section>
 
     <section class="detail-pane" aria-label="Thread">
-      <ThreadDetail v-if="selected" :thread="selected" @back="mobileDetail = false" />
+      <NewThread v-if="composing" :key="String(route.query.part)" :part="part" :page-label="item?.label ?? ''" @post="postThread" @cancel="cancelThread" />
+      <ThreadDetail v-else-if="selected" :thread="selected" @back="mobileDetail = false" />
       <p v-else class="empty pad">Pick a thread.</p>
     </section>
   </div>
