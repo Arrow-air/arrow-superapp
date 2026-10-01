@@ -26,9 +26,9 @@ export function load(): Promise<void> {
   if (inflight) return inflight;
   inflight = (async () => {
     try {
-      const [th, po, vo, wo, rl, me, bu] = await Promise.all([
+      const [th, po, vo, wo, rl, me, bu, tv] = await Promise.all([
         all('sa_threads'), all('sa_positions', 'ord'), all('sa_votes'),
-        all('sa_work'), all('sa_release'), all('sa_members'), all('sa_builders'),
+        all('sa_work'), all('sa_release'), all('sa_members'), all('sa_builders'), all('sa_thread_votes'),
       ]);
       session.members = Object.fromEntries(me.map((m) => [m.user_id, m as Member]));
       session.builders = bu.map((b) => `${b.thread_id}|${b.user_id}`);
@@ -37,7 +37,7 @@ export function load(): Promise<void> {
         for (const r of rows) map.set(r.thread_id, [...(map.get(r.thread_id) ?? []), r]);
         return map;
       };
-      const P = byThread(po), V = byThread(vo);
+      const P = byThread(po), V = byThread(vo), TV = byThread(tv);
       state.threads = th.filter((t) => t.project === 'quiver').map((t): Thread => ({
         id: t.id, zone: t.zone, part: t.part ?? undefined, pcb: t.pcb ?? undefined,
         title: t.title, body: t.body, kind: t.kind, type: t.type, system: t.system, version: t.version,
@@ -46,6 +46,7 @@ export function load(): Promise<void> {
         // One comment tree: top-level comments are the options, replies carry parentId.
         positions: (P.get(t.id) ?? []).map((p) => ({ id: p.id, text: p.text, authorId: mine(p.author_id) ?? p.named ?? undefined, source: p.source ?? undefined, at: p.created_at, parentId: p.parent_id ?? undefined, deleted: p.deleted_at ? (p.removed ? 'lead' : 'author') : undefined, editedAt: p.edited_at ?? undefined })),
         votes: (V.get(t.id) ?? []).map((v) => ({ memberId: mine(v.user_id)!, positionId: v.position_id, value: v.value })),
+        threadVotes: (TV.get(t.id) ?? []).map((v) => ({ memberId: mine(v.user_id)!, value: v.value })),
         replies: [],
         objections: 0,
         settled: t.settled ? { ...t.settled, byId: mine(t.settled.byId) } : undefined,

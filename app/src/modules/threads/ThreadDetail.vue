@@ -7,6 +7,7 @@ import SourceChip from './SourceChip.vue';
 import StatusIcon from './StatusIcon.vue';
 import WorkCard from '../work/WorkCard.vue';
 import CommentNode from './CommentNode.vue';
+import ThreadVote from './ThreadVote.vue';
 import Icon from '../../frame/Icon.vue';
 import { threadTypes, typeStyle } from './types';
 import { useFreeze } from '../../frame/freeze';
@@ -142,17 +143,23 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 <template>
   <article class="detail">
     <header class="head">
-      <h1 class="title">{{ t.title }}</h1>
-      <p class="meta">
-        <span class="type" :style="typeStyle(t.type)"><Icon :name="threadTypes[t.type].icon" :size="12" />{{ threadTypes[t.type].label }}</span>
-        <span v-if="due" class="due" :data-level="freeze.level.value" title="Open threads are settled, deferred or declined at the design freeze">
-          {{ freeze.frozen.value ? 'Due at freeze' : `Settles by freeze · ${freeze.label.value}` }}
-        </span>
-        <template v-if="t.authorId"><Avatar :id="t.authorId" :size="16" /> {{ nameOf(t.authorId) }}<span class="dot">·</span></template>
-        <span>{{ day(t.raisedAt) }}</span>
-        <template v-if="t.source"><span class="dot"></span><SourceChip :source="t.source" /></template>
-        <template v-if="t.version"><span class="dot">·</span><span class="mono ver" title="The version this thread is about">{{ t.version }}</span></template>
-      </p>
+      <!-- The thread's own vote, Reddit style, beside its title. -->
+      <div class="head-top">
+        <ThreadVote :thread="t" />
+        <div class="head-main">
+          <h1 class="title">{{ t.title }}</h1>
+          <p class="meta">
+            <span class="type" :style="typeStyle(t.type)"><Icon :name="threadTypes[t.type].icon" :size="12" />{{ threadTypes[t.type].label }}</span>
+            <span v-if="due" class="due" :data-level="freeze.level.value" title="Open threads are settled, deferred or declined at the design freeze">
+              {{ freeze.frozen.value ? 'Due at freeze' : `Settles by freeze · ${freeze.label.value}` }}
+            </span>
+            <template v-if="t.authorId"><Avatar :id="t.authorId" :size="16" /> {{ nameOf(t.authorId) }}<span class="dot">·</span></template>
+            <span>{{ day(t.raisedAt) }}</span>
+            <template v-if="t.source"><span class="dot"></span><SourceChip :source="t.source" /></template>
+            <template v-if="t.version"><span class="dot">·</span><span class="mono ver" title="The version this thread is about">{{ t.version }}</span></template>
+          </p>
+        </div>
+      </div>
       <p v-if="t.pcb" class="part">
         About <span class="mono">{{ t.pcb.ref }}</span> on the {{ boardById(t.pcb.board)?.name }}
         <RouterLink :to="{ path: '/quiver/overview/pcbs', query: { board: t.pcb.board, ref: t.pcb.ref, thread: t.id } }">View on the board</RouterLink>
@@ -368,6 +375,8 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .flip { transform: rotate(180deg); }
 .eyebrow { display: flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--fg-muted); }
 .eyebrow .dot { margin: 0; }
+.head-top { display: flex; align-items: flex-start; gap: 10px; margin-left: -6px; }
+.head-main { flex: 1; min-width: 0; padding-top: 2px; }
 .title { margin: 0 0 8px; font-size: 18px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; color: var(--fg); }
 .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0; margin: 0; font-size: var(--text-sm); color: var(--fg-muted); }
 .meta .av { margin-right: 5px; }
