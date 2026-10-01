@@ -21,6 +21,8 @@ export interface Position {
   id: string; text: string; authorId?: string; source?: SourceRef; at: string; parentId?: string;
   /** Deleted by its author, or removed by a lead; it keeps its place so replies under it stay. */
   deleted?: 'author' | 'lead';
+  /** When its author last changed it. */
+  editedAt?: string;
 }
 export interface Reply { id: string; text: string; authorId?: string; source?: SourceRef; at: string }
 export interface Settled {

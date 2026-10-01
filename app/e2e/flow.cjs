@@ -124,6 +124,14 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   check((await reply.locator('.cm-vote .n').first().innerText()).trim() !== '0', 'replies can be voted on');
   check((await panel.locator('.choices button').count()) === 1, 'only top-level comments are offered for adoption');
 
+  // Editing your own comment, in place; it shows as edited.
+  const mine = top.locator('.cm-kids .cm').first();
+  await mine.getByRole('button', { name: 'Edit this reply' }).first().click();
+  await mine.getByRole('textbox', { name: 'Edit comment' }).fill('Which path: the tether, or a second plate?');
+  await mine.getByRole('button', { name: 'Save' }).click();
+  await p.waitForTimeout(200);
+  check((await mine.locator('.cm-text').first().innerText()) === 'Which path: the tether, or a second plate?' && (await mine.locator('.edited').count()) > 0, 'you edit your own reply and it shows as edited');
+
   // Deleting comments: your own reply goes; an option with replies leaves a placeholder.
   const leaf = reply.locator('.cm-kids .cm').first();
   await leaf.getByRole('button', { name: 'Delete this reply' }).click();
@@ -135,7 +143,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await top.getByRole('button', { name: 'Yes, delete' }).click();
   await p.waitForTimeout(200);
   const after1 = await panel.innerText();
-  check(!after1.includes('Yes, with a second structural path.') && after1.includes('Which path, the tether') && (await top.locator('.gone-note').first().innerText()) === 'Deleted', 'a deleted option keeps its place for its replies, without its words');
+  check(!after1.includes('Yes, with a second structural path.') && after1.includes('Which path: the tether') && (await top.locator('.gone-note').first().innerText()) === 'Deleted', 'a deleted option keeps its place for its replies, without its words');
   check(!(await panel.locator('.choices button').count()) && !(await top.locator(':scope > .cm-vote button').count()), 'a deleted option can no longer be adopted or voted on');
 
   // Start a discussion from a call suggestion.
@@ -287,6 +295,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.goto(`${BASE}/quiver/overview/gps-rf?thread=Q-6`);
   await p.waitForTimeout(400);
   check(!(await panel.locator('.cm.top.decided').getByRole('button', { name: /^Delete option / }).count()), 'the adopted option can\'t be deleted');
+  check(!(await panel.getByRole('button', { name: /^Edit (option|this reply)/ }).count()), 'nobody edits other people\'s comments, leads included');
   await p.getByRole('button', { name: /^Demo/ }).click();
   await p.getByRole('radio', { name: 'Member' }).click();
   await p.getByRole('button', { name: /^Demo/ }).click();

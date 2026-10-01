@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import Avatar from './Avatar.vue';
 import SourceChip from './SourceChip.vue';
 import type { Position, Thread } from './data';
-import { ago, canDeleteComment, childrenOf, comment, deleteComment, isOpen, leaderOf, letterOf, myVote, person, state, talliesOf, vote } from './store';
+import { ago, canDeleteComment, canEditComment, childrenOf, comment, deleteComment, editComment, isOpen, leaderOf, letterOf, myVote, person, state, talliesOf, vote } from './store';
 
 // One comment and its replies, Reddit style: a vote column, the comment,
 // Reply, and the replies indented under a line. Top-level comments are the
@@ -29,6 +29,16 @@ const standsUnder = (id: string): boolean => childrenOf(t.value, id).some((k) =>
 const visible = computed(() => !props.c.deleted || standsUnder(props.c.id));
 const deletable = computed(() => canDeleteComment(t.value, props.c));
 const confirming = ref(false);
+// Editing your own comment, in place.
+const editable = computed(() => canEditComment(t.value, props.c));
+const editing = ref(false);
+const editDraft = ref('');
+function startEdit() { editDraft.value = props.c.text; editing.value = true; replying.value = false; confirming.value = false; }
+function saveEdit() {
+  if (!editDraft.value.trim()) return;
+  editComment(t.value, props.c, editDraft.value);
+  editing.value = false;
+}
 function remove() {
   deleteComment(t.value, props.c);
   confirming.value = false;
@@ -70,14 +80,26 @@ const isLead = computed(() => state.role === 'lead');
         <template v-if="c.authorId"><Avatar :id="c.authorId" :size="16" /><span class="who">{{ nameOf(c.authorId) }}</span></template>
         <SourceChip v-if="c.source" :source="c.source" />
         <span class="muted">{{ ago(c.at) }}</span>
+        <span v-if="c.editedAt && !c.deleted" class="muted edited" :title="`Edited ${ago(c.editedAt)}`">· edited</span>
         <span v-if="decided" class="tag ok">Adopted</span>
         <span v-else-if="leading" class="tag">Leading</span>
       </div>
-      <p v-if="!collapsed && !c.deleted" class="cm-text">{{ c.text }}</p>
+      <form v-if="editing && !collapsed" class="cm-reply cm-edit" @submit.prevent="saveEdit">
+        <div class="cm-reply-body">
+          <textarea v-model="editDraft" rows="3" aria-label="Edit comment" autofocus @keydown.meta.enter.prevent="saveEdit" @keydown.ctrl.enter.prevent="saveEdit" @keydown.esc="editing = false"></textarea>
+        </div>
+        <div class="cm-bar">
+          <span v-if="tally?.voters" class="edit-note">{{ tally.voters }} {{ tally.voters === 1 ? 'person has' : 'people have' }} voted on this; it will show as edited.</span>
+          <button class="ghost" type="button" @click="editing = false">Cancel</button>
+          <button class="primary sm" type="submit" :disabled="!editDraft.trim() || editDraft.trim() === c.text">Save</button>
+        </div>
+      </form>
+      <p v-else-if="!collapsed && !c.deleted" class="cm-text">{{ c.text }}</p>
       <div class="cm-acts">
-        <button v-if="!collapsed && !c.deleted" class="act" type="button" @click="replying = !replying">Reply</button>
+        <button v-if="!collapsed && !c.deleted && !editing" class="act" type="button" @click="replying = !replying">Reply</button>
+        <button v-if="editable && !collapsed && !editing" class="act" type="button" :aria-label="`Edit ${top ? 'option ' + letterOf(t, c.id) : 'this reply'}`" @click="startEdit">Edit</button>
         <button v-if="top && open && isLead && !collapsed && !c.deleted" class="act" type="button" @click="emit('adopt', c.id)">Adopt…</button>
-        <template v-if="deletable && !collapsed">
+        <template v-if="deletable && !collapsed && !editing">
           <button v-if="!confirming" class="act" type="button" :aria-label="`Delete ${top ? 'option ' + letterOf(t, c.id) : 'this reply'}`" @click="confirming = true">Delete</button>
           <span v-else class="confirm" role="group" aria-label="Confirm delete">
             {{ c.authorId === 'me' ? 'Delete' : 'Remove' }} this {{ top ? 'option' : 'reply' }}?<template v-if="kids.length"> Its replies stay.</template>
@@ -153,4 +175,7 @@ const isLead = computed(() => state.role === 'lead');
 .cm-kids { margin-top: 2px; padding-left: 12px; border-left: 2px solid var(--slate-a3); }
 .cm-kids:hover { border-left-color: var(--slate-a5); }
 .cm-kids.flat { padding-left: 0; border-left: 0; }
+.edited { font-style: italic; cursor: default; }
+.cm-edit { margin-top: 6px; }
+.edit-note { margin-right: auto; padding-left: 4px; font-size: var(--text-sm); color: var(--fg-faint); }
 </style>
