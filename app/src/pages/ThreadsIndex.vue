@@ -39,7 +39,7 @@ const groups = computed(() => {
     <div class="view-head">
       <div>
         <h1 class="view-title">{{ areaLabel ? `${areaLabel} threads` : 'All threads' }}</h1>
-        <p class="view-lede">Every thread lives in a zone; this is the index across them. Open one to vote, add a position, or reply.</p>
+        <p class="view-lede">Every thread lives in a zone; this is the index across them. Open one to comment, reply, or vote.</p>
       </div>
     </div>
     <div class="tools">

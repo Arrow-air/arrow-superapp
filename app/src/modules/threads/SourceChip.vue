@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { SourceRef } from './data';
-// Where a thread, position or reply came from. Call notes open in the app;
+// Where a thread or comment came from. Call notes open in the app;
 // issues and pull requests open on GitHub.
 defineProps<{ source: SourceRef }>();
 </script>
