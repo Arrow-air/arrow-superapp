@@ -39,17 +39,17 @@ async function signIn(p, email) {
   await p.waitForSelector('.row[data-thread="Q-3"]', { timeout: 20000 });
   check(true, 'signed out, the seeded threads load from the database');
   await p.locator('.row[data-thread="Q-3"]').click();
-  await panel.getByRole('button', { name: /^Back option / }).first().click();
+  await panel.getByRole('button', { name: 'Vote up' }).first().click();
   check(await p.locator('.dlg').isVisible(), 'voting while signed out opens sign-in');
   await signIn(p, users.member);
   check((await p.locator('footer.footer').innerText()).includes('Test Member'), 'member is signed in and shown in the footer');
 
-  await panel.getByRole('button', { name: /^Back option / }).first().click();
+  await panel.getByRole('button', { name: 'Vote up' }).first().click();
   await p.waitForTimeout(1500);
   await p.reload();
-  await p.waitForSelector('aside.panel .vote-back .n', { timeout: 20000 });
+  await p.waitForSelector('aside.panel .cm-vote .n', { timeout: 20000 });
   await p.waitForTimeout(1000);
-  check((await panel.locator('.vote-back .n').first().innerText()).trim() === '1', 'the vote is saved and survives a reload');
+  check((await panel.locator('.cm-vote .n').first().innerText()).trim() === '1', 'the vote is saved and survives a reload');
 
   await p.goto(`${BASE}/#/quiver/overview/power`);
   await p.waitForTimeout(800);

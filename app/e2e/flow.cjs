@@ -33,13 +33,12 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
 
   // Vote, then decide as lead from the Demo menu.
   check(!(await panel.getByRole('button', { name: 'Delete thread' }).count()), 'a member cannot delete someone else\'s thread');
-  await panel.getByRole('button', { name: /^Back option / }).first().click();
-  check((await panel.locator('.vote-back .n').first().innerText()).trim() === '1', 'member backing an option counts 1');
-  check((await panel.locator('.vote-back').first().innerText()).includes('Backed') && (await panel.locator('.share .pct').first().innerText()).trim() === '100%', 'the option reads as backed, with its share of the vote');
+  await panel.getByRole('button', { name: 'Vote up' }).first().click();
+  check((await panel.locator('.cm-vote .n').first().innerText()).trim() === '1', 'member up-vote counts 1');
   await p.getByRole('button', { name: /^Demo/ }).click();
   await p.getByRole('radio', { name: 'Lead' }).click();
   await p.getByRole('button', { name: /^Demo/ }).click();
-  check((await panel.locator('.vote-back .n').first().innerText()).trim() === '2', 'same vote counts 2 as lead');
+  check((await panel.locator('.cm-vote .n').first().innerText()).trim() === '2', 'same vote counts 2 as lead');
   await panel.getByLabel('Decision note').fill('Cheapest change; test it before any board spin.');
   await panel.getByRole('button', { name: 'Record decision' }).click();
   await p.waitForTimeout(200);
