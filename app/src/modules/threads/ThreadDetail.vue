@@ -222,7 +222,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         <h2 class="label">
           <template v-if="!tops.length">Comments</template>
           <template v-else-if="!open">{{ tops.length }} {{ tops.length === 1 ? 'option' : 'options' }} · {{ t.settled ? 'decided' : 'closed' }}</template>
-          <template v-else>{{ tops.length }} competing {{ tops.length === 1 ? 'option' : 'options' }} <span class="label-hint">· back the one you'd build</span></template>
+          <template v-else>{{ tops.length }} competing {{ tops.length === 1 ? 'option' : 'options' }} <span class="label-hint">· vote up the one you'd build</span></template>
           <span v-if="t.positions.length > tops.length" class="legend">· {{ t.positions.length }} comments</span>
         </h2>
         <span class="legend">
@@ -252,7 +252,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
           ></textarea>
         </div>
         <div class="composer-bar">
-          <span class="hint"><Kbd :keys="[MOD, '↵']" outline /> Top-level comments are the options people back; reply under any comment to discuss it.</span>
+          <span class="hint"><Kbd :keys="[MOD, '↵']" outline /> Top-level comments are the options people vote on; reply under any comment to discuss it.</span>
           <button class="primary" type="submit" :disabled="!newComment.trim()">Comment</button>
         </div>
       </form>
