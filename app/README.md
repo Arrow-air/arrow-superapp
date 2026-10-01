@@ -1,14 +1,14 @@
-# quiver-demo: Gavin's frame with real Quiver work in it
+# Arrow superapp
 
-**Question:** does Gavin's app frame, with working zones in the sidebar, hold up as the place Quiver's work happens: attachments, software, the aircraft, building it and selling it?
+The app: the Quiver workspace, live at [superapp-beta.arrowair.com](https://superapp-beta.arrowair.com). Sign in with the same GitHub or email account as flights.arrowair.com.
 
-**Worked would look like:** anyone on Quiver can open the zone they care about (an attachment, QuiverHub, GPS and RF), see what exists for it, and weigh in on its open questions; the Thursday calls can run off it; decisions land in a numbered register.
+Agreed with Gavin on 2026-10-01 as the canonical version. It began as `prototypes/quiver-demo`, a fork of Gavin's `prototypes/app-frame` (branch `sl33ty/explore/app-frame` at `31d499a`); the frame, tokens, command palette, drawers and the thread design are his. Gavin's later frame work on that branch is not in here yet.
 
-Forked from `prototypes/app-frame` on `sl33ty/explore/app-frame` at `31d499a` (Gavin, 2026-09-29). The frame, tokens, command palette, drawers and the thread detail design are his. Gavin's own prototype is untouched; changes to his frame come over by hand.
+**What it's for:** anyone on Quiver can open the zone they care about (an attachment, QuiverHub, GPS and RF), see what exists for it, and weigh in on its open questions; calls can run off it; decisions land in a numbered register and can be funded as bounties or grants.
 
 ## How it works
 
-- **Tabs are places, then views.** Attachments, Software, Aircraft, Build and Selling hold the working zones; after the divider, Discussion, Decisions and Work cut across all of them.
+- **Tabs are places, then views.** Overview, Attachments, Software, Build and Selling hold the working zones; after the divider, Discussion, Decisions and Work cut across all of them.
 - **A zone is one page that scrolls:** what it is (and, for an attachment, its status, port, power and data), its discussion as rows, then what the call notes and GitHub already say about it.
 - **A thread is a side panel, the same everywhere.** Rows in a zone, the Discussion index, the decision register, the Road to selling cards, call notes and People all open the same panel over the page (`?thread=Q-3`). Esc or ✕ closes it; ⤢ expands it. Nothing opens on its own.
 - **Inside a thread, one order:** the question, then one Reddit-style comment tree with voting at every level. Top-level comments are the options (lettered A, B, C; one can lead; a lead can adopt one); replies nest under any comment to any depth. The lead's decision block (a required note, an override warning) closes the thread.
@@ -23,12 +23,12 @@ Forked from `prototypes/app-frame` on `sl33ty/explore/app-frame` at `31d499a` (G
 - **3D model** (`public/quiver.glb`): the Dev Kit assembly exported from the build123d CAD on project-quiver main (unchanged since 2026-06-12), compressed to 1.7 MB, carried over from `prototypes/quiver-app`. Every mesh sits under a node named for its BOM number; the 47 parts in it are clickable. Fasteners were left out of the export, and the Fusion changes in PR #266 are not in it until that merges.
 - **Attachments** (`src/data/attachments.ts`): the payloads in `payload-systems` (latch and multispectral camera flown as V1, RAM ball mount prototyped), the spreader adapter (#233), and the six concepts with written requirements. Each links to its source.
 - **Sep 29 call notes** (`src/data/calls.ts`): curated from the transcript, Quiver items only, each naming who said it. The recording and the full transcript are not in the app.
-- **Seeded threads** (`src/modules/threads/data.ts`): seventeen open questions. The V2 choices come from the latch and camera V1 notes; QuiverHub's next scope from T-12; the rest from #234, #248, PR #267 and the Sep 29 call. Every position says where it came from: a person named in the notes (linked to the note) or a document, issue or pull request. Nobody has voted.
+- **Seeded threads** (`src/modules/threads/data.ts`): twenty-two starting questions, including the Longshot battery integration. The V2 choices come from the latch and camera V1 notes; QuiverHub's next scope from T-12; the rest from #234, #248, PR #267 and the Sep 29 call. Every position says where it came from: a person named in the notes (linked to the note) or a document, issue or pull request. Nobody has voted.
 - **People** (`src/data/people.ts`): only what the task board or the notes say about them, with the source on each line. No roles, holdings or vote weight until people join.
 
-## What is demo
+## Demo mode
 
-- No backend. Votes, replies, new threads, positions and decisions stay in this browser (localStorage). "Reset demo" in the footer puts the seed back.
+- Without the Supabase env vars (below), the same build is a self-contained demo: votes, comments, new threads and decisions stay in the browser (localStorage), and "Reset demo" in the footer puts the seed back.
 - The footer's Demo menu switches between member, core and lead, so you can see weight change and decide as a lead. The weight formula is the real one from `spec-threads`.
 - The wallet shows nothing: no wallet is linked.
 
@@ -43,15 +43,14 @@ Forked from `prototypes/app-frame` on `sl33ty/explore/app-frame` at `31d499a` (G
 
 | Tab | Zones and views |
 |---|---|
-| Overview | Summary (areas, what needs input, road to selling, recent decisions), People, Call notes |
+| Overview | Dev Kit v1.1 (improvements, 3D model, PCBs, structure and enclosure, GPS and RF, propulsion, power and battery, avionics and network); operating (pilot's handbook, maintenance); Quiver at a glance, People, Call notes |
 | Attachments | Catalog, attachment interface, developer guide; payload latch, multispectral camera, RAM ball mount, spreader adapter; concepts ready for contributors; new ideas |
 | Software | Quiver SDK, QuiverHub, ground station and remote; autonomy and obstacle avoidance, parameters and failsafes, flight logs and data |
-| Aircraft | Next revision (structure, GPS and RF, power, avionics); testing; operating; CAD and the BOM |
-| Build | Assembly, configuration guide, case and shipping; bringing on manufacturers, suppliers and cost |
+| Build | Bill of materials, assembly, configuration guide, case and shipping; bringing on manufacturers, suppliers and cost |
 | Selling | Road to selling; where we sell, customers and applications, pricing, sales page, what goes back to the DAO |
 | Discussion | Every thread across zones, by area; suggested from calls |
 | Decisions | The register |
-| Work | Task board and open pull requests, read-only from GitHub |
+| Work | Grants and bounties; task board and open pull requests, read-only from GitHub |
 
 ## Live (superapp-beta.arrowair.com)
 
@@ -62,7 +61,7 @@ With `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` set at build time, 
 - Deleting threads (`20261001100000_sa_delete_thread.sql`): leads delete any thread, authors their own until someone else takes part, never once work is funded. Soft: the row keeps who, when and why, and the thread and everything on it disappear from reads.
 - Starting content: `npx tsx scripts/build-seed-sql.ts > supabase/seed_quiver.sql` (idempotent).
 - Applied to production by POSTing the SQL to the Supabase pg-meta endpoint (`/pg/query`, service key), after a `pg_dumpall` on the box.
-- Hosting: Openship, `npm run build` then `npm start` (serve on $PORT), root `prototypes/quiver-demo`.
+- Hosting: Openship project `superapp-beta`, branch `main`, root `app/`: `npm run build` then `npm start` (serve on $PORT). Every push to `main` redeploys.
 - `e2e/live.cjs` runs the signed-in path against any Supabase with the migration (BASE, SUPA, ANON, SERVICE env).
 
 ## Run
@@ -84,5 +83,5 @@ Checks, against a build:
 npm run build
 npm run typecheck
 node e2e/flow.cjs    # zone → panel, vote, decide, fund → claim → accept, v1.1 spec, 3D model part proposals, retro pool, decline, defer, freeze, reload, reset
-node e2e/shots.cjs   # screenshots of the main screens to /tmp/quiver-demo-shots
+node e2e/shots.cjs   # screenshots of the main screens to /tmp/superapp-shots
 ```

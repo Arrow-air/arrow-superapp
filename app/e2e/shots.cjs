@@ -2,7 +2,7 @@
 const { chromium } = require('playwright-core');
 const { spawn } = require('node:child_process');
 const fs = require('node:fs');
-const out = process.argv[2] || '/tmp/quiver-demo-shots';
+const out = process.argv[2] || '/tmp/superapp-shots';
 fs.mkdirSync(out, { recursive: true });
 const PORT = 4312;
 const exe = ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Chromium.app/Contents/MacOS/Chromium'].find((p) => fs.existsSync(p));

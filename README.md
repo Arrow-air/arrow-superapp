@@ -1,6 +1,8 @@
 # Arrow Superapp
 
-**Try it:** [specs.arrowair.com](https://specs.arrowair.com) serves the example Spearhead workspace: fictional contributors, real call and repository records, running in your browser. Pick someone under “Explore as” to act as a lead or a contributor. How it works and how to run the shared version: [PRODUCT-WORKSPACE.md](prototypes/spec-threads/PRODUCT-WORKSPACE.md). Historical prototype plans below are retained as context; the shared local pilot now has real accounts and persistent team records.
+**The app:** [`app/`](app/), live at [superapp-beta.arrowair.com](https://superapp-beta.arrowair.com). The Quiver workspace: working zones for attachments, software, the next Dev Kit and selling; Reddit-style threads with weighted votes; decisions into a numbered register; bounties and grants funded from decisions; a retro pool split at each version freeze. Sign in with your flights.arrowair.com account (GitHub or email). How it works, how to run it, and how the database is set up: [`app/README.md`](app/README.md).
+
+The earlier Spearhead example workspace still runs at [specs.arrowair.com](https://specs.arrowair.com) from [`prototypes/spec-threads`](prototypes/spec-threads/PRODUCT-WORKSPACE.md).
 
 Working notes and prototypes for how Arrow could coordinate, decide, and fund work as one continuous loop.
 
@@ -18,6 +20,7 @@ Nothing here is decided. Everything is a hypothesis until it lands in `DECISIONS
 | `meetings/YYYY-MM-DD/` | Notes and transcript per call. Raw material, not curated. |
 | `sources/` | Original inputs: journal scans, diagrams, one-pagers. Never edited after the fact. |
 | `references/` | Notes on existing tools we're borrowing from (Snapshot, Coordinape, Dework, etc.) and what each does well or badly for us. |
+| `app/` | The app (Vue 3 + Vite on the shared Arrow Supabase). Deployed from `main`. |
 | `prototypes/` | Throwaway builds. One folder per experiment, each with its own README saying what it tests. Branches welcome. |
 
 ## Idea template
