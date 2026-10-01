@@ -114,6 +114,11 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.getByRole('button', { name: 'Post thread' }).click();
   await p.waitForTimeout(300);
   check((await panel.locator('h1.title').innerText()).includes('Rate the latch for 5 kg?'), 'new thread opens in the panel');
+  await panel.getByRole('button', { name: 'Edit thread' }).click();
+  await panel.getByLabel('Thread title').fill('Rate the latch for 5 kg, with margin?');
+  await panel.getByRole('button', { name: 'Save' }).click();
+  await p.waitForTimeout(200);
+  check((await panel.locator('h1.title').innerText()) === 'Rate the latch for 5 kg, with margin?' && (await panel.locator('.meta .edited').count()) === 1 && (await p.locator('.rows').first().innerText()).includes('Rate the latch for 5 kg, with margin?'), 'a thread title is edited in place, marked edited, and the list follows');
   await panel.getByLabel('New comment').fill('Yes, with a second structural path.');
   await panel.getByRole('button', { name: 'Comment', exact: true }).click();
   await p.waitForTimeout(200);
@@ -284,6 +289,9 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   const after = await text();
   check(after.includes('Frozen') && after.includes('Recorded split'), 'freeze records the retro split and locks the spec');
   check((await clock.innerText()).includes('design frozen'), 'footer shows the version frozen');
+  await p.goto(`${BASE}/quiver/overview/v1-1?thread=Q-3`);
+  await p.waitForTimeout(300);
+  check(!(await panel.getByRole('button', { name: 'Edit thread' }).count()), 'a frozen version\'s threads can\'t be edited, even by a lead');
 
   // Deleting: an author removes their own fresh thread; a lead removes any thread.
   await p.goto(`${BASE}/quiver/overview/airframe`);
@@ -330,6 +338,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.goto(`${BASE}/quiver/overview/power?thread=Q-19`);
   await p.waitForTimeout(400);
   check((await panel.locator('.cm').count()) > 0 && !(await panel.getByRole('button', { name: /^Delete (option|this reply)/ }).count()), 'a member can\'t delete other people\'s comments');
+  check(!(await panel.getByRole('button', { name: 'Edit thread' }).count()), 'a member can\'t edit someone else\'s thread');
   await p.getByRole('button', { name: /^Demo/ }).click();
   await p.getByRole('radio', { name: 'Lead' }).click();
   await p.getByRole('button', { name: /^Demo/ }).click();

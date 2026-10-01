@@ -69,6 +69,8 @@ export interface Thread {
   activeAt: string;
   positions: Position[];
   votes: { memberId: string; positionId: string; value: 1 | -1 }[];
+  /** When its title or description was last changed. */
+  editedAt?: string;
   /** Up and down votes on the thread itself. */
   threadVotes?: { memberId: string; value: 1 | -1 }[];
   replies: Reply[];

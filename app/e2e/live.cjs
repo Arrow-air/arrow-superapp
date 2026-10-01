@@ -74,6 +74,16 @@ async function signIn(p, email) {
   await p.waitForSelector('aside.panel h1.title', { timeout: 15000 });
   const tid = new URL(p.url().replace('/#', '')).searchParams.get('thread');
   check(/^Q-\d+$/.test(tid ?? '') && (await panel.locator('h1.title').innerText()).includes(`${stamp}`), `new thread ${tid} is created in the database`);
+  await panel.getByRole('button', { name: 'Edit thread' }).click();
+  await panel.getByLabel('Thread title').fill(`Live test thread ${stamp}, renamed`);
+  await panel.getByRole('button', { name: 'Save' }).click();
+  await p.waitForTimeout(1500);
+  await p.reload();
+  await p.waitForSelector('aside.panel h1.title', { timeout: 20000 });
+  await p.waitForTimeout(800);
+  const tEdits = await (await fetch(`${SUPA}/rest/v1/sa_thread_edits?thread_id=eq.${tid}&select=title`, { headers: admin })).json();
+  check((await panel.locator('h1.title').innerText()) === `Live test thread ${stamp}, renamed` && (await panel.locator('.meta .edited').count()) === 1 && tEdits[0]?.title === `Live test thread ${stamp}`, 'a member renames their own thread; it shows as edited and the old title is kept privately');
+  check(await rpcAs(users.member, 'sa_edit_thread', { p_thread: 'Q-6', p_title: 'hijack', p_body: '' }) >= 400, 'the database refuses a member editing someone else\'s thread');
   await panel.getByLabel('New comment').fill('Do the obvious thing');
   await panel.getByRole('button', { name: 'Comment', exact: true }).click();
   await p.waitForTimeout(1500);
