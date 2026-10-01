@@ -51,7 +51,7 @@ async function create(d: { type: Thread['type']; title: string; body: string }) 
   if (t) router.replace({ query: { ...route.query, thread: t.id } });
 }
 const letter = (t: Thread, id: string) => letterOf(t, id);
-const stageLabel = { draft: 'Draft', open: 'Open', in_progress: 'In progress', in_review: 'In review', completed: 'Accepted' } as const;
+const stageLabel = { draft: 'Draft', open: 'Open', in_progress: 'In progress', in_review: 'In review', completed: 'Accepted', withdrawn: 'Withdrawn' } as const;
 
 // Freeze and retro pool, as the spec workspace does it.
 const isLead = computed(() => state.role === 'lead');

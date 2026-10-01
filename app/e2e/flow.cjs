@@ -70,6 +70,12 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.waitForTimeout(500);
   const spec = await p.locator('.changes').innerText();
   check(spec.includes('D-003') && spec.includes('W-1') && spec.includes('Accepted'), 'v1.1 spec lists the decision with its bounty');
+  await p.goto(`${BASE}/quiver/overview/v1-1?thread=Q-3`);
+  await p.waitForTimeout(300);
+  check((await panel.innerText()).includes('W-1 has been taken on, so this decision stays') && !(await panel.getByRole('button', { name: 'Reopen as discussion' }).count()), 'a decision whose work was taken on can\'t be reopened');
+  await p.keyboard.press('Escape');
+  await p.goto(`${BASE}/quiver/overview/v1-1`);
+  await p.waitForTimeout(300);
   await p.getByRole('button', { name: 'Propose an improvement' }).click();
   await p.getByLabel('Zone').selectOption('power');
   await p.getByLabel('Title').fill('Add a battery strap retention check');
@@ -290,6 +296,36 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.getByRole('button', { name: /^Demo/ }).click();
   await p.getByRole('radio', { name: 'Lead' }).click();
   await p.getByRole('button', { name: /^Demo/ }).click();
+
+  // Reopening: a lead puts a decision back into discussion; its open bounty is withdrawn; decided again, it keeps its number.
+  await p.goto(`${BASE}/quiver/attachments/payload-latch?thread=Q-14`);
+  await p.waitForTimeout(400);
+  await panel.getByLabel('Decision note').fill('Good enough for V2.');
+  await panel.getByRole('button', { name: 'Record decision' }).click();
+  await p.waitForTimeout(200);
+  const dec = (/D-\d{3}/.exec(await panel.locator('.pipe').innerText()) ?? [''])[0];
+  await panel.getByRole('button', { name: 'Fund it as a bounty or grant' }).click();
+  await panel.getByLabel('Acceptance').fill('It works.');
+  await panel.getByLabel('Reward in ARROW').fill('100');
+  await panel.getByRole('button', { name: 'Draft bounty' }).click();
+  await panel.getByRole('button', { name: 'Publish bounty' }).click();
+  await p.waitForTimeout(200);
+  await panel.getByRole('button', { name: 'Reopen as discussion' }).click();
+  check((await panel.locator('form.reopen').innerText()).includes('open bounty) is withdrawn') && (await panel.locator('form.reopen').innerText()).includes(`keeps ${dec}`), 'reopening says the open bounty is withdrawn and the number is kept');
+  await panel.getByLabel('Why reopen').fill('New load data from the latch test.');
+  await panel.getByRole('button', { name: 'Reopen', exact: true }).click();
+  await p.waitForTimeout(300);
+  const re = await panel.innerText();
+  check(dec && re.includes(`${dec} (adopted`) && re.includes('reopened by You') && re.includes('New load data from the latch test.') && (await panel.getByText('Outcome, as lead').count()) > 0, 'the thread is back in discussion, with the reopened decision on its record');
+  await p.goto(`${BASE}/quiver/work/grants`);
+  await p.waitForTimeout(300);
+  check((await text()).includes('Withdrawn (decision reopened)'), 'the bounty shows as withdrawn');
+  await p.goto(`${BASE}/quiver/attachments/payload-latch?thread=Q-14`);
+  await p.waitForTimeout(300);
+  await panel.getByLabel('Decision note').fill('Still good for V2.');
+  await panel.getByRole('button', { name: 'Record decision' }).click();
+  await p.waitForTimeout(200);
+  check((await panel.locator('.pipe').innerText()).includes(dec) && (await panel.getByRole('button', { name: 'Fund it as a bounty or grant' }).count()) > 0, 'decided again, it keeps its D-number and can be funded afresh');
 
   // Persistence and reset.
   await p.goto(`${BASE}/quiver/decisions/register`);

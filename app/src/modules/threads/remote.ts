@@ -51,6 +51,7 @@ export function load(): Promise<void> {
         settled: t.settled ? { ...t.settled, byId: mine(t.settled.byId) } : undefined,
         declined: t.declined ? { ...t.declined, byId: mine(t.declined.byId) } : undefined,
         deferrals: (t.deferrals ?? []).map((d: Row) => ({ ...d, byId: mine(d.byId) })),
+        history: (t.history ?? []).map((h: Row) => ({ ...h, byId: mine(h.byId), decidedBy: mine(h.decidedBy) })),
       }));
       state.work = wo.map((w): Work => ({
         id: w.id, threadId: w.thread_id, decision: w.decision, positionId: w.position_id, kind: w.kind,

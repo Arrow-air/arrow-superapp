@@ -10,7 +10,7 @@ const props = defineProps<{ work: Work }>();
 const w = computed(() => props.work);
 const isLead = computed(() => state.role === 'lead');
 const nameOf = (id?: string) => (id === 'me' ? 'You' : person(id)?.name);
-const stageLabel: Record<Work['stage'], string> = { draft: 'Draft', open: 'Open', in_progress: 'In progress', in_review: 'In review', completed: 'Accepted' };
+const stageLabel: Record<Work['stage'], string> = { draft: 'Draft', open: 'Open', in_progress: 'In progress', in_review: 'In review', completed: 'Accepted', withdrawn: 'Withdrawn' };
 const kindLabel = computed(() => (w.value.kind === 'bounty' ? 'Bounty' : 'Grant'));
 const evidence = ref('');
 const changes = ref('');
@@ -89,6 +89,7 @@ const showHistory = ref(false);
 .stage[data-stage='open'] { background: var(--indigo-a3); color: var(--indigo-11); }
 .stage[data-stage='in_progress'], .stage[data-stage='in_review'] { background: var(--amber-a3); color: var(--amber-11); }
 .stage[data-stage='completed'] { background: var(--jade-a3); color: var(--jade-11); }
+.wc[data-stage='withdrawn'] { opacity: 0.6; }
 .reward { margin-left: auto; color: var(--fg-muted); }
 .reward b { color: var(--fg); font-weight: 600; }
 .title { margin: 8px 0 0; color: var(--fg); font-size: var(--text-nav); font-weight: 500; line-height: 1.45; }

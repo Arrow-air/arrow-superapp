@@ -22,7 +22,7 @@ export const V11_ZONES = ['airframe', 'gps-rf', 'propulsion', 'power', 'avionics
 // claim) or a grant (scoped work for someone to take on). Carries the
 // proposer award, 25% of the reward to whoever wrote the adopted idea.
 export type WorkKind = 'bounty' | 'grant';
-export type WorkStage = 'draft' | 'open' | 'in_progress' | 'in_review' | 'completed';
+export type WorkStage = 'draft' | 'open' | 'in_progress' | 'in_review' | 'completed' | 'withdrawn';
 export interface Proposer {
   /** 'me' for the visitor; a person named in notes; absent when only a document is the source. */
   personId?: string;
@@ -196,13 +196,31 @@ export function vote(thread: Thread, positionId: string, value: 1 | -1) {
 export function settle(thread: Thread, positionId: string, note: string) {
   const { top } = leaderOf(thread);
   if (remote) { void call('sa_settle', { p_thread: thread.id, p_position: positionId, p_note: note, p_override: positionId !== top?.positionId }); return; }
-  const decision = thread.settled?.decision ?? `D-${String(state.nextDecision++).padStart(3, '0')}`;
+  // Decided again after a reopen, a thread keeps its D-number.
+  const decision = thread.settled?.decision ?? [...(thread.history ?? [])].reverse().find((h) => h.decision)?.decision ?? `D-${String(state.nextDecision++).padStart(3, '0')}`;
   thread.settled = { positionId, byId: 'me', at: now(), override: positionId !== top?.positionId, note, decision };
   thread.activeAt = now();
 }
-export const reopen = (thread: Thread) => {
-  if (remote) { void call('sa_reopen', { p_thread: thread.id }); return; }
-  thread.settled = undefined; thread.declined = undefined; thread.activeAt = now(); };
+/** Work on a thread that someone has taken on; a decision with it can't be reopened. */
+export const takenWork = (t: Thread) => state.work.find((w) => w.threadId === t.id && ['in_progress', 'in_review', 'completed'].includes(w.stage));
+/** Leads can put an outcome back into discussion, unless it was decided outside the app, the version is frozen, or someone has taken on its work. */
+export function canReopen(t: Thread): boolean {
+  if (state.role !== 'lead' || (!t.settled && !t.declined)) return false;
+  if (remote && !session.userId) return false;
+  return !t.settled?.source && !locked(t) && !takenWork(t);
+}
+/** Back to discussion: the outcome goes into the thread's history, unclaimed work is withdrawn, votes and comments stay. */
+export function reopen(thread: Thread, note?: string) {
+  if (remote) { void call('sa_reopen', { p_thread: thread.id, p_reason: note ?? null }); return; }
+  const s = thread.settled, d = thread.declined;
+  (thread.history ??= []).push({
+    was: s ? 'decided' : 'declined', decision: s?.decision, positionId: s?.positionId,
+    decidedBy: s?.byId ?? d?.byId, decidedAt: s?.at ?? d?.at, decisionNote: s?.note ?? d?.note,
+    byId: 'me', at: now(), note,
+  });
+  for (const w of state.work) if (w.threadId === thread.id && (w.stage === 'draft' || w.stage === 'open')) move(w, 'withdrawn', `Withdrawn: ${s?.decision ?? 'the decision'} was reopened`);
+  thread.settled = undefined; thread.declined = undefined; thread.activeAt = now();
+}
 
 /** Open: neither adopted nor declined. Deferred threads stay open in their new version. */
 export const isOpen = (t: Thread) => !t.settled && !t.declined;
@@ -228,11 +246,12 @@ export function defer(thread: Thread, note?: string) {
 }
 
 // Work drafted from decisions.
-export const workFor = (t: Thread) => state.work.find((w) => w.threadId === t.id);
+// Withdrawn work stays on the record but no longer belongs to the thread's current outcome.
+export const workFor = (t: Thread) => state.work.find((w) => w.threadId === t.id && w.stage !== 'withdrawn');
 
 /** Leads can delete any thread; an author their own until someone else takes part. Never once work is funded. */
 export function canDelete(t: Thread): boolean {
-  if (workFor(t)) return false;
+  if (state.work.some((w) => w.threadId === t.id)) return false;
   if (remote && !session.userId) return false;
   if (state.role === 'lead') return true;
   const others = liveComments(t).some((p) => p.authorId !== 'me') || t.votes.some((v) => v.memberId !== 'me' && liveComments(t).some((p) => p.id === v.positionId));
