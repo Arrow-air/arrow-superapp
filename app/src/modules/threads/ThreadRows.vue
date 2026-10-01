@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import StatusIcon from './StatusIcon.vue';
+import Icon from '../../frame/Icon.vue';
+import { threadTypes, typeStyle } from './types';
 import type { Thread } from './data';
 import { ago, standing } from './store';
 import { zoneLabel } from '../../frame/nav';
@@ -30,10 +32,13 @@ const open = (id: string) => router.replace({ query: { ...route.query, thread: i
         <span class="main">
           <span class="title">{{ t.title }}</span>
           <span class="meta">
-            <span v-if="showZone" class="zone">{{ zoneLabel(t.zone) }}</span>
-            <span v-if="showZone" class="dot">·</span>
-            <template v-if="t.pcb"><span class="zone">{{ boardById(t.pcb.board)?.short }} {{ t.pcb.ref }}</span><span class="dot">·</span></template>
-            <template v-else-if="t.part"><span class="zone">{{ partById(t.part)?.name.split(',')[0] ?? t.part }}</span><span class="dot">·</span></template>
+            <!-- What kind of thread, in its colour; named by its part when it is about one. -->
+            <span class="tp" :style="typeStyle(t.type)" :title="threadTypes[t.type].label"><Icon :name="threadTypes[t.type].icon" :size="11" />
+              <template v-if="t.pcb">{{ boardById(t.pcb.board)?.short }} {{ t.pcb.ref }}</template>
+              <template v-else-if="t.part">{{ partById(t.part)?.name.split(',')[0] ?? t.part }}</template>
+              <template v-else>{{ threadTypes[t.type].label }}</template>
+            </span><span class="dot">·</span>
+            <template v-if="showZone"><span class="zone">{{ zoneLabel(t.zone) }}</span><span class="dot">·</span></template>
             <span :class="{ decided: t.settled }">{{ standing(t).text }}</span>
           </span>
         </span>
@@ -59,6 +64,8 @@ const open = (id: string) => router.replace({ query: { ...route.query, thread: i
 .title { color: var(--fg); font-size: var(--text-nav); font-weight: 500; line-height: 1.4; }
 .meta { font-size: var(--text-sm); color: var(--fg-muted); }
 .zone { color: var(--fg-2); }
+.tp { display: inline-flex; align-items: center; gap: 5px; color: var(--fg-2); }
+.tp :deep(svg) { flex: none; color: var(--tfg); }
 .decided { color: var(--jade-11); }
 .dot { margin: 0 6px; color: var(--fg-faint); }
 .time { flex: none; margin-top: 2px; font-size: var(--text-sm); color: var(--fg-faint); }

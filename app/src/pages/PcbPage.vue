@@ -2,11 +2,12 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
-import { NEXT } from '../modules/threads/data';
-import { isOpen, startThread, state, threadsOnComponent } from '../modules/threads/store';
+import NewThread from '../modules/threads/NewThread.vue';
+import { NEXT, type ThreadType } from '../modules/threads/data';
+import { isOpen, openVersion, startThread, state, threadsOnComponent } from '../modules/threads/store';
 import { boardById, boardZone, boards, groupOf, groupsOf, naturalRef, pcbCommit } from '../data/pcbs';
 import { partById } from '../data/quiver';
-import { zoneLabel, zonePath } from '../frame/nav';
+import { zoneIcon, zoneLabel, zonePath } from '../frame/nav';
 
 // The PCBs on Quiver, rendered from their KiCad files with KiCanvas. Click a
 // component on the board, or pick it from the list, to see its threads or
@@ -113,17 +114,18 @@ watch(selectedRef, (r) => highlight(r));
 onBeforeUnmount(() => { clearInterval(poll); viewer?.removeEventListener('kicanvas:select', onSelect); });
 
 const composing = ref(false);
-const draft = ref({ title: '', body: '' });
-watch([selectedRef, boardId], () => { composing.value = false; draft.value = { title: '', body: '' }; });
-async function propose() {
-  if (!selected.value || !draft.value.title.trim()) return;
+// What the thread is about: the component, or the whole board.
+const about = ref<'ref' | 'board'>('ref');
+watch([selectedRef, boardId], () => { composing.value = false; about.value = 'ref'; });
+async function propose(d: { type: ThreadType; title: string; body: string }) {
+  if (!selected.value) return;
   const t = await startThread({
     zone: boardZone[board.value.id],
     part: board.value.part,
-    pcb: { board: board.value.id, ref: selected.value.ref },
-    title: draft.value.title.trim(),
-    body: draft.value.body.trim(),
-    type: 'proposal',
+    pcb: about.value === 'ref' ? { board: board.value.id, ref: selected.value.ref } : undefined,
+    title: d.title,
+    body: d.body,
+    type: d.type,
     version: NEXT,
   });
   composing.value = false;
@@ -152,16 +154,22 @@ const githubFile = computed(() => `https://github.com/Arrow-air/project-quiver/b
           <dt>Discussed in</dt><dd><RouterLink :to="zonePath(boardZone[board.id])">{{ zoneLabel(boardZone[board.id]) }}</RouterLink></dd>
         </dl>
         <button v-if="!composing" class="propose" type="button" @click="composing = true">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" /></svg> Propose a change for {{ NEXT }}
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h10v7H7l-3 2.5v-2.5H3z" /></svg> Start a thread about <b>{{ selected.ref }}</b>
         </button>
-        <form v-else class="form" @submit.prevent="propose">
-          <input v-model="draft.title" class="f-title" :placeholder="`What should change about ${selected.ref}?`" aria-label="Proposed change" autofocus />
-          <textarea v-model="draft.body" rows="3" placeholder="Why: what it fixes, what it costs, what else on the board it touches" aria-label="Why"></textarea>
-          <div class="f-bar">
-            <button class="ghost" type="button" @click="composing = false">Cancel</button>
-            <button class="primary" type="submit" :disabled="!draft.title.trim()">Propose</button>
-          </div>
-        </form>
+        <NewThread
+          v-else
+          v-model:scope="about"
+          class="nt"
+          :where="zoneLabel(boardZone[board.id])"
+          :where-icon="zoneIcon(boardZone[board.id])"
+          :scopes="[{ key: 'ref', label: selected.ref }, { key: 'board', label: board.short }]"
+          type="proposal"
+          :version="openVersion()"
+          :title-hint="{ proposal: `What should change about ${about === 'ref' ? selected.ref : 'the board'}?` }"
+          body-hint="Why: what it fixes, what it costs, what else on the board it touches"
+          @post="propose"
+          @cancel="composing = false"
+        />
         <h2 class="h">Threads about {{ selected.ref }}</h2>
         <div v-if="threads.length" class="list"><ThreadRows :threads="threads" /></div>
         <p v-else class="none">None yet.</p>
@@ -240,15 +248,6 @@ const githubFile = computed(() => `https://github.com/Arrow-air/project-quiver/b
 .propose { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; height: 30px; padding: 0 12px; border: 0; border-radius: 8px; background: var(--indigo-9); color: #fff; font: inherit; font-size: var(--text-base); font-weight: 500; cursor: pointer; }
 .propose:hover { background: var(--indigo-10); }
 .propose svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
-.form { display: grid; gap: 8px; margin-top: 16px; padding: 10px; border: 1px solid var(--slate-a5); border-radius: 10px; background: var(--slate-a2); }
-.form input, .form textarea { width: 100%; border: 0; background: none; color: var(--fg); font: inherit; outline: none; resize: vertical; }
-.f-title { font-size: var(--text-nav); font-weight: 500; }
-.form textarea { font-size: var(--text-base); color: var(--fg-2); line-height: 1.5; }
-.form ::placeholder { color: var(--fg-faint); }
-.f-bar { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
-.ghost { padding: 0; border: 0; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); cursor: pointer; }
-.primary { height: 28px; padding: 0 12px; border: 0; border-radius: 7px; background: var(--indigo-9); color: #fff; font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; }
-.primary:disabled { opacity: 0.4; cursor: default; }
 .list { border: 1px solid var(--slate-a4); border-radius: 10px; overflow: hidden; }
 .none { margin: 0; color: var(--fg-faint); font-size: var(--text-base); }
 @media (max-width: 899px) {
@@ -256,4 +255,6 @@ const githubFile = computed(() => `https://github.com/Arrow-air/project-quiver/b
   .stage { order: -1; height: 52vh; }
   .side { border-right: 0; border-top: 1px solid var(--slate-a3); }
 }
+.nt { margin-top: 14px; }
+.propose b { font-weight: 600; }
 </style>

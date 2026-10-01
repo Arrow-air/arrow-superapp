@@ -3,10 +3,11 @@ import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
 import StatusIcon from '../modules/threads/StatusIcon.vue';
+import NewThread from '../modules/threads/NewThread.vue';
 import { LATER, NEXT, type Thread } from '../modules/threads/data';
 import { session } from '../lib/session';
 import {
-  V11_ZONES, letterOf, byActivity, day, deferOpen, freezeRelease, isOpen, person, retroPreview, setReleasePlan, startThread, state, statusOf, workFor,
+  V11_ZONES, letterOf, byActivity, day, deferOpen, freezeRelease, isOpen, person, retroPreview, setReleasePlan, startThread, state, statusOf, workFor, openVersion,
 } from '../modules/threads/store';
 import { callItems } from '../data/calls';
 import { remote } from '../lib/backend';
@@ -37,17 +38,15 @@ const raised = computed(() =>
 );
 
 const composing = ref(false);
-const draft = ref({ zone: V11_ZONES[0], title: '', body: '' });
+const draft = ref({ zone: V11_ZONES[0] });
 const where = [...V11_ZONES, 'interface'];
 function proposeIn(zone: string) {
   draft.value.zone = zone;
   composing.value = true;
-  requestAnimationFrame(() => document.querySelector<HTMLInputElement>('.rel-form .nf-title')?.focus());
+  requestAnimationFrame(() => document.querySelector<HTMLInputElement>('.rel-form .title')?.focus());
 }
-async function create() {
-  if (!draft.value.title.trim()) return;
-  const t = await startThread({ zone: draft.value.zone, title: draft.value.title.trim(), body: draft.value.body.trim(), type: 'proposal', version: NEXT });
-  draft.value = { zone: draft.value.zone, title: '', body: '' };
+async function create(d: { type: Thread['type']; title: string; body: string }) {
+  const t = await startThread({ zone: draft.value.zone, title: d.title, body: d.body, type: d.type, version: NEXT });
   composing.value = false;
   if (t) router.replace({ query: { ...route.query, thread: t.id } });
 }
@@ -98,23 +97,20 @@ function deferRest() {
       </div>
     </header>
 
-    <form v-if="composing" class="new-form rel-form" @submit.prevent="create">
-      <label class="where">
-        <span>Where</span>
-        <select v-model="draft.zone" aria-label="Where the change is">
-          <option v-for="z in where" :key="z" :value="z">{{ zoneLabel(z) }}</option>
-        </select>
-      </label>
-      <input v-model="draft.title" class="nf-title" placeholder="The change, in one line" aria-label="Improvement" />
-      <textarea v-model="draft.body" rows="3" placeholder="Why: what it fixes, what it costs, what it touches" aria-label="Why"></textarea>
-      <div class="nf-bar">
-        <span class="hint">Opens as a {{ NEXT }} proposal in {{ zoneLabel(draft.zone) }}.</span>
-        <span class="nf-actions">
-          <button class="ghost" type="button" @click="composing = false">Cancel</button>
-          <button class="primary" type="submit" :disabled="!draft.title.trim()">Propose</button>
-        </span>
-      </div>
-    </form>
+    <NewThread
+      v-if="composing"
+      v-model:zone="draft.zone"
+      class="rel-form"
+      :where="zoneLabel(draft.zone)"
+      :zones="where.map((z) => ({ id: z, label: zoneLabel(z) }))"
+      type="proposal"
+      :version="openVersion()"
+      :title-hint="{ proposal: 'The change, in one line' }"
+      body-hint="Why: what it fixes, what it costs, what it touches"
+      submit-label="Propose"
+      @post="create"
+      @cancel="composing = false"
+    />
 
     <section v-for="z in zones" :key="z" class="grp">
       <div class="grp-head">
@@ -217,16 +213,6 @@ function deferRest() {
 .model-link:hover { text-decoration: underline; }
 .model-link + .new-btn { margin-left: 0; }
 .new-btn svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
-.new-form { display: grid; gap: 8px; margin-top: 16px; padding: 12px; border: 1px solid var(--slate-a5); border-radius: 12px; background: var(--slate-a2); }
-.where { display: inline-flex; align-items: center; gap: 8px; font-size: var(--text-sm); color: var(--fg-muted); }
-.where select { height: 26px; padding: 0 8px; border: 1px solid var(--slate-a5); border-radius: 7px; background: var(--surface); color: var(--fg); font: inherit; font-size: var(--text-sm); }
-.new-form input, .new-form textarea { width: 100%; border: 0; background: none; color: var(--fg); font: inherit; outline: none; resize: vertical; }
-.nf-title { font-size: 15px; font-weight: 500; }
-.new-form textarea { font-size: var(--text-nav); color: var(--fg-2); line-height: 1.5; }
-.new-form ::placeholder { color: var(--fg-faint); }
-.nf-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.hint { font-size: var(--text-sm); color: var(--fg-faint); }
-.nf-actions { display: inline-flex; align-items: center; gap: 10px; }
 .ghost { padding: 0; border: 0; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); cursor: pointer; }
 .ghost:hover { color: var(--fg); }
 .primary { height: 30px; padding: 0 14px; border: 0; border-radius: 8px; background: var(--indigo-9); color: #fff; font: inherit; font-size: var(--text-base); font-weight: 500; cursor: pointer; }

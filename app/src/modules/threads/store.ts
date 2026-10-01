@@ -201,6 +201,10 @@ export const reopen = (thread: Thread) => {
 /** Open: neither adopted nor declined. Deferred threads stay open in their new version. */
 export const isOpen = (t: Thread) => !t.settled && !t.declined;
 /** A frozen version's outcomes are locked. */
+/** The moment v1.1's design freezes: the end (UTC) of the date a lead set. */
+export const freezeAt = () => (state.release.freezeTarget ? new Date(`${state.release.freezeTarget.slice(0, 10)}T23:59:59Z`) : undefined);
+/** Where a new v1.1 thread goes: v1.1 until the freeze date passes or a lead records the freeze, then v1.2. */
+export const openVersion = () => (state.release.frozenAt || (freezeAt()?.getTime() ?? Infinity) <= Date.now() ? LATER : NEXT);
 export const locked = (t: Thread) => t.version === NEXT && !!state.release.frozenAt;
 
 /** Lead only. Close without adopting anything; the reason is required. */
@@ -322,7 +326,7 @@ export async function startThread(input: { zone: string; title: string; body: st
   const source: SourceRef | undefined = input.fromCall ? { kind: 'call', ref: input.fromCall, label: 'Sep 29 call' } : undefined;
   const version = (() => {
     const v = input.version ?? (V11_ZONES.includes(input.zone) ? NEXT : '');
-    return v === NEXT && state.release.frozenAt ? LATER : v;
+    return v === NEXT ? openVersion() : v;
   })();
   if (remote) {
     const id = await call<string>('sa_start_thread', {

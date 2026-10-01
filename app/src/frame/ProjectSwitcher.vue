@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router';
 import Menu from './Menu.vue';
 import { defaultVersion, projects, statusLabel, statusNote, type VersionStatus } from './nav';
 import { useWorkspace } from './useWorkspace';
+import { useFreeze } from './freeze';
+const freeze = useFreeze();
 
 // Which aircraft, and which version of it. Lives in the workspace header
 // because the tabs and sidebar below it belong to the chosen aircraft.
@@ -41,7 +43,7 @@ function switchProject(id: string) {
     <template v-if="project && version">
       <span class="tsep" aria-hidden="true"></span>
       <Menu
-        :items="project.versions.map((v) => ({ id: v.id, label: statusLabel[v.status], note: statusNote[v.status], hint: v.code, dot: dot(v.status) }))"
+        :items="project.versions.map((v) => ({ id: v.id, label: statusLabel[v.status], note: v.code === freeze.version && freeze.active.value ? (freeze.frozen.value ? 'Design frozen' : `Design freeze in ${freeze.label.value}`) : statusNote[v.status], hint: v.code, dot: dot(v.status) }))"
         :current="version.id"
         @select="versionId = $event"
       >
@@ -89,6 +91,10 @@ function switchProject(id: string) {
   background: center / contain no-repeat
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 20' fill='none' stroke='%23b0b4ba' stroke-width='1.2' stroke-linecap='round'%3E%3Cpath d='M3 11h36M8 11l14-8M10 11l14 6M30 11l4-5M30 11l4 5M16 7h10M16 15h10'/%3E%3C/svg%3E");
 }
+/* The chevron's glyph sits inside a 12px box with blank space either side;
+   pull the box in so the gap after it matches the gap before the lit dot. */
+.tbtn .chev-v:last-child { margin-right: -4px; }
+
 /* Version status: a lit dot, coloured by how current the version is. */
 .status-dot {
   width: 8px;

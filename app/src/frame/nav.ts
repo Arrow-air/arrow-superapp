@@ -261,6 +261,10 @@ export function zonePath(zoneId: string, projectId = 'quiver') {
   for (const t of tabs) for (const g of t.groups) for (const i of g.items) if (i.id === zoneId) return `/${projectId}/${t.id}/${i.id}`;
   return `/${projectId}/overview`;
 }
+export function zoneIcon(zoneId: string): IconName | undefined {
+  for (const t of tabs) for (const g of t.groups) for (const i of g.items) if (i.id === zoneId) return i.icon;
+  return undefined;
+}
 export function zoneLabel(zoneId: string) {
   for (const t of tabs) for (const g of t.groups) for (const i of g.items) if (i.id === zoneId) return i.label;
   return zoneId;

@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
 import { areaOf, byActivity, isOpen, state } from '../modules/threads/store';
 import { tabs, zoneLabel } from '../frame/nav';
+import { partById } from '../data/quiver';
 
 // Every thread in one list, the same rows as the zones, opening the same
 // panel. Threads still live in their zones; this is the index over them.
 const route = useRoute();
+const router = useRouter();
 const area = computed(() => (String(route.params.item).startsWith('area-') ? String(route.params.item).slice(5) : undefined));
 const areaLabel = computed(() => tabs.find((t) => t.id === area.value)?.label);
 
@@ -15,16 +17,26 @@ type Scope = 'open' | 'settled' | 'all';
 const scope = ref<Scope>('open');
 const query = ref('');
 
-const visible = computed(() =>
+// A part picked elsewhere (?part=3410) narrows the list to threads about it,
+// with a chip to clear it (Gavin's app-frame).
+const part = computed(() => (route.query.part as string | undefined) || undefined);
+function clearPart() {
+  const { part: _drop, ...rest } = route.query;
+  router.replace({ query: rest });
+}
+const matching = computed(() =>
   state.threads
     .filter((t) => (area.value ? areaOf(t) === area.value : true))
-    .filter((t) => (scope.value === 'open' ? isOpen(t) : scope.value === 'settled' ? !isOpen(t) : true))
+    .filter((t) => !part.value || t.part === part.value)
     .filter((t) => {
       const q = query.value.trim().toLowerCase();
       return !q || `${t.id} ${t.title} ${zoneLabel(t.zone)} ${t.body}`.toLowerCase().includes(q);
     })
     .sort(byActivity),
 );
+const visible = computed(() => matching.value.filter((t) => (scope.value === 'open' ? isOpen(t) : scope.value === 'settled' ? !isOpen(t) : true)));
+/** Threads the scope switch is hiding, so an empty list can say so instead of looking empty. */
+const hidden = computed(() => matching.value.length - visible.value.length);
 // All threads group by area; an area groups by zone.
 const groups = computed(() => {
   const key = (t: (typeof visible.value)[number]) => (area.value ? t.zone : areaOf(t));
@@ -53,7 +65,17 @@ const groups = computed(() => {
         </button>
       </div>
     </div>
-    <p v-if="!groups.length" class="vempty">Nothing here with this filter.</p>
+    <div v-if="part" class="filter">
+      <button type="button" class="chip" title="Show every thread" @click="clearPart">
+        About {{ partById(part)?.name.split(',')[0] ?? part }}
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 4.5 7 7m0-7-7 7" /></svg>
+      </button>
+    </div>
+    <p v-if="!groups.length && hidden" class="vempty">
+      {{ hidden }} {{ scope === 'open' ? 'closed' : 'open' }} {{ hidden === 1 ? 'thread' : 'threads' }} hidden.
+      <button type="button" class="show-all" @click="scope = 'all'">Show all</button>
+    </p>
+    <p v-else-if="!groups.length" class="vempty">Nothing here with this filter.</p>
     <section v-for="g in groups" :key="g.id" class="view-section">
       <h2>{{ g.label }}</h2>
       <div class="list"><ThreadRows :threads="g.threads" :show-zone="true" /></div>
@@ -73,4 +95,14 @@ const groups = computed(() => {
 .find input:focus { background: var(--slate-a3); box-shadow: 0 0 0 1px var(--indigo-a7); }
 .list { border: 1px solid var(--slate-a4); border-radius: 12px; overflow: hidden; }
 .view-section { margin-top: 22px; }
+.filter { margin-top: 12px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; max-width: 100%; height: 24px; padding: 0 6px 0 9px;
+  border: 0; border-radius: 6px; background: var(--indigo-a3); color: var(--indigo-11);
+  font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; transition: background-color 120ms;
+}
+.chip:hover { background: var(--indigo-a4); }
+.chip svg { flex: none; width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.show-all { padding: 0; border: 0; background: none; color: var(--indigo-11); font: inherit; cursor: pointer; }
+.show-all:hover { text-decoration: underline; }
 </style>

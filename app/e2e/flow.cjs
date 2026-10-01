@@ -33,12 +33,13 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
 
   // Vote, then decide as lead from the Demo menu.
   check(!(await panel.getByRole('button', { name: 'Delete thread' }).count()), 'a member cannot delete someone else\'s thread');
-  await panel.getByRole('button', { name: 'Vote up' }).first().click();
-  check((await panel.locator('.cm-vote .n').first().innerText()).trim() === '1', 'member up-vote counts 1');
+  await panel.getByRole('button', { name: /^Back option / }).first().click();
+  check((await panel.locator('.vote-back .n').first().innerText()).trim() === '1', 'member backing an option counts 1');
+  check((await panel.locator('.vote-back').first().innerText()).includes('Backed') && (await panel.locator('.share .pct').first().innerText()).trim() === '100%', 'the option reads as backed, with its share of the vote');
   await p.getByRole('button', { name: /^Demo/ }).click();
   await p.getByRole('radio', { name: 'Lead' }).click();
   await p.getByRole('button', { name: /^Demo/ }).click();
-  check((await panel.locator('.cm-vote .n').first().innerText()).trim() === '2', 'same vote counts 2 as lead');
+  check((await panel.locator('.vote-back .n').first().innerText()).trim() === '2', 'same vote counts 2 as lead');
   await panel.getByLabel('Decision note').fill('Cheapest change; test it before any board spin.');
   await panel.getByRole('button', { name: 'Record decision' }).click();
   await p.waitForTimeout(200);
@@ -71,8 +72,8 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   const spec = await p.locator('.changes').innerText();
   check(spec.includes('D-003') && spec.includes('W-1') && spec.includes('Accepted'), 'v1.1 spec lists the decision with its bounty');
   await p.getByRole('button', { name: 'Propose an improvement' }).click();
-  await p.getByLabel('Where the change is').selectOption('power');
-  await p.getByLabel('Improvement').fill('Add a battery strap retention check');
+  await p.getByLabel('Zone').selectOption('power');
+  await p.getByLabel('Title').fill('Add a battery strap retention check');
   await p.getByRole('button', { name: 'Propose', exact: true }).click();
   await p.waitForTimeout(300);
   check((await panel.innerText()).includes('Dev Kit v1.1') && (await panel.locator('a.home, .home').first().innerText()) === 'Power & battery', 'proposal opens as a v1.1 thread in its zone');
@@ -91,8 +92,9 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.waitForTimeout(500);
   await p.getByRole('button', { name: 'New thread' }).click();
   await p.getByLabel('Title').fill('Rate the latch for 5 kg?');
-  await p.getByLabel('Thread context').fill('Test thread from the flow check.');
-  await p.getByRole('button', { name: 'Start thread' }).click();
+  await p.getByLabel('Description').fill('Test thread from the flow check.');
+  check((await p.getByRole('radio', { name: 'Question' }).getAttribute('aria-checked')) === 'true', 'a new thread starts as a question, chosen inside the composer');
+  await p.getByRole('button', { name: 'Post thread' }).click();
   await p.waitForTimeout(300);
   check((await panel.locator('h1.title').innerText()).includes('Rate the latch for 5 kg?'), 'new thread opens in the panel');
   await panel.getByLabel('New comment').fill('Yes, with a second structural path.');
@@ -153,14 +155,18 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.mouse.click(cv.x + cv.width / 2, cv.y + cv.height / 2);
   await p.waitForTimeout(400);
   check(/part=\d{4}/.test(p.url()), 'clicking the model selects a part');
-  await p.getByRole('button', { name: '← All parts' }).click();
-  await p.getByRole('button', { name: /Power & battery/ }).click();
-  await p.locator('button.part[data-part="3410"]').click();
-  await p.waitForTimeout(300);
-  check((await p.locator('.p-name').innerText()).includes('Battery, Tattu'), 'parts list selects the battery and shows its BOM facts');
-  await p.getByRole('button', { name: /Propose a change for Dev Kit v1.1/ }).click();
-  await p.getByLabel('Proposed change').fill('Add a second retention strap to the battery');
-  await p.getByRole('button', { name: 'Propose', exact: true }).click();
+  check((await p.locator('.crumbs').innerText()).includes('Dev Kit'), 'a picked part shows its path from the aircraft');
+  await p.locator('.crumbs button.crumb').first().click();
+  await p.locator('button.tile[data-zone="power"]').waitFor({ timeout: 5000 });
+  await p.locator('button.tile[data-zone="power"]').click();
+  await p.locator('button.tile[data-part]').first().waitFor({ timeout: 5000 });
+  check(p.url().includes('zone=power') && (await p.locator('button.tile[data-part]').count()) === 5, 'an area drills down to its parts');
+  await p.locator('button.tile[data-part="3410"]').click();
+  await p.locator('.p-name').waitFor({ timeout: 5000 });
+  check((await p.locator('.p-name').innerText()).includes('Battery') && (await p.locator('aside.side').innerText()).includes('Tattu'), 'parts list selects the battery and shows its BOM facts');
+  await p.getByRole('button', { name: /Start a thread about Battery/ }).click();
+  await p.getByLabel('Title').fill('Add a second retention strap to the battery');
+  await p.getByRole('button', { name: 'Post thread' }).click();
   await p.waitForTimeout(300);
   const pt = await panel.innerText();
   if (process.env.DEBUG) console.log('PANEL:', pt.slice(0, 300), '| HOME:', await panel.locator('.home').first().innerText());
@@ -178,9 +184,9 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.locator('button.part[data-ref="U3"]').click();
   await p.waitForTimeout(300);
   check((await p.locator('.c-ref').innerText()) === 'U3' && (await p.locator('.c-name').innerText()).includes('CPC1019N'), 'battery PCB component card shows the part');
-  await p.getByRole('button', { name: /Propose a change for Dev Kit v1.1/ }).click();
-  await p.getByLabel('Proposed change').fill('Swap U3 for a relay rated for the Longshot charge current');
-  await p.getByRole('button', { name: 'Propose', exact: true }).click();
+  await p.getByRole('button', { name: /Start a thread about U3/ }).click();
+  await p.getByLabel('Title').fill('Swap U3 for a relay rated for the Longshot charge current');
+  await p.getByRole('button', { name: 'Post thread' }).click();
   await p.waitForTimeout(300);
   const pp = await panel.innerText();
   check(/About\s+U3\s+on the Battery PCB/.test(pp) && (await panel.locator('.home').first().innerText()) === 'Power & battery', 'PCB proposal is anchored to the component, in the board\'s zone');
@@ -202,8 +208,17 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.goto(`${BASE}/quiver/overview/v1-1`);
   await p.waitForTimeout(400);
   await p.getByLabel('Retro pool in ARROW').fill('1000');
+  const inFive = new Date(Date.now() + 5 * 86400000).toISOString().slice(0, 10);
+  await p.getByLabel('Freeze date').fill(inFive);
   await p.getByRole('button', { name: 'Save plan' }).click();
   await p.waitForTimeout(200);
+  const clock = p.locator('footer.footer .freeze');
+  check(/Dev Kit v1\.1 design freeze in [45]d/.test(await clock.innerText()) && (await clock.getAttribute('data-level')) === 'soon', 'footer counts down to the freeze date, amber inside two weeks');
+  await p.goto(`${BASE}/quiver/overview/v1-1?thread=Q-19`);
+  await p.waitForTimeout(300);
+  check((await panel.locator('.due').innerText()).includes('Settles by freeze'), 'an open v1.1 thread says it settles by the freeze');
+  await p.keyboard.press('Escape');
+  await p.waitForTimeout(150);
   const pre = await p.locator('.alloc').innerText();
   check(pre.includes('If it froze now') && pre.includes('Erick') && pre.includes('held until a lead confirms'), 'retro preview splits the pool by support, holding shares for people named in notes');
   check(!(await p.getByRole('button', { name: 'Freeze Dev Kit v1.1' }).isEnabled()), 'freeze is blocked while threads are open');
@@ -213,6 +228,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.waitForTimeout(300);
   const after = await text();
   check(after.includes('Frozen') && after.includes('Recorded split'), 'freeze records the retro split and locks the spec');
+  check((await clock.innerText()).includes('design frozen'), 'footer shows the version frozen');
 
   // Deleting: an author removes their own fresh thread; a lead removes any thread.
   await p.goto(`${BASE}/quiver/overview/airframe`);
@@ -222,7 +238,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.getByRole('button', { name: /^Demo/ }).click();
   await p.getByRole('button', { name: 'New thread' }).click();
   await p.getByLabel('Title').fill('Posted by mistake');
-  await p.getByRole('button', { name: 'Start thread' }).click();
+  await p.getByRole('button', { name: 'Post thread' }).click();
   await p.waitForTimeout(300);
   await panel.getByRole('button', { name: 'Delete thread' }).click();
   await panel.getByRole('button', { name: 'Delete thread' }).last().click();

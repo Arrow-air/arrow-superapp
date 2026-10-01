@@ -5,11 +5,13 @@ import { formatMoney, network, quote, quoteValue, type Quote } from './account';
 import { generatedAt, shortDate, tasks } from '../data/quiver';
 import { isOpen, state } from '../modules/threads/store';
 import DemoMenu from './DemoMenu.vue';
+import { useFreeze } from './freeze';
 import SessionStatus from './SessionStatus.vue';
 import { remote } from '../lib/backend';
 import { socials } from './links';
 import logomark from '../assets/arrow-logomark-white.svg';
 import { theme, type Theme } from './theme';
+const freeze = useFreeze();
 import type { IconName } from './icons';
 
 const themes: { id: Theme; label: string; icon: IconName }[] = [
@@ -36,6 +38,12 @@ const claimable = tasks.filter((t) => t.claimable).length;
       <span class="sep hide-sm" aria-hidden="true"></span>
       <span class="stat hide-sm"><Icon name="sync" :size="11" /> GitHub data from {{ shortDate(generatedAt) }}</span>
       <span class="sep hide-md" aria-hidden="true"></span>
+      <template v-if="freeze.active.value">
+        <RouterLink class="stat freeze" to="/quiver/overview/v1-1" :data-level="freeze.level.value" :title="freeze.at.value ? `Design freeze for ${freeze.version}: ${freeze.when.value}` : `${freeze.version} design frozen`">
+          <i aria-hidden="true"></i>{{ freeze.frozen.value ? `${freeze.version} design frozen` : `${freeze.version} design freeze in ${freeze.label.value}` }}
+        </RouterLink>
+        <span class="sep hide-md" aria-hidden="true"></span>
+      </template>
       <RouterLink class="stat link hide-md" to="/quiver/discussion/all">
         <Icon name="vote" :size="11" /> {{ openThreads }} open threads
       </RouterLink>
@@ -186,4 +194,12 @@ const claimable = tasks.filter((t) => t.claimable).length;
   .hide-sm { display: none; }
   .footer { padding-inline: var(--gutter); }
 }
+/* Design freeze countdown: calm grey, amber inside 14 days, red inside 48 hours. */
+.freeze { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; color: inherit; text-decoration: none; }
+.freeze:hover { color: var(--fg-2); }
+.freeze i { width: 6px; height: 6px; border-radius: 50%; background: var(--fg-faint); }
+.freeze[data-level='soon'] { color: var(--amber-11); }
+.freeze[data-level='soon'] i { background: var(--amber-9); }
+.freeze[data-level='urgent'], .freeze[data-level='frozen'] { color: var(--red-11); }
+.freeze[data-level='urgent'] i { background: var(--red-9); box-shadow: 0 0 0 3px var(--red-a4); }
 </style>

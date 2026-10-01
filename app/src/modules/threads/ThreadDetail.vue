@@ -7,6 +7,9 @@ import SourceChip from './SourceChip.vue';
 import StatusIcon from './StatusIcon.vue';
 import WorkCard from '../work/WorkCard.vue';
 import CommentNode from './CommentNode.vue';
+import Icon from '../../frame/Icon.vue';
+import { threadTypes, typeStyle } from './types';
+import { useFreeze } from '../../frame/freeze';
 import { LATER, NEXT, type Thread } from './data';
 import { partById } from '../../data/quiver';
 import { boardById } from '../../data/pcbs';
@@ -35,7 +38,10 @@ const flipped = computed(() => changedWinner(t.value));
 const rawLeader = computed(() => [...tallies.value].sort((a, b) => b.rawScore - a.rawScore)[0]);
 const rawTie = computed(() => tallies.value.filter((x) => x.rawScore === rawLeader.value?.rawScore).length > 1);
 const letter = (id: string) => letterOf(t.value, id);
-const typeLabel = computed(() => ({ question: 'Question', proposal: 'Proposal', idea: 'Idea' })[t.value.type]);
+const freeze = useFreeze();
+// Open v1.1 threads are due at the design freeze: settled, deferred or declined.
+const due = computed(() => isOpen(t.value) && t.value.version === NEXT && freeze.active.value && !state.release.frozenAt);
+const showWhy = ref(false);
 // Your weight shows where you use it: on hover over the vote buttons.
 const formula = computed(() =>
   `Your vote counts ${mine.value.total}: (${mine.value.base} base + ${mine.value.token} token + ${mine.value.expertise} expertise + ${mine.value.builder} builder) × ${mine.value.roleMultiplier} ${mine.value.role}. Technical calls weigh role, verified expertise and intent to build more than holdings. No wallet is linked in the demo.`,
@@ -123,7 +129,10 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
     <header class="head">
       <h1 class="title">{{ t.title }}</h1>
       <p class="meta">
-        <span class="kind">{{ typeLabel }}</span><span class="dot">·</span>
+        <span class="type" :style="typeStyle(t.type)"><Icon :name="threadTypes[t.type].icon" :size="12" />{{ threadTypes[t.type].label }}</span>
+        <span v-if="due" class="due" :data-level="freeze.level.value" title="Open threads are settled, deferred or declined at the design freeze">
+          {{ freeze.frozen.value ? 'Due at freeze' : `Settles by freeze · ${freeze.label.value}` }}
+        </span>
         <template v-if="t.authorId"><Avatar :id="t.authorId" :size="16" /> {{ nameOf(t.authorId) }}<span class="dot">·</span></template>
         <span>{{ day(t.raisedAt) }}</span>
         <template v-if="t.source"><span class="dot"></span><SourceChip :source="t.source" /></template>
@@ -210,23 +219,40 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 
     <section class="block comments">
       <div class="block-head">
-        <h2 class="label">Comments <span class="legend">{{ t.positions.length }}</span></h2>
-        <label v-if="remote && session.userId && open" class="builder" title="Adds one point of weight to your votes in this thread">
-          <input type="checkbox" :checked="isBuilder(t)" @change="setBuilder(t, ($event.target as HTMLInputElement).checked)" /> I'd help build this
-        </label>
+        <h2 class="label">
+          <template v-if="!tops.length">Comments</template>
+          <template v-else-if="!open">{{ tops.length }} {{ tops.length === 1 ? 'option' : 'options' }} · {{ t.settled ? 'decided' : 'closed' }}</template>
+          <template v-else>{{ tops.length }} competing {{ tops.length === 1 ? 'option' : 'options' }} <span class="label-hint">· back the one you'd build</span></template>
+          <span v-if="t.positions.length > tops.length" class="legend">· {{ t.positions.length }} comments</span>
+        </h2>
+        <span class="legend">
+          <label v-if="remote && session.userId && open" class="builder" title="Adds one point of weight to your votes in this thread">
+            <input type="checkbox" :checked="isBuilder(t)" @change="setBuilder(t, ($event.target as HTMLInputElement).checked)" /> I'd help build this
+          </label>
+          Your vote counts <b class="mono">{{ mine.total }}</b> <button class="ghost link" type="button" :aria-expanded="showWhy" @click="showWhy = !showWhy">{{ showWhy ? 'Hide' : 'Why' }}</button>
+        </span>
+      </div>
+      <div v-if="showWhy" class="why">
+        <p class="why-note first">{{ t.kind === 'funding' ? 'A funding call, so votes are token-weighted.' : 'A technical call, so votes are signal-weighted.' }}</p>
+        <p class="formula mono">({{ mine.base }} base + {{ mine.token }} token + {{ mine.expertise }} expertise + {{ mine.builder }} builder) × {{ mine.roleMultiplier }} {{ mine.role }} = <b>{{ mine.total }}</b></p>
+        <p class="why-note">Role and a declared intent to build count for more than holdings. Scores are weighted; hover one for the raw headcount.</p>
       </div>
 
       <form v-if="open" class="composer top" @submit.prevent="addComment">
-        <textarea
-          v-model="newComment"
-          rows="2"
-          placeholder="Add a comment: an option, an answer, or what you know"
-          aria-label="New comment"
-          @keydown.meta.enter.prevent="addComment"
-          @keydown.ctrl.enter.prevent="addComment"
-        ></textarea>
+        <!-- You, speaking; the utility bar below is set apart. -->
+        <div class="composer-body">
+          <Avatar id="me" :size="28" />
+          <textarea
+            v-model="newComment"
+            rows="2"
+            placeholder="Add a comment: an option, an answer, or what you know"
+            aria-label="New comment"
+            @keydown.meta.enter.prevent="addComment"
+            @keydown.ctrl.enter.prevent="addComment"
+          ></textarea>
+        </div>
         <div class="composer-bar">
-          <span class="hint">Top-level comments are the options people vote on and a lead can adopt. Reply under any comment to discuss it.</span>
+          <span class="hint"><Kbd :keys="[MOD, '↵']" outline /> Top-level comments are the options people back; reply under any comment to discuss it.</span>
           <button class="primary" type="submit" :disabled="!newComment.trim()">Comment</button>
         </div>
       </form>
@@ -400,16 +426,22 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .reply p { margin: 3px 0 0; color: var(--fg-2); line-height: 1.55; font-size: var(--text-nav); }
 
 .composer {
-  margin-top: 12px; border: 1px solid var(--slate-a4); border-radius: 12px; background: var(--slate-a2);
+  margin-top: 12px; overflow: clip; border: 1px solid var(--slate-a4); border-radius: 12px; background: var(--slate-2);
   transition: border-color 150ms;
 }
 .composer:focus-within { border-color: var(--slate-a7); }
+.composer-body { display: flex; align-items: flex-start; gap: 12px; padding: 14px 14px 8px; }
+.composer-body .av { flex: none; }
 .composer textarea {
-  display: block; width: 100%; min-height: 64px; padding: 12px 14px 4px; border: 0; background: none; resize: vertical;
+  flex: 1; display: block; min-width: 0; min-height: 48px; padding: 4px 0 0; border: 0; background: none; resize: vertical;
   color: var(--fg); font: inherit; font-size: var(--text-nav); line-height: 1.5; outline: none;
 }
 .composer textarea::placeholder { color: var(--fg-faint); }
-.composer-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 8px 14px; }
+/* The utility bar: a darker strip under a hairline, apart from what you write. */
+.composer-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 8px 8px 14px;
+  border-top: 1px solid var(--slate-a3); background: var(--composer-bar);
+}
 .hint { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--fg-faint); }
 
 .zlink { color: var(--fg-2); text-decoration: none; }
@@ -456,7 +488,13 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 }
 .choices button[aria-checked='true'] { background: var(--indigo-9); border-color: var(--indigo-9); color: #fff; }
 .hint-line { margin: 8px 0 0; font-size: var(--text-sm); color: var(--fg-muted); }
-.kind { color: var(--fg-2); font-weight: 500; }
+.meta .type { display: inline-flex; align-items: center; gap: 5px; height: 20px; margin-right: 10px; padding: 0 7px 0 6px; border-radius: 6px; background: var(--tbg); color: var(--tfg); font-weight: 500; }
+.meta .due { display: inline-flex; align-items: center; height: 20px; margin-right: 10px; padding: 0 7px; border-radius: 6px; background: var(--slate-a3); color: var(--fg-2); font-weight: 500; font-variant-numeric: tabular-nums; }
+.meta .due[data-level='soon'] { background: var(--amber-a3); color: var(--amber-11); }
+.meta .due[data-level='urgent'], .meta .due[data-level='frozen'] { background: var(--red-a3); color: var(--red-11); }
+.label-hint { color: var(--fg-faint); font-weight: 400; }
+.why-note.first { margin: 0 0 6px; color: var(--fg-2); }
+.legend .builder { margin-right: 10px; }
 .part { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; margin: 8px 0 0; font-size: var(--text-sm); color: var(--fg-2); }
 .part .mono { color: var(--fg-muted); }
 .part a { color: var(--indigo-11); text-decoration: none; }
