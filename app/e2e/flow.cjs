@@ -185,9 +185,10 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   check((await p.locator('.crumbs').innerText()).includes('Dev Kit'), 'a picked part shows its path from the aircraft');
   await p.locator('.crumbs button.crumb').first().click();
   await p.locator('button.tile[data-zone="power"]').waitFor({ timeout: 5000 });
+  check(await p.locator('button.tile[data-zone="harness"]').count() === 1, 'the model has a Harness & wiring area');
   await p.locator('button.tile[data-zone="power"]').click();
   await p.locator('button.tile[data-part]').first().waitFor({ timeout: 5000 });
-  check(p.url().includes('zone=power') && (await p.locator('button.tile[data-part]').count()) === 5, 'an area drills down to its parts');
+  check(p.url().includes('zone=power') && (await p.locator('button.tile[data-part]').count()) === 4 && !(await p.locator('button.tile[data-part="4010"]').count()), 'an area drills down to its parts (busbars now under harness)');
   await p.locator('button.tile[data-part="3410"]').click();
   await p.locator('.p-name').waitFor({ timeout: 5000 });
   check((await p.locator('.p-name').innerText()).includes('Battery') && (await p.locator('aside.side').innerText()).includes('Tattu'), 'parts list selects the battery and shows its BOM facts');
@@ -217,6 +218,21 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.waitForTimeout(300);
   const pp = await panel.innerText();
   check(/About\s+U3\s+on the Battery PCB/.test(pp) && (await panel.locator('.home').first().innerText()) === 'Power & battery', 'PCB proposal is anchored to the component, in the board\'s zone');
+
+  // Harness & wiring is a v1.1 area of its own: a page, threads for v1.1, and the busbars on the model.
+  await p.goto(`${BASE}/quiver/overview/harness`);
+  await p.waitForTimeout(400);
+  const hz = await text();
+  check(hz.includes('Harness & wiring') && hz.includes('Harness Manufacturing Guide') && hz.includes('HAR-0014'), 'harness and wiring has its own zone page');
+  await p.getByRole('button', { name: 'New thread' }).click();
+  await p.getByLabel('Title').fill('Label every harness end with its HAR number');
+  await p.getByRole('button', { name: 'Post thread' }).click();
+  await p.waitForTimeout(300);
+  check((await panel.innerText()).includes('Dev Kit v1.1'), 'a harness thread opens for v1.1');
+  await p.keyboard.press('Escape');
+  await p.goto(`${BASE}/quiver/overview/v1-1`);
+  await p.waitForTimeout(300);
+  check((await p.locator('.grp', { hasText: 'Harness & wiring' }).innerText()).includes('Label every harness end'), 'the v1.1 page groups it under Harness & wiring');
 
   // Power & battery is about Longshot now.
   await p.goto(`${BASE}/quiver/overview/power`);

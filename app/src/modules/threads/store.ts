@@ -16,7 +16,7 @@ import { reload, requireSignIn, say, session, type Member } from '../../lib/sess
 //   function, then reloads.
 const KEY = 'quiver-demo.threads.v7';
 /** The zones that make up the next Dev Kit revision, in page order. */
-export const V11_ZONES = ['airframe', 'gps-rf', 'propulsion', 'power', 'avionics'];
+export const V11_ZONES = ['airframe', 'gps-rf', 'propulsion', 'power', 'avionics', 'harness'];
 
 // Work drafted from a decision: a bounty (a fixed deliverable anyone can
 // claim) or a grant (scoped work for someone to take on). Carries the
