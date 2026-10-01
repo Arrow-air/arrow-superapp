@@ -138,7 +138,14 @@ export const zones: Zone[] = [
     id: 'avionics',
     summary: 'Flight controller, companion computer, Ethernet switches and the onboard network every device and attachment shares.',
     parts: ['3312', '3313', '3201'],
+  },
+  {
+    id: 'harness',
+    summary: 'The wiring that ties it all together: the busbars and the 28 harnesses (HAR-0001 to HAR-0028) for ESC power and signal, payload ports, sensors, radios and GNSS, with their connectors. Built from the Harness Manufacturing Guide.',
+    parts: ['4010', 'HAR-0004', 'HAR-0008', 'HAR-0012', 'HAR-0014', 'HAR-0021'],
+    issues: [147, 119, 110, 95],
     prs: [235],
+    links: [{ label: 'Harness Manufacturing Guide', url: `${PQ}/blob/main/docs/Manufacturing/Harness-Manufacturing-Guide.mdx` }],
   },
   {
     id: 'pilots-handbook',

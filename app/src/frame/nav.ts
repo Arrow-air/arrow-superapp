@@ -70,7 +70,8 @@ export const tabs: Tab[] = [
           item('gps-rf', 'GPS & RF', 'globe'),
           item('propulsion', 'Propulsion', 'fan'),
           item('power', 'Power & battery', 'battery'),
-          item('avionics', 'Avionics & network', 'harness'),
+          item('avionics', 'Avionics & network', 'gauge'),
+          item('harness', 'Harness & wiring', 'harness'),
         ],
       },
       {
