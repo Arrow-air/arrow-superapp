@@ -322,10 +322,30 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   check((await text()).includes('Withdrawn (decision reopened)'), 'the bounty shows as withdrawn');
   await p.goto(`${BASE}/quiver/attachments/payload-latch?thread=Q-14`);
   await p.waitForTimeout(300);
+  const wdn = panel.locator('.wc[data-stage="withdrawn"]');
+  const wid = (await wdn.locator('.wc-head .mono').innerText()).trim();
+  await wdn.getByRole('button', { name: `Delete ${wid}` }).click();
+  await wdn.getByRole('button', { name: 'Yes, delete' }).click();
+  await p.waitForTimeout(200);
+  check(!(await panel.locator('.wc[data-stage="withdrawn"]').count()) && !(await panel.innerText()).includes('Withdrawn work'), 'a lead deletes the withdrawn bounty from its thread');
   await panel.getByLabel('Decision note').fill('Still good for V2.');
   await panel.getByRole('button', { name: 'Record decision' }).click();
   await p.waitForTimeout(200);
   check((await panel.locator('.pipe').innerText()).includes(dec) && (await panel.getByRole('button', { name: 'Fund it as a bounty or grant' }).count()) > 0, 'decided again, it keeps its D-number and can be funded afresh');
+  await panel.getByRole('button', { name: 'Fund it as a bounty or grant' }).click();
+  await panel.getByLabel('Acceptance').fill('It works.');
+  await panel.getByLabel('Reward in ARROW').fill('100');
+  await panel.getByRole('button', { name: 'Draft bounty' }).click();
+  await p.waitForTimeout(200);
+  const draftId = (await panel.locator('.wc .wc-head .mono').innerText()).trim();
+  await panel.getByRole('button', { name: `Delete ${draftId}` }).click();
+  check((await panel.locator('.wc .confirm').innerText()).includes('funded again'), 'deleting a live bounty says the decision can be funded again');
+  await panel.getByRole('button', { name: 'Yes, delete' }).click();
+  await p.waitForTimeout(200);
+  check(!(await panel.locator('.wc').count()) && (await panel.getByRole('button', { name: 'Fund it as a bounty or grant' }).count()) > 0, 'a lead deletes a draft bounty and the decision can be funded again');
+  await p.goto(`${BASE}/quiver/overview/v1-1?thread=Q-3`);
+  await p.waitForTimeout(300);
+  check((await panel.locator('.wc').count()) > 0 && !(await panel.getByRole('button', { name: /^Delete W-/ }).count()), 'work someone has taken on can\'t be deleted');
 
   // Persistence and reset.
   await p.goto(`${BASE}/quiver/decisions/register`);

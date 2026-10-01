@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import Avatar from '../threads/Avatar.vue';
 import SourceChip from '../threads/SourceChip.vue';
-import { acceptWork, awardOf, claimWork, confirmProposer, day, person, publishWork, requestChanges, state, submitWork, type Work } from '../threads/store';
+import { acceptWork, awardOf, canDeleteWork, claimWork, confirmProposer, day, deleteWork, person, publishWork, requestChanges, state, submitWork, type Work } from '../threads/store';
 
 // A bounty or grant drafted from a decision: what it is, what it pays, who
 // gets the proposer award, and the one next step for whoever is looking.
@@ -15,6 +15,7 @@ const kindLabel = computed(() => (w.value.kind === 'bounty' ? 'Bounty' : 'Grant'
 const evidence = ref('');
 const changes = ref('');
 const showHistory = ref(false);
+const confirming = ref(false);
 </script>
 
 <template>
@@ -70,7 +71,17 @@ const showHistory = ref(false);
         </div>
         <span v-else class="muted">Waiting for the lead's review.</span>
       </template>
+      <span v-else-if="w.stage === 'withdrawn'" class="muted">Withdrawn when the decision was reopened.</span>
       <span v-else class="muted">Accepted. Nothing is paid from the app; payouts follow the DAO's process.</span>
+    </div>
+
+    <div v-if="canDeleteWork(w)" class="del">
+      <button v-if="!confirming" class="link danger" type="button" :aria-label="`Delete ${w.id}`" @click="confirming = true">Delete {{ kindLabel.toLowerCase() }}</button>
+      <span v-else class="confirm" role="group" aria-label="Confirm delete">
+        Delete {{ w.id }}? It leaves every list{{ w.stage === 'withdrawn' ? '' : `, and the decision can be funded again` }}.
+        <button class="link danger" type="button" @click="deleteWork(w); confirming = false">Yes, delete</button>
+        <button class="link" type="button" @click="confirming = false">Cancel</button>
+      </span>
     </div>
 
     <button class="hist-t" type="button" @click="showHistory = !showHistory">{{ showHistory ? 'Hide history' : `History (${w.history.length})` }}</button>
@@ -113,4 +124,7 @@ const showHistory = ref(false);
 .link:hover { text-decoration: underline; }
 .hist-t { margin-top: 10px; padding: 0; border: 0; background: none; color: var(--fg-faint); font: inherit; font-size: var(--text-sm); cursor: pointer; }
 .hist { margin: 4px 0 0; padding-left: 16px; font-size: var(--text-sm); color: var(--fg-2); line-height: 1.6; }
+.del { margin-top: 10px; font-size: var(--text-sm); }
+.del .danger { color: var(--red-11); }
+.confirm { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: var(--fg-2); }
 </style>

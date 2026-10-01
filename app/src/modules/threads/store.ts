@@ -298,6 +298,16 @@ export function draftWork(t: Thread, input: { kind: WorkKind; title: string; sco
   t.activeAt = now();
   return w;
 }
+/** Leads can delete a bounty or grant until someone takes it on; then it stays on the record. */
+export function canDeleteWork(w: Work): boolean {
+  if (state.role !== 'lead' || (remote && !session.userId)) return false;
+  return w.stage === 'draft' || w.stage === 'open' || w.stage === 'withdrawn';
+}
+/** Gone from every list; live, a private copy is kept. The thread can be funded again. */
+export function deleteWork(w: Work) {
+  if (remote) return void call('sa_delete_work', { p_work: w.id });
+  state.work = state.work.filter((x) => x.id !== w.id);
+}
 const move = (w: Work, stage: WorkStage, note: string) => { w.stage = stage; w.history.push({ at: now(), byId: 'me', note }); };
 const step = (w: Work, action: string, text?: string) => void call('sa_work_step', { p_work: w.id, p_action: action, p_text: text ?? null });
 export const publishWork = (w: Work) => (remote ? step(w, 'publish') : move(w, 'open', `Published as an open ${w.kind}`));

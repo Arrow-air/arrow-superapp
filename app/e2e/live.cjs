@@ -135,6 +135,18 @@ async function signIn(p, email) {
   await lp.getByRole('button', { name: 'Record decision' }).click();
   await q.waitForTimeout(1500);
   check((await lp.locator('.pipe').innerText()).includes(decNo), `decided again, it keeps ${decNo}`);
+  // A draft bounty, deleted: gone from the thread, kept privately; the decision can be funded again.
+  await lp.getByRole('button', { name: 'Fund it as a bounty or grant' }).click();
+  await lp.getByLabel('Acceptance').fill('Draft to delete.');
+  await lp.getByLabel('Reward in ARROW').fill('50');
+  await lp.getByRole('button', { name: 'Draft bounty' }).click();
+  await q.waitForTimeout(1500);
+  const draftId = (await lp.locator('.wc .wc-head .mono').innerText()).trim();
+  await lp.getByRole('button', { name: `Delete ${draftId}` }).click();
+  await lp.getByRole('button', { name: 'Yes, delete' }).click();
+  await q.waitForTimeout(1500);
+  const keptWork = await (await fetch(`${SUPA}/rest/v1/sa_deleted_work?id=eq.${draftId}&select=id,acceptance`, { headers: admin })).json();
+  check(!(await lp.locator('.wc').count()) && keptWork[0]?.acceptance === 'Draft to delete.', `a lead deletes draft ${draftId}: gone from the thread, kept privately`);
   await lp.getByRole('button', { name: 'Fund it as a bounty or grant' }).click();
   await lp.getByLabel('Acceptance').fill('It works.');
   await lp.getByLabel('Reward in ARROW').fill('300');
@@ -150,6 +162,8 @@ async function signIn(p, email) {
   await p.waitForTimeout(1500);
   check((await panel.locator('.wc .stage').innerText()) === 'In progress' && (await panel.locator('.wc').innerText()).includes('You took it on'), 'the member claims it');
   check(await rpcAs(users.lead, 'sa_reopen', { p_thread: tid }) >= 400, 'the database keeps a decision once its bounty is claimed');
+  const claimed = (await (await fetch(`${SUPA}/rest/v1/sa_work?thread_id=eq.${tid}&select=id`, { headers: admin })).json())[0]?.id;
+  check(claimed && await rpcAs(users.lead, 'sa_delete_work', { p_work: claimed }) >= 400, 'the database keeps a bounty once it is claimed');
   const award = await panel.locator('.wc .award').innerText();
   check(award.includes('75 ARROW') && award.includes('You'), `proposer award goes to the position's author, seen by them as You (${award.replace(/\s+/g, ' ').slice(0, 90)})`);
 

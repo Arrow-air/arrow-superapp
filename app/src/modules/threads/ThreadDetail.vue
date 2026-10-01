@@ -125,6 +125,7 @@ const reopening = ref(false);
 const reopenNote = ref('');
 const withdrawable = computed(() => state.work.find((w) => w.threadId === t.value.id && (w.stage === 'draft' || w.stage === 'open')));
 const taken = computed(() => takenWork(t.value));
+const withdrawn = computed(() => state.work.filter((w) => w.threadId === t.value.id && w.stage === 'withdrawn'));
 function doReopen() {
   reopen(t.value, reopenNote.value.trim() || undefined);
   reopening.value = false;
@@ -247,6 +248,12 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         </form>
       </template>
       <p v-else class="empty">Not funded yet. A lead can turn this decision into a bounty or grant.</p>
+    </section>
+
+    <!-- Work withdrawn when an earlier decision was reopened: on the record until a lead deletes it. -->
+    <section v-if="withdrawn.length" class="block work">
+      <div class="block-head"><h2 class="label">Withdrawn work</h2></div>
+      <WorkCard v-for="w in withdrawn" :key="w.id" :work="w" />
     </section>
 
     <section class="block comments">
