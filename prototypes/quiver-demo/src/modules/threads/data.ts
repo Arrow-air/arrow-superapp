@@ -16,7 +16,8 @@ export interface SourceRef {
   url?: string;
 }
 
-export interface Position { id: string; text: string; authorId?: string; source?: SourceRef; at: string }
+/** A comment. Top-level comments (no parentId) are the options a lead can adopt; replies nest under any comment. */
+export interface Position { id: string; text: string; authorId?: string; source?: SourceRef; at: string; parentId?: string }
 export interface Reply { id: string; text: string; authorId?: string; source?: SourceRef; at: string }
 export interface Settled {
   positionId: string;
@@ -86,7 +87,7 @@ const T12 = '2026-09-09T15:59:00-05:00';
 export const NEXT = 'Dev Kit v1.1';
 export const LATER = 'Dev Kit v1.2';
 
-export const threads: Thread[] = [
+const seeded: Thread[] = [
   {
     id: 'Q-1', zone: 'road-to-selling', kind: 'technical', type: 'question', system: 'selling', version: 'Dev Kit',
     title: 'What else has to be true before Quiver ships in the US?',
@@ -325,3 +326,14 @@ export const threads: Thread[] = [
     positions: [], votes: [], replies: [], objections: 0,
   },
 ];
+
+// Threads are one tree of comments. The seeded replies were written as
+// answers to a specific option, so they nest under it; the rest stay top level.
+const PARENT: Record<string, string> = {
+  'Q-6:r1': 'p1', 'Q-6:r2': 'p1', 'Q-6:r3': 'p1', 'Q-7:r1': 'p1', 'Q-8:r1': 'p1', 'Q-12:r1': 'p1',
+};
+export const threads: Thread[] = seeded.map((t) => ({
+  ...t,
+  positions: [...t.positions, ...t.replies.map((r) => ({ id: r.id, text: r.text, authorId: r.authorId, source: r.source, at: r.at, parentId: PARENT[`${t.id}:${r.id}`] }))],
+  replies: [],
+}));

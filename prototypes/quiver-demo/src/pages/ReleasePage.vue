@@ -6,7 +6,7 @@ import StatusIcon from '../modules/threads/StatusIcon.vue';
 import { LATER, NEXT, type Thread } from '../modules/threads/data';
 import { session } from '../lib/session';
 import {
-  V11_ZONES, byActivity, day, deferOpen, freezeRelease, isOpen, person, retroPreview, setReleasePlan, startThread, state, statusOf, workFor,
+  V11_ZONES, letterOf, byActivity, day, deferOpen, freezeRelease, isOpen, person, retroPreview, setReleasePlan, startThread, state, statusOf, workFor,
 } from '../modules/threads/store';
 import { callItems } from '../data/calls';
 import { remote } from '../lib/backend';
@@ -51,7 +51,7 @@ async function create() {
   composing.value = false;
   if (t) router.replace({ query: { ...route.query, thread: t.id } });
 }
-const letter = (t: Thread, id: string) => String.fromCharCode(65 + t.positions.findIndex((p) => p.id === id));
+const letter = (t: Thread, id: string) => letterOf(t, id);
 const stageLabel = { draft: 'Draft', open: 'Open', in_progress: 'In progress', in_review: 'In review', completed: 'Accepted' } as const;
 
 // Freeze and retro pool, as the spec workspace does it.

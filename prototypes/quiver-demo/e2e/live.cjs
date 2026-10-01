@@ -47,9 +47,9 @@ async function signIn(p, email) {
   await panel.getByRole('button', { name: 'Vote up' }).first().click();
   await p.waitForTimeout(1500);
   await p.reload();
-  await p.waitForSelector('aside.panel .vote .n', { timeout: 20000 });
+  await p.waitForSelector('aside.panel .cm-vote .n', { timeout: 20000 });
   await p.waitForTimeout(1000);
-  check((await panel.locator('.vote .n').first().innerText()).trim() === '1', 'the vote is saved and survives a reload');
+  check((await panel.locator('.cm-vote .n').first().innerText()).trim() === '1', 'the vote is saved and survives a reload');
 
   await p.goto(`${BASE}/#/quiver/overview/power`);
   await p.waitForTimeout(800);
@@ -59,11 +59,15 @@ async function signIn(p, email) {
   await p.waitForSelector('aside.panel h1.title', { timeout: 15000 });
   const tid = new URL(p.url().replace('/#', '')).searchParams.get('thread');
   check(/^Q-\d+$/.test(tid ?? '') && (await panel.locator('h1.title').innerText()).includes(`${stamp}`), `new thread ${tid} is created in the database`);
-  await panel.getByRole('button', { name: 'Add a position' }).click();
-  await panel.getByLabel('New position').fill('Do the obvious thing');
-  await panel.getByRole('button', { name: 'Add position' }).click();
+  await panel.getByLabel('New comment').fill('Do the obvious thing');
+  await panel.getByRole('button', { name: 'Comment', exact: true }).click();
   await p.waitForTimeout(1500);
-  check((await panel.innerText()).includes('Do the obvious thing'), 'position saved');
+  await panel.locator('.cm.top').first().getByRole('button', { name: 'Reply', exact: true }).click();
+  await panel.getByRole('textbox', { name: 'Reply' }).fill('Agreed, nested reply');
+  await panel.locator('.cm-reply').getByRole('button', { name: 'Reply', exact: true }).click();
+  await p.waitForTimeout(1500);
+  check((await panel.innerText()).includes('Do the obvious thing'), 'top-level comment saved');
+  check((await panel.locator('.cm-kids .cm').first().innerText()).includes('Agreed, nested reply'), 'nested reply saved under it');
   check(!(await panel.getByText('Outcome, as lead').count()), 'a member sees no lead controls');
 
   // Lead: sign in fresh in a new context, set role through the database the way a grant or lead would.

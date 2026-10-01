@@ -1,5 +1,5 @@
-// Seed SQL for the shared Supabase: the starting threads, positions and
-// replies from src/modules/threads/data.ts, with people named in notes kept
+// Seed SQL for the shared Supabase: the starting threads and their comment
+// trees from src/modules/threads/data.ts, with people named in notes kept
 // as `named` (they have no account rows). Idempotent: existing ids are left alone.
 //   npx tsx scripts/build-seed-sql.ts > supabase/seed_quiver.sql
 import { threads } from '../src/modules/threads/data';
@@ -14,11 +14,11 @@ for (const t of threads) {
       q(t.raisedAt), q(t.activeAt), j(t.settled), j(t.declined), j(t.deferrals ?? []),
     ].join(', ')}) on conflict (id) do nothing;`,
   );
-  t.positions.forEach((p, i) => {
-    out.push(`insert into public.sa_positions (id, thread_id, text, named, source, ord, created_at) values (${[q(`${t.id}-${p.id}`), q(t.id), q(p.text), q(p.authorId), j(p.source), i, q(p.at)].join(', ')}) on conflict (id) do nothing;`);
-  });
-  for (const r of t.replies) {
-    out.push(`insert into public.sa_replies (id, thread_id, text, named, source, created_at) values (${[q(`${t.id}-${r.id}`), q(t.id), q(r.text), q(r.authorId), j(r.source), q(r.at)].join(', ')}) on conflict (id) do nothing;`);
+  // One comment tree: parents come before their replies in the array.
+  let top = 0;
+  for (const p of t.positions) {
+    const ord = p.parentId ? 0 : top++;
+    out.push(`insert into public.sa_positions (id, thread_id, parent_id, text, named, source, ord, created_at) values (${[q(`${t.id}-${p.id}`), q(t.id), p.parentId ? q(`${t.id}-${p.parentId}`) : 'null', q(p.text), q(p.authorId), j(p.source), ord, q(p.at)].join(', ')}) on conflict (id) do nothing;`);
   }
 }
 // Seeded decisions point at seeded position ids, which are prefixed in the database.

@@ -14,7 +14,7 @@ import { reload, requireSignIn, say, session, type Member } from '../../lib/sess
 // - live (the shared Arrow Supabase): remote.ts loads the workspace into this
 //   same state, and every write below goes through a checked database
 //   function, then reloads.
-const KEY = 'quiver-demo.threads.v6';
+const KEY = 'quiver-demo.threads.v7';
 /** The zones that make up the next Dev Kit revision, in page order. */
 export const V11_ZONES = ['airframe', 'gps-rf', 'propulsion', 'power', 'avionics'];
 
@@ -145,8 +145,15 @@ export const CONVERGE_SHARE = 0.65;
 /** …and is at least this many weighted points ahead of the runner-up. */
 export const CONVERGE_MARGIN = 3;
 
+// Comments form a tree. Top-level comments are the options: they get letters,
+// lead, and can be adopted. Every comment can be voted on.
+export const topLevel = (t: Thread) => t.positions.filter((p) => !p.parentId);
+export const childrenOf = (t: Thread, id: string) => t.positions.filter((p) => p.parentId === id);
+export const letterOf = (t: Thread, id: string) => String.fromCharCode(65 + topLevel(t).findIndex((p) => p.id === id));
+
 export function leaderOf(thread: Thread) {
-  const t = [...talliesOf(thread)].sort((a, b) => b.weightedScore - a.weightedScore);
+  const ids = new Set(topLevel(thread).map((p) => p.id));
+  const t = talliesOf(thread).filter((x) => ids.has(x.positionId)).sort((a, b) => b.weightedScore - a.weightedScore);
   const top = t[0];
   const margin = top ? top.weightedScore - (t[1]?.weightedScore ?? 0) : 0;
   const positive = t.reduce((s, x) => s + Math.max(0, x.weightedScore), 0);
@@ -218,7 +225,7 @@ export function canDelete(t: Thread): boolean {
   if (workFor(t)) return false;
   if (remote && !session.userId) return false;
   if (state.role === 'lead') return true;
-  const others = t.positions.some((p) => p.authorId !== 'me') || t.replies.some((r) => r.authorId !== 'me') || t.votes.some((v) => v.memberId !== 'me');
+  const others = t.positions.some((p) => p.authorId !== 'me') || t.votes.some((v) => v.memberId !== 'me');
   return t.authorId === 'me' && !others;
 }
 /** Soft delete live (kept with who and why, hidden from everyone); gone from this browser in the demo. */
@@ -300,21 +307,16 @@ export const deferOpen = (note: string) => remote
   ? void call('sa_defer_open', { p_version: NEXT, p_to: LATER, p_note: note })
   : state.threads.filter((t) => t.version === NEXT && isOpen(t)).forEach((t) => defer(t, note));
 
-export function reply(thread: Thread, text: string) {
-  if (remote && !requireSignIn()) return;
-  if (remote) void call('sa_reply', { p_thread: thread.id, p_text: text });
-  thread.replies.push({ id: `r${Date.now()}`, authorId: 'me', text, at: now() });
-  thread.activeAt = now();
-}
-
-export function propose(thread: Thread, text: string): Position | undefined {
+/** A top-level comment (a new option), or a reply under any comment. */
+export function comment(thread: Thread, text: string, parentId?: string): Position | undefined {
   if (remote && !requireSignIn()) return undefined;
-  if (remote) void call('sa_propose', { p_thread: thread.id, p_text: text });
-  const p: Position = { id: `p${Date.now()}`, text, authorId: 'me', at: now() };
+  if (remote) void call('sa_comment', { p_thread: thread.id, p_text: text, p_parent: parentId ?? null });
+  const p: Position = { id: `c${Date.now()}`, text, authorId: 'me', at: now(), parentId };
   thread.positions.push(p);
   thread.activeAt = now();
   return p;
 }
+export const propose = (thread: Thread, text: string) => comment(thread, text);
 
 export async function startThread(input: { zone: string; title: string; body: string; type?: Thread['type']; fromCall?: string; version?: string; part?: string; pcb?: Thread['pcb'] }): Promise<Thread | undefined> {
   const source: SourceRef | undefined = input.fromCall ? { kind: 'call', ref: input.fromCall, label: 'Sep 29 call' } : undefined;
@@ -378,7 +380,7 @@ export const byActivity = (a: Thread, b: Thread) => b.activeAt.localeCompare(a.a
 
 /** One line on where a thread stands, for rows and the panel. */
 export function standing(t: Thread) {
-  const letter = (id: string) => String.fromCharCode(65 + t.positions.findIndex((p) => p.id === id));
+  const letter = (id: string) => letterOf(t, id);
   if (t.settled) {
     const w = workFor(t);
     const work = w ? ` · ${w.id} ${w.stage === 'completed' ? 'done' : w.stage.replace('_', ' ')}` : '';
@@ -386,10 +388,10 @@ export function standing(t: Thread) {
   }
   if (t.declined) return { status: 'declined' as Status, text: 'Declined' };
   const n = t.positions.length;
-  if (!n) return { status: 'needs' as Status, text: 'No positions yet' };
+  if (!n) return { status: 'needs' as Status, text: 'No comments yet' };
   const votes = t.votes.length;
   const { top, share } = leaderOf(t);
-  const pos = `${n} position${n === 1 ? '' : 's'}`;
+  const pos = `${n} comment${n === 1 ? '' : 's'}`;
   if (!votes || !top || top.weightedScore <= 0) return { status: statusOf(t), text: `${pos} · no votes yet` };
   return { status: statusOf(t), text: `${pos} · ${letter(top.positionId)} leads with ${Math.round(share * 100)}%` };
 }

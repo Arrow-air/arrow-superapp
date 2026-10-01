@@ -34,11 +34,11 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   // Vote, then decide as lead from the Demo menu.
   check(!(await panel.getByRole('button', { name: 'Delete thread' }).count()), 'a member cannot delete someone else\'s thread');
   await panel.getByRole('button', { name: 'Vote up' }).first().click();
-  check((await panel.locator('.vote .n').first().innerText()).trim() === '1', 'member up-vote counts 1');
+  check((await panel.locator('.cm-vote .n').first().innerText()).trim() === '1', 'member up-vote counts 1');
   await p.getByRole('button', { name: /^Demo/ }).click();
   await p.getByRole('radio', { name: 'Lead' }).click();
   await p.getByRole('button', { name: /^Demo/ }).click();
-  check((await panel.locator('.vote .n').first().innerText()).trim() === '2', 'same vote counts 2 as lead');
+  check((await panel.locator('.cm-vote .n').first().innerText()).trim() === '2', 'same vote counts 2 as lead');
   await panel.getByLabel('Decision note').fill('Cheapest change; test it before any board spin.');
   await panel.getByRole('button', { name: 'Record decision' }).click();
   await p.waitForTimeout(200);
@@ -95,15 +95,27 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.getByRole('button', { name: 'Start thread' }).click();
   await p.waitForTimeout(300);
   check((await panel.locator('h1.title').innerText()).includes('Rate the latch for 5 kg?'), 'new thread opens in the panel');
-  await panel.getByRole('button', { name: 'Add a position' }).click();
-  await panel.getByLabel('New position').fill('Yes, with a second structural path.');
-  await panel.getByRole('button', { name: 'Add position' }).click();
+  await panel.getByLabel('New comment').fill('Yes, with a second structural path.');
+  await panel.getByRole('button', { name: 'Comment', exact: true }).click();
   await p.waitForTimeout(200);
   check((await panel.innerText()).includes('Yes, with a second structural path.'), 'position added');
-  await panel.getByLabel('Reply').fill('A reply, not a position.');
-  await panel.getByRole('button', { name: 'Reply', exact: true }).click();
+  const top = panel.locator('.cm.top').first();
+  check((await top.locator('.letter').first().innerText()) === 'A', 'a top-level comment is option A');
+  await top.getByRole('button', { name: 'Reply', exact: true }).first().click();
+  await top.getByRole('textbox', { name: 'Reply' }).fill('Which path, the tether or a second plate?');
+  await top.locator('.cm-reply').getByRole('button', { name: 'Reply', exact: true }).click();
   await p.waitForTimeout(200);
-  check((await panel.locator('.reply').last().innerText()).includes('A reply, not a position.'), 'reply lands under replies');
+  const reply = top.locator('.cm-kids .cm').first();
+  check((await reply.innerText()).includes('Which path') && !(await reply.locator('.letter').count()), 'a reply nests under the comment, without an option letter');
+  await reply.getByRole('button', { name: 'Reply', exact: true }).first().click();
+  await reply.getByRole('textbox', { name: 'Reply' }).fill('A second plate.');
+  await reply.locator('.cm-reply').getByRole('button', { name: 'Reply', exact: true }).click();
+  await p.waitForTimeout(200);
+  check((await reply.locator('.cm-kids .cm').first().innerText()).includes('A second plate.'), 'replies nest to any depth');
+  await reply.getByRole('button', { name: 'Vote up' }).first().click();
+  await p.waitForTimeout(150);
+  check((await reply.locator('.cm-vote .n').first().innerText()).trim() !== '0', 'replies can be voted on');
+  check((await panel.locator('.choices button').count()) === 1, 'only top-level comments are offered for adoption');
 
   // Start a discussion from a call suggestion.
   await p.goto(`${BASE}/quiver/discussion/suggested`);

@@ -6,20 +6,22 @@ import Avatar from './Avatar.vue';
 import SourceChip from './SourceChip.vue';
 import StatusIcon from './StatusIcon.vue';
 import WorkCard from '../work/WorkCard.vue';
+import CommentNode from './CommentNode.vue';
 import { LATER, NEXT, type Thread } from './data';
 import { partById } from '../../data/quiver';
 import { boardById } from '../../data/pcbs';
 import {
-  changedWinner, day, decline, defer, draftWork, isOpen, leaderOf, locked, myVote, person, propose, reopen, reply, settle,
-  standing, state, talliesOf, vote, weightOf, workFor, isBuilder, setBuilder, type WorkKind,
+  changedWinner, comment, day, decline, defer, draftWork, isOpen, leaderOf, letterOf, locked, person, reopen, settle,
+  standing, state, talliesOf, topLevel, weightOf, workFor, isBuilder, setBuilder, type WorkKind,
 } from './store';
 import { remote } from '../../lib/backend';
 import { session } from '../../lib/session';
 
 // One thread, always in the same order: the question and where it is in the
 // pipeline (discussion → decided spec → funded work), the outcome and its
-// work, the positions people vote on, the lead's outcome controls, then the
-// replies. Rendered in the thread panel wherever the thread is opened from.
+// work, the comments, then the lead's outcome controls. Comments are one
+// Reddit-style tree with voting at every level; top-level comments are the
+// options a lead can adopt. Rendered in the thread panel wherever it opens.
 const props = defineProps<{ thread: Thread }>();
 
 const t = computed(() => props.thread);
@@ -32,29 +34,27 @@ const mine = computed(() => weightOf(t.value, 'me'));
 const flipped = computed(() => changedWinner(t.value));
 const rawLeader = computed(() => [...tallies.value].sort((a, b) => b.rawScore - a.rawScore)[0]);
 const rawTie = computed(() => tallies.value.filter((x) => x.rawScore === rawLeader.value?.rawScore).length > 1);
-const letter = (id: string) => String.fromCharCode(65 + t.value.positions.findIndex((p) => p.id === id));
+const letter = (id: string) => letterOf(t.value, id);
 const typeLabel = computed(() => ({ question: 'Question', proposal: 'Proposal', idea: 'Idea' })[t.value.type]);
 // Your weight shows where you use it: on hover over the vote buttons.
 const formula = computed(() =>
   `Your vote counts ${mine.value.total}: (${mine.value.base} base + ${mine.value.token} token + ${mine.value.expertise} expertise + ${mine.value.builder} builder) × ${mine.value.roleMultiplier} ${mine.value.role}. Technical calls weigh role, verified expertise and intent to build more than holdings. No wallet is linked in the demo.`,
 );
 
-// Positions ordered by weighted score, so the leader reads first; ties keep
-// the order they were proposed in.
+// Top-level comments ordered by weighted score, so the leader reads first;
+// ties keep the order they were posted in.
+const tops = computed(() => topLevel(t.value));
 const ordered = computed(() =>
-  t.value.positions.map((p, i) => ({ p, i })).sort((a, b) => tallyOf(b.p.id).weightedScore - tallyOf(a.p.id).weightedScore || a.i - b.i).map((x) => x.p),
+  tops.value.map((p, i) => ({ p, i })).sort((a, b) => (tallyOf(b.p.id)?.weightedScore ?? 0) - (tallyOf(a.p.id)?.weightedScore ?? 0) || a.i - b.i).map((x) => x.p),
 );
-const votersOf = (id: string) => t.value.votes.filter((v) => v.positionId === id && v.value === 1).map((v) => v.memberId);
 const nameOf = (id?: string) => (id === 'me' ? 'You' : person(id)?.name);
 
-// Adding a position is its own action, at the end of the positions.
-const adding = ref(false);
-const newPosition = ref('');
-function addPosition() {
-  if (!newPosition.value.trim()) return;
-  propose(t.value, newPosition.value.trim());
-  newPosition.value = '';
-  adding.value = false;
+// A new top-level comment: an option others can vote on and a lead can adopt.
+const newComment = ref('');
+function addComment() {
+  if (!newComment.value.trim()) return;
+  comment(t.value, newComment.value.trim());
+  newComment.value = '';
 }
 
 const open = computed(() => isOpen(t.value));
@@ -69,7 +69,14 @@ const declineNote = ref('');
 const deferNote = ref('');
 const choice = ref<string>();
 const note = ref('');
-const chosen = computed(() => choice.value ?? (hasLeader.value ? leader.value.top!.positionId : t.value.positions[0]?.id));
+const chosen = computed(() => choice.value ?? (hasLeader.value ? leader.value.top!.positionId : tops.value[0]?.id));
+// "Adopt…" on a comment: pick it in the outcome block and go there.
+const noteInput = ref<HTMLInputElement>();
+function adoptFrom(id: string) {
+  outcome.value = 'adopt';
+  choice.value = id;
+  requestAnimationFrame(() => { noteInput.value?.scrollIntoView({ block: 'center', behavior: 'smooth' }); noteInput.value?.focus(); });
+}
 const overrides = computed(() => hasLeader.value && chosen.value !== leader.value.top!.positionId);
 function decide() {
   if (!chosen.value || !note.value.trim()) return;
@@ -78,13 +85,6 @@ function decide() {
   choice.value = undefined;
 }
 
-// Replies only; positions have their own control above.
-const draft = ref('');
-function send() {
-  if (!draft.value.trim()) return;
-  reply(t.value, draft.value.trim());
-  draft.value = '';
-}
 // Funding a decision: a bounty or grant drafted from the adopted position.
 const funding = ref(false);
 const chosenText = computed(() => t.value.positions.find((p) => p.id === t.value.settled?.positionId)?.text ?? '');
@@ -112,7 +112,7 @@ const proposerName = computed(() => {
 });
 
 watch(() => t.value.id, () => {
-  adding.value = false; newPosition.value = ''; choice.value = undefined; note.value = ''; draft.value = '';
+  newComment.value = ''; choice.value = undefined; note.value = '';
   outcome.value = 'adopt'; declineNote.value = ''; deferNote.value = ''; funding.value = false;
 });
 const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
@@ -208,59 +208,33 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
       <p v-else class="empty">Not funded yet. A lead can turn this decision into a bounty or grant.</p>
     </section>
 
-    <section class="block">
+    <section class="block comments">
       <div class="block-head">
-        <h2 class="label">Positions</h2>
+        <h2 class="label">Comments <span class="legend">{{ t.positions.length }}</span></h2>
         <label v-if="remote && session.userId && open" class="builder" title="Adds one point of weight to your votes in this thread">
           <input type="checkbox" :checked="isBuilder(t)" @change="setBuilder(t, ($event.target as HTMLInputElement).checked)" /> I'd help build this
         </label>
       </div>
 
-      <p v-if="!t.positions.length" class="empty">No positions yet. Add the first one.</p>
-
-      <div class="positions">
-        <div v-for="p in ordered" :key="p.id" class="pos">
-          <div class="vote" role="group" :aria-label="`Vote on position ${letter(p.id)}`" :class="{ locked: !open }">
-            <button class="v up" type="button" :aria-pressed="myVote(t, p.id) === 1" :disabled="!open" aria-label="Vote up" :title="formula" @click="vote(t, p.id, 1)">
-              <svg viewBox="0 0 16 16"><path d="m4 10 4-4 4 4" /></svg>
-            </button>
-            <span class="n mono" :title="`Weighted. Raw ${fmt(tallyOf(p.id).rawScore)} from ${tallyOf(p.id).voters} ${tallyOf(p.id).voters === 1 ? 'vote' : 'votes'}`">{{ Math.round(tallyOf(p.id).weightedScore * 10) / 10 }}</span>
-            <button class="v down" type="button" :aria-pressed="myVote(t, p.id) === -1" :disabled="!open" aria-label="Vote down" :title="formula" @click="vote(t, p.id, -1)">
-              <svg viewBox="0 0 16 16"><path d="m4 6 4 4 4-4" /></svg>
-            </button>
-          </div>
-          <div class="pos-main">
-            <div class="pos-top">
-              <span class="letter">{{ letter(p.id) }}</span>
-              <span v-if="t.settled?.positionId === p.id" class="tag ok">Decided</span>
-              <span v-else-if="!t.settled && hasLeader && leader.top?.positionId === p.id" class="tag">Leading</span>
-            </div>
-            <p class="pos-text">{{ p.text }}</p>
-            <div class="pos-meta">
-              <span v-if="p.authorId" class="by"><Avatar :id="p.authorId" :size="14" /> {{ nameOf(p.authorId) }}</span>
-              <span v-else class="muted">From</span>
-              <template v-if="p.source"><span class="dot"></span><SourceChip :source="p.source" /></template>
-              <span class="dot">·</span>
-              <span class="stack" :title="votersOf(p.id).map((id) => nameOf(id)).join(', ')">
-                <Avatar v-for="id in votersOf(p.id).slice(0, 4)" :key="id" :id="id" :size="14" />
-              </span>
-              <span class="muted">{{ tallyOf(p.id).voters }} {{ tallyOf(p.id).voters === 1 ? 'vote' : 'votes' }}</span>
-            </div>
-          </div>
+      <form v-if="open" class="composer top" @submit.prevent="addComment">
+        <textarea
+          v-model="newComment"
+          rows="2"
+          placeholder="Add a comment: an option, an answer, or what you know"
+          aria-label="New comment"
+          @keydown.meta.enter.prevent="addComment"
+          @keydown.ctrl.enter.prevent="addComment"
+        ></textarea>
+        <div class="composer-bar">
+          <span class="hint">Top-level comments are the options people vote on and a lead can adopt. Reply under any comment to discuss it.</span>
+          <button class="primary" type="submit" :disabled="!newComment.trim()">Comment</button>
         </div>
-      </div>
+      </form>
+      <p v-else class="hint-line">Closed to new options. You can still reply under a comment.</p>
 
-      <div v-if="open" class="add">
-        <button v-if="!adding" class="add-btn" type="button" @click="adding = true">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" /></svg> Add a position
-        </button>
-        <form v-else class="add-form" @submit.prevent="addPosition">
-          <textarea v-model="newPosition" rows="2" placeholder="A concrete option people can vote for" aria-label="New position" autofocus></textarea>
-          <div class="add-bar">
-            <button class="ghost" type="button" @click="adding = false">Cancel</button>
-            <button class="primary sm" type="submit" :disabled="!newPosition.trim()">Add position</button>
-          </div>
-        </form>
+      <p v-if="!t.positions.length" class="empty">No comments yet. Start the discussion.</p>
+      <div class="tree">
+        <CommentNode v-for="c in ordered" :key="c.id" :thread="t" :c="c" :depth="0" :formula="formula" @adopt="adoptFrom" />
       </div>
 
       <p v-if="flipped && open" class="aside">
@@ -278,7 +252,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
       </div>
 
       <template v-if="outcome === 'decline'">
-        <p class="hint-line">Closes the thread without adopting anything. Its positions still share in the retro pool by the support they got.</p>
+        <p class="hint-line">Closes the thread without adopting anything. Its comments still share in the retro pool by the support they got.</p>
         <div class="settle-act">
           <input v-model="declineNote" class="field" placeholder="Why (required, a sentence)" aria-label="Decline reason" />
           <button class="primary" type="button" :disabled="declineNote.trim().length < 10" @click="decline(t, declineNote.trim())">Decline</button>
@@ -291,11 +265,11 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
           <button class="primary" type="button" @click="defer(t, deferNote.trim() || undefined)">Defer to {{ LATER }}</button>
         </div>
       </template>
-      <p v-else-if="!t.positions.length" class="hint-line">Add a position first: adopting picks one of them.</p>
+      <p v-else-if="!tops.length" class="hint-line">Adopting picks a top-level comment; there are none yet.</p>
       <template v-else>
       <div class="choices" role="radiogroup" aria-label="Position to decide on">
         <button
-          v-for="p in t.positions"
+          v-for="p in tops"
           :key="p.id"
           type="button"
           role="radio"
@@ -309,41 +283,12 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         <template v-else>{{ letter(chosen!) }} is the weighted leader.</template>
       </p>
       <div class="settle-act">
-        <input v-model="note" class="field" placeholder="Why (required): the decision note" aria-label="Decision note" />
+        <input ref="noteInput" v-model="note" class="field" placeholder="Why (required): the decision note" aria-label="Decision note" />
         <button class="primary" type="button" :disabled="!note.trim()" @click="decide">Record decision</button>
       </div>
       </template>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h2 class="label">Replies</h2><span class="legend">{{ t.replies.length }}</span></div>
-      <div v-for="r in t.replies" :key="r.id" class="reply">
-        <Avatar :id="r.authorId ?? ''" :size="20" />
-        <div>
-          <div class="reply-head">
-            <span class="strong">{{ nameOf(r.authorId) ?? 'From' }}</span>
-            <SourceChip v-if="r.source" :source="r.source" />
-            <span v-else class="muted">{{ day(r.at) }}</span>
-          </div>
-          <p>{{ r.text }}</p>
-        </div>
-      </div>
-
-      <form class="composer" @submit.prevent="send">
-        <textarea
-          v-model="draft"
-          rows="2"
-          placeholder="Reply…"
-          aria-label="Reply"
-          @keydown.meta.enter.prevent="send"
-          @keydown.ctrl.enter.prevent="send"
-        ></textarea>
-        <div class="composer-bar">
-          <span class="hint"><Kbd :keys="[MOD, '↵']" outline /> to send</span>
-          <button class="primary" type="submit" :disabled="!draft.trim()">Reply</button>
-        </div>
-      </form>
-    </section>
   </article>
 </template>
 
@@ -526,6 +471,9 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .pipe .mono { font-size: 11px; }
 .deferred { margin: 6px 0 0; font-size: var(--text-sm); color: var(--fg-muted); }
 .small { font-size: var(--text-sm); }
+.composer.top { margin: 4px 0 6px; }
+.tree { margin-top: 2px; }
+.label .legend { margin-left: 4px; font-weight: 400; }
 .builder { display: inline-flex; align-items: center; gap: 5px; font-size: var(--text-sm); color: var(--fg-muted); cursor: pointer; }
 .builder input { accent-color: var(--indigo-9); }
 .modes { display: flex; width: fit-content; flex-wrap: wrap; gap: 2px; margin-top: 8px; padding: 2px; border-radius: 8px; background: var(--slate-a3); }

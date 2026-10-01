@@ -26,8 +26,8 @@ export function load(): Promise<void> {
   if (inflight) return inflight;
   inflight = (async () => {
     try {
-      const [th, po, vo, re, wo, rl, me, bu] = await Promise.all([
-        all('sa_threads'), all('sa_positions', 'ord'), all('sa_votes'), all('sa_replies', 'created_at'),
+      const [th, po, vo, wo, rl, me, bu] = await Promise.all([
+        all('sa_threads'), all('sa_positions', 'ord'), all('sa_votes'),
         all('sa_work'), all('sa_release'), all('sa_members'), all('sa_builders'),
       ]);
       session.members = Object.fromEntries(me.map((m) => [m.user_id, m as Member]));
@@ -37,15 +37,16 @@ export function load(): Promise<void> {
         for (const r of rows) map.set(r.thread_id, [...(map.get(r.thread_id) ?? []), r]);
         return map;
       };
-      const P = byThread(po), V = byThread(vo), R = byThread(re);
+      const P = byThread(po), V = byThread(vo);
       state.threads = th.filter((t) => t.project === 'quiver').map((t): Thread => ({
         id: t.id, zone: t.zone, part: t.part ?? undefined, pcb: t.pcb ?? undefined,
         title: t.title, body: t.body, kind: t.kind, type: t.type, system: t.system, version: t.version,
         authorId: mine(t.author_id) ?? t.named ?? undefined, source: t.source ?? undefined,
         raisedAt: t.raised_at, activeAt: t.active_at,
-        positions: (P.get(t.id) ?? []).map((p) => ({ id: p.id, text: p.text, authorId: mine(p.author_id) ?? p.named ?? undefined, source: p.source ?? undefined, at: p.created_at })),
+        // One comment tree: top-level comments are the options, replies carry parentId.
+        positions: (P.get(t.id) ?? []).map((p) => ({ id: p.id, text: p.text, authorId: mine(p.author_id) ?? p.named ?? undefined, source: p.source ?? undefined, at: p.created_at, parentId: p.parent_id ?? undefined })),
         votes: (V.get(t.id) ?? []).map((v) => ({ memberId: mine(v.user_id)!, positionId: v.position_id, value: v.value })),
-        replies: (R.get(t.id) ?? []).map((r) => ({ id: r.id, text: r.text, authorId: mine(r.author_id) ?? r.named ?? undefined, source: r.source ?? undefined, at: r.created_at })),
+        replies: [],
         objections: 0,
         settled: t.settled ? { ...t.settled, byId: mine(t.settled.byId) } : undefined,
         declined: t.declined ? { ...t.declined, byId: mine(t.declined.byId) } : undefined,
