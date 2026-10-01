@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import StatusIcon from './StatusIcon.vue';
+import ThreadVote from './ThreadVote.vue';
 import Icon from '../../frame/Icon.vue';
 import { threadTypes, typeStyle } from './types';
 import type { Thread } from './data';
@@ -20,7 +21,8 @@ const open = (id: string) => router.replace({ query: { ...route.query, thread: i
 
 <template>
   <ul class="rows">
-    <li v-for="t in threads" :key="t.id">
+    <li v-for="t in threads" :key="t.id" class="li">
+      <ThreadVote :thread="t" size="sm" class="rv" />
       <button
         type="button"
         class="row"
@@ -50,14 +52,16 @@ const open = (id: string) => router.replace({ query: { ...route.query, thread: i
 
 <style scoped>
 .rows { margin: 0; padding: 0; list-style: none; }
-.rows li + li .row { border-top-color: var(--slate-a3); }
+.li { display: flex; align-items: stretch; }
+.rows li + li { border-top: 1px solid var(--slate-a3); }
+.rv { padding: 7px 0 7px 6px; }
 .row {
-  display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 11px 12px;
-  border: 0; border-top: 1px solid transparent; border-radius: 0; background: none;
+  display: flex; align-items: flex-start; gap: 12px; flex: 1; min-width: 0; padding: 11px 12px 11px 8px;
+  border: 0; border-radius: 0; background: none;
   text-align: left; color: inherit; font: inherit; cursor: pointer; transition: background-color 120ms;
 }
-.row:hover { background: var(--slate-a2); }
-.row[aria-current='true'] { background: var(--slate-a3); }
+.li:hover { background: var(--slate-a2); }
+.li:has(.row[aria-current='true']) { background: var(--slate-a3); }
 .row:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--focus-ring); }
 .row :deep(.st) { margin-top: 3px; flex: none; }
 .main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }

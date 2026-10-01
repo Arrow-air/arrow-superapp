@@ -30,6 +30,16 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.waitForTimeout(300);
   check((await panel.locator('h1.title').innerText()).includes('GPS interference'), 'row opens the thread in the panel');
   check((await p.locator('.zp-title').isVisible()), 'zone page stays visible behind the panel');
+  // Votes on the thread itself: in the panel header and on its row.
+  await panel.getByRole('button', { name: 'Upvote thread' }).click();
+  await p.waitForTimeout(150);
+  check((await panel.locator('.head-top .tv .n').innerText()).trim() === '1' && (await p.locator('li', { has: p.locator('.row[data-thread="Q-3"]') }).locator('.tv .n').innerText()).trim() === '1', 'a thread upvote counts 1, in the panel and on its row');
+  await p.locator('li', { has: p.locator('.row[data-thread="Q-4"]') }).getByRole('button', { name: 'Upvote thread' }).click();
+  await p.waitForTimeout(150);
+  check(!p.url().includes('thread=Q-4') && (await p.locator('li', { has: p.locator('.row[data-thread="Q-4"]') }).locator('.tv .n').innerText()).trim() === '1', 'voting from a row doesn\'t open the thread');
+  await p.locator('li', { has: p.locator('.row[data-thread="Q-4"]') }).getByRole('button', { name: 'Upvote thread' }).click();
+  await p.waitForTimeout(150);
+  check((await p.locator('li', { has: p.locator('.row[data-thread="Q-4"]') }).locator('.tv .n').innerText()).trim() === '0', 'the same vote again takes it back');
 
   // Vote, then decide as lead from the Demo menu.
   check(!(await panel.getByRole('button', { name: 'Delete thread' }).count()), 'a member cannot delete someone else\'s thread');
@@ -39,10 +49,12 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.getByRole('radio', { name: 'Lead' }).click();
   await p.getByRole('button', { name: /^Demo/ }).click();
   check((await panel.locator('.cm-vote .n').first().innerText()).trim() === '2', 'same vote counts 2 as lead');
+  check((await panel.locator('.head-top .tv .n').innerText()).trim() === '2', 'the thread vote is weighted the same way');
   await panel.getByLabel('Decision note').fill('Cheapest change; test it before any board spin.');
   await panel.getByRole('button', { name: 'Record decision' }).click();
   await p.waitForTimeout(200);
   check((await panel.innerText()).includes('D-003'), 'decision gets D-003 (D-001 and D-002 are the T-01 decisions from GitHub)');
+  check(await panel.getByRole('button', { name: 'Upvote thread' }).isDisabled(), 'thread votes lock once it is decided');
 
   // Decision → bounty: fund it, publish, claim, submit, accept; proposer award held until confirmed.
   await panel.getByRole('button', { name: 'Fund it as a bounty or grant' }).click();

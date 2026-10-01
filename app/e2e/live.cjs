@@ -59,6 +59,12 @@ async function signIn(p, email) {
   await p.waitForSelector('aside.panel .cm-vote .n', { timeout: 20000 });
   await p.waitForTimeout(1000);
   check((await panel.locator('.cm-vote .n').first().innerText()).trim() === '1', 'the vote is saved and survives a reload');
+  await panel.getByRole('button', { name: 'Upvote thread' }).click();
+  await p.waitForTimeout(1500);
+  await p.reload();
+  await p.waitForSelector('aside.panel .head-top .tv .n', { timeout: 20000 });
+  await p.waitForTimeout(1000);
+  check((await panel.locator('.head-top .tv .n').innerText()).trim() === '1' && (await panel.getByRole('button', { name: 'Upvote thread' }).getAttribute('aria-pressed')) === 'true', 'a thread upvote is saved and survives a reload');
 
   await p.goto(`${BASE}/#/quiver/overview/power`);
   await p.waitForTimeout(800);
@@ -125,6 +131,7 @@ async function signIn(p, email) {
   await lp.getByRole('button', { name: 'Record decision' }).click();
   await q.waitForTimeout(1500);
   check(/D-\d{3}/.test(await lp.locator('.pipe').innerText()), 'lead decision is recorded with a D-number');
+  check(await rpcAs(users.member, 'sa_vote_thread', { p_thread: tid, p_value: 1 }) >= 400, 'the database refuses thread votes once it is decided');
   check(!(await lp.locator('.cm.top.decided').getByRole('button', { name: /^Delete option / }).count()), 'the adopted option has no Delete');
   const adopted = (await (await fetch(`${SUPA}/rest/v1/sa_threads?id=eq.${tid}&select=settled`, { headers: admin })).json())[0].settled.positionId;
   check(await rpcAs(users.lead, 'sa_delete_comment', { p_comment: adopted }) >= 400, 'the database keeps the adopted option even for a lead');

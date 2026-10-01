@@ -192,6 +192,22 @@ export function vote(thread: Thread, positionId: string, value: 1 | -1) {
   thread.activeAt = now();
 }
 
+/** Up or down on the thread itself, Reddit style; the same vote again takes it back. Open threads only. */
+export function voteThread(thread: Thread, value: 1 | -1) {
+  if (!isOpen(thread)) return;
+  if (remote && !requireSignIn()) return;
+  if (remote) void call('sa_vote_thread', { p_thread: thread.id, p_value: value });
+  const list = (thread.threadVotes ??= []);
+  const i = list.findIndex((v) => v.memberId === 'me');
+  if (i >= 0 && list[i].value === value) list.splice(i, 1);
+  else if (i >= 0) list[i].value = value;
+  else list.push({ memberId: 'me', value });
+  thread.activeAt = now();
+}
+export const myThreadVote = (t: Thread) => t.threadVotes?.find((v) => v.memberId === 'me')?.value ?? 0;
+/** Weighted like comment votes: each vote counts its voter's weight on this thread. */
+export const threadScore = (t: Thread) => Math.round((t.threadVotes ?? []).reduce((s, v) => s + v.value * weightOf(t, v.memberId).total, 0) * 10) / 10;
+
 /** Lead only. Settling on anything but the weighted leader is recorded as an override. */
 export function settle(thread: Thread, positionId: string, note: string) {
   const { top } = leaderOf(thread);
