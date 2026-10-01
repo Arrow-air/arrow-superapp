@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit",
     "data": "node scripts/build-data.mjs && node scripts/build-prs.mjs",
-    "e2e": "node e2e/flow.cjs"
+    "e2e": "node e2e/flow.cjs",
+    "start": "serve -s dist -l ${PORT:-3000}"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",

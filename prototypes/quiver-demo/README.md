@@ -53,6 +53,16 @@ Forked from `prototypes/app-frame` on `sl33ty/explore/app-frame` at `31d499a` (G
 | Decisions | The register |
 | Work | Task board and open pull requests, read-only from GitHub |
 
+## Live (superapp-beta.arrowair.com)
+
+With `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` set at build time, the app runs against the shared Arrow Supabase (the flight tracking app's), so people sign in with the same GitHub or email accounts. Reads are public; every write is a database function that checks who is signed in and, for lead actions, their role. Thomas and Erick are granted lead by GitHub login; leads set everyone else's role on the People page.
+
+- Schema: `supabase/migrations/20261001000000_superapp_quiver.sql` (sa_-prefixed tables and functions only; nothing existing is touched).
+- Starting content: `npx tsx scripts/build-seed-sql.ts > supabase/seed_quiver.sql` (idempotent).
+- Applied to production by POSTing the SQL to the Supabase pg-meta endpoint (`/pg/query`, service key), after a `pg_dumpall` on the box.
+- Hosting: Openship, `npm run build` then `npm start` (serve on $PORT), root `prototypes/quiver-demo`.
+- `e2e/live.cjs` runs the signed-in path against any Supabase with the migration (BASE, SUPA, ANON, SERVICE env).
+
 ## Run
 
 ```
