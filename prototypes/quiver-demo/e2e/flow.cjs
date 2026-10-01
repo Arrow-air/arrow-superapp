@@ -32,6 +32,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   check((await p.locator('.zp-title').isVisible()), 'zone page stays visible behind the panel');
 
   // Vote, then decide as lead from the Demo menu.
+  check(!(await panel.getByRole('button', { name: 'Delete thread' }).count()), 'a member cannot delete someone else\'s thread');
   await panel.getByRole('button', { name: 'Vote up' }).first().click();
   check((await panel.locator('.vote .n').first().innerText()).trim() === '1', 'member up-vote counts 1');
   await p.getByRole('button', { name: /^Demo/ }).click();
@@ -200,6 +201,33 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.waitForTimeout(300);
   const after = await text();
   check(after.includes('Frozen') && after.includes('Recorded split'), 'freeze records the retro split and locks the spec');
+
+  // Deleting: an author removes their own fresh thread; a lead removes any thread.
+  await p.goto(`${BASE}/quiver/overview/airframe`);
+  await p.waitForTimeout(400);
+  await p.getByRole('button', { name: /^Demo/ }).click();
+  await p.getByRole('radio', { name: 'Member' }).click();
+  await p.getByRole('button', { name: /^Demo/ }).click();
+  await p.getByRole('button', { name: 'New thread' }).click();
+  await p.getByLabel('Title').fill('Posted by mistake');
+  await p.getByRole('button', { name: 'Start thread' }).click();
+  await p.waitForTimeout(300);
+  await panel.getByRole('button', { name: 'Delete thread' }).click();
+  await panel.getByRole('button', { name: 'Delete thread' }).last().click();
+  await p.waitForTimeout(300);
+  check(!(await panel.count()) && !(await text()).includes('Posted by mistake'), 'an author deletes their own untouched thread');
+  await p.getByRole('button', { name: /^Demo/ }).click();
+  await p.getByRole('radio', { name: 'Lead' }).click();
+  await p.getByRole('button', { name: /^Demo/ }).click();
+  await p.goto(`${BASE}/quiver/selling/who-we-sell-to?thread=Q-10`);
+  await p.waitForTimeout(400);
+  await panel.getByRole('button', { name: 'Delete thread' }).click();
+  await panel.getByLabel('Reason for deleting').fill('off-topic');
+  await panel.getByRole('button', { name: 'Delete thread' }).last().click();
+  await p.waitForTimeout(300);
+  await p.goto(`${BASE}/quiver/discussion/all`);
+  await p.waitForTimeout(400);
+  check(!(await p.locator('.row[data-thread="Q-10"]').count()), 'a lead deletes a seeded thread and it leaves every list');
 
   // Persistence and reset.
   await p.goto(`${BASE}/quiver/decisions/register`);

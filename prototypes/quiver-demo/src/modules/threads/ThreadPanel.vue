@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ThreadDetail from './ThreadDetail.vue';
-import { state } from './store';
+import { canDelete, deleteThread, state } from './store';
 import { zoneLabel, zonePath } from '../../frame/nav';
 
 // The one place a thread opens. Any page links a thread with ?thread=Q-3;
@@ -30,6 +30,19 @@ watch(id, () => body.value?.scrollTo(0, 0));
 // Leaving a page closes the expanded view, so the next page is visible.
 watch(() => route.path, () => (expanded.value = false));
 const home = computed(() => (thread.value ? zonePath(thread.value.zone) : ''));
+
+// Deleting: an inline confirmation with a reason, then the panel closes.
+const confirming = ref(false);
+const reason = ref('');
+const isLead = computed(() => state.role === 'lead');
+watch(id, () => { confirming.value = false; reason.value = ''; });
+function remove() {
+  if (!thread.value) return;
+  deleteThread(thread.value, reason.value.trim());
+  confirming.value = false;
+  reason.value = '';
+  close();
+}
 const atHome = computed(() => route.path === home.value);
 </script>
 
@@ -44,6 +57,9 @@ const atHome = computed(() => route.path === home.value);
           <span class="mono">{{ thread.id }}</span>
         </span>
         <span class="acts">
+          <button v-if="canDelete(thread)" class="ic" type="button" title="Delete thread" aria-label="Delete thread" :aria-pressed="confirming" @click="confirming = !confirming">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5M7 7v4M9 7v4" /></svg>
+          </button>
           <button class="ic" type="button" :aria-pressed="expanded" :title="expanded ? 'Back to side panel' : 'Expand'" @click="expanded = !expanded">
             <svg v-if="!expanded" viewBox="0 0 16 16" aria-hidden="true"><path d="M9.5 2.5h4v4M6.5 13.5h-4v-4M13.5 2.5 9 7M2.5 13.5 7 9" /></svg>
             <svg v-else viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 6.5h-4v-4M2.5 9.5h4v4M9.5 6.5 14 2M6.5 9.5 2 14" /></svg>
@@ -53,6 +69,14 @@ const atHome = computed(() => route.path === home.value);
           </button>
         </span>
       </header>
+      <form v-if="confirming" class="confirm" @submit.prevent="remove">
+        <p>Delete {{ thread.id }}? It disappears for everyone{{ isLead ? '' : '. You can do this until someone else joins in' }}.</p>
+        <div class="c-row">
+          <input v-model="reason" :placeholder="isLead ? 'Why: spam, duplicate, off-topic' : 'Why (optional)'" aria-label="Reason for deleting" autofocus />
+          <button class="danger" type="submit">Delete thread</button>
+          <button class="cancel" type="button" @click="confirming = false">Cancel</button>
+        </div>
+      </form>
       <div ref="body" class="scroll">
         <ThreadDetail :thread="thread" />
       </div>
@@ -88,6 +112,12 @@ a.home:hover { color: var(--fg); text-decoration: underline; }
 }
 .ic:hover { background: var(--slate-a3); color: var(--fg); }
 .ic svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.confirm { flex: none; padding: 10px 20px 12px; border-bottom: 1px solid var(--red-a5, var(--slate-a4)); background: var(--red-a2, var(--slate-a2)); }
+.confirm p { margin: 0 0 8px; font-size: var(--text-base); color: var(--fg-2); }
+.c-row { display: flex; gap: 6px; }
+.c-row input { flex: 1; min-width: 0; height: 30px; padding: 0 10px; border: 1px solid var(--slate-a5); border-radius: 8px; background: var(--surface); color: var(--fg); font: inherit; font-size: var(--text-base); outline: none; }
+.danger { height: 30px; padding: 0 12px; border: 0; border-radius: 8px; background: var(--red-9); color: #fff; font: inherit; font-size: var(--text-base); font-weight: 500; cursor: pointer; }
+.cancel { height: 30px; padding: 0 10px; border: 0; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); cursor: pointer; }
 .scroll { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; }
 
 .panel-enter-active, .panel-leave-active { transition: transform 200ms cubic-bezier(0.32, 0.72, 0, 1), opacity 160ms; }

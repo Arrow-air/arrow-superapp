@@ -212,6 +212,20 @@ export function defer(thread: Thread, note?: string) {
 
 // Work drafted from decisions.
 export const workFor = (t: Thread) => state.work.find((w) => w.threadId === t.id);
+
+/** Leads can delete any thread; an author their own until someone else takes part. Never once work is funded. */
+export function canDelete(t: Thread): boolean {
+  if (workFor(t)) return false;
+  if (remote && !session.userId) return false;
+  if (state.role === 'lead') return true;
+  const others = t.positions.some((p) => p.authorId !== 'me') || t.replies.some((r) => r.authorId !== 'me') || t.votes.some((v) => v.memberId !== 'me');
+  return t.authorId === 'me' && !others;
+}
+/** Soft delete live (kept with who and why, hidden from everyone); gone from this browser in the demo. */
+export function deleteThread(t: Thread, reason: string) {
+  if (remote) return void call('sa_delete_thread', { p_thread: t.id, p_reason: reason });
+  state.threads = state.threads.filter((x) => x.id !== t.id);
+}
 export function draftWork(t: Thread, input: { kind: WorkKind; title: string; scope: string; acceptance: string; reward: number }): Work | undefined {
   if (remote) {
     void call('sa_draft_work', { p_thread: t.id, p_kind: input.kind, p_title: input.title, p_scope: input.scope, p_acceptance: input.acceptance, p_reward: input.reward });
