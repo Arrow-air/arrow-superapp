@@ -1,0 +1,2481 @@
+{
+ "generatedAt": "2026-10-01T04:08:09.696Z",
+ "commit": "9ef9efc",
+ "boards": [
+  {
+   "id": "main",
+   "name": "Main PCB",
+   "part": "3310",
+   "path": "src/pcb/main_pcb/Quiver_PT3_Main_PCB-rounded.kicad_pcb",
+   "file": "pcb/main.kicad_pcb",
+   "footprints": [
+    {
+     "ref": "LED2",
+     "value": "APT2012LVBC_D",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 274.15,
+     "y": 145.25
+    },
+    {
+     "ref": "J10",
+     "value": "1778719",
+     "footprint": "1778719",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "F.Cu",
+     "x": 139.6,
+     "y": 115.3
+    },
+    {
+     "ref": "C5",
+     "value": "100nF",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor",
+     "layer": "F.Cu",
+     "x": 125.9,
+     "y": 179.8
+    },
+    {
+     "ref": "C11",
+     "value": "100uF",
+     "footprint": "CAP-TH_BD10.0-P5.00-D0.6-FD_2",
+     "description": "Capacitance:100uF Tolerance:±20% Tolerance:±20% Voltage Rating:100V Pin Spacing:5mm Diameter:10mm Height - Seated (Max):13mm Operating Temperature:-55°C~+105°C Operating Temperature:-55°C~+105°C",
+     "layer": "F.Cu",
+     "x": 307.4,
+     "y": 144.8
+    },
+    {
+     "ref": "S1",
+     "value": "SLW-913535-2A-SMT",
+     "footprint": "SLW9135352ASMT",
+     "description": "9.1 x 3.5 x 3.5 mm, 2 mm Raised Slide Actuator, Vertical, Surface Mount, Slide Switch",
+     "layer": "F.Cu",
+     "x": 126.7,
+     "y": 195.5
+    },
+    {
+     "ref": "J20",
+     "value": "SM04B-GHS-TB_LF__SN_",
+     "footprint": "SM04B-GHS-TB",
+     "description": "JST GH Series, 1.25mm Pitch 4 Way Right Angle PCB Header, Solder Termination, 1A",
+     "layer": "F.Cu",
+     "x": 162.632753,
+     "y": 48.784404
+    },
+    {
+     "ref": "J28",
+     "value": "XT60PW-F",
+     "footprint": "XT60PWF",
+     "description": "Socket; DC supply; XT60; female; PIN: 2; on PCBs; THT; Colour: yellow",
+     "layer": "F.Cu",
+     "x": 271.4,
+     "y": 78.6
+    },
+    {
+     "ref": "R23",
+     "value": "1K2",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 291,
+     "y": 132.1
+    },
+    {
+     "ref": "R12",
+     "value": "5K1",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 108.2,
+     "y": 115.3
+    },
+    {
+     "ref": "R17",
+     "value": "10K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 123,
+     "y": 189.4
+    },
+    {
+     "ref": "JP5",
+     "value": "SolderJumper_2_Open",
+     "footprint": "SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm",
+     "description": "Solder Jumper, 2-pole, open",
+     "layer": "F.Cu",
+     "x": 215.5,
+     "y": 122.75
+    },
+    {
+     "ref": "PS2",
+     "value": "REC30K-4812SZ",
+     "footprint": "REC30K",
+     "description": "30W DC/DC-Converter \\'ECONOLINE\\' 1\"x1\" 2kV reg 4:1",
+     "layer": "F.Cu",
+     "x": 288.780256,
+     "y": 166.188154
+    },
+    {
+     "ref": "U13",
+     "value": "SMTWEM245STR",
+     "footprint": "SCREW-SMD_BD4.4-D2.8-H4.5",
+     "description": "specifications:M2 surface treatment:Tin Plated Product Description:- material quality:Iron Rated current:- length:4.5mm",
+     "layer": "F.Cu",
+     "x": 175.3,
+     "y": 117
+    },
+    {
+     "ref": "J9",
+     "value": "SM04B-GHS-TB_LF__SN_",
+     "footprint": "SM04B-GHS-TB",
+     "description": "JST GH Series, 1.25mm Pitch 4 Way Right Angle PCB Header, Solder Termination, 1A",
+     "layer": "F.Cu",
+     "x": 163.8,
+     "y": 80.05
+    },
+    {
+     "ref": "J18",
+     "value": "SM04B-GHS-TB_LF__SN_",
+     "footprint": "SM04B-GHS-TB",
+     "description": "JST GH Series, 1.25mm Pitch 4 Way Right Angle PCB Header, Solder Termination, 1A",
+     "layer": "F.Cu",
+     "x": 169.123313,
+     "y": 42.323313
+    },
+    {
+     "ref": "C8",
+     "value": "100uF",
+     "footprint": "CAP-TH_BD10.0-P5.00-D0.6-FD_2",
+     "description": "Capacitance:100uF Tolerance:±20% Tolerance:±20% Voltage Rating:100V Pin Spacing:5mm Diameter:10mm Height - Seated (Max):13mm Operating Temperature:-55°C~+105°C Operating Temperature:-55°C~+105°C",
+     "layer": "F.Cu",
+     "x": 278.2,
+     "y": 190.20025
+    },
+    {
+     "ref": "J26",
+     "value": "1814919",
+     "footprint": "1814919",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 2, Number of rows: 1, Number of positions per row: 2, number of connections: 2, product range: PTSM 0,5/..-HH-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 32 mm wide tape",
+     "layer": "F.Cu",
+     "x": 121.15,
+     "y": 95
+    },
+    {
+     "ref": "R22",
+     "value": "100R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 146.991,
+     "y": 94.2
+    },
+    {
+     "ref": "R31",
+     "value": "15K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 142.7,
+     "y": 90.9
+    },
+    {
+     "ref": "U5",
+     "value": "C7429635",
+     "footprint": "CONN-TH_5P-P2.50_ZX-XH2.54-5PZZ",
+     "description": "Pins Structure:1x5P Pitch:2.5mm Mounting Type:Through Hole Reference Series:XH Number of Pins:5P Number of Rows:1 Number of PINs Per Row:5 Row Spacing:- Current Rating:3A Contact Material:Brass Contact Plating:Tin Operating Temperature:-25°C~+85°C Operating",
+     "layer": "F.Cu",
+     "x": 200,
+     "y": 23.5
+    },
+    {
+     "ref": "C1",
+     "value": "100nF",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor",
+     "layer": "F.Cu",
+     "x": 195,
+     "y": 122.5
+    },
+    {
+     "ref": "J24",
+     "value": "1778719",
+     "footprint": "1778719",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "F.Cu",
+     "x": 230.8,
+     "y": 57.2
+    },
+    {
+     "ref": "LED4",
+     "value": "APT2012LVBC_D",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 252.9,
+     "y": 113.3
+    },
+    {
+     "ref": "J2",
+     "value": "1778719",
+     "footprint": "1778719",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "F.Cu",
+     "x": 104.1,
+     "y": 187.5
+    },
+    {
+     "ref": "LS1",
+     "value": "CMT-8530S-SMT-TR",
+     "footprint": "CMT8530SSMTTR",
+     "description": "8.5 mm, 3.6 Vo-p, 90 dB, Surface Mount (SMT), Magnetic Audio Transducer Buzzer",
+     "layer": "F.Cu",
+     "x": 150.2,
+     "y": 198.8
+    },
+    {
+     "ref": "J12",
+     "value": "1778719",
+     "footprint": "1778719",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "F.Cu",
+     "x": 293.214897,
+     "y": 176.485103
+    },
+    {
+     "ref": "U16",
+     "value": "SMTWEM245STR",
+     "footprint": "SCREW-SMD_BD4.4-D2.8-H4.5",
+     "description": "specifications:M2 surface treatment:Tin Plated Product Description:- material quality:Iron Rated current:- length:4.5mm",
+     "layer": "F.Cu",
+     "x": 224.7,
+     "y": 117
+    },
+    {
+     "ref": "J47",
+     "value": "GIGABLOX_NANO_SWITCH_REVA_MODULE",
+     "footprint": "GIGABLOX_NANO_SWITCH_REVA_MODULE_LSHM-120-02.5-L-DV-A-S-K-TR",
+     "description": "40 Position, 0.50 mm Razor Beam&trade; High-Speed Hermaphroditic Terminal/Socket Strip",
+     "layer": "F.Cu",
+     "x": 214,
+     "y": 97.5
+    },
+    {
+     "ref": "R4",
+     "value": "100k",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 211.2,
+     "y": 122.7
+    },
+    {
+     "ref": "J52",
+     "value": "SM04B-GHS-TB_LF__SN_",
+     "footprint": "SM04B-GHS-TB",
+     "description": "JST GH Series, 1.25mm Pitch 4 Way Right Angle PCB Header, Solder Termination, 1A",
+     "layer": "F.Cu",
+     "x": 228.5,
+     "y": 115.775
+    },
+    {
+     "ref": "J54",
+     "value": "SM04B-GHS-TB_LF__SN_",
+     "footprint": "SM04B-GHS-TB",
+     "description": "JST GH Series, 1.25mm Pitch 4 Way Right Angle PCB Header, Solder Termination, 1A",
+     "layer": "F.Cu",
+     "x": 175.823313,
+     "y": 35.723313
+    },
+    {
+     "ref": "F4",
+     "value": "0154005.DR",
+     "footprint": "0154005DR",
+     "description": "Fuse, Surface Mount with Clip/Holder, 5 A, Very Fast Acting, 125 VAC, 125 VDC, 9.73mm x 5.03mm",
+     "layer": "F.Cu",
+     "x": 280.9,
+     "y": 137.4
+    },
+    {
+     "ref": "R25",
+     "value": "4K7",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 277.55,
+     "y": 141.75
+    },
+    {
+     "ref": "U2",
+     "value": "MCP2515-I/SO",
+     "footprint": "SOIC127P1030X265-18N",
+     "description": "CAN Controller SPI data filtering SO18",
+     "layer": "F.Cu",
+     "x": 122.6,
+     "y": 171.99
+    },
+    {
+     "ref": "R18",
+     "value": "120R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 127.2,
+     "y": 189.4
+    },
+    {
+     "ref": "TP3",
+     "value": "TestPoint_Small",
+     "footprint": "TestPoint_Pad_1.0x1.0mm",
+     "description": "test point",
+     "layer": "F.Cu",
+     "x": 198.6,
+     "y": 90.3
+    },
+    {
+     "ref": "Q3",
+     "value": "SIR570DP-T1-RE3",
+     "footprint": "POWERPAK-SO-8_L5.9-W4.9-P1.27-LS6.2-BL",
+     "description": "Number:1 N-Channel Drain to Source Voltage:150V Current - Continuous Drain(Id):77.4A RDS(on):8.5mΩ@7.5V Pd - Power Dissipation:45W Gate Threshold Voltage (Vgs(th)):4V@250uA Gate Charge(Qg):71nC@10V Input Capacitance(Ciss):3.74nF Reverse Transfer Capacitan",
+     "layer": "F.Cu",
+     "x": 139.9,
+     "y": 96.1
+    },
+    {
+     "ref": "J13",
+     "value": "1778719",
+     "footprint": "1778719",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "F.Cu",
+     "x": 306.614897,
+     "y": 163.185103
+    },
+    {
+     "ref": "J15",
+     "value": "SM04B-GHS-TB_LF__SN_",
+     "footprint": "SM04B-GHS-TB",
+     "description": "JST GH Series, 1.25mm Pitch 4 Way Right Angle PCB Header, Solder Termination, 1A",
+     "layer": "F.Cu",
+     "x": 304.6,
+     "y": 184.3
+    },
+    {
+     "ref": "J45",
+     "value": "AMT0450003DB0000G",
+     "footprint": "AMT0450003DB0000G",
+     "description": "Terminals Current (A) : 150AScrew : M5Torque : 15 lbf.in BrassTerminal Part+Steel Nut (plating : matte tin)Pin out :  4PINMount Type : DIP",
+     "layer": "F.Cu",
+     "x": 190.3625,
+     "y": 202.75
+    },
+    {
+     "ref": "R30",
+     "value": "4K7",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 269.492893,
+     "y": 130.292893
+    },
+    {
+     "ref": "U1",
+     "value": "TJA1049T/3J",
+     "footprint": "SOIC127P600X175-8N",
+     "description": "NXP - TJA1049T/3J - CAN TRANSCEIVER, AEC-Q100, 5MBPS, SOIC-8",
+     "layer": "F.Cu",
+     "x": 125.9,
+     "y": 184.2
+    },
+    {
+     "ref": "J19",
+     "value": "1778719",
+     "footprint": "1778719",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "F.Cu",
+     "x": 175,
+     "y": 42.3
+    },
+    {
+     "ref": "J7",
+     "value": "SM04B-GHS-TB_LF__SN_",
+     "footprint": "SM04B-GHS-TB",
+     "description": "JST GH Series, 1.25mm Pitch 4 Way Right Angle PCB Header, Solder Termination, 1A",
+     "layer": "F.Cu",
+     "x": 325.25,
+     "y": 148.425
+    },
+    {
+     "ref": "J31",
+     "value": "1814951",
+     "footprint": "1814951",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 6, Number of rows: 1, Number of positions per row: 6, number of connections: 6, product range: PTSM 0,5/..-HH-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape",
+     "layer": "F.Cu",
+     "x": 238.2,
+     "y": 49.4
+    },
+    {
+     "ref": "TP4",
+     "value": "TestPoint_Small",
+     "footprint": "TestPoint_Pad_1.0x1.0mm",
+     "description": "test point",
+     "layer": "F.Cu",
+     "x": 201.9,
+     "y": 90.3
+    },
+    {
+     "ref": "Z1",
+     "value": "MMSZ5242B-E3-08",
+     "footprint": "SOD3716X135N",
+     "description": "Zener Diodes 12 Volt 0.5 Watt 5%",
+     "layer": "F.Cu",
+     "x": 159.6,
+     "y": 96.9
+    },
+    {
+     "ref": "C10",
+     "value": "470uF",
+     "footprint": "CAP-TH_BD8.0-P3.50-D0.6-FD",
+     "description": "Capacitance:470uF Tolerance:±20% Tolerance:±20% Voltage Rating:25V Ripple Current:- Equivalent Series Resistance(ESR):- Type:- Pin Spacing:3.5mm Diameter:8mm Height - Seated (Max):12mm Lifetime:2000hrs@105°C Operating Temperature:-55°C~+105°C Operating Tempe",
+     "layer": "F.Cu",
+     "x": 264.9,
+     "y": 145.5
+    },
+    {
+     "ref": "R24",
+     "value": "1K2",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 251.4,
+     "y": 164.2
+    },
+    {
+     "ref": "R21",
+     "value": "10K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 118,
+     "y": 189.3
+    },
+    {
+     "ref": "R16",
+     "value": "0R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 117.9,
+     "y": 192.4
+    },
+    {
+     "ref": "R1",
+     "value": "1K5",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 255.992893,
+     "y": 93.492893
+    },
+    {
+     "ref": "R26",
+     "value": "100K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 147.7,
+     "y": 100.8
+    },
+    {
+     "ref": "J44",
+     "value": "AMT0450003DB0000G",
+     "footprint": "AMT0450003DB0000G",
+     "description": "Terminals Current (A) : 150AScrew : M5Torque : 15 lbf.in BrassTerminal Part+Steel Nut (plating : matte tin)Pin out :  4PINMount Type : DIP",
+     "layer": "F.Cu",
+     "x": 222.3625,
+     "y": 202.75
+    },
+    {
+     "ref": "J16",
+     "value": "1778719",
+     "footprint": "1778719",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "F.Cu",
+     "x": 161.9,
+     "y": 55.4
+    },
+    {
+     "ref": "TP1",
+     "value": "TestPoint_Small",
+     "footprint": "TestPoint_Pad_1.0x1.0mm",
+     "description": "test point",
+     "layer": "F.Cu",
+     "x": 198.6,
+     "y": 86.1
+    },
+    {
+     "ref": "J23",
+     "value": "1814948",
+     "footprint": "1814948",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 5, Number of rows: 1, Number of positions per row: 5, number of connections: 5, product range: PTSM 0,5/..-HH-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 32 mm wide tape",
+     "layer": "F.Cu",
+     "x": 281.4,
+     "y": 202.5
+    },
+    {
+     "ref": "U3",
+     "value": "SMTSOM380BTR",
+     "footprint": "SMD_BD6.0-D4.2",
+     "description": "specifications:M3 surface treatment:Tin plated Product Description:- material quality:Copper Rated current:- length:8mm",
+     "layer": "F.Cu",
+     "x": 184.75,
+     "y": 79.75
+    },
+    {
+     "ref": "J25",
+     "value": "XT60PW-F",
+     "footprint": "XT60PWF",
+     "description": "Socket; DC supply; XT60; female; PIN: 2; on PCBs; THT; Colour: yellow",
+     "layer": "F.Cu",
+     "x": 271.4,
+     "y": 221.4
+    },
+    {
+     "ref": "R7",
+     "value": "10K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 266.192893,
+     "y": 96.607107
+    },
+    {
+     "ref": "F2",
+     "value": "0154005.DR",
+     "footprint": "0154005DR",
+     "description": "Fuse, Surface Mount with Clip/Holder, 5 A, Very Fast Acting, 125 VAC, 125 VDC, 9.73mm x 5.03mm",
+     "layer": "F.Cu",
+     "x": 126.2,
+     "y": 102.8
+    },
+    {
+     "ref": "J22",
+     "value": "SM04B-GHS-TB_LF__SN_",
+     "footprint": "SM04B-GHS-TB",
+     "description": "JST GH Series, 1.25mm Pitch 4 Way Right Angle PCB Header, Solder Termination, 1A",
+     "layer": "F.Cu",
+     "x": 156.123313,
+     "y": 55.223313
+    },
+    {
+     "ref": "C12",
+     "value": "470uF",
+     "footprint": "CAP-TH_BD8.0-P3.50-D0.6-FD",
+     "description": "Capacitance:470uF Tolerance:±20% Tolerance:±20% Voltage Rating:25V Ripple Current:- Equivalent Series Resistance(ESR):- Type:- Pin Spacing:3.5mm Diameter:8mm Height - Seated (Max):12mm Lifetime:2000hrs@105°C Operating Temperature:-55°C~+105°C Operating Tempe",
+     "layer": "F.Cu",
+     "x": 300.1,
+     "y": 137.7
+    },
+    {
+     "ref": "J48",
+     "value": "SM04B-GHS-TB_LF__SN_",
+     "footprint": "SM04B-GHS-TB",
+     "description": "JST GH Series, 1.25mm Pitch 4 Way Right Angle PCB Header, Solder Termination, 1A",
+     "layer": "F.Cu",
+     "x": 228.5,
+     "y": 107.125
+    },
+    {
+     "ref": "R13",
+     "value": "5K1",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 108.2,
+     "y": 110.5
+    },
+    {
+     "ref": "D7",
+     "value": "SS34",
+     "footprint": "SMB_L4.6-W3.6-LS5.3-RD",
+     "description": "Voltage - Forward(Vf@If):500mV@3A Voltage - DC Reverse(Vr):40V Current - Rectified:3A Reverse Leakage Current (Ir):500uA@40V Operating Junction Temperature Range:-55°C~+125°C Operating Junction Temperature Range:-55°C~+125°C Non-Repetitive Peak Forward Surge",
+     "layer": "F.Cu",
+     "x": 244.3,
+     "y": 98.9
+    },
+    {
+     "ref": "LED6",
+     "value": "APT2012LVBC_D",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 146.7,
+     "y": 88.5
+    },
+    {
+     "ref": "PS1",
+     "value": "REC20K-4805SZ",
+     "footprint": "REC20K",
+     "description": "20W DC/DC-Converter \\'ECONOLINE\\' 1\"x1\" 2kV reg 4:1",
+     "layer": "F.Cu",
+     "x": 268.380256,
+     "y": 186.488154
+    },
+    {
+     "ref": "R10",
+     "value": "10k",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 199.1,
+     "y": 122.5
+    },
+    {
+     "ref": "D3",
+     "value": "SMBJ13CA",
+     "footprint": "D_SMB",
+     "description": "27.91A 600W 21.5V 15.9V Bidirectional 13V SMB ESD and Surge Protection (TVS/ESD) ROHS",
+     "layer": "F.Cu",
+     "x": 263.592893,
+     "y": 94.207107
+    },
+    {
+     "ref": "D5",
+     "value": "SMBJ13CA",
+     "footprint": "D_SMB",
+     "description": "27.91A 600W 21.5V 15.9V Bidirectional 13V SMB ESD and Surge Protection (TVS/ESD) ROHS",
+     "layer": "F.Cu",
+     "x": 147.8,
+     "y": 97.5
+    },
+    {
+     "ref": "J6",
+     "value": "1778719",
+     "footprint": "1778719",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "F.Cu",
+     "x": 119.8,
+     "y": 115.3
+    },
+    {
+     "ref": "D4",
+     "value": "SMBJ13CA",
+     "footprint": "D_SMB",
+     "description": "27.91A 600W 21.5V 15.9V Bidirectional 13V SMB ESD and Surge Protection (TVS/ESD) ROHS",
+     "layer": "F.Cu",
+     "x": 274.3,
+     "y": 120.5
+    },
+    {
+     "ref": "J21",
+     "value": "1778719",
+     "footprint": "1778719",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "F.Cu",
+     "x": 246.6,
+     "y": 73
+    },
+    {
+     "ref": "F3",
+     "value": "0154005.DR",
+     "footprint": "0154005DR",
+     "description": "Fuse, Surface Mount with Clip/Holder, 5 A, Very Fast Acting, 125 VAC, 125 VDC, 9.73mm x 5.03mm",
+     "layer": "F.Cu",
+     "x": 251.1,
+     "y": 156.9
+    },
+    {
+     "ref": "U6",
+     "value": "SMTSOM380BTR",
+     "footprint": "SMD_BD6.0-D4.2",
+     "description": "specifications:M3 surface treatment:Tin plated Product Description:- material quality:Copper Rated current:- length:8mm",
+     "layer": "F.Cu",
+     "x": 215.25,
+     "y": 79.75
+    },
+    {
+     "ref": "R9",
+     "value": "10K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 276.9,
+     "y": 122.8
+    },
+    {
+     "ref": "R20",
+     "value": "10K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 130.4,
+     "y": 176
+    },
+    {
+     "ref": "U9",
+     "value": "SMTSO25100CTJ",
+     "footprint": "SMD_BD5.6-L5.6-W5.6-D4.1",
+     "description": "specifications:M2.5X10 surface treatment:镀锡 Product Description:- material quality:- model:SMTSO25100CTJ brand:Sinhoo(雄和远景)",
+     "layer": "F.Cu",
+     "x": 98.5,
+     "y": 125.5
+    },
+    {
+     "ref": "U4",
+     "value": "URB4805S-6WR3",
+     "footprint": "PWRM-TH_YLPTEC_URBXXXXS-6WR3",
+     "description": "Type:Buck Number of Channels:1 Output Power:6W Voltage - Supply:18V~75V Voltage - Supply:18V~75V Conversion Efficiency:82% Conversion Efficiency:82% Output Voltage:5V Output Voltage:5V Output Current(Max):1.2A Output Current(Max):1.2A Capacitive Load(Max)",
+     "layer": "F.Cu",
+     "x": 293.813821,
+     "y": 149.113821
+    },
+    {
+     "ref": "R11",
+     "value": "10k",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 197.1,
+     "y": 122.5
+    },
+    {
+     "ref": "J50",
+     "value": "1814935",
+     "footprint": "1814935",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HH-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 32 mm wide tape",
+     "layer": "F.Cu",
+     "x": 310.578159,
+     "y": 126.721841
+    },
+    {
+     "ref": "F7",
+     "value": "0154002.DR",
+     "footprint": "0154002DR",
+     "description": "Fuse,Nano2,SMT,c/w holder,2A",
+     "layer": "F.Cu",
+     "x": 260.2,
+     "y": 118.3
+    },
+    {
+     "ref": "J40",
+     "value": "1814948",
+     "footprint": "1814948",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 5, Number of rows: 1, Number of positions per row: 5, number of connections: 5, product range: PTSM 0,5/..-HH-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 32 mm wide tape",
+     "layer": "F.Cu",
+     "x": 147.6,
+     "y": 68.5
+    },
+    {
+     "ref": "J46",
+     "value": "1814951",
+     "footprint": "1814951",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 6, Number of rows: 1, Number of positions per row: 6, number of connections: 6, product range: PTSM 0,5/..-HH-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape",
+     "layer": "F.Cu",
+     "x": 153.6,
+     "y": 215.2
+    },
+    {
+     "ref": "D8",
+     "value": "ES3D",
+     "footprint": "SMC_L7.1-W6.2-LS8.1-RD",
+     "description": "Diode Configuration:- Voltage - Forward(Vf@If):950mV@3A Voltage - DC Reverse(Vr):200V Current - Rectified:3A Reverse Leakage Current (Ir):10uA@200V Non-Repetitive Peak Forward Surge Current:100A Operating Junction Temperature Range:-50°C~+150°C Operating Ju",
+     "layer": "F.Cu",
+     "x": 132.6,
+     "y": 102.5
+    },
+    {
+     "ref": "C2",
+     "value": "100uF",
+     "footprint": "CAP-TH_BD10.0-P5.00-D0.6-FD_2",
+     "description": "Capacitance:100uF Tolerance:±20% Tolerance:±20% Voltage Rating:100V Pin Spacing:5mm Diameter:10mm Height - Seated (Max):13mm Operating Temperature:-55°C~+105°C Operating Temperature:-55°C~+105°C",
+     "layer": "F.Cu",
+     "x": 270.2,
+     "y": 198.1
+    },
+    {
+     "ref": "R2",
+     "value": "100k",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 201.1,
+     "y": 122.5
+    },
+    {
+     "ref": "R33",
+     "value": "0R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 199.9,
+     "y": 175
+    },
+    {
+     "ref": "U10",
+     "value": "SMTSO25100CTJ",
+     "footprint": "SMD_BD5.6-L5.6-W5.6-D4.1",
+     "description": "specifications:M2.5X10 surface treatment:镀锡 Product Description:- material quality:- model:SMTSO25100CTJ brand:Sinhoo(雄和远景)",
+     "layer": "F.Cu",
+     "x": 156.5,
+     "y": 125.5
+    },
+    {
+     "ref": "J3",
+     "value": "AXK6S00547YG",
+     "footprint": "AXK6S00547YG",
+     "description": "Board to Board & Mezzanine Connectors CONN HEADER BRD/BRD 100 POS 0.5mm",
+     "layer": "F.Cu",
+     "x": 173.75,
+     "y": 150
+    },
+    {
+     "ref": "C4",
+     "value": "100nF",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor",
+     "layer": "F.Cu",
+     "x": 113.2,
+     "y": 167
+    },
+    {
+     "ref": "X1",
+     "value": "16MHz",
+     "footprint": "NX3225GB-16M-STD-CRA-2",
+     "description": "NDK 16MHz Crystal Unit +/-50ppm SMD 2-Pin 3.2 x 2.5 x 0.75mm",
+     "layer": "F.Cu",
+     "x": 114.1,
+     "y": 175.1
+    },
+    {
+     "ref": "J1",
+     "value": "RPI_5_WITH_SSQ-120-01-F-D",
+     "footprint": "SSM-120-XXX-DV",
+     "description": "SSQ-120-01-F-D as a socket for a raspberry PI",
+     "layer": "F.Cu",
+     "x": 127.49,
+     "y": 125.55
+    },
+    {
+     "ref": "D2",
+     "value": "PESD0603-240",
+     "footprint": "DIONC1608X55N",
+     "description": "LITTELFUSE - PESD0603-240 - ESD SUPPRESSOR, 0603, 24V, 0.25PF",
+     "layer": "F.Cu",
+     "x": 131.4,
+     "y": 188.4
+    },
+    {
+     "ref": "TP2",
+     "value": "TestPoint_Small",
+     "footprint": "TestPoint_Pad_1.0x1.0mm",
+     "description": "test point",
+     "layer": "F.Cu",
+     "x": 201.9,
+     "y": 86.1
+    },
+    {
+     "ref": "LED1",
+     "value": "APT2012LVBC_D",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 253,
+     "y": 165.9
+    },
+    {
+     "ref": "F5",
+     "value": "0154001.DR",
+     "footprint": "0154001DR",
+     "description": "Littelfuse Surface Mount Fuse 1A, 125V ac/dc",
+     "layer": "F.Cu",
+     "x": 285.6,
+     "y": 132.8
+    },
+    {
+     "ref": "LED3",
+     "value": "APT2012LVBC_D",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 293.4,
+     "y": 136.8
+    },
+    {
+     "ref": "K1",
+     "value": "CPC1019N",
+     "footprint": "SOP254P610X218-4N",
+     "description": "SPST-NO Solid State Relay Solder 1 A, 750 mA dc Surface Mount, AC/DC MOSFET",
+     "layer": "F.Cu",
+     "x": 259.3,
+     "y": 98.6
+    },
+    {
+     "ref": "J34",
+     "value": "XT60PW-F",
+     "footprint": "XT60PWF",
+     "description": "Socket; DC supply; XT60; female; PIN: 2; on PCBs; THT; Colour: yellow",
+     "layer": "F.Cu",
+     "x": 128.6,
+     "y": 221.4
+    },
+    {
+     "ref": "JP1",
+     "value": "SolderJumper_2_Bridged",
+     "footprint": "SolderJumper-2_P1.3mm_Bridged2Bar_RoundedPad1.0x1.5mm",
+     "description": "Solder Jumper, 2-pole, closed/bridged",
+     "layer": "F.Cu",
+     "x": 203.4,
+     "y": 122.7
+    },
+    {
+     "ref": "K3",
+     "value": "CPC1019N",
+     "footprint": "SOP254P610X218-4N",
+     "description": "SPST-NO Solid State Relay Solder 1 A, 750 mA dc Surface Mount, AC/DC MOSFET",
+     "layer": "F.Cu",
+     "x": 155.2,
+     "y": 96
+    },
+    {
+     "ref": "U11",
+     "value": "SMTSO25100CTJ",
+     "footprint": "SMD_BD5.6-L5.6-W5.6-D4.1",
+     "description": "specifications:M2.5X10 surface treatment:镀锡 Product Description:- material quality:- model:SMTSO25100CTJ brand:Sinhoo(雄和远景)",
+     "layer": "F.Cu",
+     "x": 98.5,
+     "y": 174.5
+    },
+    {
+     "ref": "U8",
+     "value": "SMTSOM380BTR",
+     "footprint": "SMD_BD6.0-D4.2",
+     "description": "specifications:M3 surface treatment:Tin plated Product Description:- material quality:Copper Rated current:- length:8mm",
+     "layer": "F.Cu",
+     "x": 184.75,
+     "y": 49.25
+    },
+    {
+     "ref": "F1",
+     "value": "0154002.DR",
+     "footprint": "0154002DR",
+     "description": "Fuse,Nano2,SMT,c/w holder,2A",
+     "layer": "F.Cu",
+     "x": 246.3,
+     "y": 104.5
+    },
+    {
+     "ref": "R19",
+     "value": "10K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 129.8,
+     "y": 163.7
+    },
+    {
+     "ref": "J8",
+     "value": "1814935",
+     "footprint": "1814935",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HH-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 32 mm wide tape",
+     "layer": "F.Cu",
+     "x": 297.678159,
+     "y": 113.821841
+    },
+    {
+     "ref": "K2",
+     "value": "CPC1019N",
+     "footprint": "SOP254P610X218-4N",
+     "description": "SPST-NO Solid State Relay Solder 1 A, 750 mA dc Surface Mount, AC/DC MOSFET",
+     "layer": "F.Cu",
+     "x": 273.007107,
+     "y": 112.807107
+    },
+    {
+     "ref": "U7",
+     "value": "SMTSOM380BTR",
+     "footprint": "SMD_BD6.0-D4.2",
+     "description": "specifications:M3 surface treatment:Tin plated Product Description:- material quality:Copper Rated current:- length:8mm",
+     "layer": "F.Cu",
+     "x": 215.25,
+     "y": 49.25
+    },
+    {
+     "ref": "R14",
+     "value": "120R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 177.075,
+     "y": 68.5
+    },
+    {
+     "ref": "J39",
+     "value": "1814935",
+     "footprint": "1814935",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HH-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 32 mm wide tape",
+     "layer": "F.Cu",
+     "x": 220.8,
+     "y": 36.9
+    },
+    {
+     "ref": "C6",
+     "value": "8pF",
+     "footprint": "C_0603_1608Metric_Pad1.08x0.95mm_HandSolder",
+     "description": "Unpolarized capacitor",
+     "layer": "F.Cu",
+     "x": 112.3,
+     "y": 172.2
+    },
+    {
+     "ref": "IC1",
+     "value": "TSYS01",
+     "footprint": "QFN65P400X400X90-17N",
+     "description": "Temp Sensor Digital Serial (4-Wire, SPI, I2C) 16-Pin QFN EP - Bulk",
+     "layer": "F.Cu",
+     "x": 200,
+     "y": 150
+    },
+    {
+     "ref": "R29",
+     "value": "4K7",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 251.3,
+     "y": 114.9
+    },
+    {
+     "ref": "Q1",
+     "value": "SIRA99DP-T1-GE3",
+     "footprint": "POWERPAK-SO-8_L5.9-W4.9-P1.27-LS6.2-BL",
+     "description": "Number:1 P-Channel Drain to Source Voltage:30V Current - Continuous Drain(Id):195A RDS(on):1.7mΩ@10V Pd - Power Dissipation:104W Gate Threshold Voltage (Vgs(th)):2.5V Gate Charge(Qg):84nC@10V Input Capacitance(Ciss):10.995nF Reverse Transfer Capacitance (",
+     "layer": "F.Cu",
+     "x": 251.811091,
+     "y": 107.588909
+    },
+    {
+     "ref": "R5",
+     "value": "100k",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 208.3,
+     "y": 122.7
+    },
+    {
+     "ref": "S2",
+     "value": "SLW-913535-2A-SMT",
+     "footprint": "SLW9135352ASMT",
+     "description": "9.1 x 3.5 x 3.5 mm, 2 mm Raised Slide Actuator, Vertical, Surface Mount, Slide Switch",
+     "layer": "F.Cu",
+     "x": 173.275,
+     "y": 76.5
+    },
+    {
+     "ref": "J14",
+     "value": "XT30PW-F",
+     "footprint": "XT30PW-F_AMASS_XT30PW-F",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 298.7,
+     "y": 195.3
+    },
+    {
+     "ref": "Q2",
+     "value": "SIRA99DP-T1-GE3",
+     "footprint": "POWERPAK-SO-8_L5.9-W4.9-P1.27-LS6.2-BL",
+     "description": "Number:1 P-Channel Drain to Source Voltage:30V Current - Continuous Drain(Id):195A RDS(on):1.7mΩ@10V Pd - Power Dissipation:104W Gate Threshold Voltage (Vgs(th)):2.5V Gate Charge(Qg):84nC@10V Input Capacitance(Ciss):10.995nF Reverse Transfer Capacitance (",
+     "layer": "F.Cu",
+     "x": 265.711091,
+     "y": 121.488909
+    },
+    {
+     "ref": "J33",
+     "value": "USB4216-03-A",
+     "footprint": "USB421603A",
+     "description": "USB Connectors USB C Receptacle, Short Body, USB2.0, 16Pin, Horizontal, SMT",
+     "layer": "F.Cu",
+     "x": 98.5,
+     "y": 114.4
+    },
+    {
+     "ref": "F8",
+     "value": "1812L110_24DR",
+     "footprint": "1812L010DR",
+     "description": "Resettable Fuses - PPTC PTC 24V POLY 1812 HALOGEN-FREE 1.10A",
+     "layer": "F.Cu",
+     "x": 259.3,
+     "y": 128
+    },
+    {
+     "ref": "C9",
+     "value": "470uF",
+     "footprint": "CAP-TH_BD8.0-P3.50-D0.6-FD",
+     "description": "Capacitance:470uF Tolerance:±20% Tolerance:±20% Voltage Rating:25V Ripple Current:- Equivalent Series Resistance(ESR):- Type:- Pin Spacing:3.5mm Diameter:8mm Height - Seated (Max):12mm Lifetime:2000hrs@105°C Operating Temperature:-55°C~+105°C Operating Tempe",
+     "layer": "F.Cu",
+     "x": 257.804323,
+     "y": 152.154246
+    },
+    {
+     "ref": "U12",
+     "value": "SMTSO25100CTJ",
+     "footprint": "SMD_BD5.6-L5.6-W5.6-D4.1",
+     "description": "specifications:M2.5X10 surface treatment:镀锡 Product Description:- material quality:- model:SMTSO25100CTJ brand:Sinhoo(雄和远景)",
+     "layer": "F.Cu",
+     "x": 156.5,
+     "y": 174.5
+    },
+    {
+     "ref": "C19",
+     "value": "22uF",
+     "footprint": "CAP-SMD_L7.3-W4.3-RD_PA300LV227M0J",
+     "description": "Capacitance:22uF Tolerance:±20% Tolerance:±20% Voltage Rating:25V Ripple Current:3.2A@100kHz Equivalent Series Resistance(ESR):40mΩ Type:Polymer Height - Seated (Max):1.9mm Lifetime:2000hrs@105°C Operating Temperature:-55°C~+105°C Operating Temperature:-55°C~",
+     "layer": "F.Cu",
+     "x": 163.5,
+     "y": 99.4
+    },
+    {
+     "ref": "R8",
+     "value": "100k",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 213.2,
+     "y": 122.7
+    },
+    {
+     "ref": "LED5",
+     "value": "APT2012LVBC_D",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 266.8,
+     "y": 127.6
+    },
+    {
+     "ref": "R6",
+     "value": "100R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 278.607107,
+     "y": 124.492893
+    },
+    {
+     "ref": "J51",
+     "value": "GIGABLOX_NANO_SWITCH_REVA_MODULE",
+     "footprint": "GIGABLOX_NANO_SWITCH_REVA_MODULE_LSHM-120-02.5-L-DV-A-S-K-TR",
+     "description": "40 Position, 0.50 mm Razor Beam&trade; High-Speed Hermaphroditic Terminal/Socket Strip",
+     "layer": "F.Cu",
+     "x": 186,
+     "y": 97.5
+    },
+    {
+     "ref": "R27",
+     "value": "1K5",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 269.5,
+     "y": 107.5
+    },
+    {
+     "ref": "J32",
+     "value": "1814948",
+     "footprint": "1814948",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 5, Number of rows: 1, Number of positions per row: 5, number of connections: 5, product range: PTSM 0,5/..-HH-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 32 mm wide tape",
+     "layer": "F.Cu",
+     "x": 118.6,
+     "y": 202.5
+    },
+    {
+     "ref": "J27",
+     "value": "1814948",
+     "footprint": "1814948",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 5, Number of rows: 1, Number of positions per row: 5, number of connections: 5, product range: PTSM 0,5/..-HH-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 32 mm wide tape",
+     "layer": "F.Cu",
+     "x": 251.6,
+     "y": 67.7
+    },
+    {
+     "ref": "U15",
+     "value": "SMTWEM245STR",
+     "footprint": "SCREW-SMD_BD4.4-D2.8-H4.5",
+     "description": "specifications:M2 surface treatment:Tin Plated Product Description:- material quality:Iron Rated current:- length:4.5mm",
+     "layer": "F.Cu",
+     "x": 203.3,
+     "y": 117
+    },
+    {
+     "ref": "J42",
+     "value": "XT60PW-F",
+     "footprint": "XT60PWF",
+     "description": "Socket; DC supply; XT60; female; PIN: 2; on PCBs; THT; Colour: yellow",
+     "layer": "F.Cu",
+     "x": 128.6,
+     "y": 78.6
+    },
+    {
+     "ref": "J53",
+     "value": "1814935",
+     "footprint": "1814935",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HH-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 32 mm wide tape",
+     "layer": "F.Cu",
+     "x": 316.478159,
+     "y": 167.178159
+    },
+    {
+     "ref": "R32",
+     "value": "15K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 146.7,
+     "y": 90.9
+    },
+    {
+     "ref": "J11",
+     "value": "M9N-G4-3100",
+     "footprint": "M9N-G4-3100",
+     "description": "Mounting hole (this is not a component)",
+     "layer": "F.Cu",
+     "x": 200,
+     "y": 64.5
+    },
+    {
+     "ref": "C7",
+     "value": "8pF",
+     "footprint": "C_0603_1608Metric_Pad1.08x0.95mm_HandSolder",
+     "description": "Unpolarized capacitor",
+     "layer": "F.Cu",
+     "x": 112.2,
+     "y": 178.1
+    },
+    {
+     "ref": "C3",
+     "value": "100nF",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor",
+     "layer": "F.Cu",
+     "x": 116.4,
+     "y": 184.9
+    },
+    {
+     "ref": "D1",
+     "value": "PESD0603-240",
+     "footprint": "DIONC1608X55N",
+     "description": "LITTELFUSE - PESD0603-240 - ESD SUPPRESSOR, 0603, 24V, 0.25PF",
+     "layer": "F.Cu",
+     "x": 131.1,
+     "y": 182
+    },
+    {
+     "ref": "JP2",
+     "value": "SolderJumper_2_Open",
+     "footprint": "SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm",
+     "description": "Solder Jumper, 2-pole, open",
+     "layer": "F.Cu",
+     "x": 206,
+     "y": 122.65
+    },
+    {
+     "ref": "J4",
+     "value": "AXK6S00547YG",
+     "footprint": "AXK6S00547YG",
+     "description": "Board to Board & Mezzanine Connectors CONN HEADER BRD/BRD 100 POS 0.5mm",
+     "layer": "F.Cu",
+     "x": 226.25,
+     "y": 150
+    },
+    {
+     "ref": "R28",
+     "value": "1K5",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 153.9,
+     "y": 102
+    },
+    {
+     "ref": "R3",
+     "value": "100R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 268.1,
+     "y": 98.5
+    },
+    {
+     "ref": "J17",
+     "value": "SM03B-GHS-TB(LF)(SN)",
+     "footprint": "CONN-TH_SM03B-GHS-TB-LF-SN",
+     "description": "Pins Structure:1x3P Pitch:1.25mm Mounting Type:Surface Mount, Right Angle Reference Series:GH Number of Pins:3P Number of Rows:1 Number of PINs Per Row:3 Row Spacing:- Current Rating:1A Contact Material:Phosphor Bronze Contact Plating:Tin Operating Temper",
+     "layer": "F.Cu",
+     "x": 311.4,
+     "y": 179.5
+    },
+    {
+     "ref": "J43",
+     "value": "1814948",
+     "footprint": "1814948",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 5, Number of rows: 1, Number of positions per row: 5, number of connections: 5, product range: PTSM 0,5/..-HH-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 32 mm wide tape",
+     "layer": "F.Cu",
+     "x": 247.2,
+     "y": 211.3
+    },
+    {
+     "ref": "D6",
+     "value": "SS34",
+     "footprint": "SMB_L4.6-W3.6-LS5.3-RD",
+     "description": "Voltage - Forward(Vf@If):500mV@3A Voltage - DC Reverse(Vr):40V Current - Rectified:3A Reverse Leakage Current (Ir):500uA@40V Operating Junction Temperature Range:-55°C~+125°C Operating Junction Temperature Range:-55°C~+125°C Non-Repetitive Peak Forward Surge",
+     "layer": "F.Cu",
+     "x": 255.4,
+     "y": 116.5
+    },
+    {
+     "ref": "R15",
+     "value": "47K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 159.6,
+     "y": 93.2
+    },
+    {
+     "ref": "U14",
+     "value": "SMTWEM245STR",
+     "footprint": "SCREW-SMD_BD4.4-D2.8-H4.5",
+     "description": "specifications:M2 surface treatment:Tin Plated Product Description:- material quality:Iron Rated current:- length:4.5mm",
+     "layer": "F.Cu",
+     "x": 196.7,
+     "y": 117
+    },
+    {
+     "ref": "J30",
+     "value": "1778735",
+     "footprint": "1778735",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 6, Number of rows: 1, Number of positions per row: 6, number of connections: 6, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "B.Cu",
+     "x": 130,
+     "y": 140.75
+    },
+    {
+     "ref": "J5",
+     "value": "SM04B-GHS-TB_LF__SN_",
+     "footprint": "SM04B-GHS-TB",
+     "description": "JST GH Series, 1.25mm Pitch 4 Way Right Angle PCB Header, Solder Termination, 1A",
+     "layer": "B.Cu",
+     "x": 325.2,
+     "y": 148.425
+    },
+    {
+     "ref": "C14",
+     "value": "1uF",
+     "footprint": "C1206",
+     "description": "Capacitance:1uF Tolerance:±10% Tolerance:±10% Voltage Rating:100V Temperature Coefficient:X7R",
+     "layer": "B.Cu",
+     "x": 276.5,
+     "y": 188.4
+    },
+    {
+     "ref": "J38",
+     "value": "1778719",
+     "footprint": "1778719",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "B.Cu",
+     "x": 127.3,
+     "y": 164.55
+    },
+    {
+     "ref": "J36",
+     "value": "SM05B-GHS-TB_LF__SN_",
+     "footprint": "SM05B-GHS-TB",
+     "description": "JST GH Series, 1.25mm Pitch 5 Way Right Angle PCB Header, Solder Termination, 1A",
+     "layer": "B.Cu",
+     "x": 148.152602,
+     "y": 62.897235
+    },
+    {
+     "ref": "C13",
+     "value": "1uF",
+     "footprint": "C1206",
+     "description": "Capacitance:1uF Tolerance:±10% Tolerance:±10% Voltage Rating:100V Temperature Coefficient:X7R",
+     "layer": "B.Cu",
+     "x": 268.5,
+     "y": 196.2
+    },
+    {
+     "ref": "J49",
+     "value": "1814935",
+     "footprint": "1814935",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HH-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 32 mm wide tape",
+     "layer": "B.Cu",
+     "x": 297.678159,
+     "y": 113.821841
+    },
+    {
+     "ref": "J41",
+     "value": "SM06B-GHS-TB_LF__SN_",
+     "footprint": "SM06B-GHS-TB",
+     "description": "GH 1.25mm header side entry 6 way JST GH Series, 1.25mm Pitch 6 Way Right Angle PCB Header, Solder Termination, 1A",
+     "layer": "B.Cu",
+     "x": 176.42891,
+     "y": 29.459521
+    },
+    {
+     "ref": "C16",
+     "value": "1uF",
+     "footprint": "C1206",
+     "description": "Capacitance:1uF Tolerance:±10% Tolerance:±10% Voltage Rating:100V Temperature Coefficient:X7R",
+     "layer": "B.Cu",
+     "x": 260.009085,
+     "y": 150.427729
+    },
+    {
+     "ref": "J29",
+     "value": "1778735",
+     "footprint": "1778735",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 6, Number of rows: 1, Number of positions per row: 6, number of connections: 6, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "B.Cu",
+     "x": 270,
+     "y": 140.75
+    },
+    {
+     "ref": "C17",
+     "value": "1uF",
+     "footprint": "C1206",
+     "description": "Capacitance:1uF Tolerance:±10% Tolerance:±10% Voltage Rating:100V Temperature Coefficient:X7R",
+     "layer": "B.Cu",
+     "x": 262.161992,
+     "y": 148.231856
+    },
+    {
+     "ref": "C18",
+     "value": "1uF",
+     "footprint": "C1206",
+     "description": "Capacitance:1uF Tolerance:±10% Tolerance:±10% Voltage Rating:100V Temperature Coefficient:X7R",
+     "layer": "B.Cu",
+     "x": 297.6,
+     "y": 140.2
+    },
+    {
+     "ref": "J37",
+     "value": "1778719",
+     "footprint": "1778719",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "B.Cu",
+     "x": 272.7,
+     "y": 164.55
+    },
+    {
+     "ref": "C15",
+     "value": "1uF",
+     "footprint": "C1206",
+     "description": "Capacitance:1uF Tolerance:±10% Tolerance:±10% Voltage Rating:100V Temperature Coefficient:X7R",
+     "layer": "B.Cu",
+     "x": 305.1,
+     "y": 147.4
+    },
+    {
+     "ref": "J35",
+     "value": "SM04B-GHS-TB_LF__SN_",
+     "footprint": "SM04B-GHS-TB",
+     "description": "JST GH Series, 1.25mm Pitch 4 Way Right Angle PCB Header, Solder Termination, 1A",
+     "layer": "B.Cu",
+     "x": 175.787348,
+     "y": 35.655293
+    }
+   ]
+  },
+  {
+   "id": "battery",
+   "name": "Battery PCB",
+   "part": "3320",
+   "path": "src/pcb/battery_pcb/Front_PCB.kicad_pcb",
+   "file": "pcb/battery.kicad_pcb",
+   "footprints": [
+    {
+     "ref": "R9",
+     "value": "120R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 170.2,
+     "y": 79.5
+    },
+    {
+     "ref": "TP2",
+     "value": "TestPoint",
+     "footprint": "TestPoint_Pad_D1.5mm",
+     "description": "test point",
+     "layer": "F.Cu",
+     "x": 224.85,
+     "y": 121.65
+    },
+    {
+     "ref": "R3",
+     "value": "100k",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 110.094507,
+     "y": 109.069536
+    },
+    {
+     "ref": "F2",
+     "value": "0154005.DR",
+     "footprint": "0154005DR",
+     "description": "Fuse, Surface Mount with Clip/Holder, 5 A, Very Fast Acting, 125 VAC, 125 VDC, 9.73mm x 5.03mm",
+     "layer": "F.Cu",
+     "x": 95,
+     "y": 135.1
+    },
+    {
+     "ref": "R1",
+     "value": "100k",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 129.3,
+     "y": 103.7
+    },
+    {
+     "ref": "C3",
+     "value": "100nF",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor",
+     "layer": "F.Cu",
+     "x": 227.1,
+     "y": 134.1
+    },
+    {
+     "ref": "JP4",
+     "value": "SolderJumper_2_Open",
+     "footprint": "SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm",
+     "description": "Solder Jumper, 2-pole, open",
+     "layer": "F.Cu",
+     "x": 113.744507,
+     "y": 106.569536
+    },
+    {
+     "ref": "J10",
+     "value": "464379206",
+     "footprint": "CONN_SD-46437-9000_06_MOL",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 152.25,
+     "y": 149.9
+    },
+    {
+     "ref": "LED6",
+     "value": "APT2012LZGCK",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 218.7,
+     "y": 137.5
+    },
+    {
+     "ref": "R7",
+     "value": "270k",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 198.95,
+     "y": 125.25
+    },
+    {
+     "ref": "TP4",
+     "value": "TestPoint",
+     "footprint": "TestPoint_Pad_D1.5mm",
+     "description": "test point",
+     "layer": "F.Cu",
+     "x": 129.5,
+     "y": 78.2
+    },
+    {
+     "ref": "J5",
+     "value": "61300211121",
+     "footprint": "HDRV2W110P0X254_1X2_508X254X854P",
+     "description": "WURTH ELEKTRONIK - 61300211121 - HEADER, 2.54MM, PIN, THT, VERTICAL, 2WAY",
+     "layer": "F.Cu",
+     "x": 172.8,
+     "y": 74.8
+    },
+    {
+     "ref": "IC1",
+     "value": "TSYS01",
+     "footprint": "QFN65P400X400X90-17N",
+     "description": "Temp Sensor Digital Serial (4-Wire, SPI, I2C) 16-Pin QFN EP - Bulk",
+     "layer": "F.Cu",
+     "x": 132.799674,
+     "y": 107.37583
+    },
+    {
+     "ref": "R14",
+     "value": "1K5",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 122.8,
+     "y": 97.5
+    },
+    {
+     "ref": "J1",
+     "value": "1778719",
+     "footprint": "1778719",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "F.Cu",
+     "x": 78.4,
+     "y": 128.9
+    },
+    {
+     "ref": "R33",
+     "value": "4K7",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 229.3,
+     "y": 130.4
+    },
+    {
+     "ref": "R34",
+     "value": "1K2",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 231.6,
+     "y": 130.4
+    },
+    {
+     "ref": "LED1",
+     "value": "APT2012LZGCK",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 225.7,
+     "y": 140
+    },
+    {
+     "ref": "U3",
+     "value": "CPC1019N",
+     "footprint": "SOP254P610X218-4N",
+     "description": "SPST-NO Solid State Relay Solder 1 A, 750 mA dc Surface Mount, AC/DC MOSFET",
+     "layer": "F.Cu",
+     "x": 192.9,
+     "y": 94.7
+    },
+    {
+     "ref": "C6",
+     "value": "1uf",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor",
+     "layer": "F.Cu",
+     "x": 213.5375,
+     "y": 124.9
+    },
+    {
+     "ref": "R32",
+     "value": "330",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 231.2,
+     "y": 136.6
+    },
+    {
+     "ref": "J2",
+     "value": "1778719",
+     "footprint": "1778719",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 4, Number of rows: 1, Number of positions per row: 4, number of connections: 4, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "F.Cu",
+     "x": 176.65,
+     "y": 89.7
+    },
+    {
+     "ref": "D11",
+     "value": "ES3D",
+     "footprint": "D_SMC(DO-214AB)",
+     "description": "Diode Configuration:- Voltage - Forward(Vf@If):950mV@3A Voltage - DC Reverse(Vr):200V Current - Rectified:3A Reverse Leakage Current (Ir):10uA@200V Non-Repetitive Peak Forward Surge Current:100A Operating Junction Temperature Range:-50°C~+150°C Operating Ju",
+     "layer": "F.Cu",
+     "x": 95.2,
+     "y": 116.6
+    },
+    {
+     "ref": "J4",
+     "value": "AMT0450003DB0000G",
+     "footprint": "AMT0450003DB0000G",
+     "description": "Terminals Current (A) : 150AScrew : M5Torque : 15 lbf.in BrassTerminal Part+Steel Nut (plating : matte tin)Pin out :  4PINMount Type : DIP",
+     "layer": "F.Cu",
+     "x": 154.55,
+     "y": 91.75
+    },
+    {
+     "ref": "C1",
+     "value": "100nF",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor",
+     "layer": "F.Cu",
+     "x": 125.5,
+     "y": 107.5
+    },
+    {
+     "ref": "TP6",
+     "value": "TestPoint",
+     "footprint": "TestPoint_Pad_D1.5mm",
+     "description": "test point",
+     "layer": "F.Cu",
+     "x": 213.65,
+     "y": 111.9
+    },
+    {
+     "ref": "J3",
+     "value": "1778735",
+     "footprint": "1778735",
+     "description": "PCB header, nominal cross section: 0.5 mm?, color: white, nominal current: 6 A, rated voltage (III/2): 160 V, contact surface: Tin, type of contact: Male connector, Number of potentials: 6, Number of rows: 1, Number of positions per row: 6, number of connections: 6, product range: PTSM 0,5/..-HV-SMD WH, pitch: 2.5 mm, mounting: SMD soldering, pin layout: Linear pad geometry, solder pin [P]: 2 mm, Stecksystem: COMBICON COMPACT PTSM, Locking: without, type of packaging: 44 mm wide tape, Article with anti-rota",
+     "layer": "F.Cu",
+     "x": 120.8,
+     "y": 87.05
+    },
+    {
+     "ref": "LED2",
+     "value": "APT2012LZGCK",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 225.7,
+     "y": 137.4
+    },
+    {
+     "ref": "R8",
+     "value": "68k",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 207,
+     "y": 125.3
+    },
+    {
+     "ref": "F1",
+     "value": "0154002.DR",
+     "footprint": "0154002DR",
+     "description": "Fuse,Nano2,SMT,c/w holder,2A",
+     "layer": "F.Cu",
+     "x": 94.9,
+     "y": 128.8
+    },
+    {
+     "ref": "R10",
+     "value": "100k",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 130,
+     "y": 111.6
+    },
+    {
+     "ref": "D10",
+     "value": "ES3D",
+     "footprint": "D_SMC(DO-214AB)",
+     "description": "Diode Configuration:- Voltage - Forward(Vf@If):950mV@3A Voltage - DC Reverse(Vr):200V Current - Rectified:3A Reverse Leakage Current (Ir):10uA@200V Non-Repetitive Peak Forward Surge Current:100A Operating Junction Temperature Range:-50°C~+150°C Operating Ju",
+     "layer": "F.Cu",
+     "x": 107.1,
+     "y": 102.3
+    },
+    {
+     "ref": "J7",
+     "value": "AMT0450003DB0000G",
+     "footprint": "AMT0450003DB0000G",
+     "description": "Terminals Current (A) : 150AScrew : M5Torque : 15 lbf.in BrassTerminal Part+Steel Nut (plating : matte tin)Pin out :  4PINMount Type : DIP",
+     "layer": "F.Cu",
+     "x": 136.85,
+     "y": 132.5
+    },
+    {
+     "ref": "LED5",
+     "value": "APT2012LZGCK",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 218.7,
+     "y": 140
+    },
+    {
+     "ref": "R2",
+     "value": "0R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 187.5,
+     "y": 88.3
+    },
+    {
+     "ref": "C5",
+     "value": "100nf",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor",
+     "layer": "F.Cu",
+     "x": 218,
+     "y": 134
+    },
+    {
+     "ref": "R36",
+     "value": "2K2",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 190.1,
+     "y": 90.3
+    },
+    {
+     "ref": "TP5",
+     "value": "TestPoint",
+     "footprint": "TestPoint_Pad_D1.5mm",
+     "description": "test point",
+     "layer": "F.Cu",
+     "x": 187.1,
+     "y": 135.4
+    },
+    {
+     "ref": "C4",
+     "value": "1uf",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor",
+     "layer": "F.Cu",
+     "x": 222.4375,
+     "y": 134.1
+    },
+    {
+     "ref": "J11",
+     "value": "AMT0450003DB0000G",
+     "footprint": "AMT0450003DB0000G",
+     "description": "Terminals Current (A) : 150AScrew : M5Torque : 15 lbf.in BrassTerminal Part+Steel Nut (plating : matte tin)Pin out :  4PINMount Type : DIP",
+     "layer": "F.Cu",
+     "x": 136.95,
+     "y": 91.75
+    },
+    {
+     "ref": "J9",
+     "value": "464379206",
+     "footprint": "CONN_SD-46437-9000_06_MOL",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 117.250001,
+     "y": 149.9
+    },
+    {
+     "ref": "R4",
+     "value": "100k",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 110.094507,
+     "y": 106.569536
+    },
+    {
+     "ref": "TP1",
+     "value": "TestPoint",
+     "footprint": "TestPoint_Pad_D1.5mm",
+     "description": "test point",
+     "layer": "F.Cu",
+     "x": 202.95,
+     "y": 125.3
+    },
+    {
+     "ref": "PS1",
+     "value": "SPAN02C-12",
+     "footprint": "SPAN02C12",
+     "description": "Module DC-DC 48VIN 1-OUT 12V 0.167A 2W 7-Pin SIP Module",
+     "layer": "F.Cu",
+     "x": 193.9,
+     "y": 131.2
+    },
+    {
+     "ref": "J8",
+     "value": "AMT0450003DB0000G",
+     "footprint": "AMT0450003DB0000G",
+     "description": "Terminals Current (A) : 150AScrew : M5Torque : 15 lbf.in BrassTerminal Part+Steel Nut (plating : matte tin)Pin out :  4PINMount Type : DIP",
+     "layer": "F.Cu",
+     "x": 106.85,
+     "y": 132.5
+    },
+    {
+     "ref": "JP7",
+     "value": "SolderJumper_2_Open",
+     "footprint": "SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm",
+     "description": "Solder Jumper, 2-pole, open",
+     "layer": "F.Cu",
+     "x": 135.950325,
+     "y": 111.399674
+    },
+    {
+     "ref": "R35",
+     "value": "4K7",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 234.7,
+     "y": 136.7
+    },
+    {
+     "ref": "JP3",
+     "value": "SolderJumper_2_Open",
+     "footprint": "SolderJumper-2_P1.3mm_Bridged2Bar_RoundedPad1.0x1.5mm",
+     "description": "Solder Jumper, 2-pole, closed/bridged",
+     "layer": "F.Cu",
+     "x": 115.3,
+     "y": 109.1
+    },
+    {
+     "ref": "U2",
+     "value": "TSR_0.6-48120WI",
+     "footprint": "TSR0648120WI",
+     "description": "0.6 Amp POL converter, industrial, ultra wide 9-72 VDC input, pos.-pos. circuit, LM78 compatible, SIP-3",
+     "layer": "F.Cu",
+     "x": 219.4,
+     "y": 126.2
+    },
+    {
+     "ref": "R13",
+     "value": "10k",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 180.6,
+     "y": 96
+    },
+    {
+     "ref": "R12",
+     "value": "10k",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 176.9,
+     "y": 96
+    },
+    {
+     "ref": "Q8",
+     "value": "CPC1019N",
+     "footprint": "SOP254P610X218-4N",
+     "description": "SPST-NO Solid State Relay Solder 1 A, 750 mA dc Surface Mount, AC/DC MOSFET",
+     "layer": "F.Cu",
+     "x": 115.3,
+     "y": 97.1
+    },
+    {
+     "ref": "TP3",
+     "value": "TestPoint",
+     "footprint": "TestPoint_Pad_D1.5mm",
+     "description": "test point",
+     "layer": "F.Cu",
+     "x": 213.4,
+     "y": 122.45
+    },
+    {
+     "ref": "PS2",
+     "value": "XC6206P332MR-G",
+     "footprint": "SOT95P280X130-3N",
+     "description": "LDO Voltage Regulators",
+     "layer": "F.Cu",
+     "x": 185.7,
+     "y": 102.9
+    },
+    {
+     "ref": "R18",
+     "value": "10R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "B.Cu",
+     "x": 76.6,
+     "y": 125.1
+    },
+    {
+     "ref": "R28",
+     "value": "10K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "B.Cu",
+     "x": 180.1,
+     "y": 133
+    },
+    {
+     "ref": "D5",
+     "value": "SMBJ13CA",
+     "footprint": "D_SMB",
+     "description": "27.91A 600W 21.5V 15.9V Bidirectional 13V SMB ESD and Surge Protection (TVS/ESD) ROHS",
+     "layer": "B.Cu",
+     "x": 175.9,
+     "y": 132.3
+    },
+    {
+     "ref": "Q1",
+     "value": "SIR570DP-T1-RE3",
+     "footprint": "POWERPAK-SO-8_L5.9-W4.9-P1.27-LS6.2-BL",
+     "description": "Number:1 N-Channel Drain to Source Voltage:150V Current - Continuous Drain(Id):77.4A RDS(on):8.5mΩ@7.5V Pd - Power Dissipation:45W Gate Threshold Voltage (Vgs(th)):4V@250uA Gate Charge(Qg):71nC@10V Input Capacitance(Ciss):3.74nF Reverse Transfer Capacitan",
+     "layer": "B.Cu",
+     "x": 82.9,
+     "y": 127
+    },
+    {
+     "ref": "R15",
+     "value": "PWR163S-25-33R0F",
+     "footprint": "RES_PWR163_BRN",
+     "description": "",
+     "layer": "B.Cu",
+     "x": 112.5,
+     "y": 108
+    },
+    {
+     "ref": "Q6",
+     "value": "S400N08TL",
+     "footprint": "IAUT150N10S5N035ATMA1",
+     "description": "MOSFET",
+     "layer": "B.Cu",
+     "x": 151.3,
+     "y": 107
+    },
+    {
+     "ref": "R20",
+     "value": "10R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "B.Cu",
+     "x": 180.1,
+     "y": 135
+    },
+    {
+     "ref": "Q7",
+     "value": "S400N08TL",
+     "footprint": "IAUT150N10S5N035ATMA1",
+     "description": "MOSFET",
+     "layer": "B.Cu",
+     "x": 139,
+     "y": 107
+    },
+    {
+     "ref": "R19",
+     "value": "10R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "B.Cu",
+     "x": 188.4,
+     "y": 129.5
+    },
+    {
+     "ref": "R23",
+     "value": "10R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "B.Cu",
+     "x": 154.9,
+     "y": 135
+    },
+    {
+     "ref": "R31",
+     "value": "10K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "B.Cu",
+     "x": 154.9,
+     "y": 133
+    },
+    {
+     "ref": "Q3",
+     "value": "S400N08TL",
+     "footprint": "IAUT150N10S5N035ATMA1",
+     "description": "MOSFET",
+     "layer": "B.Cu",
+     "x": 188.2,
+     "y": 107
+    },
+    {
+     "ref": "D7",
+     "value": "SMBJ13CA",
+     "footprint": "D_SMB",
+     "description": "27.91A 600W 21.5V 15.9V Bidirectional 13V SMB ESD and Surge Protection (TVS/ESD) ROHS",
+     "layer": "B.Cu",
+     "x": 159.1,
+     "y": 132.3
+    },
+    {
+     "ref": "F4",
+     "value": "3425L200_60MR",
+     "footprint": "FUSC8664X180N",
+     "description": "Resettable Fuses - PPTC 3425L Series PPTC",
+     "layer": "B.Cu",
+     "x": 97.7,
+     "y": 130.6
+    },
+    {
+     "ref": "R24",
+     "value": "10K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "B.Cu",
+     "x": 65.7,
+     "y": 132.1
+    },
+    {
+     "ref": "R38",
+     "value": "10K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "B.Cu",
+     "x": 75.4,
+     "y": 131
+    },
+    {
+     "ref": "D8",
+     "value": "SMBJ13CA",
+     "footprint": "D_SMB",
+     "description": "27.91A 600W 21.5V 15.9V Bidirectional 13V SMB ESD and Surge Protection (TVS/ESD) ROHS",
+     "layer": "B.Cu",
+     "x": 150.8,
+     "y": 132.35
+    },
+    {
+     "ref": "R21",
+     "value": "10R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "B.Cu",
+     "x": 171.7,
+     "y": 135
+    },
+    {
+     "ref": "R30",
+     "value": "10K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "B.Cu",
+     "x": 163.3,
+     "y": 133
+    },
+    {
+     "ref": "Q5",
+     "value": "S400N08TL",
+     "footprint": "IAUT150N10S5N035ATMA1",
+     "description": "MOSFET",
+     "layer": "B.Cu",
+     "x": 163.6,
+     "y": 107
+    },
+    {
+     "ref": "D1",
+     "value": "SMBJ13CA",
+     "footprint": "D_SMB",
+     "description": "27.91A 600W 21.5V 15.9V Bidirectional 13V SMB ESD and Surge Protection (TVS/ESD) ROHS",
+     "layer": "B.Cu",
+     "x": 130.3,
+     "y": 99.4
+    },
+    {
+     "ref": "R16",
+     "value": "PWR163S-25-33R0F",
+     "footprint": "RES_PWR163_BRN",
+     "description": "",
+     "layer": "B.Cu",
+     "x": 125.9,
+     "y": 108
+    },
+    {
+     "ref": "Q4",
+     "value": "S400N08TL",
+     "footprint": "IAUT150N10S5N035ATMA1",
+     "description": "MOSFET",
+     "layer": "B.Cu",
+     "x": 175.9,
+     "y": 107
+    },
+    {
+     "ref": "D6",
+     "value": "SMBJ13CA",
+     "footprint": "D_SMB",
+     "description": "27.91A 600W 21.5V 15.9V Bidirectional 13V SMB ESD and Surge Protection (TVS/ESD) ROHS",
+     "layer": "B.Cu",
+     "x": 167.5,
+     "y": 132.3
+    },
+    {
+     "ref": "R29",
+     "value": "10K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "B.Cu",
+     "x": 171.7,
+     "y": 133
+    },
+    {
+     "ref": "D2",
+     "value": "SMBJ64CA",
+     "footprint": "D_SMB",
+     "description": "5.83A 600W 103V 78.6V Bidirectional 64V SMB ESD and Surge Protection (TVS/ESD) ROHS",
+     "layer": "B.Cu",
+     "x": 122.5,
+     "y": 101.5
+    },
+    {
+     "ref": "Q9",
+     "value": "SIR570DP-T1-RE3",
+     "footprint": "POWERPAK-SO-8_L5.9-W4.9-P1.27-LS6.2-BL",
+     "description": "Number:1 N-Channel Drain to Source Voltage:150V Current - Continuous Drain(Id):77.4A RDS(on):8.5mΩ@7.5V Pd - Power Dissipation:45W Gate Threshold Voltage (Vgs(th)):4V@250uA Gate Charge(Qg):71nC@10V Input Capacitance(Ciss):3.74nF Reverse Transfer Capacitan",
+     "layer": "B.Cu",
+     "x": 82.9,
+     "y": 134.6
+    },
+    {
+     "ref": "R22",
+     "value": "10R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "B.Cu",
+     "x": 163.3,
+     "y": 135
+    },
+    {
+     "ref": "D3",
+     "value": "~",
+     "footprint": "SMC_L6.9-W5.9-LS7.9-BI",
+     "description": "Polarity:Bidirectional Reverse Stand-Off Voltage (Vrwm):75V Clamping Voltage:121V Peak Pulse Current (Ipp):12.4A Peak Pulse Power Dissipation (Ppp):1.5kW Voltage - Breakdown:83.3V Type:TVS",
+     "layer": "B.Cu",
+     "x": 97.6,
+     "y": 119.9
+    },
+    {
+     "ref": "D9",
+     "value": "SMBJ13CA",
+     "footprint": "D_SMB",
+     "description": "27.91A 600W 21.5V 15.9V Bidirectional 13V SMB ESD and Surge Protection (TVS/ESD) ROHS",
+     "layer": "B.Cu",
+     "x": 70.2,
+     "y": 130.8
+    },
+    {
+     "ref": "R37",
+     "value": "10R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "B.Cu",
+     "x": 68,
+     "y": 136.1
+    },
+    {
+     "ref": "R27",
+     "value": "10K",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "B.Cu",
+     "x": 188.4,
+     "y": 127.5
+    },
+    {
+     "ref": "D4",
+     "value": "SMBJ13CA",
+     "footprint": "D_SMB",
+     "description": "27.91A 600W 21.5V 15.9V Bidirectional 13V SMB ESD and Surge Protection (TVS/ESD) ROHS",
+     "layer": "B.Cu",
+     "x": 184.3,
+     "y": 132.3
+    }
+   ]
+  },
+  {
+   "id": "attach",
+   "name": "Attachment interface PCB",
+   "part": "3331",
+   "path": "src/pcb/attach_pcb/QuiverAttachPCB.kicad_pcb",
+   "file": "pcb/attach.kicad_pcb",
+   "footprints": [
+    {
+     "ref": "U6",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 110.26,
+     "y": 127.96
+    },
+    {
+     "ref": "U8",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 112.8,
+     "y": 127.96
+    },
+    {
+     "ref": "U10",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 115.34,
+     "y": 127.96
+    },
+    {
+     "ref": "U18",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3_only_Pad_D2.0mm_1",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 112.8,
+     "y": 138.04
+    },
+    {
+     "ref": "U11",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3_only_Pad_D2.0mm_1",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 105.18,
+     "y": 135.5
+    },
+    {
+     "ref": "U14",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3_only_Pad_D2.0mm_1",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 107.72,
+     "y": 138.04
+    },
+    {
+     "ref": "U17",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3_only_Pad_D2.0mm_1",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 112.8,
+     "y": 135.5
+    },
+    {
+     "ref": "U7",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 112.8,
+     "y": 130.5
+    },
+    {
+     "ref": "U2",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 105.18,
+     "y": 127.96
+    },
+    {
+     "ref": "U16",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3_only_Pad_D2.0mm_1",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 110.26,
+     "y": 138.04
+    },
+    {
+     "ref": "U12",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3_only_Pad_D2.0mm_1",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 105.18,
+     "y": 138.04
+    },
+    {
+     "ref": "U19",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3_only_Pad_D2.0mm_1",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 115.34,
+     "y": 135.5
+    },
+    {
+     "ref": "U4",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 107.72,
+     "y": 127.96
+    },
+    {
+     "ref": "U13",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3_only_Pad_D2.0mm_1",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 107.72,
+     "y": 135.5
+    },
+    {
+     "ref": "U9",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 115.34,
+     "y": 130.5
+    },
+    {
+     "ref": "U1",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 105.18,
+     "y": 130.5
+    },
+    {
+     "ref": "U3",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 107.72,
+     "y": 130.5
+    },
+    {
+     "ref": "U5",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 110.26,
+     "y": 130.5
+    },
+    {
+     "ref": "U20",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3_only_Pad_D2.0mm_1",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 115.34,
+     "y": 138.04
+    },
+    {
+     "ref": "U15",
+     "value": "~",
+     "footprint": "C2826546-BWCD-L4.5W2.0H2.3_only_Pad_D2.0mm_1",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 110.26,
+     "y": 135.5
+    },
+    {
+     "ref": "J1",
+     "value": "2077601281",
+     "footprint": "CONN12_2077601281_MOL",
+     "description": "",
+     "layer": "B.Cu",
+     "x": 110,
+     "y": 133
+    }
+   ]
+  }
+ ]
+}

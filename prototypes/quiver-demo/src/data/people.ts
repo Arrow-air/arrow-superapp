@@ -37,6 +37,7 @@ export const people: Person[] = [
     id: 'julius', name: 'Julius', initials: 'J', hue: 'jade', github: 'Julius-eng', discord: 'far1no',
     does: [
       { text: 'Owns the battery PCB and the pack integration', source: 'T-01' },
+      { text: 'Lead designer of the Longshot battery pack', source: 'project-longshot' },
       { text: 'Flies the Ethernet switch build to check the M9N', source: 'T-13' },
     ],
   },

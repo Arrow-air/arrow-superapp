@@ -5,6 +5,7 @@ import type { Thread } from './data';
 import { ago, standing } from './store';
 import { zoneLabel } from '../../frame/nav';
 import { partById } from '../../data/quiver';
+import { boardById } from '../../data/pcbs';
 
 // Threads as full-width rows: status, title, where it stands, activity.
 // Clicking a row opens the thread panel over the current page (?thread=),
@@ -31,7 +32,8 @@ const open = (id: string) => router.replace({ query: { ...route.query, thread: i
           <span class="meta">
             <span v-if="showZone" class="zone">{{ zoneLabel(t.zone) }}</span>
             <span v-if="showZone" class="dot">·</span>
-            <template v-if="t.part"><span class="zone">{{ partById(t.part)?.name.split(',')[0] ?? t.part }}</span><span class="dot">·</span></template>
+            <template v-if="t.pcb"><span class="zone">{{ boardById(t.pcb.board)?.name.replace(' PCB', '') }} {{ t.pcb.ref }}</span><span class="dot">·</span></template>
+            <template v-else-if="t.part"><span class="zone">{{ partById(t.part)?.name.split(',')[0] ?? t.part }}</span><span class="dot">·</span></template>
             <span :class="{ decided: t.settled }">{{ standing(t).text }}</span>
             <template v-if="t.replies.length"><span class="dot">·</span>{{ t.replies.length }} {{ t.replies.length === 1 ? 'reply' : 'replies' }}</template>
           </span>

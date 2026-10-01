@@ -5,6 +5,7 @@ import ThreadRows from '../modules/threads/ThreadRows.vue';
 import ZoneSections from '../modules/zone/ZoneSections.vue';
 import GateList from '../modules/zone/GateList.vue';
 import AttachmentCard from '../modules/zone/AttachmentCard.vue';
+import LongshotCard from '../modules/zone/LongshotCard.vue';
 import type { Thread } from '../modules/threads/data';
 import { byActivity, isOpen, startThread, threadsInZone } from '../modules/threads/store';
 import { zoneById } from '../data/zones';
@@ -47,6 +48,7 @@ function create() {
     </header>
 
     <AttachmentCard v-if="z?.attachment" :id="z.attachment" />
+    <LongshotCard v-if="z?.card === 'longshot'" />
     <div v-if="gate" class="gate-wrap"><GateList /></div>
 
     <section class="disc">

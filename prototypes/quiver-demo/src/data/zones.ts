@@ -14,6 +14,8 @@ export interface Zone {
   links?: { label: string; url: string }[];
   /** Attachment catalog entry shown at the top of the zone. */
   attachment?: string;
+  /** A zone-specific card under the summary. */
+  card?: 'longshot';
 }
 
 const PS = 'https://github.com/Arrow-air/payload-systems';
@@ -122,8 +124,15 @@ export const zones: Zone[] = [
   },
   {
     id: 'power',
-    summary: 'The Tattu smart pack, its BMS, the power distribution, and the 12 V rails that feed avionics and payloads.',
-    parts: ['3410', '3320', '3310'],
+    card: 'longshot',
+    summary: 'The big goal here: integrate Longshot, Arrow\'s own 14S9P battery pack, as a drop-in replacement for the Tattu 4.0 30 Ah. It should fit the same bay, but the connector, BMS telemetry, failsafe values and charging all need checking, and then it needs testing in flight.',
+    issues: [248, 188],
+    parts: ['3410', '3320', '2211'],
+    links: [
+      { label: 'project-longshot', url: 'https://github.com/Arrow-air/project-longshot' },
+      { label: 'Longshot specs and weight (LS #26)', url: 'https://github.com/Arrow-air/project-longshot/issues/26' },
+      { label: 'Longshot build123d model (LS PR #27)', url: 'https://github.com/Arrow-air/project-longshot/pull/27' },
+    ],
   },
   {
     id: 'avionics',

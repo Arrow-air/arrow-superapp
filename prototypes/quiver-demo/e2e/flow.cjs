@@ -41,7 +41,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await panel.getByLabel('Decision note').fill('Cheapest change; test it before any board spin.');
   await panel.getByRole('button', { name: 'Record decision' }).click();
   await p.waitForTimeout(200);
-  check((await panel.innerText()).includes('D-001'), 'decision gets D-001');
+  check((await panel.innerText()).includes('D-003'), 'decision gets D-003 (D-001 and D-002 are the T-01 decisions from GitHub)');
 
   // Decision → bounty: fund it, publish, claim, submit, accept; proposer award held until confirmed.
   await panel.getByRole('button', { name: 'Fund it as a bounty or grant' }).click();
@@ -68,7 +68,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.goto(`${BASE}/quiver/overview/v1-1`);
   await p.waitForTimeout(500);
   const spec = await p.locator('.changes').innerText();
-  check(spec.includes('D-001') && spec.includes('W-1') && spec.includes('Accepted'), 'v1.1 spec lists the decision with its bounty');
+  check(spec.includes('D-003') && spec.includes('W-1') && spec.includes('Accepted'), 'v1.1 spec lists the decision with its bounty');
   await p.getByRole('button', { name: 'Propose an improvement' }).click();
   await p.getByLabel('Where the change is').selectOption('power');
   await p.getByLabel('Improvement').fill('Add a battery strap retention check');
@@ -80,7 +80,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.goto(`${BASE}/quiver/decisions/register`);
   await p.waitForTimeout(500);
   const reg = await text();
-  check(reg.includes('D-001') && reg.includes('Cheapest change') && reg.includes('longer cable'), 'register lists D-001 with note and choice');
+  check(reg.includes('D-001') && reg.includes('#248') && reg.includes('D-003') && reg.includes('Cheapest change') && reg.includes('longer cable'), 'register lists the GitHub decisions and D-003 with note and choice');
   await p.locator('a.q').first().click();
   await p.waitForTimeout(300);
   check(p.url().includes('/decisions/register') && (await panel.count()) === 1, 'register opens the same panel in place');
@@ -159,6 +159,25 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.waitForTimeout(400);
   check((await p.locator('.grp', { hasText: 'Power & battery' }).innerText()).includes('Add a second retention strap'), 'v1.1 page shows the part proposal under its zone');
 
+  // PCBs: pick a component on the battery board, propose a change anchored to it.
+  await p.goto(`${BASE}/quiver/overview/pcbs?board=battery`);
+  await p.waitForSelector('.stage[data-ready="true"]', { timeout: 30000 });
+  await p.locator('button.part[data-ref="U3"]').click();
+  await p.waitForTimeout(300);
+  check((await p.locator('.c-ref').innerText()) === 'U3' && (await p.locator('.c-name').innerText()).includes('CPC1019N'), 'battery PCB component card shows the part');
+  await p.getByRole('button', { name: /Propose a change for Dev Kit v1.1/ }).click();
+  await p.getByLabel('Proposed change').fill('Swap U3 for a relay rated for the Longshot charge current');
+  await p.getByRole('button', { name: 'Propose', exact: true }).click();
+  await p.waitForTimeout(300);
+  const pp = await panel.innerText();
+  check(/About\s+U3\s+on the Battery PCB/.test(pp) && (await panel.locator('.home').first().innerText()) === 'Power & battery', 'PCB proposal is anchored to the component, in the board\'s zone');
+
+  // Power & battery is about Longshot now.
+  await p.goto(`${BASE}/quiver/overview/power`);
+  await p.waitForTimeout(400);
+  const pw = await text();
+  check(pw.includes('Longshot PT1 vs. the Tattu') && pw.includes('Longshot BMS: emulate the Tattu BMS'), 'power page leads with Longshot integration and its threads');
+
   // Retro pool, decline, defer the rest, freeze.
   await p.goto(`${BASE}/quiver/overview/gps-rf?thread=Q-4`);
   await p.waitForTimeout(400);
@@ -186,11 +205,11 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.goto(`${BASE}/quiver/decisions/register`);
   await p.reload();
   await p.waitForTimeout(500);
-  check((await text()).includes('D-001'), 'decision survives reload');
+  check((await text()).includes('D-003'), 'decision survives reload');
   await p.getByRole('button', { name: /^Demo/ }).click();
   await p.getByRole('button', { name: 'Reset demo' }).click();
   await p.waitForTimeout(300);
-  check((await text()).includes('Nothing decided yet'), 'reset clears the register');
+  check(!(await text()).includes('D-003') && (await text()).includes('D-002'), 'reset clears your decisions and keeps the seeded ones');
 
   check(!errors.length, `no page errors${errors.length ? `: ${errors.join(' | ')}` : ''}`);
   await b.close();

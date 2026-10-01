@@ -1,0 +1,3 @@
+kicanvas.js is KiCanvas by Alethea Katherine Flowers and contributors,
+https://github.com/theacodes/kicanvas, distributed under the MIT License.
+Vendored from https://kicanvas.org/kicanvas/kicanvas.js on 2026-09-30.

@@ -8,6 +8,7 @@ import StatusIcon from './StatusIcon.vue';
 import WorkCard from '../work/WorkCard.vue';
 import { LATER, NEXT, type Thread } from './data';
 import { partById } from '../../data/quiver';
+import { boardById } from '../../data/pcbs';
 import {
   changedWinner, day, decline, defer, draftWork, isOpen, leaderOf, locked, myVote, person, propose, reopen, reply, settle,
   standing, state, talliesOf, vote, weightOf, workFor, type WorkKind,
@@ -126,7 +127,11 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         <template v-if="t.source"><span class="dot"></span><SourceChip :source="t.source" /></template>
         <template v-if="t.version"><span class="dot">·</span><span class="mono ver" title="The version this thread is about">{{ t.version }}</span></template>
       </p>
-      <p v-if="t.part" class="part">
+      <p v-if="t.pcb" class="part">
+        About <span class="mono">{{ t.pcb.ref }}</span> on the {{ boardById(t.pcb.board)?.name }}
+        <RouterLink :to="{ path: '/quiver/overview/pcbs', query: { board: t.pcb.board, ref: t.pcb.ref, thread: t.id } }">View on the board</RouterLink>
+      </p>
+      <p v-else-if="t.part" class="part">
         About <span class="mono">{{ t.part }}</span> {{ partById(t.part)?.name }}
         <RouterLink :to="{ path: '/quiver/overview/model', query: { part: t.part, thread: t.id } }">View in model</RouterLink>
       </p>
@@ -156,7 +161,8 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         <span class="tag mono">{{ t.settled.decision }}</span>
         <span v-if="t.settled.override" class="tag warn">Override</span>
         <span class="muted">{{ nameOf(t.settled.byId) }} as lead, {{ day(t.settled.at) }}</span>
-        <button v-if="isLead && !frozen && !work" class="ghost" type="button" @click="reopen(t)">Reopen</button>
+        <SourceChip v-if="t.settled.source" :source="t.settled.source" />
+        <button v-if="isLead && !frozen && !work && !t.settled.source" class="ghost" type="button" @click="reopen(t)">Reopen</button>
       </div>
       <p class="note">{{ t.settled.note }}</p>
       <p v-if="frozen" class="muted small">Part of the frozen {{ NEXT }} spec.</p>

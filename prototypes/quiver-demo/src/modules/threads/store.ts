@@ -8,7 +8,7 @@ import { zoneTab } from '../../frame/nav';
 // Module state: the threads, who you are voting as, and the derived tallies
 // and statuses. A demo with no backend: everything you do is kept in this
 // browser's localStorage, and "Reset demo" puts the seed back.
-const KEY = 'quiver-demo.threads.v5';
+const KEY = 'quiver-demo.threads.v6';
 /** The zones that make up the next Dev Kit revision, in page order. */
 export const V11_ZONES = ['airframe', 'gps-rf', 'propulsion', 'power', 'avionics'];
 
@@ -61,7 +61,7 @@ const fresh = (): Saved => ({
   role: 'member',
   builder: false,
   nextThread: seed.length + 1,
-  nextDecision: 1,
+  nextDecision: 1 + seed.filter((t) => t.settled).length,
   work: [],
   nextWork: 1,
   release: {},
@@ -234,11 +234,12 @@ export function propose(thread: Thread, text: string): Position {
   return p;
 }
 
-export function startThread(input: { zone: string; title: string; body: string; type?: Thread['type']; fromCall?: string; version?: string; part?: string }): Thread {
+export function startThread(input: { zone: string; title: string; body: string; type?: Thread['type']; fromCall?: string; version?: string; part?: string; pcb?: Thread['pcb'] }): Thread {
   const t: Thread = {
     id: `Q-${state.nextThread++}`,
     zone: input.zone,
     part: input.part,
+    pcb: input.pcb,
     title: input.title,
     body: input.body,
     kind: 'technical',
@@ -279,6 +280,7 @@ export const day = (iso: string) => new Date(iso).toLocaleDateString('en-US', { 
 
 export const threadsInZone = (zone: string) => state.threads.filter((t) => t.zone === zone);
 export const threadsOnPart = (part: string) => state.threads.filter((t) => t.part === part);
+export const threadsOnComponent = (board: string, ref: string) => state.threads.filter((t) => t.pcb?.board === board && t.pcb.ref === ref);
 /** The tab a thread's zone sits under: Attachments, Software, Aircraft… */
 export const areaOf = (t: Thread) => zoneTab(t.zone)?.id ?? 'overview';
 export const byActivity = (a: Thread, b: Thread) => b.activeAt.localeCompare(a.activeAt);

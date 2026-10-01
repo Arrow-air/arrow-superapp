@@ -26,6 +26,8 @@ export interface Settled {
   note: string;
   /** Register number, D-001 upward, as T-09 asks. */
   decision: string;
+  /** When the decision was made outside the app (an accepted GitHub issue), where. */
+  source?: SourceRef;
 }
 
 /** Closed without adopting anything, with the lead's reason. Still counts toward the retro split. */
@@ -39,6 +41,8 @@ export interface Thread {
   zone: string;
   /** BOM number of the part it is about, when it is about one (clickable in the 3D model). */
   part?: string;
+  /** A component on one of the PCBs: board id and reference designator. */
+  pcb?: { board: string; ref: string };
   title: string;
   body: string;
   kind: Kind;
@@ -70,6 +74,12 @@ const CALL = '2026-09-29T11:30:00-05:00';
 const PR267 = '2026-09-18T23:09:00-05:00';
 const I234 = '2026-07-09T21:38:00-05:00';
 const I248 = '2026-09-09T15:59:00-05:00';
+const T01_YES = '2026-09-30T01:07:00-05:00';
+const T01_OK = '2026-09-30T02:00:00-05:00';
+const LS_DATE = '2026-09-30T12:00:00-05:00';
+const LS = 'https://github.com/Arrow-air/project-longshot';
+const lsIssue = (n: number): SourceRef => ({ kind: 'issue', ref: `LS-${n}`, label: `LS #${n}`, url: `${LS}/issues/${n}` });
+const lsDoc = (label: string, path: string): SourceRef => ({ kind: 'doc', ref: path, label, url: `${LS}/${path}` });
 const NOTES = '2026-09-17T12:00:00-05:00';
 const T12 = '2026-09-09T15:59:00-05:00';
 /** The next Dev Kit revision (working name), and the one after it, for deferrals. */
@@ -140,8 +150,10 @@ export const threads: Thread[] = [
     replies: [
       { id: 'r1', text: 'Asked Julius on the call for his input on the cutoffs, now that the Tattu BMS is available.', authorId: 'erick', source: callSource('sep29-15'), at: CALL },
       { id: 'r2', text: 'I will write something on GitHub.', authorId: 'julius', source: callSource('sep29-15'), at: CALL },
+      { id: 'r3', text: 'Q1: Yes. The proposed low and critical values are good. Side note: for manual flights, LAND_REPOSITION should stay enabled, so the pilot can steer away from a bad spot if a failsafe landing triggers.', authorId: 'julius', source: issueSource(248), at: T01_YES },
     ],
     objections: 0,
+    settled: { positionId: 'p1', byId: 'erick', at: T01_OK, override: false, decision: 'D-001', source: issueSource(248), note: 'Accepted on GitHub: BATT2_LOW_MAH 7500 and BATT2_CRT_MAH 4500, documented in Pilot\'s Handbook §4.2.1 and Initial Configuration Guide §7.3 and §7.4.' },
   },
   {
     id: 'Q-7', zone: 'parameters', kind: 'technical', type: 'question', system: 'battery', version: 'Dev Kit',
@@ -151,7 +163,10 @@ export const threads: Thread[] = [
     positions: [
       { id: 'p1', text: 'Yes: add BATT2_ARM_MAH 9000 to the same parameter card revision.', source: issueSource(248), at: I248 },
     ],
-    votes: [], replies: [], objections: 0,
+    votes: [],
+    replies: [{ id: 'r1', text: 'Q2: Yes. The arming block at 9000 mAh makes sense.', authorId: 'julius', source: issueSource(248), at: T01_YES }],
+    objections: 0,
+    settled: { positionId: 'p1', byId: 'erick', at: T01_OK, override: false, decision: 'D-002', source: issueSource(248), note: 'Accepted on GitHub: BATT2_ARM_MAH 9000 added, and LAND_REPOSITION stays 1.' },
   },
   {
     id: 'Q-8', zone: 'where-we-sell', kind: 'technical', type: 'question', system: 'sales', version: 'Dev Kit',
@@ -270,4 +285,43 @@ export const threads: Thread[] = [
     votes: [], replies: [], objections: 0,
   },
 
+  {
+    id: 'Q-18', zone: 'power', part: '3320', kind: 'technical', type: 'question', system: 'battery', version: NEXT,
+    title: 'Longshot fit: does it slide into the bay and mate with the battery connector PCB?',
+    body: 'Longshot was designed around Tattu geometry and uses the Tattu clip, with full-length side rail channels. But its SL board carries an ET60S-D06 connector, while Quiver\'s battery connector PCB (3320) uses two Molex 46437-9206 with guide pins. No fit check against the slider (2211) or the connector PCB is recorded.',
+    source: lsDoc('LS PR #27', 'pull/27'), raisedAt: LS_DATE, activeAt: LS_DATE,
+    positions: [], votes: [], replies: [], objections: 0,
+  },
+  {
+    id: 'Q-19', zone: 'power', kind: 'technical', type: 'question', system: 'battery', version: NEXT,
+    title: 'Longshot BMS: emulate the Tattu BMS, or speak DroneCAN natively?',
+    body: 'The PT1 board has no BMS: one fuse and cell-sense lines passed through to the charger. The v1 plan is an STM32 smart BMS (VESC BMS reference design) with isolated CAN. How it talks to Quiver is marked TBD in LS #26. As of the Sep 22 call there was no working BMS yet.',
+    source: lsIssue(26), raisedAt: LS_DATE, activeAt: LS_DATE,
+    positions: [
+      { id: 'p1', text: 'Emulate the Tattu BMS, so Quiver\'s existing battery setup and failsafes work unchanged.', source: lsIssue(26), at: LS_DATE },
+      { id: 'p2', text: 'Native DroneCAN battery messages.', source: lsIssue(26), at: LS_DATE },
+    ],
+    votes: [], replies: [], objections: 0,
+  },
+  {
+    id: 'Q-20', zone: 'power', kind: 'technical', type: 'question', system: 'battery', version: NEXT,
+    title: 'Failsafe values for a 58.5 Ah pack',
+    body: 'The values adopted in #248 (warn at 7,500 mAh left, land at 4,500, refuse to arm below 9,000) read the Tattu BMS over DroneCAN and are sized for 30 Ah. A PT1 Longshot sends no battery data, so only the voltage backstop on the ESC monitor would act. What should Quiver fly with on Longshot, before and after its BMS?',
+    source: issueSource(248), raisedAt: LS_DATE, activeAt: LS_DATE,
+    positions: [], votes: [], replies: [], objections: 0,
+  },
+  {
+    id: 'Q-21', zone: 'power', kind: 'technical', type: 'question', system: 'battery', version: NEXT,
+    title: 'Charging both packs: 58.8 V for Longshot, 60.9 V for the Tattu',
+    body: 'Longshot charges to 58.8 V; the Tattu LiHV pack to 60.9 V. LS #26 warns that chargers and docks must handle both cutoffs, and the Pilot\'s Handbook currently calls for a 14S LiHV charger. Longshot is planned around the Tattu TA3200 plus a balance connector.',
+    source: lsIssue(26), raisedAt: LS_DATE, activeAt: LS_DATE,
+    positions: [], votes: [], replies: [], objections: 0,
+  },
+  {
+    id: 'Q-22', zone: 'power', part: '3410', kind: 'technical', type: 'question', system: 'battery', version: NEXT,
+    title: 'First Longshot test on Quiver: what does it have to show?',
+    body: 'No pack-level test is recorded yet; the only data is a cell-level discharge (BAK 65E, 20.18 Wh at 10 A to 2.8 V). Before Longshot replaces the Tattu, what should a first bench test and first flight prove: fit, voltage under load, temperatures from its four sensors, endurance against the Tattu?',
+    source: lsIssue(26), raisedAt: LS_DATE, activeAt: LS_DATE,
+    positions: [], votes: [], replies: [], objections: 0,
+  },
 ];
