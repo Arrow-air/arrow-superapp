@@ -51,6 +51,22 @@
   --sky-a1: #0044ff0f; --sky-a2: #1171fb18; --sky-a3: #1184fc33; --sky-a4: #128fff49;
   --sky-a5: #1c9dfd5d; --sky-a6: #28a5ff72; --sky-a7: #2badfe8b; --sky-a8: #1db2fea9;
   --sky-a9: #7ce3fffe; --sky-a10: #a8eeff; --sky-a11: #7cd3ffef; --sky-a12: #c2f3ff;
+  --teal-a3: #00deab1f; --teal-a4: #00ffd52e; --teal-9: #12a594; --teal-11: #0bd8b6;
+  --grass-a3: #3ff9391c; --grass-a4: #3dff4a2b; --grass-9: #46a758; --grass-11: #71d083;
+
+  /* The CAD explorer (3D model): Gavin's blueprint, viewer and inspector as one. */
+  --cad-viewer: radial-gradient(ellipse at 50% 40%, #1b2a45, #0e1526 75%);
+  --cad-grid: linear-gradient(rgb(120 150 220 / 0.07) 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(90deg, rgb(120 150 220 / 0.07) 1px, transparent 1px) 0 0 / 28px 28px;
+  --cad-panel: #0c1322;
+  --cad-chip: rgb(140 170 235 / 0.08); --cad-chip-hover: rgb(140 170 235 / 0.14); --cad-chip-active: rgb(140 170 235 / 0.2);
+
+  /* The strip under a composer, apart from what you write. */
+  --composer-bar: rgb(0 0 0 / 0.25);
+
+  /* Thread types: questions grass, proposals teal, ideas amber. */
+  --type-question: var(--grass-11); --type-question-bg: var(--grass-a3);
+  --type-proposal: var(--teal-11); --type-proposal-bg: var(--teal-a3);
+  --type-idea: var(--amber-11); --type-idea-bg: var(--amber-a3);
 
   /* Surfaces */
   --bg: var(--slate-1);             /* page behind the card */
@@ -222,9 +238,17 @@
   --sky-1: #f9feff; --sky-2: #f1fafd; --sky-3: #e1f6fd; --sky-4: #d1f0fa;
   --sky-5: #bee7f5; --sky-6: #a9daed; --sky-7: #8dcae3; --sky-8: #60b3d7;
   --sky-9: #7ce2fe; --sky-10: #74daf8; --sky-11: #00749e; --sky-12: #1d3e56;
+  --teal-a3: #00c69d1f; --teal-a4: #00c39633; --teal-9: #12a594; --teal-11: #008573;
+  --grass-a3: #07c1001f; --grass-a4: #00b20033; --grass-9: #46a758; --grass-11: #2a7e3b;
+  --amber-a3: #ffbb0040; --red-a3: #f3000d14;
 
   /* Light-specific tuning: softer shadows and depth, a light pool behind renders. */
   --footer-bg: var(--slate-2);
+  --composer-bar: rgb(0 0 0 / 0.03);
+  --cad-viewer: radial-gradient(ellipse at 50% 40%, #f8fafd, #e2e8f3 75%);
+  --cad-grid: linear-gradient(rgb(60 90 170 / 0.08) 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(90deg, rgb(60 90 170 / 0.08) 1px, transparent 1px) 0 0 / 28px 28px;
+  --cad-panel: #eef2f8;
+  --cad-chip: rgb(60 90 170 / 0.07); --cad-chip-hover: rgb(60 90 170 / 0.12); --cad-chip-active: rgb(60 90 170 / 0.18);
   --thread-bg: var(--slate-1);
   --overlay: rgb(0 0 0 / 0.28);
   --shadow: 0 12px 32px rgb(0 0 0 / 0.14);
@@ -277,9 +301,17 @@
     --sky-1: #f9feff; --sky-2: #f1fafd; --sky-3: #e1f6fd; --sky-4: #d1f0fa;
     --sky-5: #bee7f5; --sky-6: #a9daed; --sky-7: #8dcae3; --sky-8: #60b3d7;
     --sky-9: #7ce2fe; --sky-10: #74daf8; --sky-11: #00749e; --sky-12: #1d3e56;
+    --teal-a3: #00c69d1f; --teal-a4: #00c39633; --teal-9: #12a594; --teal-11: #008573;
+    --grass-a3: #07c1001f; --grass-a4: #00b20033; --grass-9: #46a758; --grass-11: #2a7e3b;
+    --amber-a3: #ffbb0040; --red-a3: #f3000d14;
 
     /* Light-specific tuning: softer shadows and depth, a light pool behind renders. */
   --footer-bg: var(--slate-2);
+  --composer-bar: rgb(0 0 0 / 0.03);
+  --cad-viewer: radial-gradient(ellipse at 50% 40%, #f8fafd, #e2e8f3 75%);
+  --cad-grid: linear-gradient(rgb(60 90 170 / 0.08) 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(90deg, rgb(60 90 170 / 0.08) 1px, transparent 1px) 0 0 / 28px 28px;
+  --cad-panel: #eef2f8;
+  --cad-chip: rgb(60 90 170 / 0.07); --cad-chip-hover: rgb(60 90 170 / 0.12); --cad-chip-active: rgb(60 90 170 / 0.18);
   --thread-bg: var(--slate-1);
     --overlay: rgb(0 0 0 / 0.28);
     --shadow: 0 12px 32px rgb(0 0 0 / 0.14);

@@ -2,14 +2,15 @@
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
+import NewThread from '../modules/threads/NewThread.vue';
 import ZoneSections from '../modules/zone/ZoneSections.vue';
 import GateList from '../modules/zone/GateList.vue';
 import AttachmentCard from '../modules/zone/AttachmentCard.vue';
 import LongshotCard from '../modules/zone/LongshotCard.vue';
 import type { Thread } from '../modules/threads/data';
-import { byActivity, isOpen, startThread, threadsInZone } from '../modules/threads/store';
+import { V11_ZONES, byActivity, isOpen, openVersion, startThread, threadsInZone } from '../modules/threads/store';
 import { zoneById } from '../data/zones';
-import { zoneLabel } from '../frame/nav';
+import { zoneIcon, zoneLabel } from '../frame/nav';
 
 // A working zone is one page that scrolls: what it is, its discussion, then
 // what the call notes and GitHub already say about it. Threads open in the
@@ -25,16 +26,8 @@ const decided = computed(() => all.value.filter((t) => !isOpen(t)).sort(byActivi
 const showDecided = ref(false);
 
 const composing = ref(false);
-const draft = ref({ title: '', body: '', type: 'question' as Thread['type'] });
-const kinds: { id: Thread['type']; label: string; hint: string }[] = [
-  { id: 'question', label: 'Question', hint: 'Something that needs deciding' },
-  { id: 'proposal', label: 'Proposal', hint: 'A change you want to make' },
-  { id: 'idea', label: 'Idea', hint: 'Early, not ready to decide' },
-];
-async function create() {
-  if (!draft.value.title.trim()) return;
-  const t = await startThread({ zone: props.zone, title: draft.value.title.trim(), body: draft.value.body.trim(), type: draft.value.type });
-  draft.value = { title: '', body: '', type: 'question' };
+async function create(d: { type: Thread['type']; title: string; body: string }) {
+  const t = await startThread({ zone: props.zone, title: d.title, body: d.body, type: d.type });
   composing.value = false;
   if (t) router.replace({ query: { ...route.query, thread: t.id } });
 }
@@ -59,20 +52,15 @@ async function create() {
         </button>
       </div>
 
-      <form v-if="composing" class="new-form" @submit.prevent="create">
-        <div class="kinds" role="radiogroup" aria-label="Kind of thread">
-          <button v-for="k in kinds" :key="k.id" type="button" role="radio" :aria-checked="draft.type === k.id" :title="k.hint" @click="draft.type = k.id">{{ k.label }}</button>
-        </div>
-        <input v-model="draft.title" class="nf-title" placeholder="Title: what should the group weigh in on?" aria-label="Title" autofocus />
-        <textarea v-model="draft.body" rows="3" placeholder="Context: what you know, what it affects, links" aria-label="Thread context"></textarea>
-        <div class="nf-bar">
-          <span class="hint">You can add positions for people to vote on once it's open.</span>
-          <span class="nf-actions">
-            <button class="ghost" type="button" @click="composing = false">Cancel</button>
-            <button class="primary" type="submit" :disabled="!draft.title.trim()">Start thread</button>
-          </span>
-        </div>
-      </form>
+      <NewThread
+        v-if="composing"
+        class="nt"
+        :where="zoneLabel(zone)"
+        :where-icon="zoneIcon(zone)"
+        :version="V11_ZONES.includes(zone) ? openVersion() : undefined"
+        @post="create"
+        @cancel="composing = false"
+      />
 
       <div class="list">
         <ThreadRows v-if="open.length" :threads="open" />
@@ -113,28 +101,11 @@ async function create() {
 }
 .new-btn:hover { color: var(--fg); border-color: var(--slate-a7); }
 .new-btn svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
-.new-form { display: grid; gap: 8px; margin-bottom: 10px; padding: 12px; border: 1px solid var(--slate-a5); border-radius: 12px; background: var(--slate-a2); }
-.kinds { display: inline-flex; gap: 2px; width: fit-content; padding: 2px; border-radius: 8px; background: var(--slate-a3); }
-.kinds button { height: 24px; padding: 0 10px; border: 0; border-radius: 6px; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; }
-.kinds button[aria-checked='true'] { background: var(--slate-a5); color: var(--fg); }
-.new-form input, .new-form textarea { width: 100%; border: 0; background: none; color: var(--fg); font: inherit; outline: none; resize: vertical; }
-.nf-title { font-size: 15px; font-weight: 500; }
-.new-form textarea { font-size: var(--text-nav); color: var(--fg-2); line-height: 1.5; }
-.new-form ::placeholder { color: var(--fg-faint); }
-.nf-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.hint { font-size: var(--text-sm); color: var(--fg-faint); }
-.nf-actions { display: inline-flex; align-items: center; gap: 10px; }
-.ghost { padding: 0; border: 0; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); cursor: pointer; }
-.ghost:hover { color: var(--fg); }
-.primary {
-  height: 30px; padding: 0 14px; border: 0; border-radius: 8px; background: var(--indigo-9); color: #fff;
-  font: inherit; font-size: var(--text-base); font-weight: 500; cursor: pointer;
-}
-.primary:disabled { opacity: 0.4; cursor: default; }
 .decided { margin-top: 10px; }
 .toggle { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 8px; padding: 0; border: 0; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); cursor: pointer; }
 .toggle:hover { color: var(--fg); }
 .toggle svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; transition: transform 150ms; }
 .toggle svg.open { transform: rotate(90deg); }
 @media (max-width: 767px) { .zp { padding: 16px; } }
+.nt { margin-top: 12px; }
 </style>
