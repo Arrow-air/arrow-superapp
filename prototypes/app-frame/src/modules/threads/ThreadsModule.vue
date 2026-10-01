@@ -4,8 +4,12 @@ import { useRoute, useRouter } from 'vue-router';
 import Icon from '../../frame/Icon.vue';
 import StatusIcon from './StatusIcon.vue';
 import ThreadDetail from './ThreadDetail.vue';
+import NewThread from './NewThread.vue';
+import { threadTypes, typeStyle } from './types';
+import { useWorkspace } from '../../frame/useWorkspace';
 import type { Thread } from './data';
-import { state, statusOf, type Status } from './store';
+import { createThread, state, statusOf, type Status } from './store';
+import { parseSelKey, selKey, selLabel, touches } from '../model/model';
 
 // Community decisions, Linear-style but minimal: the list is only for finding
 // a thread (status, title, time). Everything else is in the thread itself. Votes are weighted
@@ -27,25 +31,60 @@ const views: Record<string, (t: Thread) => boolean> = {
 };
 // On an ordinary page, show only the threads that live on it; in the
 // Discussion tab, the sidebar item picks the view.
-const props = defineProps<{ page?: string }>();
+// `flow`: the list and thread take part in the page's own scroll instead of
+// scrolling inside a fixed box (used under the model on subsystem pages).
+const props = defineProps<{ page?: string; flow?: boolean }>();
 const viewFilter = computed(() => (props.page ? (t: Thread) => t.page === props.page : views[String(route.params.item)] ?? views.all));
+// A part picked on the model (?part=…) narrows a page's list to threads about it.
+const part = computed(() => (props.page ? parseSelKey(route.query.part) : undefined));
+// Starting a thread: ?new=1 swaps the thread pane for the compose form.
+const { item } = useWorkspace();
+const composing = computed(() => !!props.page && route.query.new === '1');
+function startThread() {
+  router.replace({ query: { ...route.query, new: '1' } });
+  mobileDetail.value = true;
+}
+function cancelThread() {
+  const query = { ...route.query };
+  delete query.new;
+  router.replace({ query });
+}
+function postThread(d: { part?: import('../model/model').Sel; type: import('./data').ThreadType; title: string; body: string }) {
+  const t = createThread({ ...d, page: props.page, system: String(route.params.item) });
+  const query = { ...route.query, thread: t.id } as Record<string, string>;
+  delete query.new;
+  if (d.part) query.part = selKey(d.part);
+  router.replace({ query });
+}
+function clearPart() {
+  const query = { ...route.query };
+  delete query.part;
+  router.replace({ query });
+}
 
 type Scope = 'open' | 'settled' | 'all';
 const scope = ref<Scope>(route.params.item === 'decisions' ? 'all' : 'open');
 watch(() => route.params.item, (i) => (scope.value = i === 'decisions' ? 'all' : 'open'));
+// Looking at one part means wanting all of its history, settled calls included.
+watch(() => part.value && selKey(part.value), (k, before) => { if (!!k !== !!before) scope.value = k ? 'all' : 'open'; }, { immediate: true });
 const query = ref('');
 const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
 
-const visible = computed(() =>
+const inScope = (t: Thread) => {
+  const st = statusOf(t);
+  return scope.value === 'all' || (scope.value === 'open' ? st !== 'settled' : st === 'settled');
+};
+const matching = computed(() =>
   state.threads.filter((t) => {
-    const st = statusOf(t);
-    if (scope.value === 'open' && st === 'settled') return false;
-    if (scope.value === 'settled' && st !== 'settled') return false;
     const q = query.value.trim().toLowerCase();
     if (q && !`${t.id} ${t.title} ${t.anchor.label} ${t.system}`.toLowerCase().includes(q)) return false;
+    if (part.value && !(t.part && touches(t.part, part.value))) return false;
     return viewFilter.value(t);
   }),
 );
+const visible = computed(() => matching.value.filter(inScope));
+/** Threads the scope switch is hiding, so an empty list can say so instead of looking empty. */
+const hidden = computed(() => matching.value.length - visible.value.length);
 
 const groupsDef: { id: Status; label: string }[] = [
   { id: 'needs', label: 'Needs input' },
@@ -84,8 +123,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 </script>
 
 <template>
-  <div class="threads" :class="{ 'show-detail': mobileDetail }">
+  <div class="threads" :class="{ 'show-detail': mobileDetail, flow }">
     <section class="list-pane" aria-label="Threads">
+      <div class="pane-inner">
       <div class="top">
         <div class="find">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
@@ -98,8 +138,22 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
         </div>
       </div>
 
+      <div v-if="part" class="filter">
+        <button type="button" class="chip" :title="`Show every thread on this page`" @click="clearPart">
+          {{ selLabel(part) }}
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 4.5 7 7m0-7-7 7" /></svg>
+        </button>
+      </div>
+
       <div class="list">
-        <p v-if="!flat.length" class="empty">Nothing here.</p>
+        <p v-if="!flat.length && hidden" class="empty">
+          {{ hidden }} {{ scope === 'open' ? 'settled' : 'open' }} {{ hidden === 1 ? 'thread' : 'threads' }} hidden.
+          <button type="button" class="show-all" @click="scope = 'all'">Show all</button>
+        </p>
+        <p v-else-if="!flat.length" class="empty">
+          {{ part ? 'No threads about this part yet.' : 'Nothing here.' }}
+          <button v-if="page" type="button" class="show-all" @click="startThread">Start one</button>
+        </p>
         <section v-for="g in groups" :key="g.id" class="group">
           <h3 class="group-head">{{ g.label }}</h3>
           <button
@@ -113,15 +167,20 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
             @click="select(t.id)"
           >
             <StatusIcon :status="statusOf(t)" :override="t.settled?.override" :size="13" />
-            <span class="rtitle">{{ t.title }}</span>
+            <span class="rbody">
+              <span class="rtitle">{{ t.title }}</span>
+              <span class="rpart" :style="typeStyle(t.type)"><Icon :name="threadTypes[t.type].icon" :size="11" />{{ t.part ? selLabel(t.part) : threadTypes[t.type].label }}</span>
+            </span>
             <span class="rtime">{{ t.active }}</span>
           </button>
         </section>
       </div>
+      </div>
     </section>
 
     <section class="detail-pane" aria-label="Thread">
-      <ThreadDetail v-if="selected" :thread="selected" @back="mobileDetail = false" />
+      <NewThread v-if="composing" :key="String(route.query.part)" :part="part" :page-label="item?.label ?? ''" :page-icon="item?.icon" @post="postThread" @cancel="cancelThread" />
+      <ThreadDetail v-else-if="selected" :thread="selected" @back="mobileDetail = false" />
       <p v-else class="empty pad">Pick a thread.</p>
     </section>
   </div>
@@ -177,16 +236,38 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 .row:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
 .row :deep(.st) { margin-top: 3px; }
 /* Up to two lines, so titles stay findable without widening the list. */
+.rbody { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.rpart { display: flex; align-items: center; gap: 5px; font-size: var(--text-sm); color: var(--fg-faint); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.rpart :deep(svg) { flex: none; color: var(--tfg); }
+.filter { padding: 0 12px 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; max-width: 100%; height: 24px; padding: 0 6px 0 9px;
+  border: 0; border-radius: 6px; background: var(--indigo-a3); color: var(--indigo-11);
+  font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; transition: background-color 120ms;
+}
+.chip:hover { background: var(--indigo-a4); }
+.chip svg { flex: none; width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 .rtitle {
-  flex: 1; min-width: 0; overflow: hidden; color: var(--fg-2); font-size: var(--text-nav); line-height: 1.45;
+  min-width: 0; overflow: hidden; color: var(--fg-2); font-size: var(--text-nav); line-height: 1.45;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
 }
 .row[aria-current='true'] .rtitle { color: var(--fg); }
 .rtime { flex: none; margin-top: 2px; font-size: var(--text-sm); color: var(--fg-faint); }
 
 .detail-pane { min-height: 0; overflow-y: auto; background: var(--thread-bg); }
+.pane-inner { display: contents; }
+
+/* Page flow: the thread grows to its own height and the page scrolls; the list
+   stays pinned in view (sticky within the slot) so switching threads never
+   means scrolling back up. */
+.threads.flow { height: auto; min-height: max(1100px, 135vh); }
+.flow .list-pane { display: block; }
+.flow .pane-inner { position: sticky; top: 0; display: flex; flex-direction: column; max-height: calc(100dvh - 230px); }
+.flow .detail-pane { overflow: visible; }
 .empty { margin: 0; padding: 24px 8px; text-align: center; color: var(--fg-muted); }
 .empty.pad { padding: 48px; }
+.show-all { padding: 0; border: 0; background: none; color: var(--indigo-11); font: inherit; cursor: pointer; }
+.show-all:hover { text-decoration: underline; }
 
 @media (max-width: 899px) {
   .threads { grid-template-columns: minmax(0, 1fr); }

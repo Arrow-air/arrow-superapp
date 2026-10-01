@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useFreeze } from './freeze';
+const freeze = useFreeze();
 import Icon from './Icon.vue';
 import { dao, formatMoney, network, quote, quoteValue, sync, type Quote, USDC_PER_ETH } from './account';
 import { socials } from './links';
@@ -28,6 +30,10 @@ const SITE = 'https://arrowair.com';
       </span>
       <span class="sep" aria-hidden="true"></span>
       <span class="stat"><Icon name="sync" :size="11" /> Synced with {{ sync.source }} · {{ sync.ago }}</span>
+      <span class="sep hide-md" aria-hidden="true"></span>
+      <span class="stat freeze" :data-level="freeze.level.value" :title="`Design freeze for ${freeze.version}: ${freeze.at.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}`">
+        <i aria-hidden="true"></i>{{ freeze.frozen.value ? `${freeze.version} design frozen` : `${freeze.version} design freeze in ${freeze.label.value}` }}
+      </span>
       <span class="sep hide-md" aria-hidden="true"></span>
       <a class="stat link hide-md" :href="`${SITE}/docs/governance/good-to-know/dao-voting`" target="_blank" rel="noopener">
         <Icon name="vote" :size="11" /> {{ dao.votesOpen }} votes open
@@ -181,4 +187,11 @@ const SITE = 'https://arrowair.com';
   .hide-sm { display: none; }
   .footer { padding-inline: var(--gutter); }
 }
+/* Design freeze countdown: calm grey, amber inside 14 days, red inside 48 hours. */
+.freeze { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+.freeze i { width: 6px; height: 6px; border-radius: 50%; background: var(--fg-faint); }
+.freeze[data-level='soon'] { color: var(--amber-11); }
+.freeze[data-level='soon'] i { background: var(--amber-9); }
+.freeze[data-level='urgent'], .freeze[data-level='frozen'] { color: var(--red-11); }
+.freeze[data-level='urgent'] i { background: var(--red-9); box-shadow: 0 0 0 3px var(--red-a4); }
 </style>

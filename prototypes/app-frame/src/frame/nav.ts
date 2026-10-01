@@ -84,6 +84,7 @@ export const tabs: Tab[] = [
         id: 'subsystems',
         label: 'Subsystems',
         items: [
+          item('aircraft', 'Whole aircraft', 'plane'),
           item('airframe', 'Airframe', 'airframe'),
           item('wings-tail', 'Wings & tail', 'wing'),
           item('propulsion', 'Propulsion', 'fan'),
@@ -97,6 +98,7 @@ export const tabs: Tab[] = [
         id: 'reference',
         label: 'Reference',
         items: [
+          item('parts', 'Parts', 'layers'),
           item('cad-files', 'CAD files', 'file'),
           item('drawings', 'Drawings', 'ruler'),
           item('requirements', 'Requirements', 'check-square'),

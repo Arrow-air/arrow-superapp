@@ -1,5 +1,7 @@
 import { computed, reactive } from 'vue';
-import { me, members, threads as seed, type Member, type Thread } from './data';
+import { me, members, threads as seed, type Member, type Thread, type ThreadType } from './data';
+import { selLabel, type Sel } from '../model/model';
+import { FREEZE } from '../../frame/freeze';
 import { tally, voteWeight, weightingChangedWinner, type Role, type Tally, type WeightBreakdown } from './weights';
 
 // Module state: the threads (cloned so edits stay in memory), who you are
@@ -69,4 +71,17 @@ export const reopen = (thread: Thread) => { thread.settled = undefined; };
 
 export function reply(thread: Thread, text: string) {
   thread.replies.push({ id: `r${Date.now()}`, authorId: 'me', text, at: 'just now' });
+}
+
+/** A new thread, from you, at the top of the list. In memory like votes and replies. */
+export function createThread(d: { page?: string; system: string; part?: Sel; type: ThreadType; title: string; body: string }): Thread {
+  const n = Math.max(0, ...state.threads.map((t) => Number(t.id.split('-')[1]) || 0)) + 1;
+  const t: Thread = {
+    id: `ARW-${n}`, page: d.page, part: d.part, title: d.title, body: d.body,
+    kind: 'technical', type: d.type, context: 'design', system: d.system,
+    anchor: { kind: 'model', label: d.part ? selLabel(d.part) : 'Page' }, version: Date.now() < FREEZE.at.getTime() ? FREEZE.version : FREEZE.next,
+    authorId: 'me', raised: 'Today', active: 'now', positions: [], votes: [], replies: [], objections: 0,
+  };
+  state.threads.unshift(t);
+  return t;
 }

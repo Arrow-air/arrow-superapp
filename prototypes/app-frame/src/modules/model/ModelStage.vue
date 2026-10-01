@@ -1,0 +1,331 @@
+<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import ModelViewer, { type ModelMeta, type Structure, type Thumbs } from './ModelViewer.vue';
+import PartsNav from './PartsNav.vue';
+import { cadThemes } from './cadThemes';
+import { useFreeze } from '../../frame/freeze';
+import StatusIcon from '../threads/StatusIcon.vue';
+import { state, statusOf } from '../threads/store';
+import type { Thread } from '../threads/data';
+import { componentName, groupNames, parseSelKey, partName, provenance, selKey, selLabel, subsystemGroups, touches, type Sel } from './model';
+
+// The model with a panel beside it. On a subsystem page its groups are lit and
+// the rest ghosted; on the whole-aircraft page everything is lit and the panel
+// carries the layer switches. The selection lives in the URL (?part=…). On a
+// subsystem page the thread list below filters to it, so the panel stays about
+// parts; on the whole aircraft there is no list, so the panel lists the threads.
+
+const props = defineProps<{ subsystem?: string; label: string }>();
+const route = useRoute();
+const router = useRouter();
+
+// Temporary: cycle background treatments for the viewer and inspector ([ and ]
+// keys, or the picker). The choice is remembered in this browser.
+const freeze = useFreeze();
+const THEME_KEY = 'app-frame:cad-theme';
+const themeIndex = ref(0);
+try { themeIndex.value = Math.min(cadThemes.length - 1, Math.max(0, Number(localStorage.getItem(THEME_KEY)) || 0)); } catch {}
+const theme = computed(() => cadThemes[themeIndex.value]);
+function cycle(step: number) {
+  themeIndex.value = (themeIndex.value + step + cadThemes.length) % cadThemes.length;
+  try { localStorage.setItem(THEME_KEY, String(themeIndex.value)); } catch {}
+}
+function onThemeKey(e: KeyboardEvent) {
+  const el = e.target as HTMLElement | null;
+  if (el?.closest?.('input, textarea, [contenteditable]') || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === '[') cycle(-1);
+  else if (e.key === ']') cycle(1);
+}
+onMounted(() => window.addEventListener('keydown', onThemeKey));
+onBeforeUnmount(() => window.removeEventListener('keydown', onThemeKey));
+
+const lit = computed(() => (props.subsystem ? subsystemGroups[props.subsystem] ?? [] : null));
+const meta = ref<ModelMeta>();
+const structure = ref<Structure>({});
+const thumbs = ref<Thumbs>({});
+function onReady(m: ModelMeta, s: Structure) { meta.value = m; structure.value = s; }
+const snapshotDate = computed(() => (meta.value ? new Date(meta.value.snapshot).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''));
+const groups = computed(() => (meta.value?.groups ?? []).filter((g) => !lit.value || lit.value.includes(g.id)));
+const solids = computed(() => groups.value.reduce((s, g) => s + g.solids, 0));
+
+const anchored = computed(() => state.threads.filter((t): t is Thread & { part: Sel } => !!t.part && (!lit.value || lit.value.includes(t.part.group))));
+const discussed = computed(() => anchored.value.filter((t) => statusOf(t) !== 'settled').map((t) => t.part));
+
+// The part picked on the model, else the part of the thread open in the list.
+const selection = computed<Sel | null>(() => {
+  const picked = parseSelKey(route.query.part);
+  if (picked) return picked;
+  const t = route.query.thread && anchored.value.find((x) => x.id === route.query.thread);
+  return t ? t.part : null;
+});
+const about = computed(() => (selection.value ? anchored.value.filter((t) => touches(t.part, selection.value!)) : []));
+const openCount = (sel: Sel) => anchored.value.filter((t) => statusOf(t) !== 'settled' && touches(t.part, sel)).length;
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
+function pick(sel: Sel | null) {
+  const query = { ...route.query };
+  delete query.part;
+  delete query.thread;
+  if (sel) {
+    query.part = selKey(sel);
+    const first = anchored.value.find((t) => touches(t.part, sel));
+    if (first && first.page === pagePath.value) query.thread = first.id;
+  }
+  router.replace({ query });
+}
+const pagePath = computed(() => `${route.params.tab}/${route.params.item}`);
+/** Open a thread: in the list below when it lives on this page, else on its own page. */
+function open(t: Thread & { part: Sel }) {
+  if (t.page === pagePath.value || !t.page) router.replace({ query: { ...route.query, part: selKey(t.part), thread: t.id } });
+  else router.push({ path: `/${route.params.project}/${t.page}`, query: { part: selKey(t.part), thread: t.id } });
+}
+
+// The call to action: start a thread about whatever is selected (or the
+// subsystem), then bring the compose form below into view.
+const subjectName = computed(() => {
+  const s = selection.value;
+  if (!s) return props.label;
+  return partName(s.part) || componentName(s.component) || groupNames[s.group] || s.group;
+});
+function startThread() {
+  router.replace({ query: { ...route.query, new: '1' } });
+  requestAnimationFrame(() => document.querySelector('.threads.flow')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+}
+
+// Layer switches (whole aircraft only).
+const hidden = ref<string[]>([]);
+const toggle = (id: string) => (hidden.value = hidden.value.includes(id) ? hidden.value.filter((h) => h !== id) : [...hidden.value, id]);
+const solo = (id: string) => (hidden.value = (meta.value?.groups ?? []).map((g) => g.id).filter((g) => g !== id));
+
+const provNote = (group: string) =>
+  ({ mirrored: 'Mirrored from the port side; not modelled in Fusion.', recovered: 'Recovered from bodies hidden in the Fusion file.', modelled: '' })[provenance(group)];
+const dot = (group: string) => `var(--prov-${provenance(group)})`;
+</script>
+
+<template>
+  <div class="stage" :style="{ '--cad-viewer': theme.base, '--cad-grid': theme.grid, '--cad-panel': theme.panel, '--cad-panel-solid': theme.panel.split(',').at(-1)!.trim() }">
+    <div class="view">
+      <ModelViewer :lit="lit" :hidden="hidden" :selection="selection" :discussed="discussed" @pick="pick" @ready="onReady" @thumbs="thumbs = $event" />
+      <!-- The model's provenance, as a chip in the viewer's corner; the detail sits behind the ⓘ. -->
+      <div class="source">
+        <span>Fusion · {{ snapshotDate }}</span>
+        <span class="about" tabindex="0" aria-label="About this model">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2" /><path d="M8 7.2v3.6M8 5.2v.1" /></svg>
+          <span class="about-card" role="tooltip">
+            Revision {{ meta?.revision ?? '' }}, from the Fusion snapshot of {{ snapshotDate }}, in
+            <a href="https://github.com/Arrow-air/project-spearhead/tree/hex/build123d-fusion-aircraft/src/design" target="_blank" rel="noopener">project-spearhead ↗</a>.
+            A tessellated preview; the STEP files in the repository are exact.
+            <span class="about-row"><i class="mirrored"></i>Mirrored: copied from the port side, not modelled in Fusion.</span>
+            <span class="about-row"><i class="recovered"></i>Recovered: bodies that were hidden in the Fusion file.</span>
+          </span>
+        </span>
+      </div>
+      <!-- Temporary background picker. -->
+      <div class="theme-picker" role="group" aria-label="Background">
+        <button type="button" aria-label="Previous background" @click="cycle(-1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg></button>
+        <span class="theme-name"><b>{{ themeIndex + 1 }}/{{ cadThemes.length }}</b> {{ theme.name }}</span>
+        <button type="button" aria-label="Next background" @click="cycle(1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5" /></svg></button>
+      </div>
+    </div>
+
+    <aside class="panel" aria-label="Model">
+      <PartsNav
+        v-if="lit?.length"
+        :label="label"
+        :groups="groups"
+        :structure="structure"
+        :thumbs="thumbs"
+        :selection="selection"
+        :open-count="openCount"
+        :thread-count="about.length"
+        @pick="pick"
+      />
+      <template v-else-if="selection">
+        <button type="button" class="back" @click="pick(null)">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>{{ label }}
+        </button>
+        <h3 class="title">{{ selLabel(selection) }}</h3>
+        <p v-if="provNote(selection.group)" class="muted">{{ provNote(selection.group) }}</p>
+        <p v-if="lit" class="muted">{{ about.length ? `${plural(about.length, 'thread')}, listed below.` : 'No threads about this yet.' }}</p>
+        <h4 v-if="!lit" class="head">Threads about this</h4>
+        <p v-if="!lit && !about.length" class="muted">None yet.</p>
+        <button v-for="t in lit ? [] : about" :key="t.id" type="button" class="row" :aria-current="route.query.thread === t.id ? 'true' : undefined" @click="open(t)">
+          <StatusIcon :status="statusOf(t)" :override="t.settled?.override" :size="13" />
+          <span class="rtitle">{{ t.title }}</span>
+        </button>
+      </template>
+
+      <template v-else>
+        <p class="kicker">Spearhead · Fusion snapshot {{ meta?.snapshot ?? '' }}</p>
+        <h3 class="title">{{ label }}</h3>
+        <template v-if="lit && !lit.length">
+          <p class="muted">The model covers the structure only, so {{ label.toLowerCase() }} has no geometry yet. The aircraft is shown for reference.</p>
+        </template>
+        <template v-else>
+          <p class="muted">{{ solids }} solids<template v-if="!lit">, {{ meta?.span_m }} m span</template>. Click a part to see its threads.</p>
+
+          <h4 class="head">{{ lit ? 'Parts of this subsystem' : 'Layers' }}</h4>
+          <div v-for="g in groups" :key="g.id" class="layer">
+            <label v-if="!lit" class="check">
+              <input type="checkbox" :checked="!hidden.includes(g.id)" @change="toggle(g.id)" />
+            </label>
+            <button type="button" class="lname" @click="pick({ group: g.id })">
+              <i :style="{ background: dot(g.id) }"></i>{{ groupNames[g.id] ?? g.id }}
+            </button>
+            <span v-if="lit && openCount({ group: g.id })" class="open" :title="plural(openCount({ group: g.id }), 'open thread')">{{ openCount({ group: g.id }) }}</span>
+            <span class="count">{{ g.solids }}</span>
+            <button v-if="!lit" type="button" class="solo" @click="solo(g.id)">Solo</button>
+          </div>
+          <button v-if="!lit && hidden.length" type="button" class="link" @click="hidden = []">Show all</button>
+
+          <template v-if="!lit">
+          <h4 class="head">Parts under discussion · {{ anchored.length }}</h4>
+          <p v-if="!anchored.length" class="muted">No threads are attached to parts here yet.</p>
+          <button v-for="t in anchored" :key="t.id" type="button" class="row" @click="open(t)">
+            <StatusIcon :status="statusOf(t)" :override="t.settled?.override" :size="13" />
+            <span class="rbody">
+              <span class="rtitle">{{ t.title }}</span>
+              <span class="rsub">{{ selLabel(t.part) }}</span>
+            </span>
+          </button>
+          </template>
+        </template>
+      </template>
+
+      <div v-if="lit" class="cta-foot">
+        <button type="button" class="cta" @click="startThread">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h10v7H7l-3 2.5v-2.5H3z" /></svg>
+          <span v-if="!freeze.frozen.value">Start a thread about <b>{{ subjectName }}</b></span>
+          <span v-else>Start a {{ freeze.next }} thread about <b>{{ subjectName }}</b></span>
+        </button>
+        <!-- The window this thread lands in, and how long it stays open. -->
+        <p class="window" :data-level="freeze.level.value">
+          <template v-if="!freeze.frozen.value">Open for {{ freeze.version }} until design freeze · <b>{{ freeze.label.value }}</b> left</template>
+          <template v-else>{{ freeze.version }} design frozen · discussion is open for {{ freeze.next }}</template>
+        </p>
+      </div>
+
+    </aside>
+  </div>
+</template>
+
+<style scoped>
+.stage {
+  --prov-modelled: var(--slate-11);
+  --prov-mirrored: var(--sky-11);
+  --prov-recovered: var(--jade-11);
+  display: grid; grid-template-columns: minmax(0, 1fr) 300px; height: 100%; min-height: 0;
+}
+.view { position: relative; min-width: 0; min-height: 0; }
+.view > :first-child { position: absolute; inset: 0; }
+.theme-picker {
+  position: absolute; top: 12px; right: 12px; display: flex; align-items: center; gap: 2px; padding: 2px;
+  border-radius: 8px; background: rgb(0 0 0 / 0.35); backdrop-filter: blur(8px); font-size: var(--text-sm); color: var(--fg-2);
+}
+.theme-picker button {
+  display: grid; place-items: center; width: 24px; height: 24px; border: 0; border-radius: 6px; background: none; color: var(--fg-muted); cursor: pointer;
+}
+.theme-picker button:hover { background: var(--slate-a4); color: var(--fg); }
+.theme-picker svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.theme-name { min-width: 150px; padding: 0 4px; text-align: center; white-space: nowrap; }
+.theme-name b { margin-right: 4px; font-family: var(--font-mono); font-weight: 500; color: var(--fg-faint); }
+
+.panel {
+  display: flex; flex-direction: column; min-height: 0; overflow-y: auto; padding: 16px 12px 12px;
+  /* Same tone as the edge of the viewer's light pool, so viewer and inspector
+     read as one CAD explorer, apart from the conversation below. */
+  border-left: 1px solid var(--border-soft); background: var(--cad-panel, var(--slate-a3)); scrollbar-width: thin;
+}
+.kicker { margin: 0 4px 4px; font-size: var(--text-sm); color: var(--fg-faint); }
+.title { margin: 0 4px 6px; font-size: var(--text-md); font-weight: 600; color: var(--fg); line-height: 1.35; }
+.muted { margin: 0 4px 4px; font-size: var(--text-base); line-height: 1.5; color: var(--fg-muted); }
+.head { margin: 18px 4px 6px; font-size: var(--text-sm); font-weight: 500; color: var(--fg-faint); }
+
+.back {
+  display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; margin: 0 0 10px; padding: 3px 6px 3px 2px;
+  border: 0; border-radius: 6px; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); cursor: pointer;
+}
+.back:hover { color: var(--fg-2); background: var(--slate-a2); }
+.back svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+.layer { display: flex; align-items: center; gap: 6px; padding: 0 4px 0 0; border-radius: 8px; }
+.layer:hover { background: var(--slate-a2); }
+.check { display: grid; place-items: center; padding-left: 6px; }
+.check input { margin: 0; accent-color: var(--indigo-9); }
+.lname {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 6px; border: 0; background: none;
+  color: var(--fg-2); font: inherit; font-size: var(--text-nav); text-align: left; cursor: pointer;
+}
+.lname i, .legend i { flex: none; width: 7px; height: 7px; border-radius: 50%; }
+.open {
+  min-width: 18px; padding: 1px 5px; border-radius: 5px; background: var(--amber-a3); color: var(--amber-11);
+  font-family: var(--font-mono); font-size: var(--text-sm); text-align: center;
+}
+.count { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--fg-faint); }
+.solo, .link { border: 0; background: none; color: var(--fg-faint); font: inherit; font-size: var(--text-sm); cursor: pointer; padding: 2px 4px; }
+.solo { opacity: 0; }
+.layer:hover .solo, .solo:focus-visible { opacity: 1; }
+.solo:hover, .link:hover { color: var(--fg-2); }
+.link { align-self: flex-start; margin: 4px 0 0 2px; }
+
+.row {
+  display: flex; align-items: flex-start; gap: 10px; width: 100%; padding: 8px 10px;
+  border: 0; border-radius: 8px; background: none; text-align: left; color: inherit; font: inherit; cursor: pointer;
+  transition: background-color 120ms;
+}
+.row:hover { background: var(--slate-a2); }
+.row[aria-current='true'] { background: var(--slate-a3); }
+.row :deep(.st) { flex: none; margin-top: 3px; }
+.rbody { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.rtitle { color: var(--fg-2); font-size: var(--text-nav); line-height: 1.45; }
+.rsub { font-size: var(--text-sm); color: var(--fg-faint); }
+
+.cta {
+  display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 36px; padding: 0 12px;
+  border: 0; border-radius: 9px; background: var(--indigo-9); color: #fff; font: inherit; font-size: var(--text-base); font-weight: 500; cursor: pointer;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), 0 1px 2px rgb(0 0 0 / 0.3);
+  transition: background-color 120ms, transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+/* Pinned to the panel's foot; tiles scroll under it behind a short fade. */
+.cta-foot {
+  position: sticky; bottom: -12px; flex: none; margin: auto -12px -12px; padding: 28px 12px 12px;
+  background: linear-gradient(to bottom, transparent, var(--cad-panel-solid, #0c1322) 40%);
+}
+.cta:hover { background: var(--indigo-10); }
+.window { margin: 8px 0 0; text-align: center; font-size: var(--text-sm); color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+.window b { font-weight: 600; color: var(--fg-2); }
+.window[data-level='soon'] b { color: var(--amber-11); }
+.window[data-level='urgent'] b, .window[data-level='frozen'] { color: var(--red-11); }
+.cta:active { transform: scale(0.98); }
+.cta:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
+.cta span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cta b { font-weight: 600; }
+.cta svg { flex: none; width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; }
+.source {
+  position: absolute; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 6px; padding: 4px 6px 4px 10px;
+  border-radius: 8px; background: rgb(140 170 235 / 0.08); backdrop-filter: blur(8px);
+  font-size: var(--text-sm); color: var(--fg-muted); white-space: nowrap;
+}
+.about-card a { color: var(--indigo-11); text-decoration: none; }
+.about-card a:hover { text-decoration: underline; }
+.about { display: inline-grid; place-items: center; padding: 2px; border-radius: 50%; cursor: help; outline: none; }
+.about svg { width: 13px; height: 13px; fill: none; stroke: var(--fg-faint); stroke-width: 1.4; stroke-linecap: round; }
+.about:hover svg, .about:focus-visible svg { stroke: var(--fg-2); }
+.about-card {
+  position: absolute; right: 0; bottom: calc(100% + 8px); z-index: 2; width: 260px; padding: 10px 12px;
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--slate-2); box-shadow: 0 8px 24px rgb(0 0 0 / 0.4);
+  color: var(--fg-2); font-size: var(--text-sm); line-height: 1.5; white-space: normal;
+  opacity: 0; transform: translateY(4px); pointer-events: none; transition: opacity 150ms, transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.about:hover .about-card, .about:focus-visible .about-card, .about-card:hover { opacity: 1; transform: none; pointer-events: auto; }
+.about-row { display: flex; align-items: baseline; gap: 7px; margin-top: 6px; color: var(--fg-muted); }
+.about-row i { flex: none; width: 6px; height: 6px; border-radius: 50%; transform: translateY(-1px); }
+.about-row i.mirrored { background: var(--sky-11); }
+.about-row i.recovered { background: var(--jade-11); }
+
+@media (max-width: 899px) {
+  .stage { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(280px, 1fr) auto; }
+  .panel { border-left: 0; border-top: 1px solid var(--border-soft); }
+}
+</style>

@@ -5,6 +5,8 @@ import Kbd from '../../frame/Kbd.vue';
 import { MOD } from '../../frame/shortcuts';
 import Avatar from './Avatar.vue';
 import StatusIcon from './StatusIcon.vue';
+import { threadTypes, typeStyle } from './types';
+import { useFreeze } from '../../frame/freeze';
 import type { Thread } from './data';
 import type { Role } from './weights';
 import {
@@ -12,10 +14,10 @@ import {
 } from './store';
 
 const props = defineProps<{ thread: Thread }>();
+const freeze = useFreeze();
 defineEmits<{ back: [] }>();
 
 const t = computed(() => props.thread);
-const status = computed(() => statusOf(t.value));
 const tallies = computed(() => talliesOf(t.value));
 const tallyOf = (id: string) => tallies.value.find((x) => x.positionId === id)!;
 const leader = computed(() => leaderOf(t.value));
@@ -47,21 +49,25 @@ function send() {
 }
 const roles: Role[] = ['member', 'core', 'lead'];
 const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
+/** Each position's share of the positive weighted vote, for the poll bars. */
+const positive = computed(() => tallies.value.reduce((sum, x) => sum + Math.max(0, x.weightedScore), 0));
+const shareOf = (id: string) => (positive.value ? Math.round((Math.max(0, tallyOf(id).weightedScore) / positive.value) * 100) : 0);
+const score = (id: string) => Math.round(tallyOf(id).weightedScore * 10) / 10;
 </script>
 
 <template>
   <article class="detail">
     <header class="head">
       <button class="tbtn back" type="button" @click="$emit('back')"><Icon name="chevron-right" :size="12" class="flip" /> Threads</button>
-      <div class="eyebrow">
-        <StatusIcon :status="status" :override="t.settled?.override" :size="12" />
-        <span class="mono">{{ t.id }}</span>
-        <span class="dot">·</span>
-        <span>{{ t.kind === 'funding' ? 'Funding, token-weighted' : 'Technical, signal-weighted' }}</span>
-      </div>
+      <!-- One quiet line under the title: who asked, when, about what. The page
+           already names the subsystem and the list already shows status. -->
       <h1 class="title">{{ t.title }}</h1>
       <p class="meta">
-        {{ t.system[0].toUpperCase() + t.system.slice(1) }}<span class="dot">·</span>{{ t.anchor.label }}<span class="dot">·</span><span class="mono">{{ t.version }}</span><span class="dot">·</span><Avatar :id="t.authorId" :size="16" /> {{ person(t.authorId)?.name }}, {{ t.raised }}
+        <span class="type" :style="typeStyle(t.type)"><Icon :name="threadTypes[t.type].icon" :size="12" />{{ threadTypes[t.type].label }}</span>
+        <span v-if="!t.settled && t.version === freeze.version" class="due" :data-level="freeze.level.value" title="Open threads are settled, deferred or declined at the design freeze">
+          {{ freeze.frozen.value ? 'Due at freeze' : `Settles by freeze · ${freeze.label.value}` }}
+        </span>
+        <Avatar :id="t.authorId" :size="16" /> {{ person(t.authorId)?.name }}, {{ t.raised }}<span class="dot">·</span>{{ t.anchor.label }}<span class="dot">·</span>{{ t.version }}<span class="id mono">{{ t.id }}</span>
       </p>
       <p class="body">{{ t.body }}</p>
     </header>
@@ -78,13 +84,18 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
       <p class="note">{{ t.settled.note }}</p>
     </section>
 
-    <section class="block">
+    <!-- No positions yet: nothing to show; the composer invites the first one. -->
+    <section v-if="t.positions.length" class="block">
       <div class="block-head">
-        <h2 class="label">Positions</h2>
+        <h2 class="label">
+          <template v-if="t.settled">{{ t.positions.length }} {{ t.positions.length === 1 ? 'position' : 'positions' }} · decided</template>
+          <template v-else>{{ t.positions.length }} competing {{ t.positions.length === 1 ? 'position' : 'positions' }} <span class="label-hint">· back the one you'd build</span></template>
+        </h2>
         <span class="legend">Your vote counts <b class="mono">{{ mine.total }}</b> <button class="ghost link" type="button" :aria-expanded="showWhy" @click="showWhy = !showWhy">{{ showWhy ? 'Hide' : 'Why' }}</button></span>
       </div>
 
       <div v-if="showWhy" class="why">
+        <p class="why-note first">{{ t.kind === 'funding' ? 'A funding call, so votes are token-weighted.' : 'A technical call, so votes are signal-weighted.' }}</p>
         <template v-if="mine.kind === 'technical'">
           <p class="formula mono">({{ mine.base }} base + {{ mine.token }} token + {{ mine.expertise }} expertise + {{ mine.builder }} builder) × {{ mine.roleMultiplier }} {{ mine.role }} = <b>{{ mine.total }}</b></p>
           <p class="why-note">Technical calls are signal-weighted: role, matching expertise{{ mine.matched.length ? ` (${mine.matched.join(', ')})` : '' }} and a declared intent to build count for more than holdings.</p>
@@ -96,20 +107,9 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         <p class="why-note">Scores below are weighted; hover a score for the raw headcount.</p>
       </div>
 
-      <p v-if="!t.positions.length" class="empty">No positions yet. Propose one below.</p>
 
       <div class="positions">
         <div v-for="p in ordered" :key="p.id" class="pos">
-          <!-- The vote capsule: obvious, one tap, solid when it's yours. -->
-          <div class="vote" role="group" :aria-label="`Vote on position ${letter(p.id)}`" :class="{ locked: !!t.settled }">
-            <button class="v up" type="button" :aria-pressed="myVote(t, p.id) === 1" :disabled="!!t.settled" aria-label="Vote up" @click="vote(t, p.id, 1)">
-              <svg viewBox="0 0 16 16"><path d="m4 10 4-4 4 4" /></svg>
-            </button>
-            <span class="n mono" :title="`Raw ${fmt(tallyOf(p.id).rawScore)} from ${tallyOf(p.id).voters} ${tallyOf(p.id).voters === 1 ? 'vote' : 'votes'}`">{{ Math.round(tallyOf(p.id).weightedScore * 10) / 10 }}</span>
-            <button class="v down" type="button" :aria-pressed="myVote(t, p.id) === -1" :disabled="!!t.settled" aria-label="Vote down" @click="vote(t, p.id, -1)">
-              <svg viewBox="0 0 16 16"><path d="m4 6 4 4 4-4" /></svg>
-            </button>
-          </div>
           <div class="pos-main">
             <div class="pos-top">
               <span class="letter">{{ letter(p.id) }}</span>
@@ -117,6 +117,11 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
               <span v-else-if="!t.settled && leader.top?.positionId === p.id && tallyOf(p.id).weightedScore > 0" class="tag">Leading</span>
             </div>
             <p class="pos-text">{{ p.text }}</p>
+            <!-- Poll bar: this position's share of the weighted vote. -->
+            <div class="share" :class="{ lead: (t.settled ? t.settled.positionId : leader.top?.positionId) === p.id }" :title="`Raw ${fmt(tallyOf(p.id).rawScore)} from ${tallyOf(p.id).voters} ${tallyOf(p.id).voters === 1 ? 'vote' : 'votes'}`">
+              <span class="bar"><i :style="{ width: `${shareOf(p.id)}%` }"></i></span>
+              <span class="pct mono">{{ shareOf(p.id) }}%</span>
+            </div>
             <div class="pos-meta">
               <span class="by"><Avatar :id="p.authorId" :size="14" /> {{ person(p.authorId)?.name }}</span>
               <span class="dot">·</span>
@@ -125,6 +130,19 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
               </span>
               <span class="muted">{{ tallyOf(p.id).voters }} {{ tallyOf(p.id).voters === 1 ? 'vote' : 'votes' }}</span>
               <button v-if="isLead && !t.settled" class="ghost settle-this" type="button" @click="doSettle(p.id)">Decide on {{ letter(p.id) }}</button>
+              <!-- The vote: say what it does, fill when it's yours. -->
+              <div class="votes" role="group" :aria-label="`Vote on position ${letter(p.id)}`">
+                <template v-if="!t.settled">
+                  <button class="vote-back" type="button" :aria-pressed="myVote(t, p.id) === 1" @click="vote(t, p.id, 1)">
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4" /></svg>
+                    {{ myVote(t, p.id) === 1 ? 'Backed' : 'Back this' }}<span class="n mono">{{ score(p.id) }}</span>
+                  </button>
+                  <button class="against" type="button" :aria-pressed="myVote(t, p.id) === -1" aria-label="Vote against" title="Vote against" @click="vote(t, p.id, -1)">
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+                  </button>
+                </template>
+                <span v-else class="final mono">{{ score(p.id) }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -155,8 +173,9 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
       </div>
     </section>
 
-    <section class="block">
-      <div class="block-head"><h2 class="label">Discussion</h2><span class="legend">{{ t.replies.length }} {{ t.replies.length === 1 ? 'reply' : 'replies' }}</span></div>
+    <!-- General discussion sits in its own panel, apart from the positions and the vote. -->
+    <section class="block talk">
+      <div class="block-head"><h2 class="label">Discussion</h2><span v-if="t.replies.length" class="legend">{{ t.replies.length }} {{ t.replies.length === 1 ? 'reply' : 'replies' }}</span></div>
       <div v-for="r in t.replies" :key="r.id" class="reply">
         <Avatar :id="r.authorId" :size="20" />
         <div>
@@ -167,13 +186,17 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 
       <!-- Composer: a real text area with a clear primary action. -->
       <form class="composer" @submit.prevent="send">
-        <textarea
-          v-model="draft"
-          rows="2"
-          placeholder="Write a reply, or propose a position…"
-          @keydown.meta.enter.prevent="send"
-          @keydown.ctrl.enter.prevent="send"
-        ></textarea>
+        <!-- You, speaking; the utility bar below is set apart. -->
+        <div class="composer-body">
+          <Avatar id="me" :size="28" />
+          <textarea
+            v-model="draft"
+            rows="2"
+            placeholder="Write a reply, or propose a position…"
+            @keydown.meta.enter.prevent="send"
+            @keydown.ctrl.enter.prevent="send"
+          ></textarea>
+        </div>
         <div class="composer-bar">
           <span class="hint"><Kbd :keys="[MOD, '↵']" outline /> to send</span>
           <button class="primary" type="submit" :disabled="!draft.trim()">Reply</button>
@@ -192,11 +215,14 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 
 .back { display: none; margin: 0 0 12px -8px; }
 .flip { transform: rotate(180deg); }
-.eyebrow { display: flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--fg-muted); }
-.eyebrow .dot { margin: 0; }
-.title { margin: 10px 0 8px; font-size: 18px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; color: var(--fg); }
+.title { margin: 4px 0 8px; font-size: 18px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; color: var(--fg); }
 .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0; margin: 0; font-size: var(--text-sm); color: var(--fg-muted); }
 .meta .av { margin-right: 5px; }
+.meta .due { display: inline-flex; align-items: center; height: 20px; margin-right: 10px; padding: 0 7px; border-radius: 6px; background: var(--slate-a3); color: var(--fg-2); font-weight: 500; font-variant-numeric: tabular-nums; }
+.meta .due[data-level='soon'] { background: var(--amber-a3); color: var(--amber-11); }
+.meta .due[data-level='urgent'], .meta .due[data-level='frozen'] { background: var(--red-a3); color: var(--red-11); }
+.meta .type { display: inline-flex; align-items: center; gap: 5px; height: 20px; margin-right: 10px; padding: 0 7px 0 6px; border-radius: 6px; background: var(--tbg); color: var(--tfg); font-weight: 500; }
+.meta .id { margin-left: auto; color: var(--fg-faint); }
 .body { margin: 16px 0 0; color: var(--fg-2); line-height: 1.6; font-size: var(--text-nav); }
 
 .tag {
@@ -213,6 +239,16 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .note { margin: 8px 0 0; color: var(--fg-2); line-height: 1.55; font-size: var(--text-nav); }
 
 .block { margin-top: 28px; }
+/* Full-bleed band: the background runs edge to edge of the pane and down to its
+   foot (a spread shadow, clipped by the card), while the content keeps its column. */
+.talk {
+  margin-bottom: -48px; padding: 20px 0 48px; background: var(--slate-2);
+  box-shadow: 0 0 0 100vmax var(--slate-2), 0 -1px 0 100vmax var(--slate-a3);
+  clip-path: inset(-1px -100vmax -100vmax -100vmax);
+}
+.talk .block-head { margin-bottom: 10px; }
+.talk .reply { background: var(--slate-a2); }
+.talk .composer { background: var(--slate-3); }
 .block-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
 .label { margin: 0; font-size: var(--text-sm); font-weight: 500; color: var(--fg-muted); }
 .legend { font-size: var(--text-sm); color: var(--fg-muted); }
@@ -222,12 +258,14 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .why { margin: 8px 0 4px; padding: 10px 12px; border-radius: 10px; background: var(--slate-a2); }
 .formula { margin: 0; font-size: var(--text-sm); color: var(--fg-2); }
 .formula b { color: var(--fg); }
+.why-note.first { margin: 0 0 6px; color: var(--fg-2); }
 .why-note { margin: 6px 0 0; font-size: var(--text-sm); color: var(--fg-muted); }
 
 /* Positions: neutral rows separated by hairlines. */
 .positions { margin-top: 4px; }
-.pos { display: flex; gap: 16px; padding: 16px 0; }
-.pos + .pos { border-top: 1px solid var(--slate-a3); }
+/* Positions and replies are people talking, so each sits on its own faint card. */
+.pos { display: flex; gap: 16px; padding: 14px 16px 14px 14px; border: 1px solid var(--slate-a3); border-radius: var(--radius-lg); background: var(--slate-a2); }
+.pos + .pos { margin-top: 8px; }
 
 /* Vote capsule */
 .vote {
@@ -250,6 +288,34 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .vote.locked .v { display: none; }
 
 .pos-main { flex: 1; min-width: 0; padding-top: 2px; }
+.label-hint { color: var(--fg-faint); font-weight: 400; }
+
+/* Poll bar */
+.share { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; }
+.bar { flex: 1; height: 6px; border-radius: 3px; background: var(--slate-a3); overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 3px; background: var(--slate-a8); transition: width 300ms cubic-bezier(0.23, 1, 0.32, 1); }
+.share.lead .bar i { background: var(--indigo-9); }
+.pct { width: 36px; text-align: right; font-size: var(--text-sm); color: var(--fg-muted); }
+.share.lead .pct { color: var(--indigo-11); }
+
+/* Vote buttons */
+.votes { display: flex; align-items: stretch; gap: 4px; margin-left: auto; }
+.vote-back, .against {
+  display: inline-flex; align-items: center; gap: 6px; box-sizing: border-box; height: 30px; border: 1px solid var(--slate-a5); border-radius: 8px;
+  background: var(--slate-a2); color: var(--fg-2); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer;
+  transition: background-color 120ms, border-color 120ms, color 120ms, transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.vote-back { padding: 0 6px 0 8px; }
+.against { justify-content: center; width: 30px; padding: 0; color: var(--fg-muted); }
+.vote-back:hover, .against:hover { background: var(--slate-a4); color: var(--fg); }
+.vote-back:active, .against:active { transform: scale(0.96); }
+.vote-back svg, .against svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.vote-back .n { min-width: 26px; padding: 1px 5px; border-radius: 5px; background: var(--slate-a3); color: var(--fg); text-align: center; }
+.vote-back[aria-pressed='true'] { border-color: transparent; background: var(--indigo-9); color: #fff; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2); }
+.vote-back[aria-pressed='true'] .n { background: rgb(255 255 255 / 0.18); color: #fff; }
+.against[aria-pressed='true'] { border-color: transparent; background: var(--red-9); color: #fff; }
+.vote-back:focus-visible, .against:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
+.final { font-size: var(--text-nav); font-weight: 600; color: var(--fg); }
 .pos-top { display: flex; align-items: center; gap: 8px; }
 .letter { font-size: var(--text-sm); font-weight: 600; color: var(--fg-muted); }
 .pos-text { margin: 6px 0 10px; color: var(--fg); line-height: 1.55; font-size: var(--text-nav); }
@@ -259,7 +325,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .stack .av + .av { margin-left: -4px; }
 .settle-this { margin-left: auto; color: var(--fg-2); }
 
-.aside { display: flex; align-items: center; gap: 8px; margin: 4px 0 0; font-size: var(--text-sm); color: var(--fg-muted); }
+.aside { display: flex; align-items: center; gap: 8px; margin: 12px 0 0 2px; font-size: var(--text-sm); color: var(--fg-muted); }
 .pip { width: 6px; height: 6px; border-radius: 50%; background: var(--amber-9); }
 
 .settle { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--slate-a3); }
@@ -285,22 +351,28 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .seg button { height: 20px; padding: 0 7px; border: 0; border-radius: 6px; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; }
 .seg button[aria-checked='true'] { background: var(--slate-a4); color: var(--fg); }
 
-.reply { display: flex; gap: 10px; padding: 12px 0; }
-.reply + .reply { border-top: 1px solid var(--slate-a3); }
+.reply { display: flex; gap: 10px; padding: 12px 14px; border: 1px solid var(--slate-a3); border-radius: var(--radius-lg); background: var(--slate-a2); }
+.reply + .reply { margin-top: 6px; }
 .reply-head { display: flex; gap: 8px; align-items: baseline; font-size: var(--text-sm); }
 .reply p { margin: 3px 0 0; color: var(--fg-2); line-height: 1.55; font-size: var(--text-nav); }
 
 .composer {
-  margin-top: 12px; border: 1px solid var(--slate-a4); border-radius: 12px; background: var(--slate-a2);
+  margin-top: 12px; overflow: clip; border: 1px solid var(--slate-a4); border-radius: 12px; background: var(--slate-2);
   transition: border-color 150ms;
 }
 .composer:focus-within { border-color: var(--slate-a7); }
+.composer-body { display: flex; align-items: flex-start; gap: 12px; padding: 14px 14px 8px; }
+.composer-body .av { flex: none; }
 .composer textarea {
-  display: block; width: 100%; min-height: 64px; padding: 12px 14px 4px; border: 0; background: none; resize: vertical;
+  flex: 1; display: block; min-width: 0; min-height: 48px; padding: 4px 0 0; border: 0; background: none; resize: vertical;
   color: var(--fg); font: inherit; font-size: var(--text-nav); line-height: 1.5; outline: none;
 }
 .composer textarea::placeholder { color: var(--fg-faint); }
-.composer-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 8px 14px; }
+/* The utility bar: a darker strip under a hairline, apart from what you write. */
+.composer-bar {
+  display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 8px 14px;
+  border-top: 1px solid var(--slate-a3); background: rgb(0 0 0 / 0.25);
+}
 .hint { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--fg-faint); }
 
 @media (max-width: 899px) {
