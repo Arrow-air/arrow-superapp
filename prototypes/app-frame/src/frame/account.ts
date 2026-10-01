@@ -1,0 +1,61 @@
+import { ref, watch } from 'vue';
+
+// Mock contributor, wallet and prices. Nothing here is live: the frame only
+// needs something to lay out until Thomas's wallet/identity work plugs in.
+export const contributor = {
+  name: 'Sleety',
+  handle: '@sl33ty',
+  address: '0x71C4a0e2b9D3f58A6c1E7b204dF9e3a8B5c63a9E',
+  arrow: 1440,
+};
+
+export const holdings = [
+  { symbol: 'ARROW', name: 'Arrow', amount: 1440 },
+  { symbol: 'USDC', name: 'USD Coin', amount: 125.5 },
+  { symbol: 'ETH', name: 'Ether', amount: 0.042 },
+] as const;
+
+export const activity = [
+  { id: 'a1', kind: 'in', label: 'Contribution reward', detail: 'From Arrow DAO treasury', amount: 400, symbol: 'ARROW', date: '27 Sep' },
+  { id: 'a2', kind: 'out', label: 'Swap', detail: 'Arrow to USDC', amount: -200, symbol: 'ARROW', date: '19 Sep' },
+  { id: 'a3', kind: 'in', label: 'Contribution reward', detail: 'From Arrow DAO treasury', amount: 640, symbol: 'ARROW', date: '30 Aug' },
+  { id: 'a4', kind: 'in', label: 'Received', detail: 'From 0x9a3F…c21B', amount: 0.02, symbol: 'ETH', date: '12 Aug' },
+] as const;
+
+// Live-ish DAO and network status for the footer. Mock values.
+export const network = { name: 'Mainnet', connected: true };
+export const sync = { source: 'GitHub', ago: '2m ago' };
+export const dao = { votesOpen: 2, bountiesOpen: 5 };
+
+// USDC per ARROW is the AIP-010 policy rate (effective $0.20/token), not a
+// market price. The ETH price is a placeholder.
+export const USDC_PER_ARROW = 0.2;
+export const USDC_PER_ETH = 2500;
+const USDC_PER: Record<string, number> = { ARROW: USDC_PER_ARROW, USDC: 1, ETH: USDC_PER_ETH };
+
+export type Quote = 'USDC' | 'ETH';
+
+// Value of an amount of any held token, in the chosen quote currency.
+export function quoteValue(amount: number, symbol: string, q: Quote) {
+  const usdc = amount * (USDC_PER[symbol] ?? 0);
+  return q === 'USDC' ? usdc : usdc / USDC_PER_ETH;
+}
+// How amounts read on screen. No uppercase tickers: USDC shows as dollars,
+// ETH with the ether sign, and ARROW as the word "Arrow".
+export function formatMoney(n: number, symbol: string, signed = false) {
+  const sign = signed && n > 0 ? '+' : n < 0 ? '−' : '';
+  const abs = Math.abs(n);
+  if (symbol === 'USDC') return `${sign}$${abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  if (symbol === 'ETH') return `${sign}Ξ${abs.toLocaleString('en-US', { maximumFractionDigits: 4 })}`;
+  return `${sign}${abs.toLocaleString('en-US', { maximumFractionDigits: 2 })} Arrow`;
+}
+export const shortAddress = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
+
+// The chosen quote currency, shared by the toolbar and the wallet drawer.
+// A per-viewer convenience, so it lives in localStorage.
+const KEY = 'arrow.quote';
+const read = (): Quote => {
+  try { return localStorage.getItem(KEY) === 'ETH' ? 'ETH' : 'USDC'; } catch { return 'USDC'; }
+};
+export const quote = ref<Quote>(read());
+watch(quote, (q) => { try { localStorage.setItem(KEY, q); } catch { /* storage unavailable */ } });

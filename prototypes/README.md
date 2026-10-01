@@ -2,8 +2,11 @@
 
 Throwaway builds. One folder per experiment. Each folder's README states the question it tests and what "worked" would look like. Branches are fine too.
 
+The Quiver workspace graduated from here (`quiver-demo`) to [`/app`](../app/) on 2026-10-01; its history is in git.
+
 | Prototype | Question it tests | Status |
 |---|---|---|
+| [`app-frame/`](app-frame/) | Gavin's frame: can one shell (bar, section nav, wallet, side panel, page header) host every Arrow module? | The app forked from it at `31d499a`; Gavin keeps iterating on branch `sl33ty/explore/app-frame`. |
 | [`spec-threads/`](spec-threads/) · [live](https://specs.arrowair.com) | Prototype 1: do weighted public spec threads, with the lead keeping the final say, beat one lead deciding alone? Prototype 2 (branch `spec-threads-v2`): if contributions target the next version and the lead must resolve every thread at a freeze (reject, spec, grant, defer), does the discussion write the specs and grants by itself? | Prototype 2 built in demo mode, tested (53 unit, 80 browser checks), not yet merged to `main`. Supabase backend still the prototype 1 shape, never run. Retro session award is the next slice. Dogfooding on Spearhead PT2 needs the shared backend. See [`ROADMAP.md`](spec-threads/ROADMAP.md). |
 
 ## Candidates not yet built
