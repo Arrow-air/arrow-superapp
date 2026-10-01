@@ -11,8 +11,10 @@ import { partById } from '../../data/quiver';
 import { boardById } from '../../data/pcbs';
 import {
   changedWinner, day, decline, defer, draftWork, isOpen, leaderOf, locked, myVote, person, propose, reopen, reply, settle,
-  standing, state, talliesOf, vote, weightOf, workFor, type WorkKind,
+  standing, state, talliesOf, vote, weightOf, workFor, isBuilder, setBuilder, type WorkKind,
 } from './store';
+import { remote } from '../../lib/backend';
+import { session } from '../../lib/session';
 
 // One thread, always in the same order: the question and where it is in the
 // pipeline (discussion → decided spec → funded work), the outcome and its
@@ -209,6 +211,9 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
     <section class="block">
       <div class="block-head">
         <h2 class="label">Positions</h2>
+        <label v-if="remote && session.userId && open" class="builder" title="Adds one point of weight to your votes in this thread">
+          <input type="checkbox" :checked="isBuilder(t)" @change="setBuilder(t, ($event.target as HTMLInputElement).checked)" /> I'd help build this
+        </label>
       </div>
 
       <p v-if="!t.positions.length" class="empty">No positions yet. Add the first one.</p>
@@ -521,6 +526,8 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .pipe .mono { font-size: 11px; }
 .deferred { margin: 6px 0 0; font-size: var(--text-sm); color: var(--fg-muted); }
 .small { font-size: var(--text-sm); }
+.builder { display: inline-flex; align-items: center; gap: 5px; font-size: var(--text-sm); color: var(--fg-muted); cursor: pointer; }
+.builder input { accent-color: var(--indigo-9); }
 .modes { display: flex; width: fit-content; flex-wrap: wrap; gap: 2px; margin-top: 8px; padding: 2px; border-radius: 8px; background: var(--slate-a3); }
 .modes button { height: 26px; padding: 0 10px; border: 0; border-radius: 6px; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; }
 .modes button[aria-checked='true'] { background: var(--slate-a6); color: var(--fg); }

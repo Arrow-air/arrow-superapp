@@ -5,6 +5,9 @@ import Menu from './Menu.vue';
 import WalletDrawer from './WalletDrawer.vue';
 import logomark from '../assets/arrow-logomark-white.svg';
 import { contributor, formatMoney, quote, quoteValue, type Quote } from './account';
+import Avatar from '../modules/threads/Avatar.vue';
+import { remote } from '../lib/backend';
+import { session, signOut } from '../lib/session';
 
 // Top right: the dashboard button on its own, then a toolbar (after coss ui
 // Toolbar) holding the balance with its quote select, and the contributor,
@@ -26,7 +29,19 @@ const walletOpen = ref(false);
       <span class="show-md">Dashboard</span>
     </button>
 
-    <div class="toolbar" role="toolbar" aria-label="Wallet">
+    <template v-if="remote">
+      <button v-if="!session.member" class="tbtn signin" type="button" @click="session.signInOpen = true">Sign in</button>
+      <Menu v-else :items="[{ id: 'out', label: 'Sign out', note: session.email }]" align="end" @select="signOut()">
+        <template #trigger="{ open, toggle }">
+          <button class="tbtn who" type="button" aria-haspopup="menu" :aria-expanded="open" @click="toggle">
+            <Avatar id="me" :size="22" />
+            <span class="hide-sm">{{ session.member.display_name }}</span>
+            <span v-if="session.member.role !== 'member'" class="rolechip">{{ session.member.role }}</span>
+          </button>
+        </template>
+      </Menu>
+    </template>
+    <div v-else class="toolbar" role="toolbar" aria-label="Wallet">
       <Menu class="hide-sm" :items="quotes" :current="quote" align="end" @select="quote = $event as Quote">
         <template #trigger="{ open, toggle }">
           <button
@@ -63,7 +78,7 @@ const walletOpen = ref(false);
       </button>
     </div>
 
-    <WalletDrawer v-model:open="walletOpen" />
+    <WalletDrawer v-if="!remote" v-model:open="walletOpen" />
   </div>
 </template>
 
@@ -117,13 +132,19 @@ const walletOpen = ref(false);
   box-shadow: 0 0 0 2px var(--toolbar-bg);
 }
 
+.signin { height: 30px; padding: 0 14px; border-radius: 9px; background: var(--indigo-9); color: #fff; font-weight: 500; }
+.signin:hover { background: var(--indigo-10); }
+.rolechip { height: 18px; padding: 0 6px; border-radius: 5px; background: var(--indigo-a3); color: var(--indigo-11); font-size: 11px; line-height: 18px; font-weight: 500; }
 .show-md { display: none; }
 @media (max-width: 1279px) {
   .hide-md { display: none; }
   .show-md { display: inline; }
 }
 @media (max-width: 767px) {
-  .hide-sm, .show-md { display: none; }
+  .hide-sm, .signin { height: 30px; padding: 0 14px; border-radius: 9px; background: var(--indigo-9); color: #fff; font-weight: 500; }
+.signin:hover { background: var(--indigo-10); }
+.rolechip { height: 18px; padding: 0 6px; border-radius: 5px; background: var(--indigo-a3); color: var(--indigo-11); font-size: 11px; line-height: 18px; font-weight: 500; }
+.show-md { display: none; }
   .who { padding-right: 3px; }
 }
 </style>

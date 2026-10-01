@@ -5,6 +5,8 @@ import { formatMoney, network, quote, quoteValue, type Quote } from './account';
 import { generatedAt, shortDate, tasks } from '../data/quiver';
 import { isOpen, state } from '../modules/threads/store';
 import DemoMenu from './DemoMenu.vue';
+import SessionStatus from './SessionStatus.vue';
+import { remote } from '../lib/backend';
 import { socials } from './links';
 import logomark from '../assets/arrow-logomark-white.svg';
 import { theme, type Theme } from './theme';
@@ -29,7 +31,8 @@ const claimable = tasks.filter((t) => t.claimable).length;
 <template>
   <footer class="footer" aria-label="Status">
     <div class="side">
-      <DemoMenu />
+      <SessionStatus v-if="remote" />
+      <DemoMenu v-else />
       <span class="sep hide-sm" aria-hidden="true"></span>
       <span class="stat hide-sm"><Icon name="sync" :size="11" /> GitHub data from {{ shortDate(generatedAt) }}</span>
       <span class="sep hide-md" aria-hidden="true"></span>

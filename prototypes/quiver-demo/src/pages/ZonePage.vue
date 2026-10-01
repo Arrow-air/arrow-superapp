@@ -31,12 +31,12 @@ const kinds: { id: Thread['type']; label: string; hint: string }[] = [
   { id: 'proposal', label: 'Proposal', hint: 'A change you want to make' },
   { id: 'idea', label: 'Idea', hint: 'Early, not ready to decide' },
 ];
-function create() {
+async function create() {
   if (!draft.value.title.trim()) return;
-  const t = startThread({ zone: props.zone, title: draft.value.title.trim(), body: draft.value.body.trim(), type: draft.value.type });
+  const t = await startThread({ zone: props.zone, title: draft.value.title.trim(), body: draft.value.body.trim(), type: draft.value.type });
   draft.value = { title: '', body: '', type: 'question' };
   composing.value = false;
-  router.replace({ query: { ...route.query, thread: t.id } });
+  if (t) router.replace({ query: { ...route.query, thread: t.id } });
 }
 </script>
 

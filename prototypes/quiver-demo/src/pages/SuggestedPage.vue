@@ -15,15 +15,15 @@ const picked = (id: string, seeded?: string) => !!seeded || state.threads.some((
 const open = computed(() => callItems.filter((c) => ['question', 'proposal', 'gap'].includes(c.kind) && !picked(c.id, c.thread)));
 const kindLabel = { question: 'Question', proposal: 'Proposal', gap: 'Gap' } as Record<string, string>;
 
-function start(c: (typeof callItems)[number]) {
-  const t = startThread({
+async function start(c: (typeof callItems)[number]) {
+  const t = await startThread({
     zone: c.zone,
     title: c.text.length > 90 ? `${c.text.slice(0, 87).trimEnd()}…` : c.text,
     body: `From the ${c.call.date} call notes, which name ${c.who.map((w) => personById(w)?.name).join(' and ')}: ${c.text}`,
     type: c.kind === 'proposal' ? 'proposal' : 'question',
     fromCall: c.id,
   });
-  router.replace({ query: { thread: t.id } });
+  if (t) router.replace({ query: { thread: t.id } });
 }
 </script>
 

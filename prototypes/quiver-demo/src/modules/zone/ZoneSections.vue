@@ -29,15 +29,15 @@ const threadFor = (id: string, seeded?: string) =>
   seeded ?? state.threads.find((t) => t.source?.kind === 'call' && t.source.ref === id)?.id;
 const openThread = (id: string) => router.replace({ query: { ...route.query, thread: id } });
 
-function start(c: (typeof notes.value)[number]) {
-  const t = startThread({
+async function start(c: (typeof notes.value)[number]) {
+  const t = await startThread({
     zone: props.zone,
     title: c.text.length > 90 ? `${c.text.slice(0, 87).trimEnd()}…` : c.text,
     body: `From the ${c.call.date} call notes, which name ${c.who.map((w) => personById(w)?.name).join(' and ')}: ${c.text}`,
     type: c.kind === 'proposal' ? 'proposal' : 'question',
     fromCall: c.id,
   });
-  openThread(t.id);
+  if (t) openThread(t.id);
 }
 const ownerOf = (owner: string | null) => {
   if (!owner || /^open/i.test(owner)) return undefined;

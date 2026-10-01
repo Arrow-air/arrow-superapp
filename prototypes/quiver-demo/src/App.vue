@@ -8,6 +8,8 @@ import SlotState from './frame/SlotState.vue';
 import AppFooter from './frame/AppFooter.vue';
 import GlobalDrawer from './frame/GlobalDrawer.vue';
 import ThreadPanel from './modules/threads/ThreadPanel.vue';
+import SignInDialog from './frame/SignInDialog.vue';
+import { session } from './lib/session';
 import { useWorkspace } from './frame/useWorkspace';
 
 const { route, project, tab, item } = useWorkspace();
@@ -59,10 +61,13 @@ watch(
     </div>
     <AppFooter />
   </div>
+  <SignInDialog />
+  <div v-if="session.notice" class="notice" role="status" @click="session.notice = ''">{{ session.notice }}</div>
   </div>
 </template>
 
 <style scoped>
+.notice { position: fixed; left: 50%; bottom: 48px; z-index: 90; transform: translateX(-50%); max-width: min(560px, calc(100vw - 32px)); padding: 9px 14px; border: 1px solid var(--red-a6, var(--slate-a6)); border-radius: 10px; background: var(--surface); color: var(--fg); font-size: var(--text-base); box-shadow: 0 12px 32px -8px rgb(0 0 0 / 0.4); cursor: pointer; }
 /* Shell: the Arrow panel and the app side by side, so opening the panel
    pushes the whole app right. */
 .shell { display: flex; height: 100dvh; overflow: hidden; }

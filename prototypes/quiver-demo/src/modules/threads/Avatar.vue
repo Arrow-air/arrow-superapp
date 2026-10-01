@@ -11,7 +11,7 @@ const p = computed(() => person(props.id));
     :data-hue="p?.hue"
     :style="{ width: `${size}px`, height: `${size}px`, fontSize: `${Math.round(size * 0.42)}px` }"
     :title="p?.name"
-  >{{ p?.initials }}</span>
+  ><img v-if="p?.avatar" :src="p.avatar" alt="" /><template v-else>{{ p?.initials }}</template></span>
 </template>
 
 <style scoped>
@@ -30,4 +30,5 @@ const p = computed(() => person(props.id));
 .av[data-hue='amber'] { background: var(--amber-4); color: var(--amber-11); }
 .av[data-hue='sky'] { background: var(--sky-4); color: var(--sky-11); }
 .av[data-hue='red'] { background: var(--red-4); color: var(--red-11); }
+.av img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 </style>

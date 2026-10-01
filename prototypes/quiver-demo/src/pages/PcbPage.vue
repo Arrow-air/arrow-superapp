@@ -115,9 +115,9 @@ onBeforeUnmount(() => { clearInterval(poll); viewer?.removeEventListener('kicanv
 const composing = ref(false);
 const draft = ref({ title: '', body: '' });
 watch([selectedRef, boardId], () => { composing.value = false; draft.value = { title: '', body: '' }; });
-function propose() {
+async function propose() {
   if (!selected.value || !draft.value.title.trim()) return;
-  const t = startThread({
+  const t = await startThread({
     zone: boardZone[board.value.id],
     part: board.value.part,
     pcb: { board: board.value.id, ref: selected.value.ref },
@@ -127,7 +127,7 @@ function propose() {
     version: NEXT,
   });
   composing.value = false;
-  go({ thread: t.id });
+  if (t) go({ thread: t.id });
 }
 const src = computed(() => `${import.meta.env.BASE_URL}${board.value.file}`);
 const githubFile = computed(() => `https://github.com/Arrow-air/project-quiver/blob/main/${board.value.path}`);

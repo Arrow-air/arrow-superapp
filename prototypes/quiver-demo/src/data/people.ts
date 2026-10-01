@@ -11,6 +11,8 @@ export interface Person {
   initials: string;
   hue: Hue;
   github?: string;
+  /** Account avatar, for signed-in members. */
+  avatar?: string;
   discord?: string;
   /** What the repository or the call notes say they do. Each line names its source. */
   does: { text: string; source: string }[];

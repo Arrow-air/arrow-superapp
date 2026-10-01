@@ -46,9 +46,9 @@ const openGroup = ref<string | null>(null);
 const composing = ref(false);
 const draft = ref({ title: '', body: '' });
 watch(selected, () => { composing.value = false; draft.value = { title: '', body: '' }; });
-function propose() {
+async function propose() {
   if (!selected.value || !draft.value.title.trim()) return;
-  const t = startThread({
+  const t = await startThread({
     zone: zoneForPart(selected.value),
     part: selected.value,
     title: draft.value.title.trim(),
@@ -58,7 +58,7 @@ function propose() {
   });
   composing.value = false;
   draft.value = { title: '', body: '' };
-  router.replace({ query: { ...route.query, thread: t.id } });
+  if (t) router.replace({ query: { ...route.query, thread: t.id } });
 }
 const money = (n: number | null) => (n == null ? null : `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
 </script>

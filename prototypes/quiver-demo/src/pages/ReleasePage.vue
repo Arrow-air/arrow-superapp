@@ -4,10 +4,12 @@ import { useRoute, useRouter } from 'vue-router';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
 import StatusIcon from '../modules/threads/StatusIcon.vue';
 import { LATER, NEXT, type Thread } from '../modules/threads/data';
+import { session } from '../lib/session';
 import {
   V11_ZONES, byActivity, day, deferOpen, freezeRelease, isOpen, person, retroPreview, setReleasePlan, startThread, state, statusOf, workFor,
 } from '../modules/threads/store';
 import { callItems } from '../data/calls';
+import { remote } from '../lib/backend';
 import { zoneLabel, zonePath } from '../frame/nav';
 
 // The next Dev Kit revision in one place. Every thread aimed at v1.1 shows
@@ -42,12 +44,12 @@ function proposeIn(zone: string) {
   composing.value = true;
   requestAnimationFrame(() => document.querySelector<HTMLInputElement>('.rel-form .nf-title')?.focus());
 }
-function create() {
+async function create() {
   if (!draft.value.title.trim()) return;
-  const t: Thread = startThread({ zone: draft.value.zone, title: draft.value.title.trim(), body: draft.value.body.trim(), type: 'proposal', version: NEXT });
+  const t = await startThread({ zone: draft.value.zone, title: draft.value.title.trim(), body: draft.value.body.trim(), type: 'proposal', version: NEXT });
   draft.value = { zone: draft.value.zone, title: '', body: '' };
   composing.value = false;
-  router.replace({ query: { ...route.query, thread: t.id } });
+  if (t) router.replace({ query: { ...route.query, thread: t.id } });
 }
 const letter = (t: Thread, id: string) => String.fromCharCode(65 + t.positions.findIndex((p) => p.id === id));
 const stageLabel = { draft: 'Draft', open: 'Open', in_progress: 'In progress', in_review: 'In review', completed: 'Accepted' } as const;
@@ -62,6 +64,7 @@ const retro = computed(() => retroPreview());
 // confirms), or a document with no person named (held).
 function recipient(r: string) {
   if (r === 'me') return { name: 'You', held: false, note: '' };
+  if (session.members[r]) return { name: session.members[r].display_name, held: false, note: '' };
   if (r.startsWith('source:')) return { name: `From ${r.slice(7)}`, held: true, note: 'no person named' };
   return { name: person(r)?.name ?? r, held: true, note: 'named in the notes' };
 }
@@ -173,7 +176,7 @@ function deferRest() {
       <p v-else-if="!state.release.pool" class="none">No retro pool set yet. A lead sets the pool and the freeze date.</p>
 
       <div v-if="state.release.pool" class="alloc">
-        <p class="alloc-h">{{ frozen ? 'Recorded split' : 'If it froze now' }}<span class="muted"> · {{ retro.amount.toLocaleString('en-US') }} ARROW{{ frozen ? '' : ', from the votes in this browser' }}</span></p>
+        <p class="alloc-h">{{ frozen ? 'Recorded split' : 'If it froze now' }}<span class="muted"> · {{ retro.amount.toLocaleString('en-US') }} ARROW{{ frozen ? '' : remote ? ', from the current votes' : ', from the votes in this browser' }}</span></p>
         <table v-if="retro.lines.length" class="vt">
           <tbody>
             <tr v-for="l in retro.lines" :key="l.recipient">
