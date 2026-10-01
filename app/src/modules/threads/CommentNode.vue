@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import Avatar from './Avatar.vue';
 import SourceChip from './SourceChip.vue';
 import type { Position, Thread } from './data';
-import { ago, childrenOf, comment, isOpen, leaderOf, letterOf, myVote, person, state, talliesOf, vote } from './store';
+import { ago, canDeleteComment, childrenOf, comment, deleteComment, isOpen, leaderOf, letterOf, myVote, person, state, talliesOf, vote } from './store';
 
 // One comment and its replies, Reddit style: a vote column, the comment,
 // Reply, and the replies indented under a line. Top-level comments are the
@@ -24,6 +24,16 @@ const kids = computed(() => {
     (talliesOf(t.value).find((x) => x.positionId === b.id)?.weightedScore ?? 0) - (talliesOf(t.value).find((x) => x.positionId === a.id)?.weightedScore ?? 0) || a.at.localeCompare(b.at);
   return childrenOf(t.value, props.c.id).sort(byScore);
 });
+// A deleted comment stays only as a placeholder for replies still standing under it.
+const standsUnder = (id: string): boolean => childrenOf(t.value, id).some((k) => !k.deleted || standsUnder(k.id));
+const visible = computed(() => !props.c.deleted || standsUnder(props.c.id));
+const deletable = computed(() => canDeleteComment(t.value, props.c));
+const confirming = ref(false);
+function remove() {
+  deleteComment(t.value, props.c);
+  confirming.value = false;
+  replying.value = false;
+}
 const countAll = (id: string): number => childrenOf(t.value, id).reduce((n, k) => n + 1 + countAll(k.id), 0);
 const nameOf = (id?: string) => (id === 'me' ? 'You' : person(id)?.name);
 const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
@@ -42,8 +52,9 @@ const isLead = computed(() => state.role === 'lead');
 </script>
 
 <template>
-  <div class="cm" :class="{ top, decided }" :data-comment="c.id">
-    <div class="cm-vote" role="group" :aria-label="`Vote on ${top ? 'option ' + letterOf(t, c.id) : 'this reply'}`">
+  <div v-if="visible" class="cm" :class="{ top, decided, gone: c.deleted }" :data-comment="c.id">
+    <div v-if="c.deleted" class="cm-vote" aria-hidden="true"></div>
+    <div v-else class="cm-vote" role="group" :aria-label="`Vote on ${top ? 'option ' + letterOf(t, c.id) : 'this reply'}`">
       <button class="v up" type="button" :aria-pressed="myVote(t, c.id) === 1" :disabled="!open" aria-label="Vote up" :title="formula" @click="vote(t, c.id, 1)">
         <svg viewBox="0 0 16 16"><path d="m4 10 4-4 4 4" /></svg>
       </button>
@@ -55,16 +66,25 @@ const isLead = computed(() => state.role === 'lead');
     <div class="cm-main">
       <div class="cm-head">
         <span v-if="top" class="letter">{{ letterOf(t, c.id) }}</span>
+        <span v-if="c.deleted" class="gone-note">{{ c.deleted === 'lead' ? 'Removed by a lead' : 'Deleted' }}</span>
         <template v-if="c.authorId"><Avatar :id="c.authorId" :size="16" /><span class="who">{{ nameOf(c.authorId) }}</span></template>
         <SourceChip v-if="c.source" :source="c.source" />
         <span class="muted">{{ ago(c.at) }}</span>
         <span v-if="decided" class="tag ok">Adopted</span>
         <span v-else-if="leading" class="tag">Leading</span>
       </div>
-      <p v-if="!collapsed" class="cm-text">{{ c.text }}</p>
+      <p v-if="!collapsed && !c.deleted" class="cm-text">{{ c.text }}</p>
       <div class="cm-acts">
-        <button v-if="!collapsed" class="act" type="button" @click="replying = !replying">Reply</button>
-        <button v-if="top && open && isLead && !collapsed" class="act" type="button" @click="emit('adopt', c.id)">Adopt…</button>
+        <button v-if="!collapsed && !c.deleted" class="act" type="button" @click="replying = !replying">Reply</button>
+        <button v-if="top && open && isLead && !collapsed && !c.deleted" class="act" type="button" @click="emit('adopt', c.id)">Adopt…</button>
+        <template v-if="deletable && !collapsed">
+          <button v-if="!confirming" class="act" type="button" :aria-label="`Delete ${top ? 'option ' + letterOf(t, c.id) : 'this reply'}`" @click="confirming = true">Delete</button>
+          <span v-else class="confirm" role="group" aria-label="Confirm delete">
+            {{ c.authorId === 'me' ? 'Delete' : 'Remove' }} this {{ top ? 'option' : 'reply' }}?<template v-if="kids.length"> Its replies stay.</template>
+            <button class="act danger" type="button" @click="remove">Yes, delete</button>
+            <button class="act" type="button" @click="confirming = false">Cancel</button>
+          </span>
+        </template>
         <button v-if="kids.length || collapsed" class="act muted" type="button" :aria-expanded="!collapsed" @click="collapsed = !collapsed">
           {{ collapsed ? `Show (${countAll(c.id) + 1})` : 'Collapse' }}
         </button>
@@ -113,6 +133,11 @@ const isLead = computed(() => state.role === 'lead');
 .cm-acts { display: flex; gap: 12px; margin-top: 4px; }
 .act { padding: 0; border: 0; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; }
 .act:hover { color: var(--fg); }
+.act.danger { color: var(--red-11); }
+.act.danger:hover { color: var(--red-11); text-decoration: underline; }
+.confirm { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: var(--text-sm); color: var(--fg-2); }
+.gone-note { color: var(--fg-faint); font-style: italic; }
+.cm.top.gone { background: none; border-style: dashed; }
 .cm-reply { margin-top: 8px; overflow: clip; border: 1px solid var(--slate-a4); border-radius: 10px; background: var(--slate-2); }
 .cm-reply:focus-within { border-color: var(--slate-a7); }
 .cm-reply-body { display: flex; align-items: flex-start; gap: 10px; padding: 10px 10px 4px; }

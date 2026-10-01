@@ -118,6 +118,20 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   check((await reply.locator('.cm-vote .n').first().innerText()).trim() !== '0', 'replies can be voted on');
   check((await panel.locator('.choices button').count()) === 1, 'only top-level comments are offered for adoption');
 
+  // Deleting comments: your own reply goes; an option with replies leaves a placeholder.
+  const leaf = reply.locator('.cm-kids .cm').first();
+  await leaf.getByRole('button', { name: 'Delete this reply' }).click();
+  await leaf.getByRole('button', { name: 'Yes, delete' }).click();
+  await p.waitForTimeout(200);
+  check(!(await panel.innerText()).includes('A second plate.'), 'you delete your own reply and it goes');
+  await top.getByRole('button', { name: 'Delete option A' }).click();
+  check((await top.locator('.confirm').innerText()).includes('Its replies stay.'), 'deleting an option with replies says the replies stay');
+  await top.getByRole('button', { name: 'Yes, delete' }).click();
+  await p.waitForTimeout(200);
+  const after1 = await panel.innerText();
+  check(!after1.includes('Yes, with a second structural path.') && after1.includes('Which path, the tether') && (await top.locator('.gone-note').first().innerText()) === 'Deleted', 'a deleted option keeps its place for its replies, without its words');
+  check(!(await panel.locator('.choices button').count()) && !(await top.locator(':scope > .cm-vote button').count()), 'a deleted option can no longer be adopted or voted on');
+
   // Start a discussion from a call suggestion.
   await p.goto(`${BASE}/quiver/discussion/suggested`);
   await p.waitForTimeout(500);
@@ -255,6 +269,27 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.goto(`${BASE}/quiver/discussion/all`);
   await p.waitForTimeout(400);
   check(!(await p.locator('.row[data-thread="Q-10"]').count()), 'a lead deletes a seeded thread and it leaves every list');
+
+  // A lead removes anyone's comment; the adopted option stays on the record.
+  await p.goto(`${BASE}/quiver/overview/power?thread=Q-19`);
+  await p.waitForTimeout(400);
+  const optB = panel.locator('.cm.top').filter({ hasText: 'Native DroneCAN battery messages.' });
+  await optB.getByRole('button', { name: /^Delete option / }).click();
+  await optB.getByRole('button', { name: 'Yes, delete' }).click();
+  await p.waitForTimeout(200);
+  check(!(await panel.innerText()).includes('Native DroneCAN battery messages.'), 'a lead removes someone else\'s comment');
+  await p.goto(`${BASE}/quiver/overview/gps-rf?thread=Q-6`);
+  await p.waitForTimeout(400);
+  check(!(await panel.locator('.cm.top.decided').getByRole('button', { name: /^Delete option / }).count()), 'the adopted option can\'t be deleted');
+  await p.getByRole('button', { name: /^Demo/ }).click();
+  await p.getByRole('radio', { name: 'Member' }).click();
+  await p.getByRole('button', { name: /^Demo/ }).click();
+  await p.goto(`${BASE}/quiver/overview/power?thread=Q-19`);
+  await p.waitForTimeout(400);
+  check((await panel.locator('.cm').count()) > 0 && !(await panel.getByRole('button', { name: /^Delete (option|this reply)/ }).count()), 'a member can\'t delete other people\'s comments');
+  await p.getByRole('button', { name: /^Demo/ }).click();
+  await p.getByRole('radio', { name: 'Lead' }).click();
+  await p.getByRole('button', { name: /^Demo/ }).click();
 
   // Persistence and reset.
   await p.goto(`${BASE}/quiver/decisions/register`);

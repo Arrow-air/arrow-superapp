@@ -60,6 +60,7 @@ With `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` set at build time, 
 
 - Schema: `supabase/migrations/20261001000000_superapp_quiver.sql` (sa_-prefixed tables and functions only; nothing existing is touched).
 - Threaded comments (`20261001200000_sa_threaded_comments.sql`): comments live in `sa_positions` with `parent_id`; `sa_comment(thread, text, parent)` writes them; only top-level comments can be adopted. Existing replies were moved in (seeded ones under the option they answer).
+- Deleting comments (`20261001300000_sa_delete_comment.sql`): leads delete any comment or reply, anyone their own; the adopted option stays. Soft, Reddit style: the row keeps its place so replies under it stay (shown as "Deleted" or "Removed by a lead"), its words, author and source are cleared, and the original goes to `sa_deleted_comments`, which the API can't read. Votes on it stop counting; nothing new lands on it.
 - Deleting threads (`20261001100000_sa_delete_thread.sql`): leads delete any thread, authors their own until someone else takes part, never once work is funded. Soft: the row keeps who, when and why, and the thread and everything on it disappear from reads.
 - Starting content: `npx tsx scripts/build-seed-sql.ts > supabase/seed_quiver.sql` (idempotent).
 - Applied to production by POSTing the SQL to the Supabase pg-meta endpoint (`/pg/query`, service key), after a `pg_dumpall` on the box.

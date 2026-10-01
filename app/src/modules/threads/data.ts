@@ -17,7 +17,11 @@ export interface SourceRef {
 }
 
 /** A comment. Top-level comments (no parentId) are the options a lead can adopt; replies nest under any comment. */
-export interface Position { id: string; text: string; authorId?: string; source?: SourceRef; at: string; parentId?: string }
+export interface Position {
+  id: string; text: string; authorId?: string; source?: SourceRef; at: string; parentId?: string;
+  /** Deleted by its author, or removed by a lead; it keeps its place so replies under it stay. */
+  deleted?: 'author' | 'lead';
+}
 export interface Reply { id: string; text: string; authorId?: string; source?: SourceRef; at: string }
 export interface Settled {
   positionId: string;

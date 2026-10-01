@@ -132,10 +132,12 @@ export function weightOf(thread: Thread, memberId: string): WeightBreakdown {
   return voteWeight(voterOf(memberId, thread), thread);
 }
 
+/** Weighted scores for the comments still standing; votes on deleted ones stop counting. */
 export function talliesOf(thread: Thread): Tally[] {
+  const live = new Set(thread.positions.filter((p) => !p.deleted).map((p) => p.id));
   return tally(
-    thread.positions.map((p) => p.id),
-    thread.votes.map((v) => ({ ...v, weight: weightOf(thread, v.memberId).total })),
+    [...live],
+    thread.votes.filter((v) => live.has(v.positionId)).map((v) => ({ ...v, weight: weightOf(thread, v.memberId).total })),
   );
 }
 
@@ -147,7 +149,11 @@ export const CONVERGE_MARGIN = 3;
 
 // Comments form a tree. Top-level comments are the options: they get letters,
 // lead, and can be adopted. Every comment can be voted on.
+// Deleted top-level comments keep their place (and letter) so the tree and
+// the letters others refer to don't shift; `options` are the ones still standing.
 export const topLevel = (t: Thread) => t.positions.filter((p) => !p.parentId);
+export const options = (t: Thread) => topLevel(t).filter((p) => !p.deleted);
+export const liveComments = (t: Thread) => t.positions.filter((p) => !p.deleted);
 export const childrenOf = (t: Thread, id: string) => t.positions.filter((p) => p.parentId === id);
 export const letterOf = (t: Thread, id: string) => String.fromCharCode(65 + topLevel(t).findIndex((p) => p.id === id));
 
@@ -229,8 +235,22 @@ export function canDelete(t: Thread): boolean {
   if (workFor(t)) return false;
   if (remote && !session.userId) return false;
   if (state.role === 'lead') return true;
-  const others = t.positions.some((p) => p.authorId !== 'me') || t.votes.some((v) => v.memberId !== 'me');
+  const others = liveComments(t).some((p) => p.authorId !== 'me') || t.votes.some((v) => v.memberId !== 'me' && liveComments(t).some((p) => p.id === v.positionId));
   return t.authorId === 'me' && !others;
+}
+/** Leads can delete any comment; anyone their own. The adopted option stays on the record. */
+export function canDeleteComment(t: Thread, p: Position): boolean {
+  if (p.deleted || t.settled?.positionId === p.id) return false;
+  if (remote && !session.userId) return false;
+  return state.role === 'lead' || p.authorId === 'me';
+}
+/** Soft: the comment keeps its place for the replies under it but loses its words, author and source. */
+export function deleteComment(t: Thread, p: Position) {
+  if (remote) return void call('sa_delete_comment', { p_comment: p.id });
+  p.deleted = p.authorId === 'me' ? 'author' : 'lead';
+  p.text = '';
+  p.authorId = undefined;
+  p.source = undefined;
 }
 /** Soft delete live (kept with who and why, hidden from everyone); gone from this browser in the demo. */
 export function deleteThread(t: Thread, reason: string) {
@@ -281,7 +301,7 @@ export function retroContributions(): Scored[] {
     .filter((t) => t.version === NEXT)
     .flatMap((t) => {
       const tallies = talliesOf(t);
-      return t.positions.map((p) => ({
+      return liveComments(t).map((p) => ({
         positionId: p.id,
         threadId: t.id,
         recipient: p.authorId ?? `source:${p.source?.label ?? 'unattributed'}`,
@@ -391,7 +411,7 @@ export function standing(t: Thread) {
     return { status: 'settled' as Status, text: `Decided: ${letter(t.settled.positionId)} · ${t.settled.decision}${work}` };
   }
   if (t.declined) return { status: 'declined' as Status, text: 'Declined' };
-  const n = t.positions.length;
+  const n = liveComments(t).length;
   if (!n) return { status: 'needs' as Status, text: 'No comments yet' };
   const votes = t.votes.length;
   const { top, share } = leaderOf(t);
