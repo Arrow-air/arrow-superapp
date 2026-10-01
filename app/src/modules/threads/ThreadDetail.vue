@@ -15,7 +15,7 @@ import { partById } from '../../data/quiver';
 import { boardById } from '../../data/pcbs';
 import {
   changedWinner, comment, day, decline, defer, draftWork, isOpen, leaderOf, letterOf, locked, person, reopen, settle,
-  standing, state, talliesOf, topLevel, weightOf, workFor, isBuilder, setBuilder, type WorkKind,
+  standing, state, talliesOf, topLevel, options, liveComments, weightOf, workFor, isBuilder, setBuilder, type WorkKind,
 } from './store';
 import { remote } from '../../lib/backend';
 import { session } from '../../lib/session';
@@ -50,6 +50,9 @@ const formula = computed(() =>
 // Top-level comments ordered by weighted score, so the leader reads first;
 // ties keep the order they were posted in.
 const tops = computed(() => topLevel(t.value));
+// The options still standing: what can lead, be counted and be adopted.
+const live = computed(() => options(t.value));
+const commentCount = computed(() => liveComments(t.value).length);
 const ordered = computed(() =>
   tops.value.map((p, i) => ({ p, i })).sort((a, b) => (tallyOf(b.p.id)?.weightedScore ?? 0) - (tallyOf(a.p.id)?.weightedScore ?? 0) || a.i - b.i).map((x) => x.p),
 );
@@ -75,7 +78,7 @@ const declineNote = ref('');
 const deferNote = ref('');
 const choice = ref<string>();
 const note = ref('');
-const chosen = computed(() => choice.value ?? (hasLeader.value ? leader.value.top!.positionId : tops.value[0]?.id));
+const chosen = computed(() => choice.value ?? (hasLeader.value ? leader.value.top!.positionId : live.value[0]?.id));
 // "Adopt…" on a comment: pick it in the outcome block and go there.
 const noteInput = ref<HTMLInputElement>();
 function adoptFrom(id: string) {
@@ -220,10 +223,10 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
     <section class="block comments">
       <div class="block-head">
         <h2 class="label">
-          <template v-if="!tops.length">Comments</template>
-          <template v-else-if="!open">{{ tops.length }} {{ tops.length === 1 ? 'option' : 'options' }} · {{ t.settled ? 'decided' : 'closed' }}</template>
-          <template v-else>{{ tops.length }} competing {{ tops.length === 1 ? 'option' : 'options' }} <span class="label-hint">· vote up the one you'd build</span></template>
-          <span v-if="t.positions.length > tops.length" class="legend">· {{ t.positions.length }} comments</span>
+          <template v-if="!live.length">Comments</template>
+          <template v-else-if="!open">{{ live.length }} {{ live.length === 1 ? 'option' : 'options' }} · {{ t.settled ? 'decided' : 'closed' }}</template>
+          <template v-else>{{ live.length }} competing {{ live.length === 1 ? 'option' : 'options' }} <span class="label-hint">· vote up the one you'd build</span></template>
+          <span v-if="commentCount > live.length" class="legend">· {{ commentCount }} comments</span>
         </h2>
         <span class="legend">
           <label v-if="remote && session.userId && open" class="builder" title="Adds one point of weight to your votes in this thread">
@@ -258,7 +261,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
       </form>
       <p v-else class="hint-line">Closed to new options. You can still reply under a comment.</p>
 
-      <p v-if="!t.positions.length" class="empty">No comments yet. Start the discussion.</p>
+      <p v-if="!commentCount" class="empty">No comments yet. Start the discussion.</p>
       <div class="tree">
         <CommentNode v-for="c in ordered" :key="c.id" :thread="t" :c="c" :depth="0" :formula="formula" @adopt="adoptFrom" />
       </div>
@@ -291,11 +294,11 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
           <button class="primary" type="button" @click="defer(t, deferNote.trim() || undefined)">Defer to {{ LATER }}</button>
         </div>
       </template>
-      <p v-else-if="!tops.length" class="hint-line">Adopting picks a top-level comment; there are none yet.</p>
+      <p v-else-if="!live.length" class="hint-line">Adopting picks a top-level comment; there are none yet.</p>
       <template v-else>
       <div class="choices" role="radiogroup" aria-label="Position to decide on">
         <button
-          v-for="p in tops"
+          v-for="p in live"
           :key="p.id"
           type="button"
           role="radio"

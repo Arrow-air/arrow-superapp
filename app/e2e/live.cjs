@@ -17,6 +17,15 @@ async function makeUser(email, name) {
   const r = await fetch(`${SUPA}/auth/v1/admin/users`, { method: 'POST', headers: admin, body: JSON.stringify({ email, password: PASS, email_confirm: true, user_metadata: { name } }) });
   return (await r.json()).id;
 }
+async function tokenFor(email) {
+  const r = await fetch(`${SUPA}/auth/v1/token?grant_type=password`, { method: 'POST', headers: { apikey: ANON, 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: PASS }) });
+  return (await r.json()).access_token;
+}
+/** Call an sa_ function as a user; resolves to the HTTP status. */
+async function rpcAs(email, fn, args) {
+  const r = await fetch(`${SUPA}/rest/v1/rpc/${fn}`, { method: 'POST', headers: { apikey: ANON, Authorization: `Bearer ${await tokenFor(email)}`, 'Content-Type': 'application/json' }, body: JSON.stringify(args) });
+  return r.status;
+}
 async function signIn(p, email) {
   await p.getByRole('button', { name: 'Use email and password instead' }).click();
   await p.getByRole('dialog').getByLabel('Email').fill(email);
@@ -70,6 +79,20 @@ async function signIn(p, email) {
   check((await panel.locator('.cm-kids .cm').first().innerText()).includes('Agreed, nested reply'), 'nested reply saved under it');
   check(!(await panel.getByText('Outcome, as lead').count()), 'a member sees no lead controls');
 
+  // Deleting comments: your own reply; never someone else's.
+  await panel.getByLabel('New comment').fill('Second idea, posted to be removed');
+  await panel.getByRole('button', { name: 'Comment', exact: true }).click();
+  await p.waitForTimeout(1500);
+  const replyNode = panel.locator('.cm-kids .cm').filter({ hasText: 'Agreed, nested reply' });
+  await replyNode.getByRole('button', { name: 'Delete this reply' }).click();
+  await replyNode.getByRole('button', { name: 'Yes, delete' }).click();
+  await p.waitForTimeout(1500);
+  await p.reload();
+  await p.waitForSelector('aside.panel .cm.top', { timeout: 20000 });
+  await p.waitForTimeout(1000);
+  check(!(await panel.innerText()).includes('Agreed, nested reply') && (await panel.innerText()).includes('Do the obvious thing'), 'a member deletes their own reply and it stays gone after a reload');
+  check(await rpcAs(users.member, 'sa_delete_comment', { p_comment: 'Q-6-p1' }) >= 400, 'the database refuses a member deleting someone else\'s comment');
+
   // Lead: sign in fresh in a new context, set role through the database the way a grant or lead would.
   await fetch(`${SUPA}/rest/v1/sa_members?user_id=eq.${leadId}`, { method: 'PATCH', headers: admin, body: JSON.stringify({ role: 'lead' }) }).catch(() => {});
   const c2 = await b.newContext({ viewport: { width: 1280, height: 860 } });
@@ -89,6 +112,18 @@ async function signIn(p, email) {
   await lp.getByRole('button', { name: 'Record decision' }).click();
   await q.waitForTimeout(1500);
   check(/D-\d{3}/.test(await lp.locator('.pipe').innerText()), 'lead decision is recorded with a D-number');
+  check(!(await lp.locator('.cm.top.decided').getByRole('button', { name: /^Delete option / }).count()), 'the adopted option has no Delete');
+  const adopted = (await (await fetch(`${SUPA}/rest/v1/sa_threads?id=eq.${tid}&select=settled`, { headers: admin })).json())[0].settled.positionId;
+  check(await rpcAs(users.lead, 'sa_delete_comment', { p_comment: adopted }) >= 400, 'the database keeps the adopted option even for a lead');
+  const spam = lp.locator('.cm.top').filter({ hasText: 'Second idea, posted to be removed' });
+  await spam.getByRole('button', { name: /^Delete option / }).click();
+  await spam.getByRole('button', { name: 'Yes, delete' }).click();
+  await q.waitForTimeout(1500);
+  const gone = (await (await fetch(`${SUPA}/rest/v1/sa_positions?thread_id=eq.${tid}&deleted_at=not.is.null&select=id,text,author_id,removed`, { headers: admin })).json());
+  const kept = gone.length ? (await (await fetch(`${SUPA}/rest/v1/sa_deleted_comments?id=eq.${gone.find((g) => g.removed)?.id}&select=text`, { headers: admin })).json()) : [];
+  check(!(await lp.innerText()).includes('Second idea, posted to be removed') && gone.some((g) => g.removed && g.text === '' && !g.author_id) && kept[0]?.text === 'Second idea, posted to be removed', 'a lead removes a member\'s comment: blanked publicly, kept privately');
+  const anonRead = await fetch(`${SUPA}/rest/v1/sa_deleted_comments?select=id`, { headers: { apikey: ANON } });
+  check(anonRead.status >= 400 || (await anonRead.json()).length === 0, 'deleted text is not readable through the API');
   await lp.getByRole('button', { name: 'Fund it as a bounty or grant' }).click();
   await lp.getByLabel('Acceptance').fill('It works.');
   await lp.getByLabel('Reward in ARROW').fill('300');
