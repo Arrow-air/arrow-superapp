@@ -39,6 +39,12 @@ export interface Settled {
 export interface Declined { byId: string; at: string; note: string }
 /** Pushed to a later version; the thread stays open there. */
 export interface Deferral { from: string; to: string; byId: string; at: string; note?: string }
+/** An outcome a lead put back into discussion: what it was, and who reopened it, when and why. */
+export interface Reopening {
+  was: 'decided' | 'declined';
+  decision?: string; positionId?: string; decidedBy?: string; decidedAt?: string; decisionNote?: string;
+  byId: string; at: string; note?: string;
+}
 
 export interface Thread {
   id: string;
@@ -66,6 +72,8 @@ export interface Thread {
   settled?: Settled;
   declined?: Declined;
   deferrals?: Deferral[];
+  /** Outcomes reopened by a lead, oldest first. */
+  history?: Reopening[];
 }
 
 export const callSource = (ref: string): SourceRef => ({ kind: 'call', ref, label: 'Sep 29 call' });

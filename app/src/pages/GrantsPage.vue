@@ -15,9 +15,11 @@ const order: { stage: Work['stage']; label: string }[] = [
   { stage: 'in_review', label: 'Waiting for review' },
   { stage: 'draft', label: 'Drafts' },
   { stage: 'completed', label: 'Accepted' },
+  { stage: 'withdrawn', label: 'Withdrawn (decision reopened)' },
 ];
 const groups = computed(() => order.map((o) => ({ ...o, items: state.work.filter((w) => w.stage === o.stage) })).filter((g) => g.items.length));
-const committed = computed(() => state.work.filter((w) => w.stage !== 'draft').reduce((s, w) => s + w.reward, 0));
+const live = (w: Work) => w.stage !== 'draft' && w.stage !== 'withdrawn';
+const committed = computed(() => state.work.filter(live).reduce((s, w) => s + w.reward, 0));
 const threadOf = (w: Work) => state.threads.find((t) => t.id === w.threadId);
 const open = (w: Work) => router.replace({ query: { ...route.query, thread: w.threadId } });
 </script>
@@ -36,7 +38,7 @@ const open = (w: Work) => router.replace({ query: { ...route.query, thread: w.th
     <p v-if="!state.work.length" class="vempty">
       Nothing funded yet. Open a decided thread and, as a lead, choose "Fund it as a bounty or grant". The task board from GitHub is under Work › Task board.
     </p>
-    <p v-else class="muted sum"><b>{{ committed.toLocaleString('en-US') }}</b> ARROW published across {{ state.work.filter((w) => w.stage !== 'draft').length }} of {{ state.work.length }}</p>
+    <p v-else class="muted sum"><b>{{ committed.toLocaleString('en-US') }}</b> ARROW published across {{ state.work.filter(live).length }} of {{ state.work.length }}</p>
     <section v-for="g in groups" :key="g.stage" class="view-section">
       <h2>{{ g.label }}</h2>
       <table class="vt">

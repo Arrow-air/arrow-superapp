@@ -124,6 +124,17 @@ async function signIn(p, email) {
   check(!(await lp.innerText()).includes('Second idea, posted to be removed') && gone.some((g) => g.removed && g.text === '' && !g.author_id) && kept[0]?.text === 'Second idea, posted to be removed', 'a lead removes a member\'s comment: blanked publicly, kept privately');
   const anonRead = await fetch(`${SUPA}/rest/v1/sa_deleted_comments?select=id`, { headers: { apikey: ANON } });
   check(anonRead.status >= 400 || (await anonRead.json()).length === 0, 'deleted text is not readable through the API');
+  // Reopen as discussion, then decide again: the D-number comes back.
+  const decNo = (/D-\d{3}/.exec(await lp.locator('.pipe').innerText()) ?? [''])[0];
+  await lp.getByRole('button', { name: 'Reopen as discussion' }).click();
+  await lp.getByLabel('Why reopen').fill('Checking the reopen path');
+  await lp.getByRole('button', { name: 'Reopen', exact: true }).click();
+  await q.waitForTimeout(1500);
+  check((await lp.getByText('Outcome, as lead').count()) > 0 && (await lp.innerText()).includes(`${decNo} (adopted`) && (await lp.innerText()).includes('Checking the reopen path'), 'a lead reopens the decision; it goes on the thread\'s record');
+  await lp.getByLabel('Decision note').fill('Simple and cheap, still.');
+  await lp.getByRole('button', { name: 'Record decision' }).click();
+  await q.waitForTimeout(1500);
+  check((await lp.locator('.pipe').innerText()).includes(decNo), `decided again, it keeps ${decNo}`);
   await lp.getByRole('button', { name: 'Fund it as a bounty or grant' }).click();
   await lp.getByLabel('Acceptance').fill('It works.');
   await lp.getByLabel('Reward in ARROW').fill('300');
@@ -138,6 +149,7 @@ async function signIn(p, email) {
   await panel.getByRole('button', { name: 'Claim this bounty' }).click();
   await p.waitForTimeout(1500);
   check((await panel.locator('.wc .stage').innerText()) === 'In progress' && (await panel.locator('.wc').innerText()).includes('You took it on'), 'the member claims it');
+  check(await rpcAs(users.lead, 'sa_reopen', { p_thread: tid }) >= 400, 'the database keeps a decision once its bounty is claimed');
   const award = await panel.locator('.wc .award').innerText();
   check(award.includes('75 ARROW') && award.includes('You'), `proposer award goes to the position's author, seen by them as You (${award.replace(/\s+/g, ' ').slice(0, 90)})`);
 

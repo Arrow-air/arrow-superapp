@@ -14,7 +14,7 @@ import { LATER, NEXT, type Thread } from './data';
 import { partById } from '../../data/quiver';
 import { boardById } from '../../data/pcbs';
 import {
-  changedWinner, comment, day, decline, defer, draftWork, isOpen, leaderOf, letterOf, locked, person, reopen, settle,
+  canReopen, changedWinner, comment, day, decline, defer, draftWork, isOpen, leaderOf, letterOf, locked, person, reopen, settle, takenWork,
   standing, state, talliesOf, topLevel, options, liveComments, weightOf, workFor, isBuilder, setBuilder, type WorkKind,
 } from './store';
 import { remote } from '../../lib/backend';
@@ -120,7 +120,18 @@ const proposerName = computed(() => {
   return p?.authorId ? nameOf(p.authorId) : p?.source ? `the source (${p.source.label})` : 'the proposer';
 });
 
+// Reopening an outcome: back to discussion, with an optional reason on the record.
+const reopening = ref(false);
+const reopenNote = ref('');
+const withdrawable = computed(() => state.work.find((w) => w.threadId === t.value.id && (w.stage === 'draft' || w.stage === 'open')));
+const taken = computed(() => takenWork(t.value));
+function doReopen() {
+  reopen(t.value, reopenNote.value.trim() || undefined);
+  reopening.value = false;
+  reopenNote.value = '';
+}
 watch(() => t.value.id, () => {
+  reopening.value = false; reopenNote.value = '';
   newComment.value = ''; choice.value = undefined; note.value = '';
   outcome.value = 'adopt'; declineNote.value = ''; deferNote.value = ''; funding.value = false;
 });
@@ -165,6 +176,10 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         <StatusIcon :status="stand.status" :override="t.settled?.override" :size="12" />
         {{ stand.status === 'needs' ? 'Needs input' : stand.status === 'converging' ? 'Converging' : stand.status === 'declined' ? 'Declined' : 'Decided' }}<span class="dot">·</span>{{ stand.text }}
       </p>
+      <p v-for="(h, i) in t.history ?? []" :key="`h${i}`" class="deferred">
+        <template v-if="h.was === 'decided'">{{ h.decision }} (adopted {{ letter(h.positionId!) }}, {{ nameOf(h.decidedBy) }}, {{ day(h.decidedAt!) }})</template><template v-else>Declined ({{ nameOf(h.decidedBy) }}, {{ day(h.decidedAt!) }})</template>
+        reopened by {{ nameOf(h.byId) }}, {{ day(h.at) }}<template v-if="h.note">: {{ h.note }}</template>
+      </p>
       <p v-for="(d, i) in t.deferrals ?? []" :key="i" class="deferred">Deferred from {{ d.from }} to {{ d.to }} by {{ nameOf(d.byId) }}, {{ day(d.at) }}<template v-if="d.note">: {{ d.note }}</template></p>
       <p v-if="t.body" class="body">{{ t.body }}</p>
     </header>
@@ -176,21 +191,35 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         <span v-if="t.settled.override" class="tag warn">Override</span>
         <span class="muted">{{ nameOf(t.settled.byId) }} as lead, {{ day(t.settled.at) }}</span>
         <SourceChip v-if="t.settled.source" :source="t.settled.source" />
-        <button v-if="isLead && !frozen && !work && !t.settled.source" class="ghost" type="button" @click="reopen(t)">Reopen</button>
+        <button v-if="canReopen(t) && !reopening" class="ghost" type="button" @click="reopening = true">Reopen as discussion</button>
       </div>
       <p class="note">{{ t.settled.note }}</p>
       <p v-if="frozen" class="muted small">Part of the frozen {{ NEXT }} spec.</p>
+      <p v-else-if="isLead && taken && !t.settled.source" class="muted small">{{ taken.id }} has been taken on, so this decision stays.</p>
     </section>
 
     <section v-if="t.declined" class="decided">
       <div class="decided-head">
         <span class="strong">Declined</span>
         <span class="muted">{{ nameOf(t.declined.byId) }} as lead, {{ day(t.declined.at) }}</span>
-        <button v-if="isLead && !frozen" class="ghost" type="button" @click="reopen(t)">Reopen</button>
+        <button v-if="canReopen(t) && !reopening" class="ghost" type="button" @click="reopening = true">Reopen as discussion</button>
       </div>
       <p class="note">{{ t.declined.note }}</p>
       <p class="muted small">Declined ideas still share in the retro pool by the support they got.</p>
     </section>
+
+    <form v-if="reopening && canReopen(t)" class="reopen" @submit.prevent="doReopen">
+      <p class="hint-line">
+        Puts the thread back into discussion; votes and comments stay.
+        <template v-if="withdrawable">{{ withdrawable.id }} ({{ withdrawable.stage === 'open' ? 'open' : 'draft' }} {{ withdrawable.kind }}) is withdrawn.</template>
+        <template v-if="t.settled">Decided again, it keeps {{ t.settled.decision }}.</template>
+      </p>
+      <div class="settle-act">
+        <input v-model="reopenNote" class="field" placeholder="Why (optional)" aria-label="Why reopen" />
+        <button class="primary" type="submit">Reopen</button>
+        <button class="ghost" type="button" @click="reopening = false">Cancel</button>
+      </div>
+    </form>
 
     <section v-if="t.settled" class="block work">
       <div class="block-head"><h2 class="label">Work</h2></div>
@@ -510,6 +539,8 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .pipe li.done { border-color: var(--jade-a5); color: var(--jade-11); }
 .pipe li.stop { color: var(--fg-muted); }
 .pipe .mono { font-size: 11px; }
+.reopen { margin-top: 12px; padding: 12px 14px; border: 1px solid var(--slate-a4); border-radius: 12px; background: var(--slate-a2); }
+.reopen .settle-act { margin-top: 10px; }
 .deferred { margin: 6px 0 0; font-size: var(--text-sm); color: var(--fg-muted); }
 .small { font-size: var(--text-sm); }
 .composer.top { margin: 4px 0 6px; }
