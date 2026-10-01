@@ -15,7 +15,7 @@ import { LATER, NEXT, type Thread } from './data';
 import { partById } from '../../data/quiver';
 import { boardById } from '../../data/pcbs';
 import {
-  canReopen, changedWinner, comment, day, decline, defer, draftWork, isOpen, leaderOf, letterOf, locked, person, reopen, settle, takenWork,
+  canEditThread, canReopen, changedWinner, editThread, comment, day, decline, defer, draftWork, isOpen, leaderOf, letterOf, locked, person, reopen, settle, takenWork,
   standing, state, talliesOf, topLevel, options, liveComments, weightOf, workFor, isBuilder, setBuilder, type WorkKind,
 } from './store';
 import { remote } from '../../lib/backend';
@@ -121,6 +121,16 @@ const proposerName = computed(() => {
   return p?.authorId ? nameOf(p.authorId) : p?.source ? `the source (${p.source.label})` : 'the proposer';
 });
 
+// Editing the thread's title and description, in place (author or lead).
+const editingThread = ref(false);
+const titleDraft = ref('');
+const bodyDraft = ref('');
+function startEditThread() { titleDraft.value = t.value.title; bodyDraft.value = t.value.body ?? ''; editingThread.value = true; }
+function saveThread() {
+  if (!titleDraft.value.trim()) return;
+  editThread(t.value, titleDraft.value, bodyDraft.value);
+  editingThread.value = false;
+}
 // Reopening an outcome: back to discussion, with an optional reason on the record.
 const reopening = ref(false);
 const reopenNote = ref('');
@@ -133,7 +143,7 @@ function doReopen() {
   reopenNote.value = '';
 }
 watch(() => t.value.id, () => {
-  reopening.value = false; reopenNote.value = '';
+  reopening.value = false; reopenNote.value = ''; editingThread.value = false;
   newComment.value = ''; choice.value = undefined; note.value = '';
   outcome.value = 'adopt'; declineNote.value = ''; deferNote.value = ''; funding.value = false;
 });
@@ -147,7 +157,16 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
       <div class="head-top">
         <ThreadVote :thread="t" />
         <div class="head-main">
-          <h1 class="title">{{ t.title }}</h1>
+          <form v-if="editingThread" class="edit-thread" @submit.prevent="saveThread" @keydown.esc="editingThread = false">
+            <input v-model="titleDraft" class="et-title" maxlength="160" aria-label="Thread title" />
+            <textarea v-model="bodyDraft" rows="4" placeholder="Context (optional)" aria-label="Thread description" @keydown.meta.enter.prevent="saveThread" @keydown.ctrl.enter.prevent="saveThread"></textarea>
+            <div class="et-bar">
+              <span class="hint">Shows as edited; earlier versions are kept.</span>
+              <button class="ghost" type="button" @click="editingThread = false">Cancel</button>
+              <button class="primary sm" type="submit" :disabled="!titleDraft.trim() || (titleDraft.trim() === t.title && bodyDraft.trim() === (t.body ?? ''))">Save</button>
+            </div>
+          </form>
+          <h1 v-else class="title">{{ t.title }}</h1>
           <p class="meta">
             <span class="type" :style="typeStyle(t.type)"><Icon :name="threadTypes[t.type].icon" :size="12" />{{ threadTypes[t.type].label }}</span>
             <span v-if="due" class="due" :data-level="freeze.level.value" title="Open threads are settled, deferred or declined at the design freeze">
@@ -157,6 +176,8 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
             <span>{{ day(t.raisedAt) }}</span>
             <template v-if="t.source"><span class="dot"></span><SourceChip :source="t.source" /></template>
             <template v-if="t.version"><span class="dot">·</span><span class="mono ver" title="The version this thread is about">{{ t.version }}</span></template>
+            <template v-if="t.editedAt"><span class="dot">·</span><span class="edited" :title="`Edited ${day(t.editedAt)}`">edited</span></template>
+            <button v-if="canEditThread(t) && !editingThread" class="ghost edit-t" type="button" aria-label="Edit thread" @click="startEditThread">Edit</button>
           </p>
         </div>
       </div>
@@ -189,7 +210,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         reopened by {{ nameOf(h.byId) }}, {{ day(h.at) }}<template v-if="h.note">: {{ h.note }}</template>
       </p>
       <p v-for="(d, i) in t.deferrals ?? []" :key="i" class="deferred">Deferred from {{ d.from }} to {{ d.to }} by {{ nameOf(d.byId) }}, {{ day(d.at) }}<template v-if="d.note">: {{ d.note }}</template></p>
-      <p v-if="t.body" class="body">{{ t.body }}</p>
+      <p v-if="t.body && !editingThread" class="body">{{ t.body }}</p>
     </header>
 
     <section v-if="t.settled" class="decided">
@@ -575,4 +596,13 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .fund-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .reward { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--fg-muted); }
 .reward input { width: 110px; height: 30px; padding: 0 8px; border: 1px solid var(--slate-a4); border-radius: 8px; background: var(--slate-a2); color: var(--fg); font: inherit; font-size: var(--text-base); outline: none; }
+.edited { font-style: italic; }
+.edit-t { margin-left: 10px; }
+.edit-thread { display: grid; gap: 8px; margin: 0 0 10px; padding: 10px 12px; border: 1px solid var(--slate-a5); border-radius: 12px; background: var(--slate-2); }
+.edit-thread:focus-within { border-color: var(--slate-a7); }
+.et-title { width: 100%; padding: 0; border: 0; background: none; outline: none; color: var(--fg); font: inherit; font-size: 18px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; }
+.edit-thread textarea { width: 100%; padding: 0; border: 0; background: none; outline: none; resize: vertical; color: var(--fg-2); font: inherit; font-size: var(--text-nav); line-height: 1.6; }
+.edit-thread textarea::placeholder { color: var(--fg-faint); }
+.et-bar { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.et-bar .hint { margin-right: auto; }
 </style>

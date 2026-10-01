@@ -42,7 +42,7 @@ export function load(): Promise<void> {
         id: t.id, zone: t.zone, part: t.part ?? undefined, pcb: t.pcb ?? undefined,
         title: t.title, body: t.body, kind: t.kind, type: t.type, system: t.system, version: t.version,
         authorId: mine(t.author_id) ?? t.named ?? undefined, source: t.source ?? undefined,
-        raisedAt: t.raised_at, activeAt: t.active_at,
+        raisedAt: t.raised_at, activeAt: t.active_at, editedAt: t.edited_at ?? undefined,
         // One comment tree: top-level comments are the options, replies carry parentId.
         positions: (P.get(t.id) ?? []).map((p) => ({ id: p.id, text: p.text, authorId: mine(p.author_id) ?? p.named ?? undefined, source: p.source ?? undefined, at: p.created_at, parentId: p.parent_id ?? undefined, deleted: p.deleted_at ? (p.removed ? 'lead' : 'author') : undefined, editedAt: p.edited_at ?? undefined })),
         votes: (V.get(t.id) ?? []).map((v) => ({ memberId: mine(v.user_id)!, positionId: v.position_id, value: v.value })),

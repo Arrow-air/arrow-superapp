@@ -192,6 +192,20 @@ export function vote(thread: Thread, positionId: string, value: 1 | -1) {
   thread.activeAt = now();
 }
 
+/** Its author or a lead can edit a thread's title and description, until its version is frozen. */
+export function canEditThread(t: Thread): boolean {
+  if (remote && !session.userId) return false;
+  return (state.role === 'lead' || t.authorId === 'me') && !locked(t);
+}
+/** Marked as edited; live, the earlier version is kept privately. */
+export function editThread(t: Thread, title: string, body: string) {
+  if (!title.trim() || (title.trim() === t.title && body.trim() === t.body)) return;
+  if (remote) return void call('sa_edit_thread', { p_thread: t.id, p_title: title.trim(), p_body: body.trim() });
+  t.title = title.trim();
+  t.body = body.trim();
+  t.editedAt = now();
+  t.activeAt = now();
+}
 /** Up or down on the thread itself, Reddit style; the same vote again takes it back. Open threads only. */
 export function voteThread(thread: Thread, value: 1 | -1) {
   if (!isOpen(thread)) return;
