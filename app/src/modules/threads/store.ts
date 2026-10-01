@@ -263,6 +263,19 @@ export function canDeleteComment(t: Thread, p: Position): boolean {
   if (remote && !session.userId) return false;
   return state.role === 'lead' || p.authorId === 'me';
 }
+/** Authors can edit their own comments, except the adopted option, which the decision quotes. */
+export function canEditComment(t: Thread, p: Position): boolean {
+  if (p.deleted || p.authorId !== 'me' || t.settled?.positionId === p.id) return false;
+  return !remote || !!session.userId;
+}
+/** Marked as edited; live, the earlier version is kept privately. */
+export function editComment(t: Thread, p: Position, text: string) {
+  if (!text.trim() || text.trim() === p.text) return;
+  if (remote) return void call('sa_edit_comment', { p_comment: p.id, p_text: text.trim() });
+  p.text = text.trim();
+  p.editedAt = now();
+  t.activeAt = now();
+}
 /** Soft: the comment keeps its place for the replies under it but loses its words, author and source. */
 export function deleteComment(t: Thread, p: Position) {
   if (remote) return void call('sa_delete_comment', { p_comment: p.id });

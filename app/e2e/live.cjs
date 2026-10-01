@@ -79,6 +79,19 @@ async function signIn(p, email) {
   check((await panel.locator('.cm-kids .cm').first().innerText()).includes('Agreed, nested reply'), 'nested reply saved under it');
   check(!(await panel.getByText('Outcome, as lead').count()), 'a member sees no lead controls');
 
+  // Editing your own comment: saved, marked edited, the earlier text kept privately.
+  const own = panel.locator('.cm.top').filter({ hasText: 'Do the obvious thing' });
+  await own.getByRole('button', { name: /^Edit option / }).click();
+  await panel.getByRole('textbox', { name: 'Edit comment' }).fill('Do the obvious thing, carefully');
+  await panel.getByRole('button', { name: 'Save' }).click();
+  await p.waitForTimeout(1500);
+  await p.reload();
+  await p.waitForSelector('aside.panel .cm.top', { timeout: 20000 });
+  await p.waitForTimeout(1000);
+  const edits = await (await fetch(`${SUPA}/rest/v1/sa_comment_edits?thread_id=eq.${tid}&select=text`, { headers: admin })).json();
+  check((await panel.innerText()).includes('Do the obvious thing, carefully') && (await panel.locator('.cm.top .edited').count()) > 0 && edits.some((e) => e.text === 'Do the obvious thing'), 'a member edits their own comment; it shows as edited and the old text is kept privately');
+  check(await rpcAs(users.member, 'sa_edit_comment', { p_comment: 'Q-6-p1', p_text: 'hijack' }) >= 400, 'the database refuses editing someone else\'s comment');
+
   // Deleting comments: your own reply; never someone else's.
   await panel.getByLabel('New comment').fill('Second idea, posted to be removed');
   await panel.getByRole('button', { name: 'Comment', exact: true }).click();
@@ -115,6 +128,7 @@ async function signIn(p, email) {
   check(!(await lp.locator('.cm.top.decided').getByRole('button', { name: /^Delete option / }).count()), 'the adopted option has no Delete');
   const adopted = (await (await fetch(`${SUPA}/rest/v1/sa_threads?id=eq.${tid}&select=settled`, { headers: admin })).json())[0].settled.positionId;
   check(await rpcAs(users.lead, 'sa_delete_comment', { p_comment: adopted }) >= 400, 'the database keeps the adopted option even for a lead');
+  check(await rpcAs(users.member, 'sa_edit_comment', { p_comment: adopted, p_text: 'Changed after adoption' }) >= 400, 'the adopted option can\'t be edited, even by its author');
   const spam = lp.locator('.cm.top').filter({ hasText: 'Second idea, posted to be removed' });
   await spam.getByRole('button', { name: /^Delete option / }).click();
   await spam.getByRole('button', { name: 'Yes, delete' }).click();
