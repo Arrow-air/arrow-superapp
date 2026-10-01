@@ -137,7 +137,7 @@ const githubFile = computed(() => `https://github.com/Arrow-air/project-quiver/b
   <div class="pp">
     <aside class="side">
       <div class="boards" role="tablist" aria-label="Board">
-        <button v-for="b in boards" :key="b.id" type="button" role="tab" :aria-selected="b.id === board.id" @click="pickBoard(b.id)">{{ b.name.replace(' PCB', '') }}</button>
+        <button v-for="b in boards" :key="b.id" type="button" role="tab" :aria-selected="b.id === board.id" :title="b.name" @click="pickBoard(b.id)">{{ b.short }}</button>
       </div>
 
       <template v-if="selected">
@@ -208,8 +208,8 @@ const githubFile = computed(() => `https://github.com/Arrow-air/project-quiver/b
 .stage { position: relative; min-height: 0; background: #001023; }
 .stage kicanvas-embed { display: block; width: 100%; height: 100%; }
 .loading { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: #9fb3c8; font-size: var(--text-base); }
-.boards { display: flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--slate-a3); }
-.boards button { flex: 1; height: 26px; padding: 0 6px; border: 0; border-radius: 6px; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; white-space: nowrap; }
+.boards { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 2px; border-radius: 8px; background: var(--slate-a3); }
+.boards button { height: 26px; padding: 0 6px; border: 0; border-radius: 6px; background: none; color: var(--fg-muted); font: inherit; font-size: var(--text-sm); font-weight: 500; cursor: pointer; white-space: nowrap; }
 .boards button[aria-selected='true'] { background: var(--slate-a6); color: var(--fg); }
 .mono { font-family: var(--font-mono); }
 .title { margin: 16px 0 0; font-size: 18px; font-weight: 600; color: var(--fg); }

@@ -1,10 +1,11 @@
 {
- "generatedAt": "2026-10-01T04:08:09.696Z",
+ "generatedAt": "2026-10-01T14:09:06.802Z",
  "commit": "9ef9efc",
  "boards": [
   {
    "id": "main",
    "name": "Main PCB",
+   "short": "Main",
    "part": "3310",
    "path": "src/pcb/main_pcb/Quiver_PT3_Main_PCB-rounded.kicad_pcb",
    "file": "pcb/main.kicad_pcb",
@@ -1488,8 +1489,487 @@
    ]
   },
   {
+   "id": "fc",
+   "name": "Flight controller PCB",
+   "short": "Flight controller",
+   "part": "3330",
+   "path": "src/pcb/fc_pcb/Quiver_PT3_FC_PCB.kicad_pcb",
+   "file": "pcb/fc.kicad_pcb",
+   "footprints": [
+    {
+     "ref": "F3",
+     "value": "NANOSMDC035F-2",
+     "footprint": "NANOSMDC016F2",
+     "description": "Littelfuse 0.35A Resettable Surface Mount Fuse, 16V dc",
+     "layer": "F.Cu",
+     "x": 118.5,
+     "y": 120.4
+    },
+    {
+     "ref": "LED7",
+     "value": "APT2012LVBC_D",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 157.4,
+     "y": 127.7
+    },
+    {
+     "ref": "J1",
+     "value": "AXK5S00347YG",
+     "footprint": "AXK5S00347YG_AXK5S00347YG",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 150,
+     "y": 117
+    },
+    {
+     "ref": "LED8",
+     "value": "APT2012LVBC_D",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 167.5,
+     "y": 127.7
+    },
+    {
+     "ref": "LED1",
+     "value": "APT2012LVBC_D",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 132.5,
+     "y": 127.65
+    },
+    {
+     "ref": "LED3",
+     "value": "APT2012LVBC_D",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 142.5,
+     "y": 127.65
+    },
+    {
+     "ref": "R7",
+     "value": "1K2",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 141.8,
+     "y": 124.6
+    },
+    {
+     "ref": "R8",
+     "value": "1K2",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 146.8,
+     "y": 124.6
+    },
+    {
+     "ref": "FL4",
+     "value": "NFM21PC104R1E3D",
+     "footprint": "NFM21PC104R1E3D",
+     "description": "Capacitor L=2.0mm W=1.25mm T=0.85mm",
+     "layer": "F.Cu",
+     "x": 181.6,
+     "y": 126.1
+    },
+    {
+     "ref": "R5",
+     "value": "1K2",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 131.8,
+     "y": 124.6
+    },
+    {
+     "ref": "FL2",
+     "value": "NFM21PC104R1E3D",
+     "footprint": "NFM21PC104R1E3D",
+     "description": "Capacitor L=2.0mm W=1.25mm T=0.85mm",
+     "layer": "F.Cu",
+     "x": 121.9,
+     "y": 126.1
+    },
+    {
+     "ref": "F2",
+     "value": "NANOSMDC035F-2",
+     "footprint": "NANOSMDC016F2",
+     "description": "Littelfuse 0.35A Resettable Surface Mount Fuse, 16V dc",
+     "layer": "F.Cu",
+     "x": 120,
+     "y": 73.4
+    },
+    {
+     "ref": "D1",
+     "value": "SMDJ5.0CA",
+     "footprint": "DIONM7959X262N",
+     "description": "ESD Suppressors / TVS Diodes 3kW 5V 5% Bi-Directional",
+     "layer": "F.Cu",
+     "x": 178.8,
+     "y": 73.4
+    },
+    {
+     "ref": "LED6",
+     "value": "APT2012LVBC_D",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 162.5,
+     "y": 127.7
+    },
+    {
+     "ref": "R11",
+     "value": "330R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 156.7,
+     "y": 124.6
+    },
+    {
+     "ref": "F1",
+     "value": "NANOSMDC035F-2",
+     "footprint": "NANOSMDC016F2",
+     "description": "Littelfuse 0.35A Resettable Surface Mount Fuse, 16V dc",
+     "layer": "F.Cu",
+     "x": 182.2,
+     "y": 80.6
+    },
+    {
+     "ref": "LED5",
+     "value": "APT2012LVBC_D",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 152.5,
+     "y": 127.65
+    },
+    {
+     "ref": "FL3",
+     "value": "NFM21PC104R1E3D",
+     "footprint": "NFM21PC104R1E3D",
+     "description": "Capacitor L=2.0mm W=1.25mm T=0.85mm",
+     "layer": "F.Cu",
+     "x": 177.4,
+     "y": 126.1
+    },
+    {
+     "ref": "R6",
+     "value": "1K2",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 136.8,
+     "y": 124.6
+    },
+    {
+     "ref": "R9",
+     "value": "330R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 151.8,
+     "y": 124.6
+    },
+    {
+     "ref": "R10",
+     "value": "1K2",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 161.8,
+     "y": 124.55
+    },
+    {
+     "ref": "LED2",
+     "value": "APT2012LVBC_D",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 137.5,
+     "y": 127.65
+    },
+    {
+     "ref": "D2",
+     "value": "SMDJ5.0CA",
+     "footprint": "DIONM7959X262N",
+     "description": "ESD Suppressors / TVS Diodes 3kW 5V 5% Bi-Directional",
+     "layer": "F.Cu",
+     "x": 167.9,
+     "y": 73.4
+    },
+    {
+     "ref": "FL1",
+     "value": "NFM21PC104R1E3D",
+     "footprint": "NFM21PC104R1E3D",
+     "description": "Capacitor L=2.0mm W=1.25mm T=0.85mm",
+     "layer": "F.Cu",
+     "x": 117.6,
+     "y": 126.1
+    },
+    {
+     "ref": "D3",
+     "value": "DFLS240L-7",
+     "footprint": "DFLS240L7",
+     "description": "Diodes Inc DFLS240L-7, SMT Schottky Diode, 40V 2A, 2-Pin PowerDI 123",
+     "layer": "F.Cu",
+     "x": 127.3,
+     "y": 73.4
+    },
+    {
+     "ref": "JP1",
+     "value": "SolderJumper_2_Open",
+     "footprint": "SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm",
+     "description": "Solder Jumper, 2-pole, open",
+     "layer": "F.Cu",
+     "x": 118.5,
+     "y": 116.1
+    },
+    {
+     "ref": "LED4",
+     "value": "APT2012LVBC_D",
+     "footprint": "LEDC2012X85N",
+     "description": "Standard LEDs - SMD 2.0X1.2MM LOW CRNT",
+     "layer": "F.Cu",
+     "x": 147.5,
+     "y": 127.65
+    },
+    {
+     "ref": "R12",
+     "value": "1K2",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "F.Cu",
+     "x": 166.8,
+     "y": 124.6
+    },
+    {
+     "ref": "C5",
+     "value": "47uF",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor, small symbol",
+     "layer": "B.Cu",
+     "x": 140,
+     "y": 126.5
+    },
+    {
+     "ref": "C6",
+     "value": "47uF",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor, small symbol",
+     "layer": "B.Cu",
+     "x": 144,
+     "y": 126.5
+    },
+    {
+     "ref": "R1",
+     "value": "22R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "B.Cu",
+     "x": 145,
+     "y": 116
+    },
+    {
+     "ref": "C2",
+     "value": "10uF, 10V, 0805",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor, small symbol",
+     "layer": "B.Cu",
+     "x": 129,
+     "y": 126.5
+    },
+    {
+     "ref": "C12",
+     "value": "10uF, 10V, 0805",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor, small symbol",
+     "layer": "B.Cu",
+     "x": 168,
+     "y": 126.5
+    },
+    {
+     "ref": "C4",
+     "value": "47uF",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor, small symbol",
+     "layer": "B.Cu",
+     "x": 136,
+     "y": 126.5
+    },
+    {
+     "ref": "FL5",
+     "value": "NFM21PC104R1E3D",
+     "footprint": "NFM21PC104R1E3D",
+     "description": "Capacitor L=2.0mm W=1.25mm T=0.85mm",
+     "layer": "B.Cu",
+     "x": 117.6,
+     "y": 126.1
+    },
+    {
+     "ref": "C10",
+     "value": "10uF, 10V, 0805",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor, small symbol",
+     "layer": "B.Cu",
+     "x": 160,
+     "y": 126.6
+    },
+    {
+     "ref": "C3",
+     "value": "47uF",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor, small symbol",
+     "layer": "B.Cu",
+     "x": 132,
+     "y": 126.5
+    },
+    {
+     "ref": "C11",
+     "value": "10uF, 10V, 0805",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor, small symbol",
+     "layer": "B.Cu",
+     "x": 164,
+     "y": 126.5
+    },
+    {
+     "ref": "FL6",
+     "value": "NFM21PC104R1E3D",
+     "footprint": "NFM21PC104R1E3D",
+     "description": "Capacitor L=2.0mm W=1.25mm T=0.85mm",
+     "layer": "B.Cu",
+     "x": 121.9,
+     "y": 126.1
+    },
+    {
+     "ref": "C1",
+     "value": "10uF",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor, small symbol",
+     "layer": "B.Cu",
+     "x": 126,
+     "y": 126.5
+    },
+    {
+     "ref": "C13",
+     "value": "10uF, 10V, 0805",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor, small symbol",
+     "layer": "B.Cu",
+     "x": 171,
+     "y": 126.5
+    },
+    {
+     "ref": "J3",
+     "value": "AXK5S00047YG",
+     "footprint": "AXK5S00047YG",
+     "description": "Board to Board & Mezzanine Connectors CONN HEADER BRD/BRD 100 POS 0.5mm",
+     "layer": "B.Cu",
+     "x": 176.25,
+     "y": 100
+    },
+    {
+     "ref": "R3",
+     "value": "22R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "B.Cu",
+     "x": 152,
+     "y": 116
+    },
+    {
+     "ref": "R4",
+     "value": "22R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "B.Cu",
+     "x": 155,
+     "y": 116
+    },
+    {
+     "ref": "FL8",
+     "value": "NFM21PC104R1E3D",
+     "footprint": "NFM21PC104R1E3D",
+     "description": "Capacitor L=2.0mm W=1.25mm T=0.85mm",
+     "layer": "B.Cu",
+     "x": 181.575,
+     "y": 126.1
+    },
+    {
+     "ref": "C9",
+     "value": "10uF, 10V, 0805",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor, small symbol",
+     "layer": "B.Cu",
+     "x": 156,
+     "y": 126.5
+    },
+    {
+     "ref": "FL7",
+     "value": "NFM21PC104R1E3D",
+     "footprint": "NFM21PC104R1E3D",
+     "description": "Capacitor L=2.0mm W=1.25mm T=0.85mm",
+     "layer": "B.Cu",
+     "x": 177.375,
+     "y": 126.1
+    },
+    {
+     "ref": "C8",
+     "value": "10uF, 10V, 0805",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor, small symbol",
+     "layer": "B.Cu",
+     "x": 152,
+     "y": 126.5
+    },
+    {
+     "ref": "C14",
+     "value": "10uF, 10V, 0805",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor, small symbol",
+     "layer": "B.Cu",
+     "x": 174,
+     "y": 126.5
+    },
+    {
+     "ref": "J2",
+     "value": "AXK5S00047YG",
+     "footprint": "AXK5S00047YG",
+     "description": "Board to Board & Mezzanine Connectors CONN HEADER BRD/BRD 100 POS 0.5mm",
+     "layer": "B.Cu",
+     "x": 123.75,
+     "y": 100
+    },
+    {
+     "ref": "R2",
+     "value": "22R",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor, small symbol",
+     "layer": "B.Cu",
+     "x": 148,
+     "y": 116
+    },
+    {
+     "ref": "C7",
+     "value": "10uF, 10V, 0805",
+     "footprint": "C_0805_2012Metric_Pad1.18x1.45mm_HandSolder",
+     "description": "Unpolarized capacitor, small symbol",
+     "layer": "B.Cu",
+     "x": 148,
+     "y": 126.5
+    }
+   ]
+  },
+  {
    "id": "battery",
    "name": "Battery PCB",
+   "short": "Battery",
    "part": "3320",
    "path": "src/pcb/battery_pcb/Front_PCB.kicad_pcb",
    "file": "pcb/battery.kicad_pcb",
@@ -2282,6 +2762,7 @@
   {
    "id": "attach",
    "name": "Attachment interface PCB",
+   "short": "Attachment",
    "part": "3331",
    "path": "src/pcb/attach_pcb/QuiverAttachPCB.kicad_pcb",
    "file": "pcb/attach.kicad_pcb",
