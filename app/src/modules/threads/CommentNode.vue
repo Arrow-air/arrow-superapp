@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import Avatar from './Avatar.vue';
+import { useDraft } from '../../lib/drafts';
 import SourceChip from './SourceChip.vue';
 import type { Position, Thread } from './data';
-import { ago, canDeleteComment, canEditComment, childrenOf, comment, deleteComment, editComment, isOpen, leaderOf, letterOf, myVote, person, state, talliesOf, vote } from './store';
+import { ago, canDeleteComment, canEditComment, childrenOf, comment, deleteComment, editComment, lastError, isOpen, leaderOf, letterOf, myVote, person, state, talliesOf, vote } from './store';
 
 // One comment and its replies, Reddit style: a vote column, the comment,
 // Reply, and the replies indented under a line. Top-level comments are the
@@ -34,10 +35,16 @@ const editable = computed(() => canEditComment(t.value, props.c));
 const editing = ref(false);
 const editDraft = ref('');
 function startEdit() { editDraft.value = props.c.text; editing.value = true; replying.value = false; confirming.value = false; }
-function saveEdit() {
-  if (!editDraft.value.trim()) return;
-  editComment(t.value, props.c, editDraft.value);
-  editing.value = false;
+const sending = ref(false);
+const sendError = ref('');
+async function saveEdit() {
+  if (!editDraft.value.trim() || sending.value) return;
+  sending.value = true;
+  const ok = await editComment(t.value, props.c, editDraft.value);
+  sending.value = false;
+  // On failure the editor stays open with your text in it.
+  sendError.value = ok ? '' : lastError.value;
+  if (ok) editing.value = false;
 }
 function remove() {
   deleteComment(t.value, props.c);
@@ -49,12 +56,18 @@ const nameOf = (id?: string) => (id === 'me' ? 'You' : person(id)?.name);
 const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 
 const collapsed = ref(false);
-const replying = ref(false);
-const draft = ref('');
-function send() {
-  if (!draft.value.trim()) return;
-  comment(t.value, draft.value.trim(), props.c.id);
-  draft.value = '';
+// An unsent reply stays in this browser (and its box stays open) until the server confirms it.
+const replyDraft = useDraft(() => `reply:${props.c.id}`);
+const draft = replyDraft.text;
+const replying = ref(!!draft.value.trim());
+async function send() {
+  if (!draft.value.trim() || sending.value) return;
+  sending.value = true;
+  const ok = await comment(t.value, draft.value.trim(), props.c.id, replyDraft.sendKey());
+  sending.value = false;
+  sendError.value = ok ? '' : lastError.value;
+  if (!ok) return;
+  replyDraft.done();
   replying.value = false;
   collapsed.value = false;
 }
@@ -91,7 +104,7 @@ const isLead = computed(() => state.role === 'lead');
         <div class="cm-bar">
           <span v-if="tally?.voters" class="edit-note">{{ tally.voters }} {{ tally.voters === 1 ? 'person has' : 'people have' }} voted on this; it will show as edited.</span>
           <button class="ghost" type="button" @click="editing = false">Cancel</button>
-          <button class="primary sm" type="submit" :disabled="!editDraft.trim() || editDraft.trim() === c.text">Save</button>
+          <button class="primary sm" type="submit" :disabled="sending || !editDraft.trim() || editDraft.trim() === c.text">{{ sending ? 'Saving…' : 'Save' }}</button>
         </div>
       </form>
       <p v-else-if="!collapsed && !c.deleted" class="cm-text">{{ c.text }}</p>
@@ -118,9 +131,10 @@ const isLead = computed(() => state.role === 'lead');
         </div>
         <div class="cm-bar">
           <button class="ghost" type="button" @click="replying = false">Cancel</button>
-          <button class="primary sm" type="submit" :disabled="!draft.trim()">Reply</button>
+          <button class="primary sm" type="submit" :disabled="!draft.trim() || sending">{{ sending ? 'Saving…' : 'Reply' }}</button>
         </div>
       </form>
+      <p v-if="sendError && (replying || editing)" class="save-error" role="alert">{{ sendError }}</p>
       <div v-if="kids.length && !collapsed" class="cm-kids" :class="{ flat: depth >= 6 }">
         <CommentNode v-for="k in kids" :key="k.id" :thread="t" :c="k" :depth="depth + 1" :formula="formula" @adopt="emit('adopt', $event)" />
       </div>
@@ -178,4 +192,5 @@ const isLead = computed(() => state.role === 'lead');
 .edited { font-style: italic; cursor: default; }
 .cm-edit { margin-top: 6px; }
 .edit-note { margin-right: auto; padding-left: 4px; font-size: var(--text-sm); color: var(--fg-faint); }
+.save-error { margin: 6px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--red-a3); color: var(--red-11); font-size: var(--text-sm); line-height: 1.45; }
 </style>

@@ -70,6 +70,11 @@ async function signIn(p, email) {
   await p.waitForTimeout(800);
   await p.getByRole('button', { name: 'New thread' }).click();
   await p.getByLabel('Title').fill(`Live test thread ${stamp}`);
+  await ctx.setOffline(true);
+  await p.getByRole('button', { name: 'Post thread' }).click();
+  await p.waitForTimeout(800);
+  check((await p.locator('.save-error').innerText().catch(() => '')).includes("Couldn't reach the server") && (await p.getByLabel('Title').inputValue()) === `Live test thread ${stamp}`, 'offline, a new thread isn\'t lost: clear message, title still there');
+  await ctx.setOffline(false);
   await p.getByRole('button', { name: 'Post thread' }).click();
   await p.waitForSelector('aside.panel h1.title', { timeout: 15000 });
   const tid = new URL(p.url().replace('/#', '')).searchParams.get('thread');
@@ -93,6 +98,30 @@ async function signIn(p, email) {
   await p.waitForTimeout(1500);
   check((await panel.innerText()).includes('Do the obvious thing'), 'top-level comment saved');
   check((await panel.locator('.cm-kids .cm').first().innerText()).includes('Agreed, nested reply'), 'nested reply saved under it');
+
+  // A flaky connection: nothing is lost, and a retry never posts twice.
+  const box = panel.getByLabel('New comment');
+  await box.fill('Written on a flaky connection');
+  await ctx.setOffline(true);
+  await panel.getByRole('button', { name: 'Comment', exact: true }).click();
+  await p.waitForTimeout(800);
+  check((await panel.locator('.save-error').innerText().catch(() => '')).includes("Couldn't reach the server") && (await box.inputValue()) === 'Written on a flaky connection', 'offline, the save fails with a clear message and the comment stays in the box');
+  await ctx.setOffline(false);
+  // The save reaches the server but its answer is lost on the way back.
+  await p.route('**/rest/v1/rpc/sa_comment', async (route) => { await route.fetch(); await route.abort('failed'); }, { times: 1 });
+  await panel.getByRole('button', { name: 'Comment', exact: true }).click();
+  await p.waitForTimeout(1500);
+  check((await box.inputValue()) === 'Written on a flaky connection', 'when the answer is lost, the comment stays for a retry');
+  await panel.getByRole('button', { name: 'Comment', exact: true }).click();
+  await p.waitForTimeout(1500);
+  const copies = await (await fetch(`${SUPA}/rest/v1/sa_positions?thread_id=eq.${tid}&text=eq.${encodeURIComponent('Written on a flaky connection')}&select=id`, { headers: admin })).json();
+  check(copies.length === 1 && (await box.inputValue()) === '', `the retry saves it once, not twice, and clears the box (${copies.length} saved)`);
+  await box.fill('Half-written thought');
+  await p.waitForTimeout(300);
+  await p.reload();
+  await p.waitForSelector('aside.panel .cm.top', { timeout: 20000 });
+  check((await panel.getByLabel('New comment').inputValue()) === 'Half-written thought', 'an unsent comment survives a reload');
+  await panel.getByLabel('New comment').fill('');
   check(!(await panel.getByText('Outcome, as lead').count()), 'a member sees no lead controls');
 
   // Editing your own comment: saved, marked edited, the earlier text kept privately.

@@ -117,8 +117,8 @@ const composing = ref(false);
 // What the thread is about: the component, or the whole board.
 const about = ref<'ref' | 'board'>('ref');
 watch([selectedRef, boardId], () => { composing.value = false; about.value = 'ref'; });
-async function propose(d: { type: ThreadType; title: string; body: string }) {
-  if (!selected.value) return;
+async function propose(d: { type: ThreadType; title: string; body: string; key: string }): Promise<boolean> {
+  if (!selected.value) return false;
   const t = await startThread({
     zone: boardZone[board.value.id],
     part: board.value.part,
@@ -127,9 +127,12 @@ async function propose(d: { type: ThreadType; title: string; body: string }) {
     body: d.body,
     type: d.type,
     version: NEXT,
+    key: d.key,
   });
+  if (!t) return false;
   composing.value = false;
   if (t) go({ thread: t.id });
+  return true;
 }
 const src = computed(() => `${import.meta.env.BASE_URL}${board.value.file}`);
 const githubFile = computed(() => `https://github.com/Arrow-air/project-quiver/blob/main/${board.value.path}`);
@@ -167,7 +170,8 @@ const githubFile = computed(() => `https://github.com/Arrow-air/project-quiver/b
           :version="openVersion()"
           :title-hint="{ proposal: `What should change about ${about === 'ref' ? selected.ref : 'the board'}?` }"
           body-hint="Why: what it fixes, what it costs, what else on the board it touches"
-          @post="propose"
+          :draft-key="`new:pcb:${board.id}:${selected.ref}`"
+          :submit="propose"
           @cancel="composing = false"
         />
         <h2 class="h">Threads about {{ selected.ref }}</h2>

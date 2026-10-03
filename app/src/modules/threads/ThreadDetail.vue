@@ -11,11 +11,12 @@ import ThreadVote from './ThreadVote.vue';
 import Icon from '../../frame/Icon.vue';
 import { threadTypes, typeStyle } from './types';
 import { useFreeze } from '../../frame/freeze';
+import { useDraft } from '../../lib/drafts';
 import { LATER, NEXT, type Thread } from './data';
 import { partById } from '../../data/quiver';
 import { boardById } from '../../data/pcbs';
 import {
-  canEditThread, canReopen, changedWinner, editThread, comment, day, decline, defer, draftWork, isOpen, leaderOf, letterOf, locked, person, reopen, settle, takenWork,
+  canEditThread, canReopen, changedWinner, editThread, lastError, comment, day, decline, defer, draftWork, isOpen, leaderOf, letterOf, locked, person, reopen, settle, takenWork,
   standing, state, talliesOf, topLevel, options, liveComments, weightOf, workFor, isBuilder, setBuilder, type WorkKind,
 } from './store';
 import { remote } from '../../lib/backend';
@@ -60,11 +61,18 @@ const ordered = computed(() =>
 const nameOf = (id?: string) => (id === 'me' ? 'You' : person(id)?.name);
 
 // A new top-level comment: an option others can vote on and a lead can adopt.
-const newComment = ref('');
-function addComment() {
-  if (!newComment.value.trim()) return;
-  comment(t.value, newComment.value.trim());
-  newComment.value = '';
+// The draft stays in this browser until the server confirms the comment.
+const draft = useDraft(() => `comment:${t.value.id}`);
+const newComment = draft.text;
+const sending = ref(false);
+const sendError = ref('');
+async function addComment() {
+  if (!newComment.value.trim() || sending.value) return;
+  sending.value = true;
+  const ok = await comment(t.value, newComment.value.trim(), undefined, draft.sendKey());
+  sending.value = false;
+  sendError.value = ok ? '' : lastError.value;
+  if (ok) draft.done();
 }
 
 const open = computed(() => isOpen(t.value));
@@ -126,10 +134,15 @@ const editingThread = ref(false);
 const titleDraft = ref('');
 const bodyDraft = ref('');
 function startEditThread() { titleDraft.value = t.value.title; bodyDraft.value = t.value.body ?? ''; editingThread.value = true; }
-function saveThread() {
-  if (!titleDraft.value.trim()) return;
-  editThread(t.value, titleDraft.value, bodyDraft.value);
-  editingThread.value = false;
+const threadError = ref('');
+async function saveThread() {
+  if (!titleDraft.value.trim() || sending.value) return;
+  sending.value = true;
+  const ok = await editThread(t.value, titleDraft.value, bodyDraft.value);
+  sending.value = false;
+  // On failure the editor stays open with your text in it.
+  threadError.value = ok ? '' : lastError.value;
+  if (ok) editingThread.value = false;
 }
 // Reopening an outcome: back to discussion, with an optional reason on the record.
 const reopening = ref(false);
@@ -144,7 +157,7 @@ function doReopen() {
 }
 watch(() => t.value.id, () => {
   reopening.value = false; reopenNote.value = ''; editingThread.value = false;
-  newComment.value = ''; choice.value = undefined; note.value = '';
+  sendError.value = ''; threadError.value = ''; choice.value = undefined; note.value = '';
   outcome.value = 'adopt'; declineNote.value = ''; deferNote.value = ''; funding.value = false;
 });
 const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
@@ -163,8 +176,9 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
             <div class="et-bar">
               <span class="hint">Shows as edited; earlier versions are kept.</span>
               <button class="ghost" type="button" @click="editingThread = false">Cancel</button>
-              <button class="primary sm" type="submit" :disabled="!titleDraft.trim() || (titleDraft.trim() === t.title && bodyDraft.trim() === (t.body ?? ''))">Save</button>
+              <button class="primary sm" type="submit" :disabled="sending || !titleDraft.trim() || (titleDraft.trim() === t.title && bodyDraft.trim() === (t.body ?? ''))">{{ sending ? 'Saving…' : 'Save' }}</button>
             </div>
+            <p v-if="threadError" class="save-error" role="alert">{{ threadError }}</p>
           </form>
           <h1 v-else class="title">{{ t.title }}</h1>
           <p class="meta">
@@ -320,9 +334,10 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         </div>
         <div class="composer-bar">
           <span class="hint"><Kbd :keys="[MOD, '↵']" outline /> Top-level comments are the options people vote on; reply under any comment to discuss it.</span>
-          <button class="primary" type="submit" :disabled="!newComment.trim()">Comment</button>
+          <button class="primary" type="submit" :disabled="!newComment.trim() || sending">{{ sending ? 'Saving…' : 'Comment' }}</button>
         </div>
       </form>
+      <p v-if="sendError" class="save-error" role="alert">{{ sendError }}</p>
       <p v-else class="hint-line">Closed to new options. You can still reply under a comment.</p>
 
       <p v-if="!commentCount" class="empty">No comments yet. Start the discussion.</p>
@@ -605,4 +620,5 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 .edit-thread textarea::placeholder { color: var(--fg-faint); }
 .et-bar { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
 .et-bar .hint { margin-right: auto; }
+.save-error { margin: 6px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--red-a3); color: var(--red-11); font-size: var(--text-sm); line-height: 1.45; }
 </style>

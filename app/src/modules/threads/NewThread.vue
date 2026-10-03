@@ -6,6 +6,8 @@ import Avatar from './Avatar.vue';
 import type { IconName } from '../../frame/icons';
 import { MOD } from '../../frame/shortcuts';
 import { threadTypes, typeStyle } from './types';
+import { useDraft } from '../../lib/drafts';
+import { lastError } from './store';
 import type { ThreadType } from './data';
 
 // Starting a thread, the same everywhere one starts (Gavin's app-frame design):
@@ -28,9 +30,12 @@ const props = withDefaults(defineProps<{
   titleHint?: Partial<Record<ThreadType, string>>;
   bodyHint?: string;
   submitLabel?: string;
+  /** Where this draft is kept in the browser until it's saved, e.g. "new:gps-rf". */
+  draftKey: string;
+  /** Creates the thread; true once the server has it. On false the draft stays. */
+  submit: (draft: { type: ThreadType; title: string; body: string; key: string }) => Promise<boolean>;
 }>(), { type: 'question', submitLabel: 'Post thread' });
 const emit = defineEmits<{
-  post: [draft: { type: ThreadType; title: string; body: string }];
   cancel: [];
   'update:zone': [zone: string];
   'update:scope': [scope: string];
@@ -39,19 +44,26 @@ const emit = defineEmits<{
 const types = (Object.keys(threadTypes) as ThreadType[]).map((id) => ({ id, ...threadTypes[id] }));
 const type = ref<ThreadType>(props.type);
 watch(() => props.type, (t) => (type.value = t));
-const title = ref('');
-const body = ref('');
+// Title and description stay in this browser until the thread is created.
+const titleDraft = useDraft(() => `${props.draftKey}:title`);
+const bodyDraft = useDraft(() => `${props.draftKey}:body`);
+const title = titleDraft.text;
+const body = bodyDraft.text;
+const sending = ref(false);
+const error = ref('');
 const titleEl = ref<HTMLInputElement>();
 onMounted(() => titleEl.value?.focus({ preventScroll: true }));
 
 const hints: Record<ThreadType, string> = { question: 'What do you need to know?', proposal: 'What should change?', idea: 'The idea, in a line' };
 const placeholder = computed(() => props.titleHint?.[type.value] ?? hints[type.value]);
-const ready = computed(() => title.value.trim().length > 3);
-function post() {
+const ready = computed(() => title.value.trim().length > 3 && !sending.value);
+async function post() {
   if (!ready.value) return;
-  emit('post', { type: type.value, title: title.value.trim(), body: body.value.trim() });
-  title.value = '';
-  body.value = '';
+  sending.value = true;
+  const ok = await props.submit({ type: type.value, title: title.value.trim(), body: body.value.trim(), key: titleDraft.sendKey() });
+  sending.value = false;
+  error.value = ok ? '' : lastError.value || 'Not saved. Your text is still here; try again.';
+  if (ok) { titleDraft.done(); bodyDraft.done(); }
 }
 </script>
 
@@ -100,10 +112,11 @@ function post() {
         <div class="actions">
           <Kbd class="hint" :keys="[MOD, '↵']" outline />
           <button type="button" class="ghost" @click="emit('cancel')">Cancel</button>
-          <button class="primary" type="submit" :disabled="!ready">{{ submitLabel }}</button>
+          <button class="primary" type="submit" :disabled="!ready">{{ sending ? 'Saving…' : submitLabel }}</button>
         </div>
       </div>
     </div>
+    <p v-if="error" class="save-error" role="alert">{{ error }}</p>
   </form>
 </template>
 
@@ -171,4 +184,5 @@ select.where:focus-visible { box-shadow: 0 0 0 2px var(--focus-ring); }
 .primary:hover:not(:disabled) { background: var(--indigo-10); }
 .primary:disabled { opacity: 0.4; cursor: default; }
 .primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
+.save-error { margin: 8px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--red-a3); color: var(--red-11); font-size: var(--text-sm); line-height: 1.45; }
 </style>
