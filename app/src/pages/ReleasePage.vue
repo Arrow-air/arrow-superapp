@@ -45,10 +45,12 @@ function proposeIn(zone: string) {
   composing.value = true;
   requestAnimationFrame(() => document.querySelector<HTMLInputElement>('.rel-form .title')?.focus());
 }
-async function create(d: { type: Thread['type']; title: string; body: string }) {
-  const t = await startThread({ zone: draft.value.zone, title: d.title, body: d.body, type: d.type, version: NEXT });
+async function create(d: { type: Thread['type']; title: string; body: string; key: string }): Promise<boolean> {
+  const t = await startThread({ zone: draft.value.zone, title: d.title, body: d.body, type: d.type, version: NEXT, key: d.key });
+  if (!t) return false;
   composing.value = false;
   if (t) router.replace({ query: { ...route.query, thread: t.id } });
+  return true;
 }
 const letter = (t: Thread, id: string) => letterOf(t, id);
 const stageLabel = { draft: 'Draft', open: 'Open', in_progress: 'In progress', in_review: 'In review', completed: 'Accepted', withdrawn: 'Withdrawn' } as const;
@@ -108,7 +110,8 @@ function deferRest() {
       :title-hint="{ proposal: 'The change, in one line' }"
       body-hint="Why: what it fixes, what it costs, what it touches"
       submit-label="Propose"
-      @post="create"
+      draft-key="new:v1-1"
+      :submit="create"
       @cancel="composing = false"
     />
 

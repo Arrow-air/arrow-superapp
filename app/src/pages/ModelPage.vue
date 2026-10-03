@@ -79,11 +79,13 @@ const composing = ref(false);
 const about = ref<'part' | 'zone'>('part');
 watch(() => [sel.value.zone, sel.value.part], () => { composing.value = false; about.value = sel.value.part ? 'part' : 'zone'; });
 const subject = computed(() => (sel.value.part ? partName(sel.value.part) : sel.value.zone ? zoneLabel(sel.value.zone) : ''));
-async function post(d: { type: ThreadType; title: string; body: string }) {
-  if (!sel.value.zone) return;
-  const t = await startThread({ zone: sel.value.zone, part: about.value === 'part' ? sel.value.part : undefined, title: d.title, body: d.body, type: d.type, version: NEXT });
+async function post(d: { type: ThreadType; title: string; body: string; key: string }): Promise<boolean> {
+  if (!sel.value.zone) return false;
+  const t = await startThread({ zone: sel.value.zone, part: about.value === 'part' ? sel.value.part : undefined, title: d.title, body: d.body, type: d.type, version: NEXT, key: d.key });
+  if (!t) return false;
   composing.value = false;
   if (t) router.replace({ query: { ...route.query, thread: t.id } });
+  return true;
 }
 const money = (n: number | null) => (n == null ? null : `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
 </script>
@@ -101,7 +103,8 @@ const money = (n: number | null) => (n == null ? null : `$${n.toLocaleString('en
         type="proposal"
         :version="openVersion()"
         body-hint="Why: what it fixes, what it costs, what else it touches"
-        @post="post"
+        :draft-key="`new:model:${sel.part ?? sel.zone}`"
+        :submit="post"
         @cancel="composing = false"
       />
       <PartsNav v-else label="Dev Kit" :zones="zones" :thumbs="thumbs" :selection="sel" :part-name="partName" :open-count="openCount" @pick="pick">

@@ -26,10 +26,12 @@ const decided = computed(() => all.value.filter((t) => !isOpen(t)).sort(byActivi
 const showDecided = ref(false);
 
 const composing = ref(false);
-async function create(d: { type: Thread['type']; title: string; body: string }) {
-  const t = await startThread({ zone: props.zone, title: d.title, body: d.body, type: d.type });
+async function create(d: { type: Thread['type']; title: string; body: string; key: string }): Promise<boolean> {
+  const t = await startThread({ zone: props.zone, title: d.title, body: d.body, type: d.type, key: d.key });
+  if (!t) return false;
   composing.value = false;
   if (t) router.replace({ query: { ...route.query, thread: t.id } });
+  return true;
 }
 </script>
 
@@ -58,7 +60,8 @@ async function create(d: { type: Thread['type']; title: string; body: string }) 
         :where="zoneLabel(zone)"
         :where-icon="zoneIcon(zone)"
         :version="V11_ZONES.includes(zone) ? openVersion() : undefined"
-        @post="create"
+        :draft-key="`new:${zone}`"
+        :submit="create"
         @cancel="composing = false"
       />
 

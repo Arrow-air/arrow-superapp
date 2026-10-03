@@ -1,4 +1,4 @@
-import { computed, reactive, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { LATER, NEXT, threads as seed, type Position, type SourceRef, type Thread } from './data';
 import { allocateRetro, proposerAward, type RetroAllocation, type Scored } from './retro';
 import { tally, voteWeight, weightingChangedWinner, type Role, type Tally, type Voter, type WeightBreakdown } from './weights';
@@ -85,12 +85,24 @@ export const state = reactive<Saved>(load());
 if (!remote) watch(state, (s) => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* storage unavailable */ } }, { deep: true });
 
 /** Live writes: ask for sign-in, call the database function, then reload. Undefined on failure. */
-async function call<T = unknown>(fn: string, args: Record<string, unknown>): Promise<T | undefined> {
-  if (!requireSignIn()) return undefined;
-  const { data, error } = await sb!.rpc(fn, args);
-  await reload();
-  if (error) { say(error.message); return undefined; }
-  return data as T;
+/** Why the last write failed, in words for the composer that sent it. */
+export const lastError = ref('');
+const OFFLINE = /failed to fetch|networkerror|load failed|network request failed|fetch failed/i;
+const OFFLINE_MSG = "Couldn't reach the server, so nothing was saved. Your text is still here; check your connection and try again.";
+async function call<T = unknown>(fn: string, args: Record<string, unknown>): Promise<{ ok: boolean; data?: T }> {
+  if (!requireSignIn()) { lastError.value = 'Sign in first; your text is still here.'; return { ok: false }; }
+  let res: { data: unknown; error: { message: string } | null };
+  try { res = await sb!.rpc(fn, args); } catch (e) { res = { data: null, error: { message: String((e as Error)?.message ?? e) } }; }
+  const offline = !!res.error && OFFLINE.test(res.error.message);
+  // Offline, the reload would hang on the same connection; don't make the composer wait for it.
+  if (offline) void reload(); else await reload();
+  if (res.error) {
+    lastError.value = offline ? OFFLINE_MSG : res.error.message;
+    say(lastError.value);
+    return { ok: false };
+  }
+  lastError.value = '';
+  return { ok: true, data: res.data as T };
 }
 
 export function resetDemo() {
@@ -198,13 +210,14 @@ export function canEditThread(t: Thread): boolean {
   return (state.role === 'lead' || t.authorId === 'me') && !locked(t);
 }
 /** Marked as edited; live, the earlier version is kept privately. */
-export function editThread(t: Thread, title: string, body: string) {
-  if (!title.trim() || (title.trim() === t.title && body.trim() === t.body)) return;
-  if (remote) return void call('sa_edit_thread', { p_thread: t.id, p_title: title.trim(), p_body: body.trim() });
+export async function editThread(t: Thread, title: string, body: string): Promise<boolean> {
+  if (!title.trim() || (title.trim() === t.title && body.trim() === t.body)) return true;
+  if (remote) return (await call('sa_edit_thread', { p_thread: t.id, p_title: title.trim(), p_body: body.trim() })).ok;
   t.title = title.trim();
   t.body = body.trim();
   t.editedAt = now();
   t.activeAt = now();
+  return true;
 }
 /** Up or down on the thread itself, Reddit style; the same vote again takes it back. Open threads only. */
 export function voteThread(thread: Thread, value: 1 | -1) {
@@ -299,12 +312,13 @@ export function canEditComment(t: Thread, p: Position): boolean {
   return !remote || !!session.userId;
 }
 /** Marked as edited; live, the earlier version is kept privately. */
-export function editComment(t: Thread, p: Position, text: string) {
-  if (!text.trim() || text.trim() === p.text) return;
-  if (remote) return void call('sa_edit_comment', { p_comment: p.id, p_text: text.trim() });
+export async function editComment(t: Thread, p: Position, text: string): Promise<boolean> {
+  if (!text.trim() || text.trim() === p.text) return true;
+  if (remote) return (await call('sa_edit_comment', { p_comment: p.id, p_text: text.trim() })).ok;
   p.text = text.trim();
   p.editedAt = now();
   t.activeAt = now();
+  return true;
 }
 /** Soft: the comment keeps its place for the replies under it but loses its words, author and source. */
 export function deleteComment(t: Thread, p: Position) {
@@ -403,27 +417,25 @@ export const deferOpen = (note: string) => remote
   ? void call('sa_defer_open', { p_version: NEXT, p_to: LATER, p_note: note })
   : state.threads.filter((t) => t.version === NEXT && isOpen(t)).forEach((t) => defer(t, note));
 
-/** A top-level comment (a new option), or a reply under any comment. */
-export function comment(thread: Thread, text: string, parentId?: string): Position | undefined {
-  if (remote && !requireSignIn()) return undefined;
-  if (remote) void call('sa_comment', { p_thread: thread.id, p_text: text, p_parent: parentId ?? null });
-  const p: Position = { id: `c${Date.now()}`, text, authorId: 'me', at: now(), parentId };
-  thread.positions.push(p);
+/** A top-level comment (a new option), or a reply under any comment. True once it is saved; live, the draft key makes a retry safe. */
+export async function comment(thread: Thread, text: string, parentId?: string, key?: string): Promise<boolean> {
+  if (remote) return (await call('sa_comment', { p_thread: thread.id, p_text: text, p_parent: parentId ?? null, p_key: key ?? null })).ok;
+  thread.positions.push({ id: `c${Date.now()}`, text, authorId: 'me', at: now(), parentId });
   thread.activeAt = now();
-  return p;
+  return true;
 }
 export const propose = (thread: Thread, text: string) => comment(thread, text);
 
-export async function startThread(input: { zone: string; title: string; body: string; type?: Thread['type']; fromCall?: string; version?: string; part?: string; pcb?: Thread['pcb'] }): Promise<Thread | undefined> {
+export async function startThread(input: { zone: string; title: string; body: string; type?: Thread['type']; fromCall?: string; version?: string; part?: string; pcb?: Thread['pcb']; key?: string }): Promise<Thread | undefined> {
   const source: SourceRef | undefined = input.fromCall ? { kind: 'call', ref: input.fromCall, label: 'Sep 29 call' } : undefined;
   const version = (() => {
     const v = input.version ?? (V11_ZONES.includes(input.zone) ? NEXT : '');
     return v === NEXT ? openVersion() : v;
   })();
   if (remote) {
-    const id = await call<string>('sa_start_thread', {
+    const { data: id } = await call<string>('sa_start_thread', {
       p_zone: input.zone, p_title: input.title, p_body: input.body, p_type: input.type ?? 'question', p_version: version,
-      p_part: input.part ?? null, p_pcb: input.pcb ?? null, p_source: source ?? null,
+      p_part: input.part ?? null, p_pcb: input.pcb ?? null, p_source: source ?? null, p_key: input.key ?? null,
     });
     return id ? state.threads.find((t) => t.id === id) : undefined;
   }
