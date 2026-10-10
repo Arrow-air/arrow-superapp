@@ -227,6 +227,41 @@ async function signIn(p, email) {
   const award = await panel.locator('.wc .award').innerText();
   check(award.includes('75 ARROW') && award.includes('You'), `proposer award goes to the position's author, seen by them as You (${award.replace(/\s+/g, ' ').slice(0, 90)})`);
 
+  // Longshot: seeded threads load, new threads are L-numbered, decisions use Longshot's own counter.
+  const counters = async () => Object.fromEntries((await (await fetch(`${SUPA}/rest/v1/sa_counters?select=name,value`, { headers: admin })).json()).map((r) => [r.name, r.value]));
+  const before = await counters();
+  await p.goto(`${BASE}/#/longshot/electronics/bms`);
+  await p.waitForSelector('.row[data-thread="L-1"]', { timeout: 20000 });
+  check(true, 'Longshot\'s seeded threads load from the database');
+  await p.goto(`${BASE}/#/longshot/pack/cells`);
+  await p.waitForTimeout(800);
+  await p.getByRole('button', { name: 'New thread' }).click();
+  await p.getByLabel('Title').fill(`Longshot live test ${stamp}`);
+  await p.getByRole('button', { name: 'Post thread' }).click();
+  await p.waitForSelector('aside.panel h1.title', { timeout: 15000 });
+  const lid = new URL(p.url().replace('/#', '')).searchParams.get('thread');
+  const lrow = (await (await fetch(`${SUPA}/rest/v1/sa_threads?id=eq.${lid}&select=project,version`, { headers: admin })).json())[0];
+  check(/^L-\d+$/.test(lid ?? '') && lrow?.project === 'longshot' && lrow?.version === 'Longshot PT2', `a new Longshot thread is ${lid}, in project longshot, about Longshot PT2`);
+  await panel.getByLabel('New comment').fill('Weigh three groups and average them');
+  await panel.getByRole('button', { name: 'Comment', exact: true }).click();
+  await p.waitForTimeout(1500);
+  await q.goto(`${BASE}/#/longshot/pack/cells?thread=${lid}`);
+  await q.waitForSelector('aside.panel .cm.top', { timeout: 20000 });
+  await q.waitForTimeout(1000);
+  await lp.getByLabel('Decision note').fill('Cheap and settles the weight table.');
+  await lp.getByRole('button', { name: 'Record decision' }).click();
+  await q.waitForTimeout(1500);
+  const after = await counters();
+  const lsDec = (/D-\d{3}/.exec(await lp.locator('.pipe').innerText()) ?? [''])[0];
+  check(lsDec === `D-${String(after['decision:longshot']).padStart(3, '0')}` && after['decision:longshot'] === (before['decision:longshot'] ?? 0) + 1 && after.decision === before.decision, `a Longshot decision takes Longshot's own number (${lsDec}) and leaves Quiver's counter alone`);
+  check(after.thread === before.thread, 'Quiver\'s thread counter is untouched by Longshot threads');
+  const tok = await (await fetch(`${SUPA}/auth/v1/token?grant_type=password`, { method: 'POST', headers: { apikey: ANON, 'Content-Type': 'application/json' }, body: JSON.stringify({ email: users.member, password: PASS }) })).json();
+  const asMember = { apikey: ANON, Authorization: `Bearer ${tok.access_token}`, 'Content-Type': 'application/json' };
+  const old = await fetch(`${SUPA}/rest/v1/rpc/sa_start_thread`, { method: 'POST', headers: asMember, body: JSON.stringify({ p_zone: 'power', p_title: `Old client ${stamp}`, p_body: '', p_type: 'question', p_version: '' }) });
+  const oldId = await old.json();
+  check(old.status === 200 && /^Q-\d+$/.test(oldId), `a client that names no project still starts a Quiver thread (${oldId})`);
+  check(await rpcAs(users.member, 'sa_start_thread', { p_zone: 'cells', p_title: 'x', p_body: '', p_type: 'question', p_version: '', p_project: 'nope' }) >= 400, 'the database refuses a thread in an unknown project');
+
   check(!errors.length, `no page errors${errors.length ? `: ${errors.join(' | ')}` : ''}`);
   await b.close();
   // Clean up the test accounts; their rows cascade or null out.

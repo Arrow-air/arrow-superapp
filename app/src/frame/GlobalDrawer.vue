@@ -3,7 +3,7 @@ import { onBeforeUnmount, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { arrowPanelOpen as open } from './layout';
 import { footerLinks, linkGroups } from './links';
-import { defaultVersion, projects } from './nav';
+import { defaultVersion, findProject, homePath, projects } from './nav';
 import { useWorkspace } from './useWorkspace';
 
 // The Arrow panel behind the logo capsule: everything Arrow-wide. It sits in
@@ -13,7 +13,8 @@ const router = useRouter();
 const { project } = useWorkspace();
 
 function goTo(id: string) {
-  router.push(`/${id}/overview`);
+  const p = findProject(id);
+  if (p) router.push(homePath(p));
 }
 
 const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && open.value) open.value = false; };
@@ -43,7 +44,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
         >
           <span class="craft-thumb" aria-hidden="true">
             <img v-if="p.thumb" :src="p.thumb" alt="" />
-            <span v-else class="craft-sketch"></span>
+            <span v-else class="craft-sketch" :class="{ pack: p.id === 'longshot' }"></span>
           </span>
           <span class="craft-name">{{ p.label }}</span>
           <span class="craft-ver">{{ defaultVersion(p).code }}</span>
@@ -156,6 +157,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
   height: 24px;
   background: center / contain no-repeat
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 20' fill='none' stroke='%23ffffff' stroke-width='1.2' stroke-linecap='round'%3E%3Cpath d='M3 11h36M8 11l14-8M10 11l14 6M30 11l4-5M30 11l4 5M16 7h10M16 15h10'/%3E%3C/svg%3E");
+}
+.craft-sketch.pack {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 20' fill='none' stroke='%23ffffff' stroke-width='1.2' stroke-linecap='round'%3E%3Crect x='6' y='4' width='30' height='13' rx='1.5'/%3E%3Cpath d='M36 8.5h3v4h-3M11 7.5v6M16 7.5v6M21 7.5v6M26 7.5v6M31 7.5v6'/%3E%3C/svg%3E");
 }
 .craft-name { font-weight: 500; }
 .craft-ver { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--on-brand-3); }

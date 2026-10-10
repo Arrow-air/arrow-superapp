@@ -1,0 +1,2806 @@
+{
+ "generatedAt": "2026-10-10T22:23:42.960Z",
+ "commit": "f7ec9a7",
+ "boards": [
+  {
+   "id": "bmsj",
+   "name": "BMSJ battery management board",
+   "short": "BMSJ",
+   "part": "",
+   "path": "engineering/electronics/pcbs/BMSJ/kicad/BMSJ.kicad_pcb",
+   "file": "pcb/bmsj.kicad_pcb",
+   "footprints": [
+    {
+     "ref": "C28",
+     "value": "47n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.515,
+     "y": 13.305
+    },
+    {
+     "ref": "C50",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 12.425,
+     "y": 76.855
+    },
+    {
+     "ref": "Q34",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 27.805,
+     "y": 92.265
+    },
+    {
+     "ref": "C51",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 12.425,
+     "y": 62.415
+    },
+    {
+     "ref": "C35",
+     "value": "1u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 50.945,
+     "y": 31.995
+    },
+    {
+     "ref": "R56",
+     "value": "10k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 25.565,
+     "y": 3.265
+    },
+    {
+     "ref": "C71",
+     "value": "1u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 74.365,
+     "y": 6.315
+    },
+    {
+     "ref": "C16",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 23.345
+    },
+    {
+     "ref": "R136",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 23.345,
+     "y": 96.315
+    },
+    {
+     "ref": "C42",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 9.525,
+     "y": 3.265
+    },
+    {
+     "ref": "D35",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 60.28,
+     "y": 67.085
+    },
+    {
+     "ref": "R4",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 9.525,
+     "y": 18.325
+    },
+    {
+     "ref": "R125",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 58.455,
+     "y": 73.145
+    },
+    {
+     "ref": "R45",
+     "value": "130k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 21.555,
+     "y": 8.285
+    },
+    {
+     "ref": "R83",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 69.375,
+     "y": 58.705
+    },
+    {
+     "ref": "D25",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 73.2,
+     "y": 39.365
+    },
+    {
+     "ref": "D26",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 71.2,
+     "y": 67.085
+    },
+    {
+     "ref": "R122",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 60.455,
+     "y": 30.985
+    },
+    {
+     "ref": "C67",
+     "value": "10n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 58.105,
+     "y": 0.755
+    },
+    {
+     "ref": "R71",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 36.615,
+     "y": 58.705
+    },
+    {
+     "ref": "Q20",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 49.645,
+     "y": 92.265
+    },
+    {
+     "ref": "C3",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 5.775
+    },
+    {
+     "ref": "C26",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.515,
+     "y": 10.795
+    },
+    {
+     "ref": "R124",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 56.105,
+     "y": 81.875
+    },
+    {
+     "ref": "C34",
+     "value": "1u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 50.945,
+     "y": 28.985
+    },
+    {
+     "ref": "R127",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 34.265,
+     "y": 81.875
+    },
+    {
+     "ref": "R14",
+     "value": "4.7M",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 13.535,
+     "y": 8.285
+    },
+    {
+     "ref": "R107",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 3.855,
+     "y": 87.585
+    },
+    {
+     "ref": "D34",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.68,
+     "y": 95.965
+    },
+    {
+     "ref": "R15",
+     "value": "100k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 13.535,
+     "y": 10.795
+    },
+    {
+     "ref": "R37",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 17.545,
+     "y": 20.835
+    },
+    {
+     "ref": "C31",
+     "value": "10u",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.515,
+     "y": 20.835
+    },
+    {
+     "ref": "R80",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 71.375,
+     "y": 30.985
+    },
+    {
+     "ref": "R11",
+     "value": "1M",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 13.535,
+     "y": 0.755
+    },
+    {
+     "ref": "R55",
+     "value": "10k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 25.565,
+     "y": 0.755
+    },
+    {
+     "ref": "R140",
+     "value": "806",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 66.125,
+     "y": 0.755
+    },
+    {
+     "ref": "R62",
+     "value": "470",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 25.565,
+     "y": 18.325
+    },
+    {
+     "ref": "Q31",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 38.725,
+     "y": 77.825
+    },
+    {
+     "ref": "C43",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 56.105,
+     "y": 91.295
+    },
+    {
+     "ref": "C73",
+     "value": "1u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 74.365,
+     "y": 9.325
+    },
+    {
+     "ref": "Q12",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 38.725,
+     "y": 63.385
+    },
+    {
+     "ref": "C53",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 12.425,
+     "y": 91.295
+    },
+    {
+     "ref": "R78",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 69.025,
+     "y": 37.205
+    },
+    {
+     "ref": "D6",
+     "value": "smcj150a",
+     "footprint": "D_SMC",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 42.89,
+     "y": 18.875
+    },
+    {
+     "ref": "R94",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 45.185,
+     "y": 96.315
+    },
+    {
+     "ref": "D32",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.68,
+     "y": 81.525
+    },
+    {
+     "ref": "R87",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 12.425,
+     "y": 79.365
+    },
+    {
+     "ref": "R129",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 64.925
+    },
+    {
+     "ref": "R46",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 21.555,
+     "y": 10.795
+    },
+    {
+     "ref": "D9",
+     "value": "1N4148W",
+     "footprint": "D_SOD-123",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 51.23,
+     "y": 14.575
+    },
+    {
+     "ref": "C21",
+     "value": "100p",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.515,
+     "y": 3.265
+    },
+    {
+     "ref": "R142",
+     "value": "2.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 66.125,
+     "y": 5.775
+    },
+    {
+     "ref": "R7",
+     "value": "806",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 9.525,
+     "y": 23.345
+    },
+    {
+     "ref": "R6",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 9.525,
+     "y": 20.835
+    },
+    {
+     "ref": "R10",
+     "value": "0",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 9.525,
+     "y": 30.875
+    },
+    {
+     "ref": "R30",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 17.545,
+     "y": 8.285
+    },
+    {
+     "ref": "C15",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 20.835
+    },
+    {
+     "ref": "R148",
+     "value": "4.75k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 66.125,
+     "y": 18.325
+    },
+    {
+     "ref": "R143",
+     "value": "4.7M",
+     "footprint": "R_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 78.795,
+     "y": 6.285
+    },
+    {
+     "ref": "C59",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 34.265,
+     "y": 91.295
+    },
+    {
+     "ref": "Q13",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 82.405,
+     "y": 77.825
+    },
+    {
+     "ref": "R79",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 69.025,
+     "y": 39.715
+    },
+    {
+     "ref": "R66",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 56.105,
+     "y": 93.805
+    },
+    {
+     "ref": "R24",
+     "value": "4.75k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 13.535,
+     "y": 25.855
+    },
+    {
+     "ref": "C78",
+     "value": "18p",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 62.115,
+     "y": 0.755
+    },
+    {
+     "ref": "C19",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 30.875
+    },
+    {
+     "ref": "C65",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 45.185,
+     "y": 62.415
+    },
+    {
+     "ref": "R111",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 45.185,
+     "y": 79.365
+    },
+    {
+     "ref": "D29",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 16.6,
+     "y": 67.085
+    },
+    {
+     "ref": "R19",
+     "value": "10",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 13.535,
+     "y": 20.835
+    },
+    {
+     "ref": "C7",
+     "value": "1u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 42.045,
+     "y": 31.995
+    },
+    {
+     "ref": "R31",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 17.545,
+     "y": 10.795
+    },
+    {
+     "ref": "C62",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 56.105,
+     "y": 76.855
+    },
+    {
+     "ref": "R41",
+     "value": "4.7M",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 17.545,
+     "y": 30.875
+    },
+    {
+     "ref": "C5",
+     "value": "1u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 42.045,
+     "y": 25.975
+    },
+    {
+     "ref": "C46",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 23.345,
+     "y": 62.415
+    },
+    {
+     "ref": "R100",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 81.875
+    },
+    {
+     "ref": "D5",
+     "value": "smcj150a",
+     "footprint": "D_SMC",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 42.89,
+     "y": 11.125
+    },
+    {
+     "ref": "D7",
+     "value": "LED",
+     "footprint": "LED_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 50.575,
+     "y": 40.815
+    },
+    {
+     "ref": "R82",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 67.025,
+     "y": 67.435
+    },
+    {
+     "ref": "J35",
+     "value": "ET60S-D06-0-00-D06-X-V1-S",
+     "footprint": "SAMTEC_ET60S-D06-0-00-D06-X-V1-S",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 200.18,
+     "y": 117.625
+    },
+    {
+     "ref": "R89",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 14.775,
+     "y": 73.145
+    },
+    {
+     "ref": "Q11",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 60.565,
+     "y": 92.265
+    },
+    {
+     "ref": "D40",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 60.28,
+     "y": 81.525
+    },
+    {
+     "ref": "R38",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 17.545,
+     "y": 23.345
+    },
+    {
+     "ref": "FB1",
+     "value": "33",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 9.525,
+     "y": 5.775
+    },
+    {
+     "ref": "C12",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 13.305
+    },
+    {
+     "ref": "R9",
+     "value": "4.7M",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 9.525,
+     "y": 28.365
+    },
+    {
+     "ref": "R81",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 67.025,
+     "y": 64.925
+    },
+    {
+     "ref": "R3",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 9.525,
+     "y": 15.815
+    },
+    {
+     "ref": "J1",
+     "value": "- Power +",
+     "footprint": "PhoenixContact_MCV_1,5_2-G-5.08_1x02_P5.08mm_Vertical",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 31.17,
+     "y": 29.88
+    },
+    {
+     "ref": "R119",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 80.295,
+     "y": 58.705
+    },
+    {
+     "ref": "R13",
+     "value": "10",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 13.535,
+     "y": 5.775
+    },
+    {
+     "ref": "Q25",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 60.565,
+     "y": 63.385
+    },
+    {
+     "ref": "D4",
+     "value": "smcj150a",
+     "footprint": "D_SMC",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 42.89,
+     "y": 3.375
+    },
+    {
+     "ref": "R147",
+     "value": "10k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 66.125,
+     "y": 15.815
+    },
+    {
+     "ref": "Q4",
+     "value": "IRFL4105PBF",
+     "footprint": "SOT-223",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 32.495,
+     "y": 20.35
+    },
+    {
+     "ref": "J19",
+     "value": "Charger +",
+     "footprint": "PhoenixContact_MCV_1,5_2-G-5.08_1x02_P5.08mm_Vertical",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 31.17,
+     "y": 39.225
+    },
+    {
+     "ref": "R99",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 79.365
+    },
+    {
+     "ref": "Q26",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 49.645,
+     "y": 77.825
+    },
+    {
+     "ref": "TH2",
+     "value": "Thermistor_NTC 100k",
+     "footprint": "R_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 29.775,
+     "y": 47.585
+    },
+    {
+     "ref": "C63",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 34.265,
+     "y": 76.855
+    },
+    {
+     "ref": "C11",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 10.795
+    },
+    {
+     "ref": "R131",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 3.855,
+     "y": 58.705
+    },
+    {
+     "ref": "R121",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 58.105,
+     "y": 39.715
+    },
+    {
+     "ref": "C77",
+     "value": "18p",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 58.105,
+     "y": 18.325
+    },
+    {
+     "ref": "C70",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 58.105,
+     "y": 8.285
+    },
+    {
+     "ref": "R67",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 56.105,
+     "y": 96.315
+    },
+    {
+     "ref": "D37",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 38.44,
+     "y": 95.965
+    },
+    {
+     "ref": "R68",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 58.455,
+     "y": 87.585
+    },
+    {
+     "ref": "D41",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 38.44,
+     "y": 81.525
+    },
+    {
+     "ref": "Q19",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 16.885,
+     "y": 63.385
+    },
+    {
+     "ref": "R105",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 93.805
+    },
+    {
+     "ref": "R36",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 17.545,
+     "y": 18.325
+    },
+    {
+     "ref": "R133",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 45.185,
+     "y": 67.435
+    },
+    {
+     "ref": "R110",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 58.455,
+     "y": 58.705
+    },
+    {
+     "ref": "C61",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 58.105,
+     "y": 34.695
+    },
+    {
+     "ref": "R98",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 14.775,
+     "y": 87.585
+    },
+    {
+     "ref": "R23",
+     "value": "220k",
+     "footprint": "R_2512_6332Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 44.175,
+     "y": 46.885
+    },
+    {
+     "ref": "R73",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 77.945,
+     "y": 81.875
+    },
+    {
+     "ref": "Q1",
+     "value": "IRFL4105PBF",
+     "footprint": "SOT-223",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 32.495,
+     "y": 3.7
+    },
+    {
+     "ref": "C1",
+     "value": "100p",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 0.755
+    },
+    {
+     "ref": "C75",
+     "value": "10n",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 74.365,
+     "y": 12.335
+    },
+    {
+     "ref": "R113",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 47.535,
+     "y": 73.145
+    },
+    {
+     "ref": "R27",
+     "value": "4.75k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 17.545,
+     "y": 0.755
+    },
+    {
+     "ref": "C4",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 8.285
+    },
+    {
+     "ref": "R120",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 58.105,
+     "y": 37.205
+    },
+    {
+     "ref": "J32",
+     "value": "Temp",
+     "footprint": "PinHeader_1x05_P2.54mm_Horizontal",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 15.155,
+     "y": 34.425
+    },
+    {
+     "ref": "FB2",
+     "value": "33",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 9.525,
+     "y": 8.285
+    },
+    {
+     "ref": "D43",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 49.36,
+     "y": 67.085
+    },
+    {
+     "ref": "R69",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 34.265,
+     "y": 64.925
+    },
+    {
+     "ref": "R90",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 12.425,
+     "y": 64.925
+    },
+    {
+     "ref": "R40",
+     "value": "1",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 17.545,
+     "y": 28.365
+    },
+    {
+     "ref": "R102",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 23.345,
+     "y": 79.365
+    },
+    {
+     "ref": "R25",
+     "value": "100k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 13.535,
+     "y": 28.365
+    },
+    {
+     "ref": "R33",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 17.545,
+     "y": 13.305
+    },
+    {
+     "ref": "C81",
+     "value": "2.2u",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 62.115,
+     "y": 8.285
+    },
+    {
+     "ref": "Q16",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 71.485,
+     "y": 63.385
+    },
+    {
+     "ref": "Q22",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 5.965,
+     "y": 77.825
+    },
+    {
+     "ref": "R34",
+     "value": "100k",
+     "footprint": "R_2512_6332Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 44.175,
+     "y": 51.795
+    },
+    {
+     "ref": "R42",
+     "value": "4.7M",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 21.555,
+     "y": 0.755
+    },
+    {
+     "ref": "D2",
+     "value": "1N4148W",
+     "footprint": "D_SOD-123",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 51.23,
+     "y": 4.525
+    },
+    {
+     "ref": "R51",
+     "value": "100k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 21.555,
+     "y": 23.345
+    },
+    {
+     "ref": "C41",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 9.525,
+     "y": 0.755
+    },
+    {
+     "ref": "R132",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 45.185,
+     "y": 64.925
+    },
+    {
+     "ref": "C72",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 58.105,
+     "y": 10.795
+    },
+    {
+     "ref": "R12",
+     "value": "0",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 13.535,
+     "y": 3.265
+    },
+    {
+     "ref": "D23",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 82.12,
+     "y": 81.525
+    },
+    {
+     "ref": "D10",
+     "value": "BZT52H-C62",
+     "footprint": "D_SOD-123",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 51.23,
+     "y": 17.925
+    },
+    {
+     "ref": "C47",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 69.025,
+     "y": 34.695
+    },
+    {
+     "ref": "R137",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 25.695,
+     "y": 87.585
+    },
+    {
+     "ref": "C18",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 28.365
+    },
+    {
+     "ref": "C40",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.515,
+     "y": 30.875
+    },
+    {
+     "ref": "Q14",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 27.805,
+     "y": 63.385
+    },
+    {
+     "ref": "R116",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 36.615,
+     "y": 87.585
+    },
+    {
+     "ref": "C55",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 23.345,
+     "y": 76.855
+    },
+    {
+     "ref": "D33",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 27.52,
+     "y": 81.525
+    },
+    {
+     "ref": "R72",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 77.945,
+     "y": 79.365
+    },
+    {
+     "ref": "J38",
+     "value": "USB",
+     "footprint": "USB_Micro-B_Molex-105133-0001",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 77.165,
+     "y": 2.155
+    },
+    {
+     "ref": "R20",
+     "value": "4.7M",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 13.535,
+     "y": 23.345
+    },
+    {
+     "ref": "C32",
+     "value": "1u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 46.495,
+     "y": 38.015
+    },
+    {
+     "ref": "R91",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 12.425,
+     "y": 67.435
+    },
+    {
+     "ref": "C23",
+     "value": "22u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 46.495,
+     "y": 28.985
+    },
+    {
+     "ref": "R97",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 12.425,
+     "y": 96.315
+    },
+    {
+     "ref": "R17",
+     "value": "100k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 13.535,
+     "y": 15.815
+    },
+    {
+     "ref": "C2",
+     "value": "100p",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 3.265
+    },
+    {
+     "ref": "C49",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 67.025,
+     "y": 76.855
+    },
+    {
+     "ref": "C57",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 56.105,
+     "y": 62.415
+    },
+    {
+     "ref": "R85",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 67.025,
+     "y": 81.875
+    },
+    {
+     "ref": "C30",
+     "value": "10u",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.515,
+     "y": 18.325
+    },
+    {
+     "ref": "Q17",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 71.485,
+     "y": 77.825
+    },
+    {
+     "ref": "C44",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 34.265,
+     "y": 62.415
+    },
+    {
+     "ref": "D36",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 49.36,
+     "y": 81.525
+    },
+    {
+     "ref": "R153",
+     "value": "4.75k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 70.135,
+     "y": 10.795
+    },
+    {
+     "ref": "D8",
+     "value": "1N4148W",
+     "footprint": "D_SOD-123",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 51.23,
+     "y": 11.225
+    },
+    {
+     "ref": "R29",
+     "value": "10k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 17.545,
+     "y": 5.775
+    },
+    {
+     "ref": "C37",
+     "value": "2.2u",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.515,
+     "y": 23.345
+    },
+    {
+     "ref": "C56",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 91.295
+    },
+    {
+     "ref": "C39",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.515,
+     "y": 28.365
+    },
+    {
+     "ref": "C25",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.515,
+     "y": 8.285
+    },
+    {
+     "ref": "R63",
+     "value": "470",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 25.565,
+     "y": 20.835
+    },
+    {
+     "ref": "D19",
+     "value": "POWER",
+     "footprint": "LED_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 50.575,
+     "y": 45.995
+    },
+    {
+     "ref": "R130",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 67.435
+    },
+    {
+     "ref": "Q21",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 16.885,
+     "y": 92.265
+    },
+    {
+     "ref": "R16",
+     "value": "100k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 13.535,
+     "y": 13.305
+    },
+    {
+     "ref": "R1",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 9.525,
+     "y": 10.795
+    },
+    {
+     "ref": "TH1",
+     "value": "100k",
+     "footprint": "R_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 29.775,
+     "y": 44.635
+    },
+    {
+     "ref": "C27",
+     "value": "1u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 46.495,
+     "y": 35.005
+    },
+    {
+     "ref": "Q3",
+     "value": "IRFL4105PBF",
+     "footprint": "SOT-223",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 32.495,
+     "y": 12.025
+    },
+    {
+     "ref": "R53",
+     "value": "100k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 21.555,
+     "y": 28.365
+    },
+    {
+     "ref": "Q28",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 82.405,
+     "y": 63.385
+    },
+    {
+     "ref": "C58",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 45.185,
+     "y": 76.855
+    },
+    {
+     "ref": "R109",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 56.105,
+     "y": 67.435
+    },
+    {
+     "ref": "R103",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 23.345,
+     "y": 81.875
+    },
+    {
+     "ref": "R145",
+     "value": "2.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 66.125,
+     "y": 10.795
+    },
+    {
+     "ref": "R39",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 17.545,
+     "y": 25.855
+    },
+    {
+     "ref": "D42",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.68,
+     "y": 67.085
+    },
+    {
+     "ref": "D24",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 27.52,
+     "y": 67.085
+    },
+    {
+     "ref": "R126",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 34.265,
+     "y": 79.365
+    },
+    {
+     "ref": "Q27",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 38.725,
+     "y": 92.265
+    },
+    {
+     "ref": "C83",
+     "value": "2.2u",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 62.115,
+     "y": 13.305
+    },
+    {
+     "ref": "R149",
+     "value": "4.75k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 70.135,
+     "y": 0.755
+    },
+    {
+     "ref": "C68",
+     "value": "10n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 58.105,
+     "y": 3.265
+    },
+    {
+     "ref": "R115",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 34.265,
+     "y": 96.315
+    },
+    {
+     "ref": "C60",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 77.945,
+     "y": 62.415
+    },
+    {
+     "ref": "C66",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 23.345,
+     "y": 91.295
+    },
+    {
+     "ref": "R77",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 25.695,
+     "y": 58.705
+    },
+    {
+     "ref": "R92",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 14.775,
+     "y": 58.705
+    },
+    {
+     "ref": "C74",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 58.105,
+     "y": 13.305
+    },
+    {
+     "ref": "C76",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 58.105,
+     "y": 15.815
+    },
+    {
+     "ref": "R93",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 45.185,
+     "y": 93.805
+    },
+    {
+     "ref": "R134",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 47.535,
+     "y": 58.705
+    },
+    {
+     "ref": "R128",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 36.615,
+     "y": 73.145
+    },
+    {
+     "ref": "C14",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 18.325
+    },
+    {
+     "ref": "R151",
+     "value": "240",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 70.135,
+     "y": 5.775
+    },
+    {
+     "ref": "D28",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 16.6,
+     "y": 81.525
+    },
+    {
+     "ref": "C20",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.515,
+     "y": 0.755
+    },
+    {
+     "ref": "R95",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 47.535,
+     "y": 87.585
+    },
+    {
+     "ref": "C36",
+     "value": "1u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 50.945,
+     "y": 35.005
+    },
+    {
+     "ref": "R35",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 17.545,
+     "y": 15.815
+    },
+    {
+     "ref": "R64",
+     "value": "470",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 25.565,
+     "y": 23.345
+    },
+    {
+     "ref": "R50",
+     "value": "0",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 21.555,
+     "y": 20.835
+    },
+    {
+     "ref": "TH3",
+     "value": "100k",
+     "footprint": "R_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 29.775,
+     "y": 50.535
+    },
+    {
+     "ref": "R152",
+     "value": "10k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 70.135,
+     "y": 8.285
+    },
+    {
+     "ref": "Q24",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 5.965,
+     "y": 92.265
+    },
+    {
+     "ref": "C82",
+     "value": "2.2u",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 62.115,
+     "y": 10.795
+    },
+    {
+     "ref": "C29",
+     "value": "10u",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.515,
+     "y": 15.815
+    },
+    {
+     "ref": "C52",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 45.185,
+     "y": 91.295
+    },
+    {
+     "ref": "R106",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 96.315
+    },
+    {
+     "ref": "C48",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 67.025,
+     "y": 62.415
+    },
+    {
+     "ref": "D44",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 27.52,
+     "y": 95.965
+    },
+    {
+     "ref": "Q23",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 27.805,
+     "y": 77.825
+    },
+    {
+     "ref": "R70",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 34.265,
+     "y": 67.435
+    },
+    {
+     "ref": "D20",
+     "value": "STATUS",
+     "footprint": "LED_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 50.575,
+     "y": 48.585
+    },
+    {
+     "ref": "C24",
+     "value": "22u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 46.495,
+     "y": 31.995
+    },
+    {
+     "ref": "R135",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 23.345,
+     "y": 93.805
+    },
+    {
+     "ref": "R76",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 23.345,
+     "y": 67.435
+    },
+    {
+     "ref": "D39",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 62.28,
+     "y": 39.365
+    },
+    {
+     "ref": "R144",
+     "value": "100k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 66.125,
+     "y": 8.285
+    },
+    {
+     "ref": "R146",
+     "value": "10k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 66.125,
+     "y": 13.305
+    },
+    {
+     "ref": "R48",
+     "value": "0",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 21.555,
+     "y": 15.815
+    },
+    {
+     "ref": "R118",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 77.945,
+     "y": 67.435
+    },
+    {
+     "ref": "R44",
+     "value": "1",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 21.555,
+     "y": 5.775
+    },
+    {
+     "ref": "R123",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 56.105,
+     "y": 79.365
+    },
+    {
+     "ref": "R26",
+     "value": "100k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 13.535,
+     "y": 30.875
+    },
+    {
+     "ref": "R8",
+     "value": "10",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 9.525,
+     "y": 25.855
+    },
+    {
+     "ref": "R60",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 25.565,
+     "y": 13.305
+    },
+    {
+     "ref": "R104",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 25.695,
+     "y": 73.145
+    },
+    {
+     "ref": "R47",
+     "value": "806",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 21.555,
+     "y": 13.305
+    },
+    {
+     "ref": "C17",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 25.855
+    },
+    {
+     "ref": "C69",
+     "value": "1u",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 58.105,
+     "y": 5.775
+    },
+    {
+     "ref": "Q30",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 60.565,
+     "y": 77.825
+    },
+    {
+     "ref": "C38",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.515,
+     "y": 25.855
+    },
+    {
+     "ref": "R114",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 34.265,
+     "y": 93.805
+    },
+    {
+     "ref": "R54",
+     "value": "100k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 21.555,
+     "y": 30.875
+    },
+    {
+     "ref": "C33",
+     "value": "1u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 50.945,
+     "y": 25.975
+    },
+    {
+     "ref": "R108",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 56.105,
+     "y": 64.925
+    },
+    {
+     "ref": "R96",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 12.425,
+     "y": 93.805
+    },
+    {
+     "ref": "R59",
+     "value": "100k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 25.565,
+     "y": 10.795
+    },
+    {
+     "ref": "D27",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 71.2,
+     "y": 81.525
+    },
+    {
+     "ref": "R49",
+     "value": "1M",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 21.555,
+     "y": 18.325
+    },
+    {
+     "ref": "C6",
+     "value": "1u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 42.045,
+     "y": 28.985
+    },
+    {
+     "ref": "D17",
+     "value": "LED",
+     "footprint": "LED_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 50.575,
+     "y": 43.405
+    },
+    {
+     "ref": "C64",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 62.415
+    },
+    {
+     "ref": "C80",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 62.115,
+     "y": 5.775
+    },
+    {
+     "ref": "R101",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 3.855,
+     "y": 73.145
+    },
+    {
+     "ref": "R2",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 9.525,
+     "y": 13.305
+    },
+    {
+     "ref": "R84",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 67.025,
+     "y": 79.365
+    },
+    {
+     "ref": "D38",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 82.12,
+     "y": 67.085
+    },
+    {
+     "ref": "D22",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 38.44,
+     "y": 67.085
+    },
+    {
+     "ref": "R112",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 45.185,
+     "y": 81.875
+    },
+    {
+     "ref": "C79",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 62.115,
+     "y": 3.265
+    },
+    {
+     "ref": "J37",
+     "value": "DEBUG",
+     "footprint": "Molex_PicoBlade_53398-0571_1x05-1MP_P1.25mm_Vertical",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 63.225,
+     "y": 22.505
+    },
+    {
+     "ref": "C54",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 76.855
+    },
+    {
+     "ref": "R141",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 66.125,
+     "y": 3.265
+    },
+    {
+     "ref": "J17",
+     "value": "Temp",
+     "footprint": "PinHeader_1x05_P2.54mm_Horizontal",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.795,
+     "y": 34.425
+    },
+    {
+     "ref": "R139",
+     "value": "51",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 62.115,
+     "y": 18.325
+    },
+    {
+     "ref": "D21",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 60.28,
+     "y": 95.965
+    },
+    {
+     "ref": "Q18",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 16.885,
+     "y": 77.825
+    },
+    {
+     "ref": "Q32",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 5.965,
+     "y": 63.385
+    },
+    {
+     "ref": "Q15",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 73.485,
+     "y": 35.665
+    },
+    {
+     "ref": "R21",
+     "value": "220k",
+     "footprint": "R_2512_6332Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 44.175,
+     "y": 41.975
+    },
+    {
+     "ref": "R75",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 23.345,
+     "y": 64.925
+    },
+    {
+     "ref": "C10",
+     "value": "1u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 46.495,
+     "y": 25.975
+    },
+    {
+     "ref": "R52",
+     "value": "100k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 21.555,
+     "y": 25.855
+    },
+    {
+     "ref": "D3",
+     "value": "BZT52H-C62",
+     "footprint": "D_SOD-123",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 51.23,
+     "y": 7.875
+    },
+    {
+     "ref": "R150",
+     "value": "240",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 70.135,
+     "y": 3.265
+    },
+    {
+     "ref": "R88",
+     "value": "1.2k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 12.425,
+     "y": 81.875
+    },
+    {
+     "ref": "C45",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 77.945,
+     "y": 76.855
+    },
+    {
+     "ref": "R65",
+     "value": "1.5k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 25.565,
+     "y": 25.855
+    },
+    {
+     "ref": "D31",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 16.6,
+     "y": 95.965
+    },
+    {
+     "ref": "D30",
+     "value": "PDZ7.5B",
+     "footprint": "D_SOD-323",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 49.36,
+     "y": 95.965
+    },
+    {
+     "ref": "Q29",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 62.565,
+     "y": 35.665
+    },
+    {
+     "ref": "R28",
+     "value": "4.75k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 17.545,
+     "y": 3.265
+    },
+    {
+     "ref": "R74",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 80.295,
+     "y": 73.145
+    },
+    {
+     "ref": "C9",
+     "value": "1u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 42.045,
+     "y": 38.015
+    },
+    {
+     "ref": "R57",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 25.565,
+     "y": 5.775
+    },
+    {
+     "ref": "D1",
+     "value": "1N4148W",
+     "footprint": "D_SOD-123",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 51.23,
+     "y": 1.175
+    },
+    {
+     "ref": "R61",
+     "value": "10k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 25.565,
+     "y": 15.815
+    },
+    {
+     "ref": "R117",
+     "value": "100",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 77.945,
+     "y": 64.925
+    },
+    {
+     "ref": "C8",
+     "value": "1u",
+     "footprint": "C_0805_2012Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 42.045,
+     "y": 35.005
+    },
+    {
+     "ref": "Q33",
+     "value": "DMG2305UX-7",
+     "footprint": "SOT-23",
+     "description": "P-Channel MOSFET -20V Vds -4A Id SOT-23",
+     "layer": "F.Cu",
+     "x": 49.645,
+     "y": 63.385
+    },
+    {
+     "ref": "R43",
+     "value": "1",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 21.555,
+     "y": 3.265
+    },
+    {
+     "ref": "R138",
+     "value": "51",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 62.115,
+     "y": 15.815
+    },
+    {
+     "ref": "R18",
+     "value": "100k",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 13.535,
+     "y": 18.325
+    },
+    {
+     "ref": "R86",
+     "value": "3.9",
+     "footprint": "R_2512_6332Metric",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 69.375,
+     "y": 73.145
+    },
+    {
+     "ref": "C13",
+     "value": "100n",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 1.505,
+     "y": 15.815
+    },
+    {
+     "ref": "R58",
+     "value": "1M",
+     "footprint": "R_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 25.565,
+     "y": 8.285
+    },
+    {
+     "ref": "R22",
+     "value": "2K2",
+     "footprint": "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
+     "description": "Resistor",
+     "layer": "F.Cu",
+     "x": 34.355,
+     "y": 44.635
+    },
+    {
+     "ref": "C22",
+     "value": "100p",
+     "footprint": "C_0603_1608Metric",
+     "description": "",
+     "layer": "F.Cu",
+     "x": 5.515,
+     "y": 5.775
+    }
+   ]
+  }
+ ]
+}

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import ProjectSwitcher from './ProjectSwitcher.vue';
 import SegmentedTabs from './SegmentedTabs.vue';
-import { tabs } from './nav';
+import { computed } from 'vue';
 import { useWorkspace } from './useWorkspace';
 
-const { tab, base } = useWorkspace();
+// The project's own tabs: each project has its places, then the shared views.
+const { project, tab, base } = useWorkspace();
+const tabs = computed(() => project.value?.tabs ?? []);
 </script>
 
 <template>

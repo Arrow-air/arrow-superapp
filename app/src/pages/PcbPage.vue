@@ -3,19 +3,26 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
 import NewThread from '../modules/threads/NewThread.vue';
-import { NEXT, type ThreadType } from '../modules/threads/data';
+import type { ThreadType } from '../modules/threads/data';
 import { isOpen, openVersion, startThread, state, threadsOnComponent } from '../modules/threads/store';
-import { boardById, boardZone, boards, groupOf, groupsOf, naturalRef, pcbCommit } from '../data/pcbs';
-import { partById } from '../data/quiver';
+import { boardNote, boardSet, boardZone, groupOf, groupsOf, naturalRef } from '../data/pcbs';
+import { partFullName } from '../projects/parts';
+import { planOf } from '../projects/plans';
 import { zoneIcon, zoneLabel, zonePath } from '../frame/nav';
+import { useWorkspace } from '../frame/useWorkspace';
 
-// The PCBs on Quiver, rendered from their KiCad files with KiCanvas. Click a
-// component on the board, or pick it from the list, to see its threads or
-// propose a change for v1.1. The thread is anchored to board and reference.
+// A project's PCBs (Quiver's four, Longshot's BMSJ), rendered from their KiCad
+// files with KiCanvas. Click a component on the board, or pick it from the
+// list, to see its threads or propose a change for the next version. The
+// thread is anchored to board and reference.
 const route = useRoute();
 const router = useRouter();
-const boardId = computed(() => (route.query.board as string) || boards[0].id);
-const board = computed(() => boardById(boardId.value) ?? boards[0]);
+const { project } = useWorkspace();
+const set = computed(() => boardSet(project.value?.id));
+const boards = computed(() => set.value.boards);
+const NEXT = computed(() => planOf(project.value?.id).next);
+const boardId = computed(() => (route.query.board as string) || boards.value[0].id);
+const board = computed(() => boards.value.find((b) => b.id === boardId.value) ?? boards.value[0]);
 const selectedRef = computed(() => (route.query.ref as string | undefined) ?? null);
 const selected = computed(() => (selectedRef.value ? board.value.footprints.find((f) => f.ref === selectedRef.value) : undefined));
 const go = (q: Record<string, string | undefined>) => {
@@ -121,12 +128,12 @@ async function propose(d: { type: ThreadType; title: string; body: string; key: 
   if (!selected.value) return false;
   const t = await startThread({
     zone: boardZone[board.value.id],
-    part: board.value.part,
+    part: board.value.part || undefined,
     pcb: about.value === 'ref' ? { board: board.value.id, ref: selected.value.ref } : undefined,
     title: d.title,
     body: d.body,
     type: d.type,
-    version: NEXT,
+    version: NEXT.value,
     key: d.key,
   });
   if (!t) return false;
@@ -135,7 +142,7 @@ async function propose(d: { type: ThreadType; title: string; body: string; key: 
   return true;
 }
 const src = computed(() => `${import.meta.env.BASE_URL}${board.value.file}`);
-const githubFile = computed(() => `https://github.com/Arrow-air/project-quiver/blob/main/${board.value.path}`);
+const githubFile = computed(() => `${set.value.repo}/blob/main/${board.value.path}`);
 </script>
 
 <template>
@@ -183,7 +190,8 @@ const githubFile = computed(() => `https://github.com/Arrow-air/project-quiver/b
         <h1 class="title">{{ board.name }}</h1>
         <p class="lede">
           Click a component on the board, or pick one below, to see what's being discussed about it or propose a change for {{ NEXT }}.
-          BOM <span class="mono">{{ board.part }}</span> {{ partById(board.part)?.name }}.
+          <template v-if="board.part">BOM <span class="mono">{{ board.part }}</span> {{ partFullName(board.part) }}.</template>
+          <template v-if="boardNote[board.id]">{{ boardNote[board.id] }}</template>
         </p>
         <h2 class="h">Components <span class="n">{{ board.footprints.length }}</span></h2>
         <section v-for="g in groups" :key="g.id" class="grp">
@@ -202,7 +210,7 @@ const githubFile = computed(() => `https://github.com/Arrow-air/project-quiver/b
           </ul>
         </section>
         <p class="src">
-          From <a :href="githubFile" target="_blank" rel="noopener">{{ board.path.split('/').pop() }}</a> on project-quiver main ({{ pcbCommit }}), drawn by KiCanvas.
+          From <a :href="githubFile" target="_blank" rel="noopener">{{ board.path.split('/').pop() }}</a> on {{ set.repo.split('/').pop() }} main ({{ set.commit }}), drawn by KiCanvas.
         </p>
       </template>
     </aside>

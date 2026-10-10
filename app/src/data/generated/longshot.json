@@ -1,0 +1,740 @@
+{
+ "generatedAt": "2026-10-10T22:13:46.385Z",
+ "repo": "https://github.com/Arrow-air/project-longshot",
+ "commit": "f7ec9a7",
+ "bomPath": "engineering/cad/build123d/BOM.csv",
+ "bom": [
+  {
+   "id": "PW-CELL-001-21700",
+   "description": "21700 Li-ion cell. CAD placeholder model: Molicel 21700 P45B; PT1 uses BAK 21700 65E",
+   "qty": 126,
+   "category": "cell",
+   "makeBuy": "buy",
+   "material": null,
+   "source": "src/longshot/parts/pw_cell_001_21700.py",
+   "exports": "exports/stl/PW-CELL-001-21700.stl.gz; exports/step/PW-CELL-001-21700.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ +0.19 %, sym-diff 0.25 %"
+  },
+  {
+   "id": "PW-BUS-001-N_Terminal",
+   "description": "Negative terminal busbar",
+   "qty": 1,
+   "category": "busbar",
+   "makeBuy": "make",
+   "material": "Copper, 0.2 mm sheet (PT1 copper order)",
+   "source": "src/longshot/parts/pw_bus_001_n_terminal.py",
+   "exports": "exports/stl/PW-BUS-001-N_Terminal.stl.gz; exports/step/PW-BUS-001-N_Terminal.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ -0.00 %, sym-diff 0.00 %"
+  },
+  {
+   "id": "PW-BUS-002-P_Terminal",
+   "description": "Positive terminal busbar",
+   "qty": 1,
+   "category": "busbar",
+   "makeBuy": "make",
+   "material": "Copper, 0.2 mm sheet (PT1 copper order)",
+   "source": "src/longshot/parts/pw_bus_002_p_terminal.py",
+   "exports": "exports/stl/PW-BUS-002-P_Terminal.stl.gz; exports/step/PW-BUS-002-P_Terminal.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ +0.00 %, sym-diff 0.00 %"
+  },
+  {
+   "id": "PW-BUS-003-Bridge_1",
+   "description": "Series bridge busbar between cell groups; qty includes the 6 instances of Fusion component PW-BUS-003-Bridge_1_Mirror (same outline and weld tongues, locating ear at the opposite end). One laser-cut flat pattern, turned 180° for the top or bottom of the pack; tongue bends are formed during spot welding",
+   "qty": 12,
+   "category": "busbar",
+   "makeBuy": "make",
+   "material": "Copper, 0.2 mm sheet (PT1 copper order)",
+   "source": "src/longshot/parts/pw_bus_003_bridge_1.py; src/longshot/parts/pw_bus_003_bridge_1_mirror.py",
+   "exports": "exports/stl/PW-BUS-003-Bridge_1.stl.gz; exports/step/PW-BUS-003-Bridge_1.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ +0.00 %, sym-diff 0.00 %; PW-BUS-003-Bridge_1_Mirror: pass: bbox Δ 0.000 mm, vol Δ +0.00 %, sym-diff 0.00 %"
+  },
+  {
+   "id": "PW-BUS-004-Bridge_2",
+   "description": "Series bridge busbar between the two cell-stack halves",
+   "qty": 1,
+   "category": "busbar",
+   "makeBuy": "make",
+   "material": "Copper, 0.2 mm sheet (PT1 copper order)",
+   "source": "src/longshot/parts/pw_bus_004_bridge_2.py",
+   "exports": "exports/stl/PW-BUS-004-Bridge_2.stl.gz; exports/step/PW-BUS-004-Bridge_2.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ -0.00 %, sym-diff 0.00 %"
+  },
+  {
+   "id": "PW-BUS-005-Screw_Terminal_Negative",
+   "description": "Negative screw terminal bar, 6 mm",
+   "qty": 1,
+   "category": "busbar",
+   "makeBuy": "make",
+   "material": null,
+   "source": "src/longshot/parts/pw_bus_005_screw_terminal_negative.py",
+   "exports": "exports/stl/PW-BUS-005-Screw_Terminal_Negative.stl.gz; exports/step/PW-BUS-005-Screw_Terminal_Negative.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ -0.00 %, sym-diff 0.00 %"
+  },
+  {
+   "id": "PW-BUS-006-Screw_Terminal_Positive",
+   "description": "Positive screw terminal bar, 6 mm",
+   "qty": 1,
+   "category": "busbar",
+   "makeBuy": "make",
+   "material": null,
+   "source": "src/longshot/parts/pw_bus_006_screw_terminal_positive.py",
+   "exports": "exports/stl/PW-BUS-006-Screw_Terminal_Positive.stl.gz; exports/step/PW-BUS-006-Screw_Terminal_Positive.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ -0.00 %, sym-diff 0.00 %"
+  },
+  {
+   "id": "EN-CELL-001-Upper_Cell_Holder",
+   "description": "Upper cell holder, 3D printed",
+   "qty": 1,
+   "category": "custom mechanical",
+   "makeBuy": "make (3D print)",
+   "material": null,
+   "source": "src/longshot/parts/en_cell_001_upper_cell_holder.py",
+   "exports": "exports/stl/EN-CELL-001-Upper_Cell_Holder.stl.gz; exports/step/EN-CELL-001-Upper_Cell_Holder.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ +0.03 %, sym-diff 0.07 %"
+  },
+  {
+   "id": "EN-CELL-001-Bottom_Cell_Holder",
+   "description": "Bottom cell holder, 3D printed",
+   "qty": 1,
+   "category": "custom mechanical",
+   "makeBuy": "make (3D print)",
+   "material": null,
+   "source": "src/longshot/parts/en_cell_001_bottom_cell_holder.py",
+   "exports": "exports/stl/EN-CELL-001-Bottom_Cell_Holder.stl.gz; exports/step/EN-CELL-001-Bottom_Cell_Holder.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ -0.01 %, sym-diff 0.06 %"
+  },
+  {
+   "id": "EN-PC-001-Top_Plate",
+   "description": "Top plate, 3 mm",
+   "qty": 1,
+   "category": "custom mechanical",
+   "makeBuy": "make",
+   "material": "Polycarbonate (PC)",
+   "source": "src/longshot/parts/en_pc_001_top_plate.py",
+   "exports": "exports/stl/EN-PC-001-Top_Plate.stl.gz; exports/step/EN-PC-001-Top_Plate.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ -0.00 %, sym-diff 0.00 %"
+  },
+  {
+   "id": "EN-PC-002-Bottom_Plate",
+   "description": "Bottom plate, 3 mm",
+   "qty": 1,
+   "category": "custom mechanical",
+   "makeBuy": "make",
+   "material": "Polycarbonate (PC)",
+   "source": "src/longshot/parts/en_pc_002_bottom_plate.py",
+   "exports": "exports/stl/EN-PC-002-Bottom_Plate.stl.gz; exports/step/EN-PC-002-Bottom_Plate.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ -0.00 %, sym-diff 0.00 %"
+  },
+  {
+   "id": "EN-SHEET-001-Reinfocement_Right",
+   "description": "Right reinforcement sheet (\"Reinfocement\" is the CAD part-number spelling)",
+   "qty": 1,
+   "category": "custom mechanical",
+   "makeBuy": "make",
+   "material": "Aluminium sheet",
+   "source": "src/longshot/parts/en_sheet_001_reinfocement_right.py",
+   "exports": "exports/stl/EN-SHEET-001-Reinfocement_Right.stl.gz; exports/step/EN-SHEET-001-Reinfocement_Right.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ +0.00 %, sym-diff 0.00 %"
+  },
+  {
+   "id": "EN-SHEET-002-Reinfocement_Left",
+   "description": "Left reinforcement sheet (\"Reinfocement\" is the CAD part-number spelling)",
+   "qty": 1,
+   "category": "custom mechanical",
+   "makeBuy": "make",
+   "material": "Aluminium sheet",
+   "source": "src/longshot/parts/en_sheet_002_reinfocement_left.py",
+   "exports": "exports/stl/EN-SHEET-002-Reinfocement_Left.stl.gz; exports/step/EN-SHEET-002-Reinfocement_Left.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ +0.00 %, sym-diff 0.00 %"
+  },
+  {
+   "id": "EN-PRINT-001-3D-Printable_Battery_Base",
+   "description": "Battery base, 3D printed",
+   "qty": 1,
+   "category": "custom mechanical",
+   "makeBuy": "make (3D print)",
+   "material": null,
+   "source": "src/longshot/parts/en_print_001_3d_printable_battery_base.py",
+   "exports": "exports/stl/EN-PRINT-001-3D-Printable_Battery_Base.stl.gz; exports/step/EN-PRINT-001-3D-Printable_Battery_Base.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ -0.23 %, sym-diff 0.68 %"
+  },
+  {
+   "id": "EN-PRINT-002-3D-Printable_Battery_Top_Cover",
+   "description": "Battery top cover, 3D printed",
+   "qty": 1,
+   "category": "custom mechanical",
+   "makeBuy": "make (3D print)",
+   "material": null,
+   "source": "src/longshot/parts/en_print_002_3d_printable_battery_top_cover.py",
+   "exports": "exports/stl/EN-PRINT-002-3D-Printable_Battery_Top_Cover.stl.gz; exports/step/EN-PRINT-002-3D-Printable_Battery_Top_Cover.step",
+   "validation": "approximate: bbox Δ 0.025 mm, vol Δ +0.28 %, sym-diff 1.97 % (at the 2 % sym-diff limit: sampled 1.97 +/- 0.24 % (20k points) and 2.29 +/- 0.10 % (100k points). Differences: strap-mound corner rounds modelled as chamfers, r9 floor round and end-wall lip as stepped layers, simplified end-block notches, tower-roof insert bosses and small r0.5-r1 rounds not modelled.)"
+  },
+  {
+   "id": "EN-STRAP-001-Metal_piece",
+   "description": "Strap metal piece",
+   "qty": 1,
+   "category": "custom mechanical",
+   "makeBuy": "make",
+   "material": "Metal",
+   "source": "src/longshot/parts/en_strap_001_metal_piece.py",
+   "exports": "exports/stl/EN-STRAP-001-Metal_piece.stl.gz; exports/step/EN-STRAP-001-Metal_piece.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ +0.00 %, sym-diff 0.00 %"
+  },
+  {
+   "id": "EN-STRAP-002-Rubber_Part",
+   "description": "Strap rubber part",
+   "qty": 1,
+   "category": "custom mechanical",
+   "makeBuy": "make",
+   "material": "Rubber",
+   "source": "src/longshot/parts/en_strap_002_rubber_part.py",
+   "exports": "exports/stl/EN-STRAP-002-Rubber_Part.stl.gz; exports/step/EN-STRAP-002-Rubber_Part.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ +0.01 %, sym-diff 0.01 %"
+  },
+  {
+   "id": "EN-STRAP-003-Metal_End",
+   "description": "Strap metal end",
+   "qty": 2,
+   "category": "custom mechanical",
+   "makeBuy": "make",
+   "material": "Metal",
+   "source": "src/longshot/parts/en_strap_003_metal_end.py",
+   "exports": "exports/stl/EN-STRAP-003-Metal_End.stl.gz; exports/step/EN-STRAP-003-Metal_End.step",
+   "validation": "pass: bbox Δ 0.000 mm, vol Δ +0.00 %, sym-diff 0.25 %"
+  },
+  {
+   "id": "SL_PCB-002-SL_PCB_V3",
+   "description": "SL_PCB V3 main battery PCB, bare board (components listed separately)",
+   "qty": 1,
+   "category": "PCB",
+   "makeBuy": "make (PCB fab)",
+   "material": null,
+   "source": "src/longshot/cots/sl_pcb_002_sl_pcb_v3.py",
+   "exports": "reference/cots/SL_PCB-002-SL_PCB_V3_SL_PCB_PCB.step.gz",
+   "validation": "reference geometry (not recreated)"
+  },
+  {
+   "id": "VS_PCB_COMPLETE_TOP_LEFT",
+   "description": "Voltage-sense PCB, top left, bare board",
+   "qty": 1,
+   "category": "PCB",
+   "makeBuy": "make (PCB fab)",
+   "material": null,
+   "source": "src/longshot/cots/vs_pcb_complete_top_left.py",
+   "exports": "reference/cots/VS_PCB_COMPLETE_TOP_LEFT_VS_PCB_PCB.step.gz",
+   "validation": "reference geometry (not recreated)"
+  },
+  {
+   "id": "VS_PCB_COMPLETE_TOP_RIGHT",
+   "description": "Voltage-sense PCB, top right, bare board",
+   "qty": 1,
+   "category": "PCB",
+   "makeBuy": "make (PCB fab)",
+   "material": null,
+   "source": "src/longshot/cots/vs_pcb_complete_top_right.py",
+   "exports": "reference/cots/VS_PCB_COMPLETE_TOP_RIGHT_VS_PCB_PCB.step.gz",
+   "validation": "reference geometry (not recreated)"
+  },
+  {
+   "id": "VS_PCB_COMPLETE_BOTTOM_LEFT",
+   "description": "Voltage-sense PCB, bottom left, bare board",
+   "qty": 1,
+   "category": "PCB",
+   "makeBuy": "make (PCB fab)",
+   "material": null,
+   "source": "src/longshot/cots/vs_pcb_complete_bottom_left.py",
+   "exports": "reference/cots/VS_PCB_COMPLETE_BOTTOM_LEFT_VS_PCB_PCB.step.gz",
+   "validation": "reference geometry (not recreated)"
+  },
+  {
+   "id": "VS_PCB_COMPLETE_BOTTOM_RIGHT",
+   "description": "Voltage-sense PCB, bottom right, bare board",
+   "qty": 1,
+   "category": "PCB",
+   "makeBuy": "make (PCB fab)",
+   "material": null,
+   "source": "src/longshot/cots/vs_pcb_complete_bottom_right.py",
+   "exports": "reference/cots/VS_PCB_COMPLETE_BOTTOM_RIGHT_VS_PCB_PCB.step.gz",
+   "validation": "reference geometry (not recreated)"
+  },
+  {
+   "id": "ET60S-D06-0-00-D06-L-V1-S",
+   "description": "ET60S-D06 battery connector (on SL_PCB)",
+   "qty": 1,
+   "category": "COTS",
+   "makeBuy": "buy",
+   "material": null,
+   "source": "src/longshot/cots/et60s_d06_0_00_d06_l_v1_s.py",
+   "exports": "reference/cots/ET60S-D06-0-00-D06-L-V1-S.step.gz",
+   "validation": "reference geometry (not recreated)"
+  },
+  {
+   "id": "EL-FUSE-001-AMXL-200",
+   "description": "AMXL-200 main fuse (default). AMX-150, as in the SL_PCB README, also fits (same size)",
+   "qty": 1,
+   "category": "COTS",
+   "makeBuy": "buy",
+   "material": null,
+   "source": "src/longshot/cots/el_fuse_001_amxl_200.py",
+   "exports": "reference/cots/EL-FUSE-001-AMXL-200.step.gz",
+   "validation": "reference geometry (not recreated)"
+  },
+  {
+   "id": "FUSE-SMD_L10_0-W5_0-H3_8",
+   "description": "SMD fuse, 10.0 x 5.0 x 3.8 mm package per CAD name (on SL_PCB)",
+   "qty": 15,
+   "category": "COTS",
+   "makeBuy": "buy",
+   "material": null,
+   "source": "src/longshot/cots/fuse_smd_l10_0_w5_0_h3_8.py",
+   "exports": "reference/cots/FUSE-SMD_L10_0-W5_0-H3_8.step.gz",
+   "validation": "reference geometry (not recreated)"
+  },
+  {
+   "id": "AMT0450003DB0000G",
+   "description": "Component AMT0450003DB0000G (CAD model name, on SL_PCB)",
+   "qty": 2,
+   "category": "COTS",
+   "makeBuy": "buy",
+   "material": null,
+   "source": "src/longshot/cots/amt0450003db0000g.py",
+   "exports": "reference/cots/AMT0450003DB0000G.step.gz",
+   "validation": "reference geometry (not recreated)"
+  },
+  {
+   "id": "CONN-TH_430451612",
+   "description": "Through-hole connector 430451612 (CAD model name, on SL_PCB)",
+   "qty": 1,
+   "category": "COTS",
+   "makeBuy": "buy",
+   "material": null,
+   "source": "src/longshot/cots/conn_th_430451612.py",
+   "exports": "reference/cots/CONN-TH_430451612.step.gz",
+   "validation": "reference geometry (not recreated)"
+  },
+  {
+   "id": "CONN-SMD_SM7B-GHS-TB-LF-SN",
+   "description": "JST SM7B-GHS-TB 7-pin SMD connector (4 on SL_PCB, 1 on each voltage-sense PCB)",
+   "qty": 8,
+   "category": "COTS",
+   "makeBuy": "buy",
+   "material": null,
+   "source": "src/longshot/cots/conn_smd_sm7b_ghs_tb_lf_sn.py",
+   "exports": "reference/cots/CONN-SMD_SM7B-GHS-TB-LF-SN.step.gz",
+   "validation": "reference geometry (not recreated)"
+  },
+  {
+   "id": "Tattu_4_0_30Ah_Clip",
+   "description": "Tattu 4.0 30Ah clip",
+   "qty": 1,
+   "category": "COTS",
+   "makeBuy": "buy",
+   "material": null,
+   "source": "src/longshot/cots/tattu_4_0_30ah_clip.py",
+   "exports": "reference/cots/Tattu_4_0_30Ah_Clip.step.gz",
+   "validation": "reference geometry (not recreated)"
+  },
+  {
+   "id": "EN-INSERT-001-ruthex_RX-M3x5_7",
+   "description": "ruthex RX-M3x5.7 heat-set insert, M3",
+   "qty": 67,
+   "category": "COTS",
+   "makeBuy": "buy",
+   "material": null,
+   "source": "src/longshot/cots/en_insert_001_ruthex_rx_m3x5_7.py",
+   "exports": "reference/cots/EN-INSERT-001-ruthex_RX-M3x5_7.step.gz",
+   "validation": "reference geometry (not recreated)"
+  },
+  {
+   "id": "EN-INSERT-002-ruthex_RX-M4x8_1",
+   "description": "ruthex RX-M4x8.1 heat-set insert, M4",
+   "qty": 4,
+   "category": "COTS",
+   "makeBuy": "buy",
+   "material": null,
+   "source": "src/longshot/cots/en_insert_002_ruthex_rx_m4x8_1.py",
+   "exports": "reference/cots/EN-INSERT-002-ruthex_RX-M4x8_1.step.gz",
+   "validation": "reference geometry (not recreated)"
+  }
+ ],
+ "issues": [
+  {
+   "number": 26,
+   "title": "Weigh items and create table",
+   "state": "OPEN",
+   "url": "https://github.com/Arrow-air/project-longshot/issues/26",
+   "labels": [],
+   "author": "vector-arrow",
+   "assignees": [
+    "Julius-eng"
+   ],
+   "createdAt": "2026-08-19T11:30:55Z",
+   "updatedAt": "2026-08-29T15:14:37Z",
+   "closedAt": null,
+   "excerpt": "Weigh the PT1 components and record the results in a weight table (repo docs/README)."
+  },
+  {
+   "number": 25,
+   "title": "Order screws",
+   "state": "OPEN",
+   "url": "https://github.com/Arrow-air/project-longshot/issues/25",
+   "labels": [],
+   "author": "vector-arrow",
+   "assignees": [
+    "Julius-eng"
+   ],
+   "createdAt": "2026-08-19T11:30:49Z",
+   "updatedAt": "2026-08-19T11:30:49Z",
+   "closedAt": null,
+   "excerpt": "Order the screws needed for the PT1 casing/assembly."
+  },
+  {
+   "number": 24,
+   "title": "Print top cap and base of the casing",
+   "state": "OPEN",
+   "url": "https://github.com/Arrow-air/project-longshot/issues/24",
+   "labels": [],
+   "author": "vector-arrow",
+   "assignees": [
+    "Julius-eng"
+   ],
+   "createdAt": "2026-08-19T11:30:44Z",
+   "updatedAt": "2026-08-19T11:30:44Z",
+   "closedAt": null,
+   "excerpt": "Print the casing top cap and base for PT1."
+  },
+  {
+   "number": 23,
+   "title": "Print battery holders (2 prints)",
+   "state": "OPEN",
+   "url": "https://github.com/Arrow-air/project-longshot/issues/23",
+   "labels": [],
+   "author": "vector-arrow",
+   "assignees": [
+    "Julius-eng"
+   ],
+   "createdAt": "2026-08-19T11:30:39Z",
+   "updatedAt": "2026-08-19T11:30:39Z",
+   "closedAt": null,
+   "excerpt": "Print the battery cell holders for PT1 — two print jobs total."
+  },
+  {
+   "number": 22,
+   "title": "Solder SL PCB",
+   "state": "OPEN",
+   "url": "https://github.com/Arrow-air/project-longshot/issues/22",
+   "labels": [],
+   "author": "vector-arrow",
+   "assignees": [
+    "Julius-eng"
+   ],
+   "createdAt": "2026-08-19T11:30:33Z",
+   "updatedAt": "2026-08-19T11:30:33Z",
+   "closedAt": null,
+   "excerpt": "Solder the SL PCB for the PT1 build."
+  },
+  {
+   "number": 21,
+   "title": "Solder VS PCBs",
+   "state": "OPEN",
+   "url": "https://github.com/Arrow-air/project-longshot/issues/21",
+   "labels": [],
+   "author": "vector-arrow",
+   "assignees": [
+    "Julius-eng"
+   ],
+   "createdAt": "2026-08-19T11:30:28Z",
+   "updatedAt": "2026-08-19T11:30:28Z",
+   "closedAt": null,
+   "excerpt": "Solder the VS PCBs for the PT1 build."
+  },
+  {
+   "number": 20,
+   "title": "Design battery strap and provide model to Freelancer",
+   "state": "CLOSED",
+   "url": "https://github.com/Arrow-air/project-longshot/issues/20",
+   "labels": [],
+   "author": "Julius-eng",
+   "assignees": [
+    "Julius-eng"
+   ],
+   "createdAt": "2026-06-17T08:50:37Z",
+   "updatedAt": "2026-06-17T08:51:35Z",
+   "closedAt": "2026-06-17T08:51:35Z",
+   "excerpt": ""
+  },
+  {
+   "number": 18,
+   "title": "Place order for 21700 battery cells",
+   "state": "CLOSED",
+   "url": "https://github.com/Arrow-air/project-longshot/issues/18",
+   "labels": [],
+   "author": "Julius-eng",
+   "assignees": [
+    "Julius-eng"
+   ],
+   "createdAt": "2026-06-11T07:39:07Z",
+   "updatedAt": "2026-06-17T08:49:29Z",
+   "closedAt": "2026-06-17T08:49:29Z",
+   "excerpt": "Order of 140pcs Reliance RS60, RH60 oder BAK 65E. Used in Longshot PT1."
+  },
+  {
+   "number": 17,
+   "title": "Place order for copper busbars for Longshot PT1",
+   "state": "CLOSED",
+   "url": "https://github.com/Arrow-air/project-longshot/issues/17",
+   "labels": [],
+   "author": "Julius-eng",
+   "assignees": [
+    "Julius-eng"
+   ],
+   "createdAt": "2026-06-11T07:36:09Z",
+   "updatedAt": "2026-06-17T08:49:55Z",
+   "closedAt": "2026-06-17T08:49:55Z",
+   "excerpt": "Increased quantity to bring down future cost for two more battery builds. Quantity is good for 3 battery builds."
+  },
+  {
+   "number": 16,
+   "title": "Design SL_PCB simple-layout battery PCB",
+   "state": "CLOSED",
+   "url": "https://github.com/Arrow-air/project-longshot/issues/16",
+   "labels": [
+    "enhancement",
+    "help wanted"
+   ],
+   "author": "vector-arrow",
+   "assignees": [
+    "Julius-eng"
+   ],
+   "createdAt": "2026-05-27T15:50:26Z",
+   "updatedAt": "2026-07-14T13:47:01Z",
+   "closedAt": "2026-07-14T13:47:01Z",
+   "excerpt": "Design the SLPCB for the Longshot battery."
+  },
+  {
+   "number": 14,
+   "title": "Design battery voltage sensing boards",
+   "state": "CLOSED",
+   "url": "https://github.com/Arrow-air/project-longshot/issues/14",
+   "labels": [
+    "enhancement",
+    "help wanted"
+   ],
+   "author": "vector-arrow",
+   "assignees": [
+    "Julius-eng"
+   ],
+   "createdAt": "2026-05-27T15:01:42Z",
+   "updatedAt": "2026-07-10T13:05:20Z",
+   "closedAt": "2026-07-10T13:05:20Z",
+   "excerpt": "Design the Longshot battery voltage sensing boards."
+  },
+  {
+   "number": 12,
+   "title": "Design 3D-printable top cover for Longshot battery",
+   "state": "CLOSED",
+   "url": "https://github.com/Arrow-air/project-longshot/issues/12",
+   "labels": [
+    "enhancement",
+    "help wanted"
+   ],
+   "author": "vector-arrow",
+   "assignees": [
+    "Julius-eng"
+   ],
+   "createdAt": "2026-05-27T14:15:16Z",
+   "updatedAt": "2026-07-14T13:50:43Z",
+   "closedAt": "2026-07-14T13:50:43Z",
+   "excerpt": "Design a 3D-printable top cover for the Longshot battery."
+  },
+  {
+   "number": 11,
+   "title": "Design 3D-printable base for Longshot battery",
+   "state": "CLOSED",
+   "url": "https://github.com/Arrow-air/project-longshot/issues/11",
+   "labels": [
+    "enhancement",
+    "help wanted"
+   ],
+   "author": "vector-arrow",
+   "assignees": [
+    "Julius-eng"
+   ],
+   "createdAt": "2026-05-27T14:06:04Z",
+   "updatedAt": "2026-06-17T08:58:26Z",
+   "closedAt": "2026-06-17T08:55:36Z",
+   "excerpt": "Design a 3D-printable base for the Longshot battery."
+  },
+  {
+   "number": 3,
+   "title": "Create v0 PCB dummy",
+   "state": "CLOSED",
+   "url": "https://github.com/Arrow-air/project-longshot/issues/3",
+   "labels": [],
+   "author": "vector-arrow",
+   "assignees": [],
+   "createdAt": "2026-04-30T14:15:24Z",
+   "updatedAt": "2026-05-27T15:55:57Z",
+   "closedAt": "2026-05-27T15:55:57Z",
+   "excerpt": "Requested by @far1no in Discord.\\n\\n Goal\\nCreate a v0 dummy PCB for Project Longshot.\\n\\n Notes\\n- Initial placeholder/dummy board for early layout, fit, and integration planning.\\n- Scope/details TBD by the Longshot electronics team.\\n\\n Acceptance criteria\\n- A KiCad PCB proje"
+  }
+ ],
+ "prs": [
+  {
+   "number": 27,
+   "title": "Add build123d model and generated BOM for the Longshot main assembly",
+   "state": "MERGED",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-longshot/pull/27",
+   "author": "vector-arrow",
+   "createdAt": "2026-09-30T14:18:08Z",
+   "updatedAt": "2026-10-10T21:29:30Z",
+   "mergedAt": "2026-10-10T21:29:26Z",
+   "excerpt": "Rebuilds Julius's Fusion 360 LongshotMainAssembly.step (shared in project-longshot-general on 2026-09-29) in build123d under engineering/cad/build123d/."
+  },
+  {
+   "number": 19,
+   "title": "docs: add Longshot PT1 copper order artifacts",
+   "state": "MERGED",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-longshot/pull/19",
+   "author": "vector-arrow",
+   "createdAt": "2026-06-11T07:53:55Z",
+   "updatedAt": "2026-06-11T10:07:04Z",
+   "mergedAt": "2026-06-11T10:07:02Z",
+   "excerpt": "- Add a engineering/builds/PT1/ build-record area for locked PT1 artifacts - Store Julius's ordered Longshot PT1 copper busbar DXFs unpacked for direct GitHub review/versioning - Add README manifests with quantities, copper thicknesses, source notes, and SHA-256 hashes - Document"
+  },
+  {
+   "number": 15,
+   "title": "Clarify SL_PCB simple layout role",
+   "state": "MERGED",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-longshot/pull/15",
+   "author": "vector-arrow",
+   "createdAt": "2026-05-27T15:19:56Z",
+   "updatedAt": "2026-05-27T15:37:03Z",
+   "mergedAt": "2026-05-27T15:37:00Z",
+   "excerpt": "Updates the SLPCB README to describe it as the dummy/simple-layout Longshot battery connector PCB rather than a full BMS.\\n\\nIncludes:\\n- high-current battery-to-connector path with AMX-150 fuse\\n- no MOSFET/BMS/firmware functionality\\n- 4x 6-pin JST inputs from issue 14 voltage "
+  },
+  {
+   "number": 13,
+   "title": "Add Longshot battery work-package reference images",
+   "state": "MERGED",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-longshot/pull/13",
+   "author": "vector-arrow",
+   "createdAt": "2026-05-27T14:21:01Z",
+   "updatedAt": "2026-05-27T15:45:54Z",
+   "mergedAt": "2026-05-27T15:45:51Z",
+   "excerpt": "Adds the Discord-provided reference images used by the Longshot battery base and top-cover work-package issues so they can be embedded directly in the GitHub issues."
+  },
+  {
+   "number": 10,
+   "title": "Replace BMSZ with SL_PCB basic layout",
+   "state": "MERGED",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-longshot/pull/10",
+   "author": "vector-arrow",
+   "createdAt": "2026-05-06T11:26:42Z",
+   "updatedAt": "2026-05-06T11:28:54Z",
+   "mergedAt": "2026-05-06T11:28:52Z",
+   "excerpt": "- replace BMSZ contents with the current simplified SLPCB basic layout - rename copied KiCad/project/library/firmware references back to BMSZ/bmsz - remove the old BMSZ hierarchical schematic sheets so BMSZ matches SLPCB's single-sheet basic-layout state"
+  },
+  {
+   "number": 9,
+   "title": "Only leave basic layout in KiCad file",
+   "state": "MERGED",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-longshot/pull/9",
+   "author": "Julius-eng",
+   "createdAt": "2026-05-06T11:15:14Z",
+   "updatedAt": "2026-05-06T11:23:42Z",
+   "mergedAt": "2026-05-06T11:23:42Z",
+   "excerpt": ""
+  },
+  {
+   "number": 8,
+   "title": "Add SL_PCB layout copy",
+   "state": "MERGED",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-longshot/pull/8",
+   "author": "vector-arrow",
+   "createdAt": "2026-05-06T11:02:58Z",
+   "updatedAt": "2026-05-06T11:08:14Z",
+   "mergedAt": "2026-05-06T11:08:12Z",
+   "excerpt": "- add a new SLPCB PCB folder copied from BMSJ - rename KiCad project/library files and firmware hardware config from BMSJ/bmsj to SLPCB/slpcb - keep copied backup artifacts with SLPCB filenames"
+  },
+  {
+   "number": 7,
+   "title": "KiCad Update",
+   "state": "MERGED",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-longshot/pull/7",
+   "author": "Julius-eng",
+   "createdAt": "2026-05-06T10:47:15Z",
+   "updatedAt": "2026-05-06T10:57:28Z",
+   "mergedAt": "2026-05-06T10:57:04Z",
+   "excerpt": "- Added Battery Connector - Copper area for battery contact - Screw holes"
+  },
+  {
+   "number": 6,
+   "title": "Copy BMSJ PCB files to BMSZ",
+   "state": "MERGED",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-longshot/pull/6",
+   "author": "vector-arrow",
+   "createdAt": "2026-05-05T08:23:22Z",
+   "updatedAt": "2026-05-05T08:27:27Z",
+   "mergedAt": "2026-05-05T08:27:25Z",
+   "excerpt": "- copy BMSJ KiCad, firmware config, docs, backups, and footprint files into BMSZ - rename BMSJ/bmsj references to BMSZ/bmsz in filenames and text content - preserve the BMSZ board folder structure while bringing it in sync with BMSJ"
+  },
+  {
+   "number": 5,
+   "title": "Kicad Update",
+   "state": "MERGED",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-longshot/pull/5",
+   "author": "Julius-eng",
+   "createdAt": "2026-05-01T15:52:20Z",
+   "updatedAt": "2026-05-02T14:19:12Z",
+   "mergedAt": "2026-05-02T14:19:12Z",
+   "excerpt": ""
+  },
+  {
+   "number": 4,
+   "title": "Import Vector BMS as BMSJ",
+   "state": "MERGED",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-longshot/pull/4",
+   "author": "vector-arrow",
+   "createdAt": "2026-05-01T07:44:14Z",
+   "updatedAt": "2026-05-01T07:50:26Z",
+   "mergedAt": "2026-05-01T07:50:25Z",
+   "excerpt": "- import Julius-eng/Vector-BMS KiCad design into engineering/electronics/pcbs/BMSJ/kicad - rename project files/references from VectorBMS / Vector BMS to BMSJ - move source footprint into the project-local BMSJ.pretty library - add renamed VESC BMS hardware config as firmware/ves"
+  },
+  {
+   "number": 2,
+   "title": "Add engineering directory layout",
+   "state": "MERGED",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-longshot/pull/2",
+   "author": "vector-arrow",
+   "createdAt": "2026-04-30T13:35:15Z",
+   "updatedAt": "2026-04-30T14:14:00Z",
+   "mergedAt": "2026-04-30T14:13:58Z",
+   "excerpt": "- Add Caribou-style engineering/ directory layout for Longshot - Include CAD/build123d placeholders and electronics/PCB conventions - Add two starter KiCad PCB projects: BMSJ and BMSZ - Add cspell project words used by the new docs/KiCad files"
+  },
+  {
+   "number": 1,
+   "title": "docs: add project README",
+   "state": "MERGED",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-longshot/pull/1",
+   "author": "vector-arrow",
+   "createdAt": "2026-04-09T07:42:05Z",
+   "updatedAt": "2026-04-09T07:48:18Z",
+   "mergedAt": "2026-04-09T07:48:16Z",
+   "excerpt": "Replaces the template README with a project overview based on the Longshot proposal."
+  }
+ ]
+}

@@ -3,10 +3,16 @@
 // says what already exists for it in the repositories, so the page opens on
 // real work rather than an empty room.
 
+export interface Fact { label: string; value: string; source?: { label: string; url: string } }
+
 export interface Zone {
   id: string;
-  /** One or two sentences: what this zone is for, in Quiver's own terms. */
+  /** One or two sentences: what this zone is for, in the project's own terms. */
   summary: string;
+  /** What the record says about it today, each with its source (Longshot's zones). */
+  facts?: Fact[];
+  /** Where it stands, in a sentence, when that's worth saying up front. */
+  status?: { tone: 'done' | 'open' | 'blocked'; text: string };
   tasks?: string[];
   issues?: number[];
   prs?: number[];
@@ -16,7 +22,11 @@ export interface Zone {
   attachment?: string;
   /** A zone-specific card under the summary. */
   card?: 'longshot';
+  /** Threads in another project's workspace that this zone depends on (Longshot's Quiver integration lives in Quiver). */
+  related?: string[];
 }
+
+import { longshotZones } from '../projects/longshot/zones';
 
 const PS = 'https://github.com/Arrow-air/payload-systems';
 const PQ = 'https://github.com/Arrow-air/project-quiver';
@@ -197,5 +207,7 @@ export const zones: Zone[] = [
   { id: 'sales-page', summary: 'The arrowair.com sales page refresh, scoped at the October checkpoint once the marketing discovery is filed.', tasks: ['T-15'] },
   { id: 'dao-return', summary: 'Every sale runs through the Arrow store process and pays back to the DAO. How much, and how, is not written down yet.' },
 ];
+
+zones.push(...longshotZones);
 
 export const zoneById = (id: string | undefined) => zones.find((z) => z.id === id);

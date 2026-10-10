@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import type { SourceRef } from './data';
-// Where a thread or comment came from. Call notes open in the app;
-// issues and pull requests open on GitHub.
+import { callItemById } from '../../data/calls';
+// Where a thread or comment came from. Call notes open in the app, in the
+// project whose call it was; issues, pull requests and documents open where they live.
 defineProps<{ source: SourceRef }>();
+const callsPath = (ref: string) => `/${callItemById(ref)?.call.project ?? 'quiver'}/overview/calls`;
 </script>
 
 <template>
-  <RouterLink v-if="source.kind === 'call'" class="src" :to="{ path: '/quiver/overview/calls', query: { item: source.ref } }" title="Open the call notes">
+  <RouterLink v-if="source.kind === 'call'" class="src" :to="{ path: callsPath(source.ref), query: { item: source.ref } }" title="Open the call notes">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h10M3 8h10M3 12h6" /></svg>{{ source.label }}
   </RouterLink>
-  <a v-else class="src" :href="source.url" target="_blank" rel="noopener" :title="`Open ${source.label} on GitHub`">
+  <a v-else class="src" :href="source.url" target="_blank" rel="noopener" :title="source.kind === 'doc' ? `Open ${source.label}` : `Open ${source.label} on GitHub`">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3H3v10h10v-3M9 3h4v4M13 3 7 9" /></svg>{{ source.label }}
   </a>
 </template>

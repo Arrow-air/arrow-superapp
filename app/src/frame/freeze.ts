@@ -1,12 +1,14 @@
 import { computed, ref } from 'vue';
-import { LATER, NEXT } from '../modules/threads/data';
-import { freezeAt, state } from '../modules/threads/store';
+import { freezeAt, releaseOf } from '../modules/threads/store';
+import { planOf } from '../projects/plans';
+import { currentProject } from './nav';
 
 // The design freeze for the version under discussion, as one clock for the
-// whole app (from Gavin's app-frame). Until it, contributors shape the next
-// version; from it, new threads go to the version after, and open ones get
-// settled, deferred or declined before a lead records the freeze. The date is
-// the one a lead sets on the Dev Kit v1.1 page; with none set there is no clock.
+// project on screen (from Gavin's app-frame). Until it, contributors shape the
+// next version; from it, new threads go to the version after, and open ones
+// get settled, deferred or declined before a lead records the freeze. The
+// date is the one a lead sets on the project's next-version page (Dev Kit
+// v1.1 for Quiver); with none set there is no clock.
 
 const now = ref(Date.now());
 let timer: ReturnType<typeof setTimeout> | undefined;
@@ -21,11 +23,12 @@ function tick() {
 /** Time left to the freeze, how to show it, and how urgent it is. */
 export function useFreeze() {
   if (!timer) tick();
-  const at = computed(() => freezeAt());
+  const at = computed(() => freezeAt(currentProject.value));
+  const frozenAt = computed(() => releaseOf(currentProject.value).frozenAt);
   /** Is there a freeze to show at all: a date set, or a freeze recorded. */
-  const active = computed(() => !!at.value || !!state.release.frozenAt);
+  const active = computed(() => !!at.value || !!frozenAt.value);
   const left = computed(() => (at.value ? Math.max(0, at.value.getTime() - now.value) : 0));
-  const frozen = computed(() => !!state.release.frozenAt || (!!at.value && left.value === 0));
+  const frozen = computed(() => !!frozenAt.value || (!!at.value && left.value === 0));
   const label = computed(() => {
     const s = Math.floor(left.value / 1000), d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60);
     if (d > 0) return `${d}d ${h}h`;
@@ -38,5 +41,12 @@ export function useFreeze() {
     return frozen.value ? 'frozen' : days < 2 ? 'urgent' : days < 14 ? 'soon' : 'calm';
   });
   const when = computed(() => (at.value ? at.value.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' }) + ' UTC' : ''));
-  return { active, at, left, frozen, label, level, when, version: NEXT, next: LATER };
+  return {
+    active, at, left, frozen, label, level, when,
+    /** The version under discussion and the one after it, for the project on screen. */
+    get version() { return planOf(currentProject.value).next; },
+    get next() { return planOf(currentProject.value).later; },
+    /** Its improvements page. */
+    get path() { return planOf(currentProject.value).nextPath; },
+  };
 }

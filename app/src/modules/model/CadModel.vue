@@ -1,12 +1,12 @@
 <script setup lang="ts">
-// The Dev Kit assembly, exported from the repository's build123d CAD. Every
-// mesh resolves to a BOM number, so hover and click work per part. The
-// viewer is Gavin's CAD explorer from app-frame (camera glides, the
-// perspective/orthographic dolly-zoom, camera views, the blueprint grid,
-// fades, tiles cut from the model) on the Quiver model, with the explode
-// slider from prototypes/quiver-app. It only draws: what is lit, selected,
-// hidden and under discussion all come in as props; a click comes out as
-// `select`.
+// A project's assembly, exported from its build123d CAD (Quiver's Dev Kit,
+// Longshot's pack). Every mesh resolves to a part number, so hover and click
+// work per part. The viewer is Gavin's CAD explorer from app-frame (camera
+// glides, the perspective/orthographic dolly-zoom, camera views, the blueprint
+// grid, fades, tiles cut from the model), with the explode slider from
+// prototypes/quiver-app. It only draws: the file, how node names map to parts
+// and how parts are coloured come in with the model; what is lit, selected,
+// hidden and under discussion come in as props; a click comes out as `select`.
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -16,10 +16,28 @@ import { theme } from '../../frame/theme';
 
 /** An assembly in the model file (Plates, Landing Gear, PCB…), switchable as a layer. */
 export interface Layer { id: string; label: string; category: string; parts: string[] }
-/** A key (a zone, or a BOM number) → a small transparent render of just those parts. */
+/** A key (a zone, or a part number) → a small transparent render of just those parts. */
 export type Thumbs = Record<string, string>;
+/** What the viewer needs to know about one project's model file. */
+export interface ModelLook {
+  /** The .glb under public/. */
+  src: string;
+  /** What it is, for the loading line and the canvas label: "Quiver Dev Kit". */
+  subject: string;
+  /** The part number a node name (as written in the file) stands for, or ''. */
+  partOf: (name: string) => string;
+  /** A part's colour family: a key into the palettes. */
+  familyOf: (id: string) => string;
+  palette: { dark: Record<string, string>; light: Record<string, string> };
+  /** Families named in the legend; `wide` ones only show on wider screens. */
+  legend: { family: string; label: string; wide?: boolean }[];
+  metallic: (id: string) => boolean;
+  /** How much further the explode pulls parts apart vertically than sideways. */
+  lift: number;
+}
 
 const props = defineProps<{
+  look: ModelLook;
   /** BOM numbers drawn solid; everything else is a faint ghost. Null lights everything. */
   lit: string[] | null;
   /** Layers switched off entirely. */
@@ -47,13 +65,12 @@ function toggleGrid() {
   try { localStorage.setItem(GRID_KEY, grid.value ? 'on' : 'off'); } catch {}
 }
 
-// Part colours by BOM family: structure, supporting structure, equipment,
-// harness. On the dark blueprint the structure is lifted so arms and gear read.
+// Part colours by family (the model decides the families). On the dark
+// blueprint the structure is lifted so it reads.
 const dark = () => theme.value === 'dark' || (theme.value === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
-const FAMILY_DARK: Record<string, string> = { '1': '#8a939e', '2': '#c3c8ce', '3': '#4f9a84', '4': '#d08c48' };
-const FAMILY_LIGHT: Record<string, string> = { '1': '#3a3f46', '2': '#9aa1aa', '3': '#3f7a69', '4': '#b97a3a' };
 const colors = { discussed: '#ffc53d', selected: '#5472e4', ghost: '#5a6169' };
-const family = (id: string) => (dark() ? FAMILY_DARK : FAMILY_LIGHT)[id[0]] ?? '#888888';
+const colorOf = (fam: string) => (dark() ? props.look.palette.dark : props.look.palette.light)[fam] ?? '#888888';
+const family = (id: string) => colorOf(props.look.familyOf(id));
 
 // three.js objects stay outside Vue's reactivity.
 let renderer: THREE.WebGLRenderer | undefined, camera: THREE.PerspectiveCamera, controls: OrbitControls, raf = 0, ro: ResizeObserver | undefined;
@@ -282,7 +299,9 @@ function thumbnails(sets: { key: string; parts: string[] }[], each: (key: string
 }
 defineExpose({ fit, reset: () => fit('iso'), thumbnails });
 
-const idOf = (o: THREE.Object3D | null) => { for (let n = o; n; n = n.parent) { const m = /^(\d{4})/.exec(n.name); if (m) return m[1]; } return ''; };
+// Node names as written in the model file (three.js sanitizes object names), set once it loads.
+let original: (o: THREE.Object3D) => string = (o) => o.name;
+const idOf = (o: THREE.Object3D | null) => { for (let n = o; n; n = n.parent) { const id = props.look.partOf(original(n)); if (id) return id; } return ''; };
 
 onMounted(async () => {
   const el = host.value!;
@@ -292,7 +311,7 @@ onMounted(async () => {
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
   el.appendChild(renderer.domElement);
-  renderer.domElement.setAttribute('aria-label', 'Quiver Dev Kit 3D model. Drag to rotate, right-drag to pan, scroll to zoom, click a part to select it.');
+  renderer.domElement.setAttribute('aria-label', `${props.look.subject} 3D model. Drag to rotate, right-drag to pan, scroll to zoom, click a part to select it.`);
   scene.add(new THREE.HemisphereLight(0xe1efff, 0x2a2e33, 2.6));
   for (const [pos, color, intensity] of [[[2, 5, 3], 0xffffff, 3], [[-3, 2, -4], 0xb9d5ff, 1.8], [[1, -2, 1], 0xffe4bf, 0.6]] as [number[], number, number][]) {
     const l = new THREE.DirectionalLight(color, intensity); l.position.set(pos[0], pos[1], pos[2]); scene.add(l);
@@ -341,10 +360,9 @@ onMounted(async () => {
 
   try {
     const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
-    const gltf = await loader.loadAsync(`${import.meta.env.BASE_URL}quiver.glb`, (e) => { if (e.total) progress.value = Math.round((e.loaded / e.total) * 100); });
+    const gltf = await loader.loadAsync(`${import.meta.env.BASE_URL}${props.look.src}`, (e) => { if (e.total) progress.value = Math.round((e.loaded / e.total) * 100); });
     const json = gltf.parser.json as { nodes: { name?: string }[] };
-    // Names as written in the model file (three.js sanitizes object names).
-    const original = (o: THREE.Object3D) => { const i = gltf.parser.associations.get(o)?.nodes; return i !== undefined ? json.nodes[i]?.name ?? o.name : o.name; };
+    original = (o: THREE.Object3D) => { const i = gltf.parser.associations.get(o)?.nodes; return i !== undefined ? json.nodes[i]?.name ?? o.name : o.name; };
     scene.add(gltf.scene);
     gltf.scene.updateMatrixWorld(true);
     const all = new THREE.Box3().setFromObject(gltf.scene);
@@ -358,7 +376,7 @@ onMounted(async () => {
       for (let n: THREE.Object3D | null = mesh; n && n !== gltf.scene; n = n.parent) chain.unshift(n);
       const [, cat, asm] = chain; // root, family, assembly or part
       if (!cat) return { id: '', label: '', category: '' };
-      const own = !asm || /^\d{4}/.test(original(asm));
+      const own = !asm || !!props.look.partOf(original(asm));
       return { id: original(own ? cat : asm), label: original(own ? cat : asm), category: original(cat) };
     };
     // Explode per part number, not per mesh, so a multi-body part moves as one piece.
@@ -368,9 +386,9 @@ onMounted(async () => {
       const m = o as THREE.Mesh; if (!m.isMesh) return;
       const id = idOf(m); if (!id) { m.visible = false; return; }
       // The export has no normals; flat shading derives them per face.
-      m.material = new THREE.MeshStandardMaterial({ flatShading: true, roughness: 0.72, metalness: id[0] === '2' ? 0.3 : 0.05, side: THREE.DoubleSide });
+      m.material = new THREE.MeshStandardMaterial({ flatShading: true, roughness: 0.72, metalness: props.look.metallic(id) ? 0.3 : 0.05, side: THREE.DoubleSide });
       const world = byId.get(id)!.getCenter(new THREE.Vector3()).sub(centre);
-      world.y *= 1.6; // pull the stack apart vertically more than sideways
+      world.y *= props.look.lift; // pull the stack apart vertically more than sideways
       const parentInv = new THREE.Matrix4().copy(m.parent!.matrixWorld).invert();
       const dir = world.clone().transformDirection(parentInv).multiplyScalar(world.length() / (m.parent!.getWorldScale(new THREE.Vector3()).x || 1));
       const l = layerOf(m);
@@ -418,14 +436,13 @@ watch(() => props.explode, () => { place(); if (!glide) fit(view.value, true); }
       </button>
       <slot name="tools" />
     </div>
-    <p v-if="status === 'loading'" class="note center">Loading the Dev Kit assembly<template v-if="progress"> · {{ progress }}%</template></p>
+    <p v-if="status === 'loading'" class="note center">Loading the {{ look.subject }} assembly<template v-if="progress"> · {{ progress }}%</template></p>
     <p v-else-if="status === 'error'" class="note center">This browser can't show the 3D model (WebGL is off). The parts list still works.</p>
     <p v-else-if="hover" class="note hovering"><span class="mono">{{ hover }}</span> {{ labels[hover] }}</p>
     <p class="note legend">
       <span><i :style="{ background: colors.selected }"></i>Selected</span>
       <span><i :style="{ background: colors.discussed }"></i>Open thread</span>
-      <span><i :style="{ background: family('1') }"></i>Structure</span>
-      <span class="hide-sm"><i :style="{ background: family('3') }"></i>Equipment</span>
+      <span v-for="l in look.legend" :key="l.family" :class="{ 'hide-sm': l.wide }"><i :style="{ background: colorOf(l.family) }"></i>{{ l.label }}</span>
     </p>
     <slot />
   </div>

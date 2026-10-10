@@ -2,13 +2,14 @@
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Menu from './Menu.vue';
-import { defaultVersion, projects, statusLabel, statusNote, type VersionStatus } from './nav';
+import { defaultVersion, findTab, findItem, homePath, projects, statusLabel, statusNote, type VersionStatus } from './nav';
 import { useWorkspace } from './useWorkspace';
 import { useFreeze } from './freeze';
 const freeze = useFreeze();
 
-// Which aircraft, and which version of it. Lives in the workspace header
-// because the tabs and sidebar below it belong to the chosen aircraft.
+// Which project (an aircraft, a battery pack), and which version of it. Lives
+// in the workspace header because the tabs and sidebar below it belong to the
+// chosen project.
 const router = useRouter();
 const { project, tab, item } = useWorkspace();
 
@@ -19,22 +20,29 @@ const version = computed(() =>
 );
 const dot = (s: VersionStatus) => `var(--status-${s})`;
 
+// Stay on the same page when the other project has it (Decisions, All
+// threads); otherwise open the project where it starts.
 function switchProject(id: string) {
   versionId.value = undefined;
-  router.push(`/${id}/${tab.value?.id ?? 'overview'}/${item.value?.id ?? ''}`);
+  const p = projects.find((x) => x.id === id);
+  if (!p) return;
+  const sameTab = findTab(tab.value?.id, p.id);
+  const sameItem = sameTab && findItem(sameTab, item.value?.id);
+  router.push(sameTab && sameItem && tab.value?.view ? `/${p.id}/${sameTab.id}/${sameItem.id}` : homePath(p));
 }
 </script>
 
 <template>
-  <div class="toolbar" role="toolbar" aria-label="Aircraft">
-    <Menu :items="projects.map((p) => ({ id: p.id, label: p.label }))" :current="project?.id" @select="switchProject">
+  <div class="toolbar" role="toolbar" aria-label="Project">
+    <Menu :items="projects.map((p) => ({ id: p.id, label: p.label, note: p.kind }))" :current="project?.id" @select="switchProject">
       <template #trigger="{ open, toggle }">
-        <button class="tbtn with-thumb" type="button" aria-haspopup="menu" :aria-expanded="open" aria-label="Aircraft" @click="toggle">
+        <button class="tbtn with-thumb" type="button" aria-haspopup="menu" :aria-expanded="open" aria-label="Project" @click="toggle">
           <span class="thumb" aria-hidden="true">
             <img v-if="project?.thumb" :src="project.thumb" alt="" width="48" height="21" />
+            <span v-else-if="project?.id === 'longshot'" class="sketch pack"></span>
             <span v-else class="sketch"></span>
           </span>
-          <span class="name">{{ project?.label ?? 'Select aircraft' }}</span>
+          <span class="name">{{ project?.label ?? 'Select project' }}</span>
           <svg class="chev-v" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5" /></svg>
         </button>
       </template>
@@ -43,7 +51,7 @@ function switchProject(id: string) {
     <template v-if="project && version">
       <span class="tsep" aria-hidden="true"></span>
       <Menu
-        :items="project.versions.map((v) => ({ id: v.id, label: statusLabel[v.status], note: v.code === freeze.version && freeze.active.value ? (freeze.frozen.value ? 'Design frozen' : `Design freeze in ${freeze.label.value}`) : statusNote[v.status], hint: v.code, dot: dot(v.status) }))"
+        :items="project.versions.map((v) => ({ id: v.id, label: statusLabel[v.status], note: v.status === 'upcoming' && freeze.active.value ? (freeze.frozen.value ? 'Design frozen' : `Design freeze in ${freeze.label.value}`) : statusNote[v.status], hint: v.code, dot: dot(v.status) }))"
         :current="version.id"
         @select="versionId = $event"
       >
@@ -90,6 +98,10 @@ function switchProject(id: string) {
   height: 16px;
   background: center / contain no-repeat
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 20' fill='none' stroke='%23b0b4ba' stroke-width='1.2' stroke-linecap='round'%3E%3Cpath d='M3 11h36M8 11l14-8M10 11l14 6M30 11l4-5M30 11l4 5M16 7h10M16 15h10'/%3E%3C/svg%3E");
+}
+/* A battery pack: a box of cells with its connector. */
+.sketch.pack {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 20' fill='none' stroke='%23b0b4ba' stroke-width='1.2' stroke-linecap='round'%3E%3Crect x='6' y='4' width='30' height='13' rx='1.5'/%3E%3Cpath d='M36 8.5h3v4h-3M11 7.5v6M16 7.5v6M21 7.5v6M26 7.5v6M31 7.5v6'/%3E%3C/svg%3E");
 }
 /* The chevron's glyph sits inside a 12px box with blank space either side;
    pull the box in so the gap after it matches the gap before the lit dot. */

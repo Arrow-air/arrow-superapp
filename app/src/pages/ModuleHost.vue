@@ -21,6 +21,9 @@ const views = {
   sources: defineAsyncComponent(() => import('./SourcesPage.vue')),
   suggested: defineAsyncComponent(() => import('./SuggestedPage.vue')),
   decisions: defineAsyncComponent(() => import('./DecisionsPage.vue')),
+  'ls-summary': defineAsyncComponent(() => import('./longshot/SummaryPage.vue')),
+  'ls-bom': defineAsyncComponent(() => import('./longshot/BomPage.vue')),
+  'ls-github': defineAsyncComponent(() => import('./longshot/GithubPage.vue')),
 };
 const { item } = useWorkspace();
 const page = computed(() => item.value?.page ?? 'zone');

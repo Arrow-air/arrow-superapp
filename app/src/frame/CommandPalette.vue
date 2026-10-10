@@ -5,10 +5,10 @@ import Icon from './Icon.vue';
 import Kbd from './Kbd.vue';
 import type { IconName } from './icons';
 import { linkGroups } from './links';
-import { defaultVersion, projects, tabs } from './nav';
+import { defaultVersion, homePath, projects } from './nav';
 import { useWorkspace } from './useWorkspace';
 
-// ⌘K: jump to any page of the current aircraft, switch aircraft, or open an
+// ⌘K: jump to any page of the current project, switch project, or open an
 // Arrow-wide link. Results are local; real search plugs in later.
 const open = defineModel<boolean>('open', { required: true });
 const router = useRouter();
@@ -26,7 +26,7 @@ const all = computed<Section[]>(() => [
   {
     id: 'pages',
     label: project.value ? `${project.value.label} pages` : 'Pages',
-    results: tabs.flatMap((t) =>
+    results: (project.value?.tabs ?? []).flatMap((t) =>
       t.groups.flatMap((g) =>
         g.items.map((i) => ({
           id: `page:${t.id}/${i.id}`,
@@ -40,15 +40,15 @@ const all = computed<Section[]>(() => [
     ),
   },
   {
-    id: 'aircraft',
-    label: 'Aircraft',
+    id: 'projects',
+    label: 'Projects',
     results: projects.map((p) => ({
-      id: `aircraft:${p.id}`,
+      id: `project:${p.id}`,
       label: p.label,
-      hint: defaultVersion(p).code,
-      icon: 'plane' as IconName,
-      action: 'Switch aircraft',
-      run: () => router.push(`/${p.id}/overview`),
+      hint: `${p.kind} · ${defaultVersion(p).code}`,
+      icon: (p.id === 'longshot' ? 'battery' : 'plane') as IconName,
+      action: 'Switch project',
+      run: () => router.push(homePath(p)),
     })),
   },
   {

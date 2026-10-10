@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import type { Thumbs } from './QuiverModel.vue';
+import type { Thumbs } from './CadModel.vue';
 
-// The Dev Kit's parts as a drill-down (Gavin's app-frame PartsNav, on the
-// Quiver model): the areas a change would be discussed in, then an area's
+// A model's parts as a drill-down (Gavin's app-frame PartsNav, on the
+// project's model): the areas a change would be discussed in, then an area's
 // parts, then one part. Each level is a set of tiles showing that piece cut
 // out of the model, and going a level deeper slides the panel left (up slides
 // it back), so the movement reads as depth. Each level's own content (layers,

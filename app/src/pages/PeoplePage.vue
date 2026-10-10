@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import Avatar from '../modules/threads/Avatar.vue';
-import { people } from '../data/people';
+import { peopleOf } from '../data/people';
 import { tasks } from '../data/quiver';
 import { computed } from 'vue';
-import { setRole, state } from '../modules/threads/store';
+import { projectThreads, setRole } from '../modules/threads/store';
+import { useWorkspace } from '../frame/useWorkspace';
 import { remote } from '../lib/backend';
 import { session } from '../lib/session';
 import type { Role } from '../modules/threads/weights';
@@ -12,14 +13,19 @@ const members = computed(() => Object.values(session.members).sort((a, b) => (a.
 const iAmLead = computed(() => session.member?.role === 'lead');
 const idOf = (uid: string) => (uid === session.userId ? 'me' : uid);
 
-// Who is in the Quiver material and what the record says they do. No roles,
-// weights or holdings until people join; every line names its source.
-const ownsTasks = (id: string, gh?: string) =>
+// Who is in the project's material and what the record says they do. No
+// roles, weights or holdings until people join; every line names its source.
+const { project } = useWorkspace();
+const pid = computed(() => project.value?.id ?? 'quiver');
+const people = computed(() => peopleOf(pid.value));
+const linesOf = (p: (typeof people.value)[number]) => p.does.filter((d) => !d.project || d.project === pid.value);
+// Quiver's task board names owners; Longshot has no task board yet.
+const ownsTasks = (id: string, gh?: string) => pid.value !== 'quiver' ? [] :
   tasks.filter((t) => t.state.toUpperCase() !== 'CLOSED').filter((t) => {
     const o = (t.owner ?? '').toLowerCase();
     return o.startsWith(id) || (gh && o.includes(gh.toLowerCase())) || o.includes(`${id} (`);
   });
-const positionsBy = (id: string) => state.threads.flatMap((t) => t.positions.filter((p) => p.authorId === id).map(() => t)).filter((t, i, a) => a.indexOf(t) === i);
+const positionsBy = (id: string) => projectThreads.value.flatMap((t) => t.positions.filter((p) => p.authorId === id).map(() => t)).filter((t, i, a) => a.indexOf(t) === i);
 </script>
 
 <template>
@@ -27,7 +33,7 @@ const positionsBy = (id: string) => state.threads.flatMap((t) => t.positions.fil
     <div class="view-head">
       <div>
         <h1 class="view-title">People</h1>
-        <p class="view-lede">Everyone named on the task board or in the call notes. Nobody has an account in the demo, so nobody has a role, verified expertise or vote weight here yet. Positions attributed to people link to the notes or issue they came from.</p>
+        <p class="view-lede">Everyone named in the {{ project?.label }} record: {{ pid === 'quiver' ? 'the task board and the call notes' : 'the repository, its issues and the call notes' }}. Nobody has a role, verified expertise or vote weight here until they sign in. Positions attributed to people link to the notes or issue they came from.</p>
       </div>
     </div>
     <section v-if="remote" class="view-section">
@@ -49,7 +55,7 @@ const positionsBy = (id: string) => state.threads.flatMap((t) => t.positions.fil
       </table>
       <p v-else class="vempty">Nobody has signed in yet.</p>
     </section>
-    <h2 v-if="remote" class="named-h">Named in the notes and on the task board</h2>
+    <h2 v-if="remote" class="named-h">{{ pid === 'quiver' ? 'Named in the notes and on the task board' : 'Named in the notes and the repository' }}</h2>
     <div class="grid">
       <article v-for="p in people" :key="p.id" class="card">
         <header class="card-head">
@@ -64,7 +70,7 @@ const positionsBy = (id: string) => state.threads.flatMap((t) => t.positions.fil
           </div>
         </header>
         <ul class="does">
-          <li v-for="d in p.does" :key="d.text">{{ d.text }} <span class="faint">({{ d.source }})</span></li>
+          <li v-for="d in linesOf(p)" :key="d.text">{{ d.text }} <a v-if="d.url" :href="d.url" target="_blank" rel="noopener" class="faint src">({{ d.source }})</a><span v-else class="faint">({{ d.source }})</span></li>
         </ul>
         <div v-if="ownsTasks(p.id, p.github).length" class="chips">
           <a v-for="t in ownsTasks(p.id, p.github)" :key="t.id" :href="t.url" target="_blank" rel="noopener" class="chip">{{ t.id }}</a>
@@ -88,5 +94,7 @@ select { height: 26px; border: 1px solid var(--slate-a5); border-radius: 6px; ba
 .name { color: var(--fg); font-weight: 500; font-size: var(--text-nav); }
 .handles { font-size: var(--text-sm); }
 .does { margin: 10px 0 0; padding-left: 16px; color: var(--fg-2); font-size: var(--text-base); line-height: 1.55; }
+.does .src { text-decoration: none; }
+.does .src:hover { color: var(--fg-2); text-decoration: underline; }
 .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
 </style>

@@ -1,60 +1,23 @@
 // Everything the frame navigates is described here: projects, their versions,
 // the workspace tabs, and the sidebar under each tab. The top bar, breadcrumb,
-// tabs, sidebar and routes are all generated from this file.
+// tabs, sidebar and routes are all generated from this file. Each project has
+// its own tabs; Quiver's are below, Longshot's in projects/longshot/nav.ts.
 //
 // Quiver demo: the sidebar items are working zones (Gavin, Sep 29). A zone
 // is any place work happens: an attachment, a piece of software, a part of
 // the aircraft, a campaign or a topic. Every zone can hold threads, votes and
 // decisions. A few items are views instead of zones: the summary, the
 // attachment catalog, the BOM, the task board, the decision register.
-import type { IconName } from './icons';
+// Zone ids are unique across projects, so a thread's zone names its project.
+import { ref } from 'vue';
+import { isZone, item, type Project, type Tab } from './navkit';
+import { longshot } from '../projects/longshot/nav';
 
-/** What renders in the content slot. Zones get the zone page with its threads. */
-export type PageKind = 'zone' | 'gate' | 'release' | 'model' | 'pcbs' | 'grants' | 'summary' | 'catalog' | 'bom' | 'work' | 'prs' | 'people' | 'sources' | 'threads' | 'suggested' | 'decisions';
-
-export interface NavItem { id: string; label: string; icon: IconName; page?: PageKind }
-export interface NavGroup { id: string; label: string; sortable?: boolean; items: NavItem[] }
-export interface Tab { id: string; label: string; groups: NavGroup[]; /** A view across places, shown after the divider. */ view?: boolean }
-export type VersionStatus = 'upcoming' | 'current' | 'previous' | 'unmaintained';
-export interface Version { id: string; code: string; status: VersionStatus }
-export interface Project { id: string; label: string; thumb?: string; versions: Version[] }
-
-export const statusLabel: Record<VersionStatus, string> = {
-  upcoming: 'Upcoming',
-  current: 'Current',
-  previous: 'Previous',
-  unmaintained: 'Unmaintained',
-};
-export const statusNote: Record<VersionStatus, string> = {
-  upcoming: 'Next version, improvements under discussion',
-  current: 'Latest release',
-  previous: 'Older, still supported',
-  unmaintained: 'No longer maintained',
-};
-
-// Quiver's own history: three prototypes, then the 2026 Dev Kit (bom/meta.yaml).
-export const projects: Project[] = [
-  {
-    id: 'quiver',
-    label: 'Quiver',
-    versions: [
-      { id: 'v1-1', code: 'Dev Kit v1.1', status: 'upcoming' },
-      { id: 'dev-kit', code: 'Dev Kit', status: 'current' },
-      { id: 'pt3', code: 'PT3', status: 'previous' },
-      { id: 'pt2', code: 'PT2', status: 'unmaintained' },
-      { id: 'pt1', code: 'PT1', status: 'unmaintained' },
-    ],
-  },
-];
-
-// The version a project opens on: its current release, or whatever it has.
-export const defaultVersion = (p: Project) => p.versions.find((v) => v.status === 'current') ?? p.versions[0];
-
-const item = (id: string, label: string, icon: IconName, page?: PageKind): NavItem => ({ id, label, icon, page });
+export * from './navkit';
 
 // Places first (where the work is), then the views that cut across them.
 // `view` tabs sit after a divider in the tab bar.
-export const tabs: Tab[] = [
+const quiverTabs: Tab[] = [
   {
     id: 'overview',
     label: 'Overview',
@@ -252,24 +215,56 @@ export const tabs: Tab[] = [
   },
 ];
 
+// Quiver's own history: three prototypes, then the 2026 Dev Kit (bom/meta.yaml).
+const quiver: Project = {
+  id: 'quiver',
+  label: 'Quiver',
+  kind: 'Aircraft',
+  versions: [
+    { id: 'v1-1', code: 'Dev Kit v1.1', status: 'upcoming' },
+    { id: 'dev-kit', code: 'Dev Kit', status: 'current' },
+    { id: 'pt3', code: 'PT3', status: 'previous' },
+    { id: 'pt2', code: 'PT2', status: 'unmaintained' },
+    { id: 'pt1', code: 'PT1', status: 'unmaintained' },
+  ],
+  tabs: quiverTabs,
+  home: 'overview/v1-1',
+};
+
+export const projects: Project[] = [quiver, longshot];
+/** Quiver's tabs, for the pages that are only Quiver's. */
+export const tabs = quiverTabs;
+
+// The version a project opens on: its current release, or whatever it has.
+export const defaultVersion = (p: Project) => p.versions.find((v) => v.status === 'current') ?? p.versions[0];
+
+/** The project on screen, kept in step with the route (router.ts), for code outside components. */
+export const currentProject = ref('quiver');
+
 export const findProject = (id: unknown) => projects.find((p) => p.id === id);
-export const findTab = (id: unknown) => tabs.find((t) => t.id === id);
+export const projectTabs = (id: unknown = currentProject.value) => findProject(id)?.tabs ?? quiverTabs;
+export const findTab = (id: unknown, project: unknown = currentProject.value) => projectTabs(project).find((t) => t.id === id);
 export const findItem = (tab: Tab | undefined, id: unknown) =>
   tab?.groups.flatMap((g) => g.items).find((i) => i.id === id);
 export const firstItem = (tab: Tab) => tab.groups[0].items[0];
+export const homePath = (p: Project) => `/${p.id}/${p.home}`;
+
+// Zones by id, across every project. A zone id appears once in the whole app.
+const zoneIndex = new Map<string, { project: Project; tab: Tab; item: ReturnType<typeof item> }>();
+for (const p of projects) for (const t of p.tabs) for (const g of t.groups) for (const i of g.items) {
+  if (!isZone(i)) continue;
+  if (zoneIndex.has(i.id)) console.error(`Zone id "${i.id}" is used twice; zone ids must be unique across projects.`);
+  zoneIndex.set(i.id, { project: p, tab: t, item: i });
+}
+/** The project a zone belongs to. */
+export const projectOfZone = (zoneId: string) => zoneIndex.get(zoneId)?.project.id;
 /** Where a zone lives, for links from anywhere. */
-export function zonePath(zoneId: string, projectId = 'quiver') {
-  for (const t of tabs) for (const g of t.groups) for (const i of g.items) if (i.id === zoneId) return `/${projectId}/${t.id}/${i.id}`;
-  return `/${projectId}/overview`;
+export function zonePath(zoneId: string) {
+  const z = zoneIndex.get(zoneId);
+  return z ? `/${z.project.id}/${z.tab.id}/${z.item.id}` : `/${currentProject.value}/overview`;
 }
-export function zoneIcon(zoneId: string): IconName | undefined {
-  for (const t of tabs) for (const g of t.groups) for (const i of g.items) if (i.id === zoneId) return i.icon;
-  return undefined;
-}
-export function zoneLabel(zoneId: string) {
-  for (const t of tabs) for (const g of t.groups) for (const i of g.items) if (i.id === zoneId) return i.label;
-  return zoneId;
-}
-export function zoneTab(zoneId: string) {
-  return tabs.find((t) => t.groups.some((g) => g.items.some((i) => i.id === zoneId)));
-}
+export const zoneIcon = (zoneId: string) => zoneIndex.get(zoneId)?.item.icon;
+export const zoneLabel = (zoneId: string) => zoneIndex.get(zoneId)?.item.label ?? zoneId;
+export const zoneTab = (zoneId: string) => zoneIndex.get(zoneId)?.tab;
+/** A project's zones in sidebar order. */
+export const zonesOf = (projectId: string) => [...zoneIndex.entries()].filter(([, z]) => z.project.id === projectId).map(([id]) => id);
