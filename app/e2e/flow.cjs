@@ -472,7 +472,9 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.waitForFunction(() => document.querySelector('aside.side')?.textContent?.includes('12 in the pack'), null, { timeout: 8000 }).catch(() => {});
   check((await p.locator('aside.side').innerText()).includes('Series bridge busbar') && (await p.locator('aside.side').innerText()).includes('12 in the pack'), 'the Longshot model drills down to a busbar with its BOM facts');
   await p.goto(`${BASE}/longshot/overview/pcbs`);
-  await p.waitForTimeout(500);
+  // Let KiCanvas finish loading the board before leaving: tearing it down mid-load throws inside the viewer (Quiver's boards do the same).
+  await p.waitForSelector('.stage[data-ready="true"]', { timeout: 30000 });
+  await p.waitForTimeout(4000);
   check((await text()).includes('BMSJ battery management board') && (await text()).includes('The layout has not started'), 'Longshot\'s boards page shows BMSJ and where its layout stands');
   await p.goto(`${BASE}/longshot/build/bom`);
   await p.waitForTimeout(300);

@@ -1,32 +1,44 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent } from 'vue';
+import { defineAsyncComponent, h, type Component } from 'vue';
 import { useWorkspace } from '../frame/useWorkspace';
+import SlotState from '../frame/SlotState.vue';
 import Placeholder from './Placeholder.vue';
 
 // Picks what renders in the slot from the sidebar item: a working zone (its
 // context and threads) by default, or one of the views.
-const ZonePage = defineAsyncComponent(() => import('./ZonePage.vue'));
-const ReleasePage = defineAsyncComponent(() => import('./ReleasePage.vue'));
-const ModelPage = defineAsyncComponent(() => import('./ModelPage.vue'));
+//
+// Pages load as their own chunks and show the frame's loading state while
+// they do, rather than holding up the route change: a page that suspended
+// the change would keep the outgoing page alive, and that page re-rendering
+// for the new route mid-transition is what broke navigation between projects.
+const page$ = (load: () => Promise<{ default: Component }>) =>
+  defineAsyncComponent({ loader: load, suspensible: false, delay: 150, loadingComponent: () => h(SlotState, { kind: 'loading' }) });
+const ZonePage = page$(() => import('./ZonePage.vue'));
+const ReleasePage = page$(() => import('./ReleasePage.vue'));
+const ModelPage = page$(() => import('./ModelPage.vue'));
 const views = {
-  pcbs: defineAsyncComponent(() => import('./PcbPage.vue')),
-  grants: defineAsyncComponent(() => import('./GrantsPage.vue')),
-  summary: defineAsyncComponent(() => import('./SummaryPage.vue')),
-  catalog: defineAsyncComponent(() => import('./CatalogPage.vue')),
-  threads: defineAsyncComponent(() => import('./ThreadsIndex.vue')),
-  bom: defineAsyncComponent(() => import('./BomPage.vue')),
-  work: defineAsyncComponent(() => import('./WorkPage.vue')),
-  prs: defineAsyncComponent(() => import('./PrsPage.vue')),
-  people: defineAsyncComponent(() => import('./PeoplePage.vue')),
-  sources: defineAsyncComponent(() => import('./SourcesPage.vue')),
-  suggested: defineAsyncComponent(() => import('./SuggestedPage.vue')),
-  decisions: defineAsyncComponent(() => import('./DecisionsPage.vue')),
-  'ls-summary': defineAsyncComponent(() => import('./longshot/SummaryPage.vue')),
-  'ls-bom': defineAsyncComponent(() => import('./longshot/BomPage.vue')),
-  'ls-github': defineAsyncComponent(() => import('./longshot/GithubPage.vue')),
+  pcbs: page$(() => import('./PcbPage.vue')),
+  grants: page$(() => import('./GrantsPage.vue')),
+  summary: page$(() => import('./SummaryPage.vue')),
+  catalog: page$(() => import('./CatalogPage.vue')),
+  threads: page$(() => import('./ThreadsIndex.vue')),
+  bom: page$(() => import('./BomPage.vue')),
+  work: page$(() => import('./WorkPage.vue')),
+  prs: page$(() => import('./PrsPage.vue')),
+  people: page$(() => import('./PeoplePage.vue')),
+  sources: page$(() => import('./SourcesPage.vue')),
+  suggested: page$(() => import('./SuggestedPage.vue')),
+  decisions: page$(() => import('./DecisionsPage.vue')),
+  'ls-summary': page$(() => import('./longshot/SummaryPage.vue')),
+  'ls-bom': page$(() => import('./longshot/BomPage.vue')),
+  'ls-github': page$(() => import('./longshot/GithubPage.vue')),
 };
-const { item } = useWorkspace();
-const page = computed(() => item.value?.page ?? 'zone');
+// App.vue keys this host by route path, so each page gets its own host and
+// the page is fixed when it is created; only the query (?thread=) changes
+// under it.
+const { item: current } = useWorkspace();
+const item = current.value;
+const page = item?.page ?? 'zone';
 </script>
 
 <template>
