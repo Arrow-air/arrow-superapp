@@ -4,7 +4,10 @@ import { useRoute, useRouter } from 'vue-router';
 import Avatar from '../threads/Avatar.vue';
 import { callItems } from '../../data/calls';
 import { zoneById } from '../../data/zones';
-import { issueByNumber, partById, prByNumber, issueUrl, prUrl, taskById, shortDate } from '../../data/quiver';
+import { issueByNumber, prByNumber, issueUrl, prUrl, taskById, shortDate } from '../../data/quiver';
+import { lsIssueByNumber, lsIssueUrl, lsPrByNumber, lsPrUrl } from '../../projects/longshot/github';
+import { partLabel } from '../../projects/parts';
+import { projectOfZone } from '../../frame/nav';
 import { personByGithub, personById } from '../../data/people';
 import { startThread, state } from '../threads/store';
 
@@ -16,10 +19,19 @@ const route = useRoute();
 const router = useRouter();
 
 const z = computed(() => zoneById(props.zone));
+// Issue and PR numbers point into the zone's own project repository.
+const project = computed(() => projectOfZone(props.zone) ?? 'quiver');
+const ls = computed(() => project.value === 'longshot');
 const tasks = computed(() => (z.value?.tasks ?? []).map(taskById).filter((t) => !!t));
-const issues = computed(() => (z.value?.issues ?? []).map((n) => ({ n, i: issueByNumber(n) })));
-const prs = computed(() => (z.value?.prs ?? []).map((n) => ({ n, p: prByNumber(n) })));
-const parts = computed(() => (z.value?.parts ?? []).map((id) => ({ id, p: partById(id) })));
+const issues = computed(() => (z.value?.issues ?? []).map((n) => (ls.value
+  ? { n, title: lsIssueByNumber(n)?.title, closed: lsIssueByNumber(n)?.state === 'CLOSED', url: lsIssueUrl(n) }
+  : { n, title: issueByNumber(n)?.title, closed: false, url: issueUrl(n) })));
+const prs = computed(() => (z.value?.prs ?? []).map((n) => {
+  if (ls.value) { const p = lsPrByNumber(n); return { n, url: lsPrUrl(n), p: p && { title: p.title, draft: p.draft, author: p.author, updatedAt: p.updatedAt, state: p.state } }; }
+  const p = prByNumber(n);
+  return { n, url: prUrl(n), p: p && { ...p, state: 'OPEN' } };
+}));
+const parts = computed(() => (z.value?.parts ?? []).map((id) => ({ id, name: partLabel(id) })));
 const hasWork = computed(() => tasks.value.length || issues.value.length || prs.value.length || parts.value.length || z.value?.links?.length);
 
 const notes = computed(() => callItems.filter((c) => c.zone === props.zone));
@@ -55,7 +67,7 @@ const ownerOf = (owner: string | null) => {
         <div class="note-main">
           <p><span class="kind" :data-kind="c.kind">{{ kindLabel[c.kind] }}</span> {{ c.text }}</p>
           <span class="note-meta">
-            <RouterLink :to="{ path: '/quiver/overview/calls', query: { item: c.id } }" class="muted">{{ c.call.date }} call</RouterLink>
+            <RouterLink :to="{ path: `/${project}/overview/calls`, query: { item: c.id } }" class="muted">{{ c.call.date }} call</RouterLink>
             <template v-if="threadFor(c.id, c.thread)">
               <span class="dot">·</span>
               <button class="link btn" type="button" @click="openThread(threadFor(c.id, c.thread)!)">Open {{ threadFor(c.id, c.thread) }}</button>
@@ -84,26 +96,28 @@ const ownerOf = (owner: string | null) => {
         </a>
       </li>
       <li v-for="x in issues" :key="x.n">
-        <a :href="issueUrl(x.n)" target="_blank" rel="noopener" class="row">
+        <a :href="x.url" target="_blank" rel="noopener" class="row">
           <span class="id mono">#{{ x.n }}</span>
-          <span class="txt">{{ x.i?.title ?? 'Issue' }}</span>
+          <span class="txt">{{ x.title ?? 'Issue' }}</span>
+          <span v-if="x.closed" class="meta"><span class="pill">Closed</span></span>
         </a>
       </li>
       <li v-for="x in prs" :key="x.n">
-        <a :href="prUrl(x.n)" target="_blank" rel="noopener" class="row">
+        <a :href="x.url" target="_blank" rel="noopener" class="row">
           <span class="id mono">PR {{ x.n }}</span>
           <span class="txt">{{ x.p?.title ?? 'Pull request (closed or merged)' }}</span>
           <span class="meta">
             <span v-if="x.p?.draft" class="pill">Draft</span>
+            <span v-if="x.p?.state === 'MERGED'" class="pill ok">Merged</span>
             <Avatar v-if="personByGithub(x.p?.author)" :id="personByGithub(x.p?.author)!.id" :size="14" />
             <span v-if="x.p" class="muted">{{ shortDate(x.p.updatedAt) }}</span>
           </span>
         </a>
       </li>
       <li v-for="x in parts" :key="x.id">
-        <RouterLink :to="{ path: '/quiver/build/bom', query: { part: x.id } }" class="row">
+        <RouterLink :to="{ path: `/${project}/build/bom`, query: { part: x.id } }" class="row">
           <span class="id mono">{{ x.id }}</span>
-          <span class="txt">{{ x.p?.name ?? 'Part' }}</span>
+          <span class="txt">{{ x.name ?? 'Part' }}</span>
           <span class="meta muted">BOM</span>
         </RouterLink>
       </li>

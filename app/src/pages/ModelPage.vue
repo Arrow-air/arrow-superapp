@@ -1,26 +1,31 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import QuiverModel, { type Layer, type Thumbs } from '../modules/model/QuiverModel.vue';
+import CadModel, { type Layer, type Thumbs } from '../modules/model/CadModel.vue';
 import PartsNav, { type Sel } from '../modules/model/PartsNav.vue';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
 import NewThread from '../modules/threads/NewThread.vue';
-import { NEXT, type ThreadType } from '../modules/threads/data';
-import { V11_ZONES, isOpen, openVersion, startThread, state, threadsOnPart } from '../modules/threads/store';
+import type { ThreadType } from '../modules/threads/data';
+import { isOpen, openVersion, startThread, state, threadsOnPart } from '../modules/threads/store';
 import { useFreeze } from '../frame/freeze';
-import { bom, partById } from '../data/quiver';
-import { zoneForPart } from '../data/model';
 import { zoneIcon, zoneLabel, zonePath } from '../frame/nav';
+import { useWorkspace } from '../frame/useWorkspace';
+import { modelFor } from '../projects/models';
 
-// Click a part of the Dev Kit, see what's being discussed about it, and start
-// a thread about it for v1.1. Gavin's CAD explorer layout from app-frame: the
-// model with an inspector that drills down from the areas a change would be
-// discussed in, to an area's parts, to one part, with a call to action pinned
-// to its foot. The part is the anchor: the thread lands in that part's zone.
-// The selection lives in the URL (?zone=…&part=…).
+// Click a part of the project's assembly (Quiver's Dev Kit, Longshot's pack),
+// see what's being discussed about it, and start a thread about it for the
+// next version. Gavin's CAD explorer layout from app-frame: the model with an
+// inspector that drills down from the areas a change would be discussed in,
+// to an area's parts, to one part, with a call to action pinned to its foot.
+// The part is the anchor: the thread lands in that part's zone. The selection
+// lives in the URL (?zone=…&part=…).
 const route = useRoute();
 const router = useRouter();
-const viewer = ref<InstanceType<typeof QuiverModel>>();
+const { project } = useWorkspace();
+const m = computed(() => modelFor(project.value?.id));
+const NEXT = computed(() => m.value.version);
+const zoneForPart = (id: string) => m.value.zoneForPart(id);
+const viewer = ref<InstanceType<typeof CadModel>>();
 
 const selected = computed(() => (route.query.part as string | undefined) ?? null);
 const sel = computed<Sel>(() => {
@@ -40,14 +45,15 @@ const inModel = ref<string[]>([]);
 const layers = ref<Layer[]>([]);
 const explode = ref(0);
 const thumbs = reactive<Thumbs>({});
-const labels = computed(() => Object.fromEntries(bom.flatMap((g) => g.items.map((i) => [i.id, i.name]))));
-const partName = (id: string) => partById(id)?.name.split(',')[0] ?? labels.value[id] ?? id;
+const labels = computed(() => m.value.labels);
+const partName = (id: string) => m.value.partName(id) ?? labels.value[id] ?? id;
 
-// The areas, in the order of the v1.1 page, with the parts of each in the model.
+// The areas, in the order of the next-version page, with the parts of each in the model.
 const zones = computed(() => {
   const byZone = new Map<string, string[]>();
   for (const id of inModel.value) byZone.set(zoneForPart(id), [...(byZone.get(zoneForPart(id)) ?? []), id]);
-  return [...V11_ZONES, 'interface'].filter((z) => byZone.has(z)).map((z) => ({ id: z, label: zoneLabel(z), parts: byZone.get(z)!.sort() }));
+  const order = [...m.value.zoneOrder, ...[...byZone.keys()].filter((z) => !m.value.zoneOrder.includes(z))];
+  return order.filter((z) => byZone.has(z)).map((z) => ({ id: z, label: zoneLabel(z), parts: byZone.get(z)!.sort() }));
 });
 function onReady(ids: string[], l: Layer[]) {
   inModel.value = ids;
@@ -66,7 +72,7 @@ const lit = computed(() => (sel.value.zone ? zones.value.find((z) => z.id === se
 const anchored = computed(() => state.threads.filter((t) => t.part && inModel.value.includes(t.part)));
 const zoneThreads = computed(() => anchored.value.filter((t) => lit.value?.includes(t.part!)));
 const partThreads = computed(() => (selected.value ? threadsOnPart(selected.value) : []));
-const part = computed(() => (selected.value ? partById(selected.value) : undefined));
+const facts = computed(() => (selected.value ? m.value.facts(selected.value) : {}));
 
 // Layer switches (the whole aircraft).
 const hidden = ref<string[]>([]);
@@ -81,13 +87,12 @@ watch(() => [sel.value.zone, sel.value.part], () => { composing.value = false; a
 const subject = computed(() => (sel.value.part ? partName(sel.value.part) : sel.value.zone ? zoneLabel(sel.value.zone) : ''));
 async function post(d: { type: ThreadType; title: string; body: string; key: string }): Promise<boolean> {
   if (!sel.value.zone) return false;
-  const t = await startThread({ zone: sel.value.zone, part: about.value === 'part' ? sel.value.part : undefined, title: d.title, body: d.body, type: d.type, version: NEXT, key: d.key });
+  const t = await startThread({ zone: sel.value.zone, part: about.value === 'part' ? sel.value.part : undefined, title: d.title, body: d.body, type: d.type, version: NEXT.value, key: d.key });
   if (!t) return false;
   composing.value = false;
   if (t) router.replace({ query: { ...route.query, thread: t.id } });
   return true;
 }
-const money = (n: number | null) => (n == null ? null : `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
 </script>
 
 <template>
@@ -107,10 +112,10 @@ const money = (n: number | null) => (n == null ? null : `$${n.toLocaleString('en
         :submit="post"
         @cancel="composing = false"
       />
-      <PartsNav v-else label="Dev Kit" :zones="zones" :thumbs="thumbs" :selection="sel" :part-name="partName" :open-count="openCount" @pick="pick">
+      <PartsNav v-else :label="m.title" :zones="zones" :thumbs="thumbs" :selection="sel" :part-name="partName" :open-count="openCount" @pick="pick">
         <template #root-head>
-          <p class="kicker">Quiver · build123d CAD on project-quiver main</p>
-          <h1 class="title">Dev Kit</h1>
+          <p class="kicker">{{ m.kicker }}</p>
+          <h1 class="title">{{ m.title }}</h1>
           <p class="muted">{{ inModel.length }} parts. Pick an area or click a part to see its threads, or start one for {{ NEXT }}.</p>
         </template>
         <template #root>
@@ -134,11 +139,14 @@ const money = (n: number | null) => (n == null ? null : `$${n.toLocaleString('en
           <RouterLink class="zlink" :to="zonePath(sel.zone!)">All of {{ zoneLabel(sel.zone!) }}'s discussion</RouterLink>
         </template>
         <template #part>
-          <dl v-if="part && selected" class="facts">
-            <template v-if="part.qty > 1"><dt>Qty</dt><dd>{{ part.qty }} on the aircraft</dd></template>
-            <template v-if="part.material || part.spec"><dt>Material</dt><dd>{{ part.material ?? part.spec }}</dd></template>
-            <template v-if="money(part.unitCostUsd)"><dt>Unit cost</dt><dd>{{ money(part.unitCostUsd) }}</dd></template>
-            <template v-if="part.suppliers.length"><dt>Supplier</dt><dd>{{ part.suppliers.map((s) => s.name).join(', ') }}</dd></template>
+          <dl v-if="selected" class="facts">
+            <template v-if="facts.qty"><dt>Qty</dt><dd>{{ facts.qty }}</dd></template>
+            <template v-if="facts.material"><dt>Material</dt><dd>{{ facts.material }}</dd></template>
+            <template v-if="facts.cost"><dt>Unit cost</dt><dd>{{ facts.cost }}</dd></template>
+            <template v-if="facts.supplier"><dt>Supplier</dt><dd>{{ facts.supplier }}</dd></template>
+            <template v-if="facts.makeBuy"><dt>Make or buy</dt><dd>{{ facts.makeBuy }}</dd></template>
+            <template v-if="facts.note"><dt>Note</dt><dd>{{ facts.note }}</dd></template>
+            <template v-if="facts.source"><dt>Source</dt><dd><a :href="facts.source.url" target="_blank" rel="noopener">{{ facts.source.label }}</a></dd></template>
             <dt>Discussed in</dt><dd><RouterLink :to="zonePath(zoneForPart(selected))">{{ zoneLabel(zoneForPart(selected)) }}</RouterLink></dd>
           </dl>
           <h4 class="head">Threads about this part</h4>
@@ -161,15 +169,16 @@ const money = (n: number | null) => (n == null ? null : `$${n.toLocaleString('en
         </p>
       </div>
       <p v-if="!sel.zone" class="src">
-        From the <a href="https://github.com/Arrow-air/project-quiver/tree/main/src/quiver" target="_blank" rel="noopener">build123d CAD</a> on project-quiver main; fasteners are left out.
-        Fusion changes waiting in <a href="https://github.com/Arrow-air/project-quiver/pull/266" target="_blank" rel="noopener">PR #266</a> appear once it merges.
-        <RouterLink to="/quiver/build/bom">Bill of materials</RouterLink>
+        {{ m.source.text }}
+        <template v-for="l in m.source.links" :key="l.url"><a :href="l.url" target="_blank" rel="noopener">{{ l.label }}</a> · </template>
+        <RouterLink :to="m.bomPath">Bill of materials</RouterLink>
       </p>
     </aside>
 
     <div class="stage">
-      <QuiverModel
+      <CadModel
         ref="viewer"
+        :look="m.look"
         :lit="lit"
         :hidden="hidden"
         :selected="selected"
@@ -183,7 +192,7 @@ const money = (n: number | null) => (n == null ? null : `$${n.toLocaleString('en
           <label class="explode">Explode <input v-model.number="explode" type="range" min="0" max="0.9" step="0.01" aria-label="Explode" /></label>
           <button type="button" class="reset" @click="pick(null); viewer?.reset()">Reset view</button>
         </template>
-      </QuiverModel>
+      </CadModel>
     </div>
   </div>
 </template>

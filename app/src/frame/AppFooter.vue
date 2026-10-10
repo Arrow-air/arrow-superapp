@@ -3,7 +3,9 @@ import Icon from './Icon.vue';
 import { computed } from 'vue';
 import { formatMoney, network, quote, quoteValue, type Quote } from './account';
 import { generatedAt, shortDate, tasks } from '../data/quiver';
-import { isOpen, state } from '../modules/threads/store';
+import { lsGeneratedAt, lsOpenIssues } from '../projects/longshot/github';
+import { isOpen, projectThreads } from '../modules/threads/store';
+import { useWorkspace } from './useWorkspace';
 import DemoMenu from './DemoMenu.vue';
 import { useFreeze } from './freeze';
 import SessionStatus from './SessionStatus.vue';
@@ -25,8 +27,15 @@ const themes: { id: Theme; label: string; icon: IconName }[] = [
 // quote currency on the right. The currency switch shares state with the
 // wallet toolbar.
 const SITE = 'https://arrowair.com';
-const openThreads = computed(() => state.threads.filter(isOpen).length);
-const claimable = tasks.filter((t) => t.claimable).length;
+const { project } = useWorkspace();
+const base = computed(() => `/${project.value?.id ?? 'quiver'}`);
+const openThreads = computed(() => projectThreads.value.filter(isOpen).length);
+// The GitHub line for the project on screen: Quiver's claimable tasks, Longshot's open issues.
+const github = computed(() =>
+  project.value?.id === 'longshot'
+    ? { at: lsGeneratedAt, n: lsOpenIssues.length, label: 'open issues', to: '/longshot/work/github' }
+    : { at: generatedAt, n: tasks.filter((t) => t.claimable).length, label: 'claimable tasks', to: '/quiver/work/tasks' },
+);
 
 </script>
 
@@ -36,19 +45,19 @@ const claimable = tasks.filter((t) => t.claimable).length;
       <SessionStatus v-if="remote" />
       <DemoMenu v-else />
       <span class="sep hide-sm" aria-hidden="true"></span>
-      <span class="stat hide-sm"><Icon name="sync" :size="11" /> GitHub data from {{ shortDate(generatedAt) }}</span>
+      <span class="stat hide-sm"><Icon name="sync" :size="11" /> GitHub data from {{ shortDate(github.at) }}</span>
       <span class="sep hide-md" aria-hidden="true"></span>
       <template v-if="freeze.active.value">
-        <RouterLink class="stat freeze" to="/quiver/overview/v1-1" :data-level="freeze.level.value" :title="freeze.at.value ? `Design freeze for ${freeze.version}: ${freeze.when.value}` : `${freeze.version} design frozen`">
+        <RouterLink class="stat freeze" :to="freeze.path" :data-level="freeze.level.value" :title="freeze.at.value ? `Design freeze for ${freeze.version}: ${freeze.when.value}` : `${freeze.version} design frozen`">
           <i aria-hidden="true"></i>{{ freeze.frozen.value ? `${freeze.version} design frozen` : `${freeze.version} design freeze in ${freeze.label.value}` }}
         </RouterLink>
         <span class="sep hide-md" aria-hidden="true"></span>
       </template>
-      <RouterLink class="stat link hide-md" to="/quiver/discussion/all">
+      <RouterLink class="stat link hide-md" :to="`${base}/discussion/all`">
         <Icon name="vote" :size="11" /> {{ openThreads }} open threads
       </RouterLink>
-      <RouterLink class="stat link hide-md" to="/quiver/work/tasks">
-        <Icon name="coin" :size="11" /> {{ claimable }} claimable tasks
+      <RouterLink class="stat link hide-md" :to="github.to">
+        <Icon name="coin" :size="11" /> {{ github.n }} {{ github.label }}
       </RouterLink>
       <span class="sep hide-md" aria-hidden="true"></span>
       <a class="stat link hide-md" :href="`${SITE}/docs/`" target="_blank" rel="noopener">Docs</a>

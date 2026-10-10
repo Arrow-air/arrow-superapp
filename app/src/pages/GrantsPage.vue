@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Avatar from '../modules/threads/Avatar.vue';
-import { awardOf, state, type Work } from '../modules/threads/store';
+import { awardOf, projectThreads, state, type Work } from '../modules/threads/store';
 import { zoneLabel } from '../frame/nav';
 
 // Bounties and grants drafted from decisions. Each one lives on its thread;
@@ -17,9 +17,11 @@ const order: { stage: Work['stage']; label: string }[] = [
   { stage: 'completed', label: 'Accepted' },
   { stage: 'withdrawn', label: 'Withdrawn (decision reopened)' },
 ];
-const groups = computed(() => order.map((o) => ({ ...o, items: state.work.filter((w) => w.stage === o.stage) })).filter((g) => g.items.length));
+// Only this project's work: work belongs to the project of the thread it was funded from.
+const mine = computed(() => { const ids = new Set(projectThreads.value.map((t) => t.id)); return state.work.filter((w) => ids.has(w.threadId)); });
+const groups = computed(() => order.map((o) => ({ ...o, items: mine.value.filter((w) => w.stage === o.stage) })).filter((g) => g.items.length));
 const live = (w: Work) => w.stage !== 'draft' && w.stage !== 'withdrawn';
-const committed = computed(() => state.work.filter(live).reduce((s, w) => s + w.reward, 0));
+const committed = computed(() => mine.value.filter(live).reduce((s, w) => s + w.reward, 0));
 const threadOf = (w: Work) => state.threads.find((t) => t.id === w.threadId);
 const open = (w: Work) => router.replace({ query: { ...route.query, thread: w.threadId } });
 </script>
@@ -35,10 +37,10 @@ const open = (w: Work) => router.replace({ query: { ...route.query, thread: w.th
         </p>
       </div>
     </div>
-    <p v-if="!state.work.length" class="vempty">
-      Nothing funded yet. Open a decided thread and, as a lead, choose "Fund it as a bounty or grant". The task board from GitHub is under Work › Task board.
+    <p v-if="!mine.length" class="vempty">
+      Nothing funded yet. Open a decided thread and, as a lead, choose "Fund it as a bounty or grant". What's on GitHub is under Work › From GitHub.
     </p>
-    <p v-else class="muted sum"><b>{{ committed.toLocaleString('en-US') }}</b> ARROW published across {{ state.work.filter(live).length }} of {{ state.work.length }}</p>
+    <p v-else class="muted sum"><b>{{ committed.toLocaleString('en-US') }}</b> ARROW published across {{ mine.filter(live).length }} of {{ mine.length }}</p>
     <section v-for="g in groups" :key="g.stage" class="view-section">
       <h2>{{ g.label }}</h2>
       <table class="vt">

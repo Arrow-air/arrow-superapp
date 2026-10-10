@@ -2,7 +2,8 @@
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Avatar from '../modules/threads/Avatar.vue';
-import { callItems } from '../data/calls';
+import { callItemsOf, type CallItem, type Call } from '../data/calls';
+import { useWorkspace } from '../frame/useWorkspace';
 import { personById } from '../data/people';
 import { zoneLabel, zonePath } from '../frame/nav';
 import { startThread, state } from '../modules/threads/store';
@@ -11,11 +12,13 @@ import { startThread, state } from '../modules/threads/store';
 // They are not open questions until someone starts a discussion, and they are
 // never counted as decided.
 const router = useRouter();
+const { project } = useWorkspace();
+const callItems = computed(() => callItemsOf(project.value?.id ?? 'quiver'));
 const picked = (id: string, seeded?: string) => !!seeded || state.threads.some((t) => t.source?.kind === 'call' && t.source.ref === id);
-const open = computed(() => callItems.filter((c) => ['question', 'proposal', 'gap'].includes(c.kind) && !picked(c.id, c.thread)));
+const open = computed(() => callItems.value.filter((c) => ['question', 'proposal', 'gap'].includes(c.kind) && !picked(c.id, c.thread)));
 const kindLabel = { question: 'Question', proposal: 'Proposal', gap: 'Gap' } as Record<string, string>;
 
-async function start(c: (typeof callItems)[number]) {
+async function start(c: CallItem & { call: Call }) {
   const t = await startThread({
     zone: c.zone,
     title: c.text.length > 90 ? `${c.text.slice(0, 87).trimEnd()}…` : c.text,

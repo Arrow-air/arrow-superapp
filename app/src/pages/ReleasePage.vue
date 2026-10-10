@@ -4,49 +4,58 @@ import { useRoute, useRouter } from 'vue-router';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
 import StatusIcon from '../modules/threads/StatusIcon.vue';
 import NewThread from '../modules/threads/NewThread.vue';
-import { LATER, NEXT, type Thread } from '../modules/threads/data';
+import type { Thread } from '../modules/threads/data';
 import { session } from '../lib/session';
 import {
-  V11_ZONES, letterOf, byActivity, day, deferOpen, freezeRelease, isOpen, person, retroPreview, setReleasePlan, startThread, state, statusOf, workFor, openVersion,
+  letterOf, byActivity, day, deferOpen, freezeRelease, isOpen, person, projectThreads, releaseOf, retroPreview, setReleasePlan, startThread, state, statusOf, workFor, openVersion,
 } from '../modules/threads/store';
-import { callItems } from '../data/calls';
+import { callItemsOf } from '../data/calls';
 import { remote } from '../lib/backend';
-import { zoneLabel, zonePath } from '../frame/nav';
+import { currentProject, zoneLabel, zonePath } from '../frame/nav';
+import { planOf } from '../projects/plans';
 
-// The next Dev Kit revision in one place. Every thread aimed at v1.1 shows
-// here, grouped by where it changes the aircraft, wherever it lives. Each
-// improvement is decided in its own thread; decided ones are the change list.
+// A project's next version in one place (Dev Kit v1.1 for Quiver, PT2 for
+// Longshot). Every thread aimed at it shows here, grouped by where it changes
+// the hardware, wherever it lives. Each improvement is decided in its own
+// thread; decided ones are the change list.
 const route = useRoute();
 const router = useRouter();
+const project = computed(() => currentProject.value);
+const plan = computed(() => planOf(project.value));
+const rel = computed(() => releaseOf(project.value));
+const intro: Record<string, string> = {
+  quiver: 'The next revision of the Quiver Dev Kit. Every improvement proposed for it is collected here, by where it changes the aircraft. Each one is weighed and decided in its own thread; the decided ones make up the v1.1 change list.',
+  longshot: 'The next Longshot build. Everything proposed for it is collected here, by the part of the pack it changes: the BMS and its telemetry first, since PT1 has none. Each change is weighed and decided in its own thread; the decided ones make up the PT2 change list.',
+};
 
-const v11 = computed(() => state.threads.filter((t) => t.version === NEXT));
+const v11 = computed(() => projectThreads.value.filter((t) => t.version === plan.value.next));
 const open = computed(() => v11.value.filter(isOpen));
 const declined = computed(() => v11.value.filter((t) => t.declined));
-const deferred = computed(() => state.threads.filter((t) => t.deferrals?.some((d) => d.from === NEXT)));
+const deferred = computed(() => projectThreads.value.filter((t) => t.deferrals?.some((d) => d.from === plan.value.next)));
 const showDeclined = ref(false);
 const decided = computed(() => v11.value.filter((t) => t.settled).sort((a, b) => a.settled!.decision.localeCompare(b.settled!.decision)));
 const converging = computed(() => open.value.filter((t) => statusOf(t) === 'converging').length);
 
-// The four next-revision zones always show, even empty; any other zone with a
-// v1.1 thread (the attachment interface, say) follows.
-const zones = computed(() => [...V11_ZONES, ...new Set(open.value.map((t) => t.zone).filter((z) => !V11_ZONES.includes(z)))]);
+// The next version's zones always show, even empty; any other zone with a
+// thread on it (Quiver's attachment interface, say) follows.
+const zones = computed(() => [...plan.value.nextZones, ...new Set(open.value.map((t) => t.zone).filter((z) => !plan.value.nextZones.includes(z)))]);
 const openIn = (zone: string) => open.value.filter((t) => t.zone === zone).sort(byActivity);
 
 // Call questions in these zones that no thread has picked up yet.
 const raised = computed(() =>
-  callItems.filter((c) => zones.value.includes(c.zone) && ['question', 'proposal', 'gap'].includes(c.kind) && !c.thread && !state.threads.some((t) => t.source?.kind === 'call' && t.source.ref === c.id)),
+  callItemsOf(project.value).filter((c) => zones.value.includes(c.zone) && ['question', 'proposal', 'gap'].includes(c.kind) && !c.thread && !state.threads.some((t) => t.source?.kind === 'call' && t.source.ref === c.id)),
 );
 
 const composing = ref(false);
-const draft = ref({ zone: V11_ZONES[0] });
-const where = [...V11_ZONES, 'interface'];
+const draft = ref({ zone: plan.value.nextZones[0] });
+const where = computed(() => [...plan.value.nextZones, ...(project.value === 'quiver' ? ['interface'] : [])]);
 function proposeIn(zone: string) {
   draft.value.zone = zone;
   composing.value = true;
   requestAnimationFrame(() => document.querySelector<HTMLInputElement>('.rel-form .title')?.focus());
 }
 async function create(d: { type: Thread['type']; title: string; body: string; key: string }): Promise<boolean> {
-  const t = await startThread({ zone: draft.value.zone, title: d.title, body: d.body, type: d.type, version: NEXT, key: d.key });
+  const t = await startThread({ zone: draft.value.zone, title: d.title, body: d.body, type: d.type, version: plan.value.next, key: d.key });
   if (!t) return false;
   composing.value = false;
   if (t) router.replace({ query: { ...route.query, thread: t.id } });
@@ -57,10 +66,10 @@ const stageLabel = { draft: 'Draft', open: 'Open', in_progress: 'In progress', i
 
 // Freeze and retro pool, as the spec workspace does it.
 const isLead = computed(() => state.role === 'lead');
-const frozen = computed(() => !!state.release.frozenAt);
-const plan = ref({ pool: state.release.pool ?? ('' as number | ''), date: state.release.freezeTarget ?? '' });
-const savePlan = () => setReleasePlan({ pool: plan.value.pool === '' ? undefined : Number(plan.value.pool), freezeTarget: plan.value.date || undefined });
-const retro = computed(() => retroPreview());
+const frozen = computed(() => !!rel.value.frozenAt);
+const form = ref({ pool: rel.value.pool ?? ('' as number | ''), date: rel.value.freezeTarget ?? '' });
+const savePlan = () => setReleasePlan({ pool: form.value.pool === '' ? undefined : Number(form.value.pool), freezeTarget: form.value.date || undefined });
+const retro = computed(() => retroPreview(project.value));
 // Who a retro line pays: you, a person named in the notes (held until a lead
 // confirms), or a document with no person named (held).
 function recipient(r: string) {
@@ -70,30 +79,27 @@ function recipient(r: string) {
   return { name: person(r)?.name ?? r, held: true, note: 'named in the notes' };
 }
 function freeze() {
-  if (confirm(`Freeze ${NEXT}? The spec locks, the retro split is recorded, and new proposals go to ${LATER}.`)) freezeRelease();
+  if (confirm(`Freeze ${plan.value.next}? The spec locks, the retro split is recorded, and new proposals go to ${plan.value.later}.`)) freezeRelease();
 }
 function deferRest() {
-  if (confirm(`Defer all ${open.value.length} open ${NEXT} threads to ${LATER}?`)) deferOpen(`Not settled before the ${NEXT} freeze.`);
+  if (confirm(`Defer all ${open.value.length} open ${plan.value.next} threads to ${plan.value.later}?`)) deferOpen(`Not settled before the ${plan.value.next} freeze.`);
 }
 </script>
 
 <template>
   <div class="zp">
     <header class="zp-head">
-      <h1 class="zp-title">{{ NEXT }} <span class="chip">Working name</span></h1>
-      <p class="zp-sum">
-        The next revision of the Quiver Dev Kit. Every improvement proposed for it is collected here, by where it changes the aircraft.
-        Each one is weighed and decided in its own thread; the decided ones make up the v1.1 change list.
-      </p>
-      <p v-if="frozen" class="frozen">Frozen {{ day(state.release.frozenAt!) }} by {{ state.release.frozenBy === 'me' ? 'you' : state.release.frozenBy }}. The spec below is locked and the retro split is recorded; new proposals go to {{ LATER }}.</p>
+      <h1 class="zp-title">{{ plan.next }} <span class="chip">Working name</span></h1>
+      <p class="zp-sum">{{ intro[project] }}</p>
+      <p v-if="frozen" class="frozen">Frozen {{ day(rel.frozenAt!) }} by {{ rel.frozenBy === 'me' ? 'you' : rel.frozenBy }}. The spec below is locked and the retro split is recorded; new proposals go to {{ plan.later }}.</p>
       <div class="stats">
-        <span v-if="state.release.pool"><b>{{ state.release.pool.toLocaleString('en-US') }}</b> ARROW retro pool</span>
-        <span v-if="state.release.freezeTarget">freeze <b>{{ day(state.release.freezeTarget) }}</b></span>
+        <span v-if="rel.pool"><b>{{ rel.pool.toLocaleString('en-US') }}</b> ARROW retro pool</span>
+        <span v-if="rel.freezeTarget">freeze <b>{{ day(rel.freezeTarget) }}</b></span>
         <span><b>{{ open.length }}</b> proposed</span>
         <span><b>{{ converging }}</b> converging</span>
         <span><b>{{ decided.length }}</b> decided</span>
-        <RouterLink to="/quiver/overview/model" class="model-link">Pick a part in the 3D model</RouterLink>
-        <button v-if="!composing" class="new-btn" type="button" @click="proposeIn(V11_ZONES[0])">
+        <RouterLink :to="`/${project}/overview/model`" class="model-link">Pick a part in the 3D model</RouterLink>
+        <button v-if="!composing" class="new-btn" type="button" @click="proposeIn(plan.nextZones[0])">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" /></svg> Propose an improvement
         </button>
       </div>
@@ -110,7 +116,7 @@ function deferRest() {
       :title-hint="{ proposal: 'The change, in one line' }"
       body-hint="Why: what it fixes, what it costs, what it touches"
       submit-label="Propose"
-      draft-key="new:v1-1"
+      :draft-key="`new:${project}:next`"
       :submit="create"
       @cancel="composing = false"
     />
@@ -130,13 +136,13 @@ function deferRest() {
       <ul class="raised">
         <li v-for="c in raised" :key="c.id">
           <span class="muted">{{ zoneLabel(c.zone) }}</span> {{ c.text }}
-          <RouterLink :to="{ path: '/quiver/overview/calls', query: { item: c.id } }" class="muted">{{ c.call.date }} call</RouterLink>
+          <RouterLink :to="{ path: `/${project}/overview/calls`, query: { item: c.id } }" class="muted">{{ c.call.date }} call</RouterLink>
         </li>
       </ul>
     </section>
 
     <section class="grp">
-      <h2 class="sec-h">The {{ NEXT }} spec: decided</h2>
+      <h2 class="sec-h">The {{ plan.next }} spec: decided</h2>
       <ol v-if="decided.length" class="changes">
         <li v-for="t in decided" :key="t.id">
           <button type="button" class="change" @click="router.replace({ query: { ...route.query, thread: t.id } })">
@@ -157,7 +163,7 @@ function deferRest() {
       <p v-else class="none">Nothing decided yet. When a lead adopts a position on any thread above, it lands here; from here it can be funded as a bounty or grant.</p>
       <p v-if="declined.length || deferred.length" class="aside">
         <button v-if="declined.length" class="add" type="button" @click="showDeclined = !showDeclined">{{ declined.length }} declined</button>
-        <span v-if="deferred.length" class="muted">{{ deferred.length }} deferred to {{ LATER }}</span>
+        <span v-if="deferred.length" class="muted">{{ deferred.length }} deferred to {{ plan.later }}</span>
       </p>
       <div v-if="showDeclined" class="list"><ThreadRows :threads="declined" /></div>
     </section>
@@ -165,16 +171,16 @@ function deferRest() {
     <section class="grp retro">
       <h2 class="sec-h">Retro pool and freeze</h2>
       <p class="expl">
-        A pool of ARROW set aside for this version's discussion. At the freeze it is split across every position on a {{ NEXT }} thread by weighted net support, adopted or not, so good ideas that lost still earn. Nothing is paid from the app.
+        A pool of ARROW set aside for this version's discussion. At the freeze it is split across every position on a {{ plan.next }} thread by weighted net support, adopted or not, so good ideas that lost still earn. Nothing is paid from the app.
       </p>
       <form v-if="isLead && !frozen" class="plan" @submit.prevent="savePlan">
-        <label>Pool <input v-model.number="plan.pool" type="number" min="0" step="100" placeholder="ARROW" aria-label="Retro pool in ARROW" /> ARROW</label>
-        <label>Freeze on <input v-model="plan.date" type="date" aria-label="Freeze date" /></label>
+        <label>Pool <input v-model.number="form.pool" type="number" min="0" step="100" placeholder="ARROW" aria-label="Retro pool in ARROW" /> ARROW</label>
+        <label>Freeze on <input v-model="form.date" type="date" aria-label="Freeze date" /></label>
         <button class="secondary" type="submit">Save plan</button>
       </form>
-      <p v-else-if="!state.release.pool" class="none">No retro pool set yet. A lead sets the pool and the freeze date.</p>
+      <p v-else-if="!rel.pool" class="none">No retro pool set yet. A lead sets the pool and the freeze date.</p>
 
-      <div v-if="state.release.pool" class="alloc">
+      <div v-if="rel.pool" class="alloc">
         <p class="alloc-h">{{ frozen ? 'Recorded split' : 'If it froze now' }}<span class="muted"> · {{ retro.amount.toLocaleString('en-US') }} ARROW{{ frozen ? '' : remote ? ', from the current votes' : ', from the votes in this browser' }}</span></p>
         <table v-if="retro.lines.length" class="vt">
           <tbody>
@@ -185,16 +191,16 @@ function deferRest() {
             </tr>
           </tbody>
         </table>
-        <p v-else class="none">No position on a {{ NEXT }} thread has net support yet, so nothing would be split.</p>
+        <p v-else class="none">No position on a {{ plan.next }} thread has net support yet, so nothing would be split.</p>
         <p v-if="retro.lines.length && retro.unallocated" class="muted small">{{ retro.unallocated }} ARROW unallocated.</p>
       </div>
 
       <div v-if="isLead && !frozen" class="freeze">
         <p v-if="open.length" class="expl">
-          To freeze, every {{ NEXT }} thread needs an outcome: adopted, declined, or deferred to {{ LATER }}. {{ open.length }} still open.
-          <button class="add" type="button" @click="deferRest">Defer the rest to {{ LATER }}</button>
+          To freeze, every {{ plan.next }} thread needs an outcome: adopted, declined, or deferred to {{ plan.later }}. {{ open.length }} still open.
+          <button class="add" type="button" @click="deferRest">Defer the rest to {{ plan.later }}</button>
         </p>
-        <button class="primary" type="button" :disabled="open.length > 0" @click="freeze">Freeze {{ NEXT }}</button>
+        <button class="primary" type="button" :disabled="open.length > 0" @click="freeze">Freeze {{ plan.next }}</button>
       </div>
     </section>
   </div>

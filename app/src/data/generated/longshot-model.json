@@ -1,0 +1,400 @@
+{
+ "generatedAt": "2026-10-10T22:38:15.845Z",
+ "source": {
+  "repo": "https://github.com/Arrow-air/project-longshot",
+  "commit": "f7ec9a7eb647734693769b0c99f73735ec3b880b",
+  "path": "engineering/cad/build123d"
+ },
+ "units": "m",
+ "bbox": {
+  "x": 249.0,
+  "y": 138.8,
+  "z": 346.5
+ },
+ "families": [
+  {
+   "id": "cells",
+   "label": "Cells",
+   "parts": [
+    "PW-CELL-001-21700"
+   ]
+  },
+  {
+   "id": "cell-holders",
+   "label": "Cell holders",
+   "parts": [
+    "EN-CELL-001-Upper_Cell_Holder",
+    "EN-CELL-001-Bottom_Cell_Holder"
+   ]
+  },
+  {
+   "id": "busbars",
+   "label": "Busbars",
+   "parts": [
+    "PW-BUS-001-N_Terminal",
+    "PW-BUS-002-P_Terminal",
+    "PW-BUS-003-Bridge_1",
+    "PW-BUS-004-Bridge_2",
+    "PW-BUS-005-Screw_Terminal_Negative",
+    "PW-BUS-006-Screw_Terminal_Positive"
+   ]
+  },
+  {
+   "id": "enclosure",
+   "label": "Enclosure",
+   "parts": [
+    "EN-PC-001-Top_Plate",
+    "EN-PC-002-Bottom_Plate",
+    "EN-SHEET-001-Reinfocement_Right",
+    "EN-SHEET-002-Reinfocement_Left",
+    "EN-PRINT-001-3D-Printable_Battery_Base",
+    "EN-PRINT-002-3D-Printable_Battery_Top_Cover"
+   ]
+  },
+  {
+   "id": "mounting",
+   "label": "Mounting",
+   "parts": [
+    "EN-STRAP-001-Metal_piece",
+    "EN-STRAP-002-Rubber_Part",
+    "EN-STRAP-003-Metal_End",
+    "Tattu_4_0_30Ah_Clip",
+    "EN-INSERT-001-ruthex_RX-M3x5_7",
+    "EN-INSERT-002-ruthex_RX-M4x8_1"
+   ]
+  },
+  {
+   "id": "electronics",
+   "label": "Electronics",
+   "parts": [
+    "SL_PCB-002-SL_PCB_V3",
+    "VS_PCB_COMPLETE_TOP_LEFT",
+    "VS_PCB_COMPLETE_TOP_RIGHT",
+    "VS_PCB_COMPLETE_BOTTOM_LEFT",
+    "VS_PCB_COMPLETE_BOTTOM_RIGHT",
+    "ET60S-D06-0-00-D06-L-V1-S",
+    "EL-FUSE-001-AMXL-200",
+    "FUSE-SMD_L10_0-W5_0-H3_8",
+    "AMT0450003DB0000G",
+    "CONN-TH_430451612",
+    "CONN-SMD_SM7B-GHS-TB-LF-SN"
+   ]
+  }
+ ],
+ "parts": [
+  {
+   "id": "PW-CELL-001-21700",
+   "name": "21700 Li-ion cell",
+   "qty": 126,
+   "family": "cells",
+   "kind": "cots",
+   "bomRef": "PW-CELL-001-21700",
+   "step": "engineering/cad/build123d/exports/step/PW-CELL-001-21700.step",
+   "note": "CAD placeholder model: Molicel 21700 P45B; PT1 uses BAK 21700 65E"
+  },
+  {
+   "id": "PW-BUS-001-N_Terminal",
+   "name": "Negative terminal busbar",
+   "qty": 1,
+   "family": "busbars",
+   "kind": "custom",
+   "material": "Copper, 0.2 mm sheet (PT1 copper order)",
+   "bomRef": "PW-BUS-001-N_Terminal",
+   "step": "engineering/cad/build123d/exports/step/PW-BUS-001-N_Terminal.step"
+  },
+  {
+   "id": "PW-BUS-002-P_Terminal",
+   "name": "Positive terminal busbar",
+   "qty": 1,
+   "family": "busbars",
+   "kind": "custom",
+   "material": "Copper, 0.2 mm sheet (PT1 copper order)",
+   "bomRef": "PW-BUS-002-P_Terminal",
+   "step": "engineering/cad/build123d/exports/step/PW-BUS-002-P_Terminal.step"
+  },
+  {
+   "id": "PW-BUS-003-Bridge_1",
+   "name": "Series bridge busbar between cell groups",
+   "qty": 12,
+   "family": "busbars",
+   "kind": "custom",
+   "material": "Copper, 0.2 mm sheet (PT1 copper order)",
+   "bomRef": "PW-BUS-003-Bridge_1",
+   "step": "engineering/cad/build123d/exports/step/PW-BUS-003-Bridge_1.step",
+   "note": "Qty includes the 6 instances of Fusion component PW-BUS-003-Bridge_1_Mirror (same outline and weld tongues, locating ear at the opposite end). One laser-cut flat pattern, turned 180° for the top or bottom of the pack; tongue bends are formed during spot welding. Model: instances 1-6 are PW-BUS-003-Bridge_1; instances 7-12 are PW-BUS-003-Bridge_1_Mirror"
+  },
+  {
+   "id": "PW-BUS-004-Bridge_2",
+   "name": "Series bridge busbar between the two cell-stack halves",
+   "qty": 1,
+   "family": "busbars",
+   "kind": "custom",
+   "material": "Copper, 0.2 mm sheet (PT1 copper order)",
+   "bomRef": "PW-BUS-004-Bridge_2",
+   "step": "engineering/cad/build123d/exports/step/PW-BUS-004-Bridge_2.step"
+  },
+  {
+   "id": "PW-BUS-005-Screw_Terminal_Negative",
+   "name": "Negative screw terminal bar, 6 mm",
+   "qty": 1,
+   "family": "busbars",
+   "kind": "custom",
+   "bomRef": "PW-BUS-005-Screw_Terminal_Negative",
+   "step": "engineering/cad/build123d/exports/step/PW-BUS-005-Screw_Terminal_Negative.step"
+  },
+  {
+   "id": "PW-BUS-006-Screw_Terminal_Positive",
+   "name": "Positive screw terminal bar, 6 mm",
+   "qty": 1,
+   "family": "busbars",
+   "kind": "custom",
+   "bomRef": "PW-BUS-006-Screw_Terminal_Positive",
+   "step": "engineering/cad/build123d/exports/step/PW-BUS-006-Screw_Terminal_Positive.step"
+  },
+  {
+   "id": "EN-CELL-001-Upper_Cell_Holder",
+   "name": "Upper cell holder, 3D printed",
+   "qty": 1,
+   "family": "cell-holders",
+   "kind": "custom",
+   "bomRef": "EN-CELL-001-Upper_Cell_Holder",
+   "step": "engineering/cad/build123d/exports/step/EN-CELL-001-Upper_Cell_Holder.step"
+  },
+  {
+   "id": "EN-CELL-001-Bottom_Cell_Holder",
+   "name": "Bottom cell holder, 3D printed",
+   "qty": 1,
+   "family": "cell-holders",
+   "kind": "custom",
+   "bomRef": "EN-CELL-001-Bottom_Cell_Holder",
+   "step": "engineering/cad/build123d/exports/step/EN-CELL-001-Bottom_Cell_Holder.step"
+  },
+  {
+   "id": "EN-PC-001-Top_Plate",
+   "name": "Top plate, 3 mm",
+   "qty": 1,
+   "family": "enclosure",
+   "kind": "custom",
+   "material": "Polycarbonate (PC)",
+   "bomRef": "EN-PC-001-Top_Plate",
+   "step": "engineering/cad/build123d/exports/step/EN-PC-001-Top_Plate.step"
+  },
+  {
+   "id": "EN-PC-002-Bottom_Plate",
+   "name": "Bottom plate, 3 mm",
+   "qty": 1,
+   "family": "enclosure",
+   "kind": "custom",
+   "material": "Polycarbonate (PC)",
+   "bomRef": "EN-PC-002-Bottom_Plate",
+   "step": "engineering/cad/build123d/exports/step/EN-PC-002-Bottom_Plate.step"
+  },
+  {
+   "id": "EN-SHEET-001-Reinfocement_Right",
+   "name": "Right reinforcement sheet",
+   "qty": 1,
+   "family": "enclosure",
+   "kind": "custom",
+   "material": "Aluminium sheet",
+   "bomRef": "EN-SHEET-001-Reinfocement_Right",
+   "step": "engineering/cad/build123d/exports/step/EN-SHEET-001-Reinfocement_Right.step",
+   "note": "\"Reinfocement\" is the CAD part-number spelling"
+  },
+  {
+   "id": "EN-SHEET-002-Reinfocement_Left",
+   "name": "Left reinforcement sheet",
+   "qty": 1,
+   "family": "enclosure",
+   "kind": "custom",
+   "material": "Aluminium sheet",
+   "bomRef": "EN-SHEET-002-Reinfocement_Left",
+   "step": "engineering/cad/build123d/exports/step/EN-SHEET-002-Reinfocement_Left.step",
+   "note": "\"Reinfocement\" is the CAD part-number spelling"
+  },
+  {
+   "id": "EN-PRINT-001-3D-Printable_Battery_Base",
+   "name": "Battery base, 3D printed",
+   "qty": 1,
+   "family": "enclosure",
+   "kind": "custom",
+   "bomRef": "EN-PRINT-001-3D-Printable_Battery_Base",
+   "step": "engineering/cad/build123d/exports/step/EN-PRINT-001-3D-Printable_Battery_Base.step"
+  },
+  {
+   "id": "EN-PRINT-002-3D-Printable_Battery_Top_Cover",
+   "name": "Battery top cover, 3D printed",
+   "qty": 1,
+   "family": "enclosure",
+   "kind": "custom",
+   "bomRef": "EN-PRINT-002-3D-Printable_Battery_Top_Cover",
+   "step": "engineering/cad/build123d/exports/step/EN-PRINT-002-3D-Printable_Battery_Top_Cover.step"
+  },
+  {
+   "id": "EN-STRAP-001-Metal_piece",
+   "name": "Strap metal piece",
+   "qty": 1,
+   "family": "mounting",
+   "kind": "custom",
+   "material": "Metal",
+   "bomRef": "EN-STRAP-001-Metal_piece",
+   "step": "engineering/cad/build123d/exports/step/EN-STRAP-001-Metal_piece.step"
+  },
+  {
+   "id": "EN-STRAP-002-Rubber_Part",
+   "name": "Strap rubber part",
+   "qty": 1,
+   "family": "mounting",
+   "kind": "custom",
+   "material": "Rubber",
+   "bomRef": "EN-STRAP-002-Rubber_Part",
+   "step": "engineering/cad/build123d/exports/step/EN-STRAP-002-Rubber_Part.step"
+  },
+  {
+   "id": "EN-STRAP-003-Metal_End",
+   "name": "Strap metal end",
+   "qty": 2,
+   "family": "mounting",
+   "kind": "custom",
+   "material": "Metal",
+   "bomRef": "EN-STRAP-003-Metal_End",
+   "step": "engineering/cad/build123d/exports/step/EN-STRAP-003-Metal_End.step"
+  },
+  {
+   "id": "SL_PCB-002-SL_PCB_V3",
+   "name": "SL_PCB V3 main battery PCB, bare board",
+   "qty": 1,
+   "family": "electronics",
+   "kind": "custom",
+   "bomRef": "SL_PCB-002-SL_PCB_V3",
+   "step": "engineering/cad/build123d/reference/cots/SL_PCB-002-SL_PCB_V3_SL_PCB_PCB.step.gz",
+   "note": "Components listed separately. Model: copper and silkscreen layers are not committed, so not in the model"
+  },
+  {
+   "id": "VS_PCB_COMPLETE_TOP_LEFT",
+   "name": "Voltage-sense PCB, top left, bare board",
+   "qty": 1,
+   "family": "electronics",
+   "kind": "custom",
+   "bomRef": "VS_PCB_COMPLETE_TOP_LEFT",
+   "step": "engineering/cad/build123d/reference/cots/VS_PCB_COMPLETE_TOP_LEFT_VS_PCB_PCB.step.gz",
+   "note": "Model: silkscreen layers are not committed, so not in the model"
+  },
+  {
+   "id": "VS_PCB_COMPLETE_TOP_RIGHT",
+   "name": "Voltage-sense PCB, top right, bare board",
+   "qty": 1,
+   "family": "electronics",
+   "kind": "custom",
+   "bomRef": "VS_PCB_COMPLETE_TOP_RIGHT",
+   "step": "engineering/cad/build123d/reference/cots/VS_PCB_COMPLETE_TOP_RIGHT_VS_PCB_PCB.step.gz",
+   "note": "Model: silkscreen layers are not committed, so not in the model"
+  },
+  {
+   "id": "VS_PCB_COMPLETE_BOTTOM_LEFT",
+   "name": "Voltage-sense PCB, bottom left, bare board",
+   "qty": 1,
+   "family": "electronics",
+   "kind": "custom",
+   "bomRef": "VS_PCB_COMPLETE_BOTTOM_LEFT",
+   "step": "engineering/cad/build123d/reference/cots/VS_PCB_COMPLETE_BOTTOM_LEFT_VS_PCB_PCB.step.gz",
+   "note": "Model: silkscreen layers are not committed, so not in the model"
+  },
+  {
+   "id": "VS_PCB_COMPLETE_BOTTOM_RIGHT",
+   "name": "Voltage-sense PCB, bottom right, bare board",
+   "qty": 1,
+   "family": "electronics",
+   "kind": "custom",
+   "bomRef": "VS_PCB_COMPLETE_BOTTOM_RIGHT",
+   "step": "engineering/cad/build123d/reference/cots/VS_PCB_COMPLETE_BOTTOM_RIGHT_VS_PCB_PCB.step.gz",
+   "note": "Model: silkscreen layers are not committed, so not in the model"
+  },
+  {
+   "id": "ET60S-D06-0-00-D06-L-V1-S",
+   "name": "ET60S-D06 battery connector",
+   "qty": 1,
+   "family": "electronics",
+   "kind": "cots",
+   "bomRef": "ET60S-D06-0-00-D06-L-V1-S",
+   "step": "engineering/cad/build123d/reference/cots/ET60S-D06-0-00-D06-L-V1-S.step.gz",
+   "note": "On SL_PCB"
+  },
+  {
+   "id": "EL-FUSE-001-AMXL-200",
+   "name": "AMXL-200 main fuse",
+   "qty": 1,
+   "family": "electronics",
+   "kind": "cots",
+   "bomRef": "EL-FUSE-001-AMXL-200",
+   "step": "engineering/cad/build123d/reference/cots/EL-FUSE-001-AMXL-200.step.gz",
+   "note": "Default; AMX-150, as in the SL_PCB README, also fits (same size)"
+  },
+  {
+   "id": "FUSE-SMD_L10_0-W5_0-H3_8",
+   "name": "SMD fuse, 10.0 x 5.0 x 3.8 mm package per CAD name",
+   "qty": 15,
+   "family": "electronics",
+   "kind": "cots",
+   "bomRef": "FUSE-SMD_L10_0-W5_0-H3_8",
+   "step": "engineering/cad/build123d/reference/cots/FUSE-SMD_L10_0-W5_0-H3_8.step.gz",
+   "note": "On SL_PCB"
+  },
+  {
+   "id": "AMT0450003DB0000G",
+   "name": "Component AMT0450003DB0000G",
+   "qty": 2,
+   "family": "electronics",
+   "kind": "cots",
+   "bomRef": "AMT0450003DB0000G",
+   "step": "engineering/cad/build123d/reference/cots/AMT0450003DB0000G.step.gz",
+   "note": "CAD model name, on SL_PCB"
+  },
+  {
+   "id": "CONN-TH_430451612",
+   "name": "Through-hole connector 430451612",
+   "qty": 1,
+   "family": "electronics",
+   "kind": "cots",
+   "bomRef": "CONN-TH_430451612",
+   "step": "engineering/cad/build123d/reference/cots/CONN-TH_430451612.step.gz",
+   "note": "CAD model name, on SL_PCB"
+  },
+  {
+   "id": "CONN-SMD_SM7B-GHS-TB-LF-SN",
+   "name": "JST SM7B-GHS-TB 7-pin SMD connector",
+   "qty": 8,
+   "family": "electronics",
+   "kind": "cots",
+   "bomRef": "CONN-SMD_SM7B-GHS-TB-LF-SN",
+   "step": "engineering/cad/build123d/reference/cots/CONN-SMD_SM7B-GHS-TB-LF-SN.step.gz",
+   "note": "4 on SL_PCB, 1 on each voltage-sense PCB. Model: instances 1-4 in Main board; instances 5-8 in Voltage-sense boards"
+  },
+  {
+   "id": "Tattu_4_0_30Ah_Clip",
+   "name": "Tattu 4.0 30Ah clip",
+   "qty": 1,
+   "family": "mounting",
+   "kind": "cots",
+   "bomRef": "Tattu_4_0_30Ah_Clip",
+   "step": "engineering/cad/build123d/reference/cots/Tattu_4_0_30Ah_Clip.step.gz"
+  },
+  {
+   "id": "EN-INSERT-001-ruthex_RX-M3x5_7",
+   "name": "ruthex RX-M3x5.7 heat-set insert, M3",
+   "qty": 67,
+   "family": "mounting",
+   "kind": "cots",
+   "bomRef": "EN-INSERT-001-ruthex_RX-M3x5_7",
+   "step": "engineering/cad/build123d/reference/cots/EN-INSERT-001-ruthex_RX-M3x5_7.step.gz"
+  },
+  {
+   "id": "EN-INSERT-002-ruthex_RX-M4x8_1",
+   "name": "ruthex RX-M4x8.1 heat-set insert, M4",
+   "qty": 4,
+   "family": "mounting",
+   "kind": "cots",
+   "bomRef": "EN-INSERT-002-ruthex_RX-M4x8_1",
+   "step": "engineering/cad/build123d/reference/cots/EN-INSERT-002-ruthex_RX-M4x8_1.step.gz"
+  }
+ ]
+}

@@ -1,12 +1,12 @@
-// Loads the Quiver workspace from the shared Supabase into the store, in the
-// same shape the in-browser demo uses. The signed-in person is mapped to
+// Loads every project's workspace from the shared Supabase into the store, in
+// the same shape the in-browser demo uses. The signed-in person is mapped to
 // 'me' so the views need no special cases; everyone else keeps their user id
 // and is resolved through session.members. People named in notes keep their
 // people.ts id.
 import { sb } from '../../lib/backend';
 import { onReload, session, type Member } from '../../lib/session';
-import { NEXT, type Thread } from './data';
-import { state, type Work } from './store';
+import type { Thread } from './data';
+import { state, type Release, type Work } from './store';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Row = Record<string, any>;
@@ -38,8 +38,8 @@ export function load(): Promise<void> {
         return map;
       };
       const P = byThread(po), V = byThread(vo), TV = byThread(tv);
-      state.threads = th.filter((t) => t.project === 'quiver').map((t): Thread => ({
-        id: t.id, zone: t.zone, part: t.part ?? undefined, pcb: t.pcb ?? undefined,
+      state.threads = th.map((t): Thread => ({
+        id: t.id, project: t.project ?? 'quiver', zone: t.zone, part: t.part ?? undefined, pcb: t.pcb ?? undefined,
         title: t.title, body: t.body, kind: t.kind, type: t.type, system: t.system, version: t.version,
         authorId: mine(t.author_id) ?? t.named ?? undefined, source: t.source ?? undefined,
         raisedAt: t.raised_at, activeAt: t.active_at, editedAt: t.edited_at ?? undefined,
@@ -61,16 +61,14 @@ export function load(): Promise<void> {
         stage: w.stage, ownerId: mine(w.owner_id), evidence: w.evidence ?? undefined,
         history: (w.history ?? []).map((h: Row) => ({ ...h, byId: mine(h.byId)! })), createdAt: w.created_at,
       }));
-      const r = rl.find((x) => x.version === NEXT);
-      state.release = r
-        ? {
-            pool: r.pool ?? undefined,
-            freezeTarget: r.freeze_target ?? undefined,
-            frozenAt: r.frozen_at ?? undefined,
-            frozenBy: mine(r.frozen_by),
-            allocation: r.allocation ? { ...r.allocation, lines: (r.allocation.lines ?? []).map((l: Row) => ({ ...l, recipient: mine(l.recipient) })) } : undefined,
-          }
-        : {};
+      // Each version's plan, by its name; projects find theirs through their next version.
+      state.releases = Object.fromEntries(rl.map((r): [string, Release] => [r.version, {
+        pool: r.pool ?? undefined,
+        freezeTarget: r.freeze_target ?? undefined,
+        frozenAt: r.frozen_at ?? undefined,
+        frozenBy: mine(r.frozen_by),
+        allocation: r.allocation ? { ...r.allocation, lines: (r.allocation.lines ?? []).map((l: Row) => ({ ...l, recipient: mine(l.recipient) })) } : undefined,
+      }]));
       state.role = session.member?.role ?? 'member';
     } catch (e) {
       session.notice = `Couldn't load the workspace: ${(e as Error).message}`;

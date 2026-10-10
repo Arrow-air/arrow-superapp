@@ -1,7 +1,9 @@
-// Call notes, curated from the transcript: Quiver items only, in plain words,
-// each naming who said it. The recording and the full transcript stay out of
+// Call notes, curated from the transcript or the published notes, in plain
+// words, each naming who said it. Each call belongs to one project's workspace. The recording and the full transcript stay out of
 // the app. A note is reference material: it becomes a thread only when
 // someone starts one, and "named in the notes" is all it can prove.
+
+import { longshotCalls } from '../projects/longshot/calls';
 
 export type CallItemKind = 'update' | 'question' | 'proposal' | 'agreement' | 'gap';
 
@@ -18,8 +20,14 @@ export interface CallItem {
 
 export interface Call {
   id: string;
+  /** The project whose workspace shows these notes. */
+  project: string;
   title: string;
   date: string;
+  /** Where the notes come from, when it isn't our own transcript. */
+  lede?: string;
+  /** The published notes, when there are some. */
+  url?: string;
   /** People named in these notes (not a full attendance list). */
   named: string[];
   items: CallItem[];
@@ -28,6 +36,7 @@ export interface Call {
 export const calls: Call[] = [
   {
     id: 'sep29',
+    project: 'quiver',
     title: 'Quiver call',
     date: 'Sep 29',
     named: ['erick', 'thomas', 'julius', 'zeynep', 'kbm', 'alperen'],
@@ -68,5 +77,9 @@ export const calls: Call[] = [
   },
 ];
 
+calls.push(...longshotCalls);
+
 export const callItems = calls.flatMap((c) => c.items.map((i) => ({ ...i, call: c })));
+export const callsOf = (project: string) => calls.filter((c) => c.project === project);
+export const callItemsOf = (project: string) => callItems.filter((i) => i.call.project === project);
 export const callItemById = (id: string) => callItems.find((i) => i.id === id);

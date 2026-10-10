@@ -1,21 +1,39 @@
-// The four Quiver PCBs for the PCB page: copies each .kicad_pcb from a
-// project-quiver checkout into public/pcb/ (KiCanvas renders them in the
-// browser) and lists their footprints into src/data/generated/pcbs.json.
-//   QUIVER_REPO=/path/to/project-quiver node scripts/build-pcbs.mjs   (reads origin/main)
+// The boards for each project's PCB page: copies each .kicad_pcb from the
+// project's checkout into public/pcb/ (KiCanvas renders them in the browser)
+// and lists their footprints into src/data/generated/.
+//   QUIVER_REPO=/path/to/project-quiver node scripts/build-pcbs.mjs                (Quiver's four PCBs, reads origin/main)
+//   LONGSHOT_REPO=/path/to/project-longshot node scripts/build-pcbs.mjs longshot   (Longshot's BMS board)
 import { writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const REPO = process.env.QUIVER_REPO ?? `${process.env.HOME}/projects/project-quiver`;
-const REF = process.env.QUIVER_REF ?? 'origin/main';
-const BOARDS = [
-  { id: 'main', name: 'Main PCB', short: 'Main', part: '3310', path: 'src/pcb/main_pcb/Quiver_PT3_Main_PCB-rounded.kicad_pcb' },
-  { id: 'fc', name: 'Flight controller PCB', short: 'Flight controller', part: '3330', path: 'src/pcb/fc_pcb/Quiver_PT3_FC_PCB.kicad_pcb' },
-  { id: 'battery', name: 'Battery PCB', short: 'Battery', part: '3320', path: 'src/pcb/battery_pcb/Front_PCB.kicad_pcb' },
-  { id: 'attach', name: 'Attachment interface PCB', short: 'Attachment', part: '3331', path: 'src/pcb/attach_pcb/QuiverAttachPCB.kicad_pcb' },
-];
+const PROJECTS = {
+  quiver: {
+    repo: process.env.QUIVER_REPO ?? `${process.env.HOME}/projects/project-quiver`,
+    ref: process.env.QUIVER_REF ?? 'origin/main',
+    out: 'pcbs.json',
+    boards: [
+      { id: 'main', name: 'Main PCB', short: 'Main', part: '3310', path: 'src/pcb/main_pcb/Quiver_PT3_Main_PCB-rounded.kicad_pcb' },
+      { id: 'fc', name: 'Flight controller PCB', short: 'Flight controller', part: '3330', path: 'src/pcb/fc_pcb/Quiver_PT3_FC_PCB.kicad_pcb' },
+      { id: 'battery', name: 'Battery PCB', short: 'Battery', part: '3320', path: 'src/pcb/battery_pcb/Front_PCB.kicad_pcb' },
+      { id: 'attach', name: 'Attachment interface PCB', short: 'Attachment', part: '3331', path: 'src/pcb/attach_pcb/QuiverAttachPCB.kicad_pcb' },
+    ],
+  },
+  // BMSJ is the full BMS design (imported from Julius-eng/Vector-BMS). BMSZ and
+  // the KiCad SL_PCB are reduced to a basic layout, so there is nothing to click on yet.
+  longshot: {
+    repo: process.env.LONGSHOT_REPO ?? `${process.env.HOME}/projects/project-longshot`,
+    ref: process.env.LONGSHOT_REF ?? 'origin/main',
+    out: 'longshot-pcbs.json',
+    boards: [
+      { id: 'bmsj', name: 'BMSJ battery management board', short: 'BMSJ', part: '', path: 'engineering/electronics/pcbs/BMSJ/kicad/BMSJ.kicad_pcb' },
+    ],
+  },
+};
+const PROJECT = process.argv[2] ?? 'quiver';
+const { repo: REPO, ref: REF, out: OUT, boards: BOARDS } = PROJECTS[PROJECT];
 
 // Minimal S-expression reader: enough to walk footprints and their properties.
 function parse(src) {
@@ -59,4 +77,4 @@ for (const b of BOARDS) {
   out.boards.push({ ...b, file: `pcb/${b.id}.kicad_pcb`, footprints });
   console.log(`${b.name}: ${footprints.length} footprints (${(src.length / 1e6).toFixed(1)} MB)`);
 }
-writeFileSync(join(here, '..', 'src', 'data', 'generated', 'pcbs.json'), JSON.stringify(out, null, 1));
+writeFileSync(join(here, '..', 'src', 'data', 'generated', OUT), JSON.stringify(out, null, 1));

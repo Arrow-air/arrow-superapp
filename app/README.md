@@ -1,6 +1,6 @@
 # Arrow superapp
 
-The app: the Quiver workspace, live at [superapp-beta.arrowair.com](https://superapp-beta.arrowair.com). Sign in with the same GitHub or email account as flights.arrowair.com.
+The app: the Quiver and Longshot workspaces, live at [superapp-beta.arrowair.com](https://superapp-beta.arrowair.com). Sign in with the same GitHub or email account as flights.arrowair.com. The project switcher in the workspace header moves between them.
 
 Agreed with Gavin on 2026-10-01 as the canonical version. It began as `prototypes/quiver-demo`, a fork of Gavin's `prototypes/app-frame` (branch `sl33ty/explore/app-frame` at `31d499a`); the frame, tokens, command palette, drawers and the thread design are his. His later app-frame work (merged to main as #13, through `d28575e`) is ported in too: the CAD explorer, thread types, the new-thread composer, option cards, and the design freeze clock. His Back this / poll-bar voting was tried and reverted (Thomas, 2026-10-01): voting stays Reddit-style arrows.
 
@@ -18,6 +18,20 @@ Agreed with Gavin on 2026-10-01 as the canonical version. It began as `prototype
 - **Discussion → spec → funded work** (ported from `spec-threads`). A lead gives each thread an outcome: adopt a position into the spec (a D-number, a required note, an override warning), decline it with a reason, or defer it to Dev Kit v1.2. A decision can then be funded as a bounty (a fixed deliverable anyone claims) or a grant (scoped work someone takes on), with acceptance criteria and an ARROW reward. Work moves draft → open → claimed → in review → accepted. The adopted idea's author gets a 25% proposer award; when the notes are the only evidence of who raised it, the award is held until a lead confirms. The thread panel shows where each thread is: Discussion → Decided → Bounty/Grant. Work › Grants & bounties lists them all.
 - **Retro pool and freeze** (DECISIONS 2026-09-23). A lead sets a retro pool and freeze date for v1.1. The pool splits across every position on a v1.1 thread by weighted net support, adopted or not (`modules/threads/retro.ts`, whole tokens, largest remainders); the v1.1 page previews it from the votes in the browser. Freezing needs every v1.1 thread settled (adopt, decline, or defer; "defer the rest" clears the way), then records the split and locks the spec. Nothing is paid from the app.
 - **Dev Kit v1.1 and the 3D model.** Overview opens on the v1.1 improvements page: every thread aimed at the next revision, grouped by structure, GPS and RF, propulsion, power, avionics, and harness and wiring, with the decided change list. The 3D model (Overview › 3D model) is the Dev Kit assembly in Gavin's CAD explorer: a blueprint viewer (3D, top, front and side views; perspective or orthographic; grid; camera glides; right-drag pans) beside an inspector that drills down from the areas a change would be discussed in, to an area's parts, to one part, as tiles cut from the model. Layers switch assemblies off; Start a thread is pinned to the inspector's foot. The thread is anchored to the part's BOM number and lands in the zone that part belongs to (`src/data/model.ts`). The bill of materials shows open threads per part.
+
+## Longshot
+
+Longshot, Arrow's own battery pack, has its own workspace beside Quiver (added 2026-10-10 at Thomas's request): the whole project explained, with the same threads, votes, decisions, bounties, freeze and retro pool.
+
+- **Tabs:** Overview (at a glance, 3D model, boards, people, call notes; PT2 improvements), Pack (cells, busbars, enclosure, mounting), Electronics (BMS, telemetry and CAN, charging, connector and sense boards), Aircraft (Quiver, Spearhead, testing), Build (bill of materials, building packs, suppliers and cost, safety, budget and proposal), then Discussion, Decisions and Work.
+- **Every zone opens on what the record says**, a line per fact with its source: the repository and its issues, the proposal the DAO approved, the call notes on the Spearhead wiki (where Longshot's battery and BMS calls are recorded), Tattu's charger pages. Facts the sources disagree on show both (copper or brass busbars, polycarbonate or acrylic plates).
+- **Threads L-1 to L-15** (`src/projects/longshot/threads.ts`) are seeded from those sources, with positions only where a source states them and people only as the notes name them. Longshot's integration into Quiver (fit, BMS protocol, failsafes, charging both packs, the first test) stays in Quiver's workspace as Q-18 to Q-22; Longshot's zones link to them under "Also discussed in Quiver".
+- **3D model** (`public/longshot.glb`, 1 MB): the PT1 main assembly from the build123d model in project-longshot (PR #27), every part node named for its BOM part number; regenerate with `scripts/model/` (see its README).
+- **Boards:** BMSJ in KiCanvas, the full BMS design imported from Julius's Vector BMS. Its schematic is complete; the layout hasn't started (only the connector is on the outline). BMSZ and the KiCad SL_PCB are basic layouts, so they're left out.
+- **Bill of materials** from the build123d `BOM.csv`, and the known PT1 cost from `engineering/builds/PT1/BOM.md`. **Issues and pull requests** from GitHub, read-only.
+- **Next version:** "Longshot PT2" (working name), with its own freeze clock and retro pool; the version after is "Longshot PT3". Version names differ between projects because the database keys freezes by version name.
+
+How projects fit together: each project has its tabs (`src/frame/nav.ts`, `src/projects/longshot/nav.ts`) and its plan (`src/projects/plans.ts`: thread prefix, next version, next-version zones). Zone ids are unique across projects, so a thread's zone names its project; the frame keeps `currentProject` in step with the route, and the store's `projectThreads` is what each view lists. Part numbers and board ids never collide either.
 
 ## What is real
 
@@ -68,7 +82,8 @@ With `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` set at build time, 
 - Deleting bounties and grants (`20261001500000_sa_delete_work.sql`): leads only, while nobody has taken the work on (draft, open, or withdrawn after a reopen); "Delete bounty" on the work card, including withdrawn work shown on its thread. The row moves to `sa_deleted_work` (no API access); the decision can be funded again. W-numbers are not reused.
 - Deleting comments (`20261001300000_sa_delete_comment.sql`): leads delete any comment or reply, anyone their own; the adopted option stays. Soft, Reddit style: the row keeps its place so replies under it stay (shown as "Deleted" or "Removed by a lead"), its words, author and source are cleared, and the original goes to `sa_deleted_comments`, which the API can't read. Votes on it stop counting; nothing new lands on it.
 - Deleting threads (`20261001100000_sa_delete_thread.sql`): leads delete any thread, authors their own until someone else takes part, never once work is funded. Soft: the row keeps who, when and why, and the thread and everything on it disappear from reads.
-- Starting content: `npx tsx scripts/build-seed-sql.ts > supabase/seed_quiver.sql` (idempotent).
+- Projects (`20261010000000_sa_projects.sql`): `sa_projects` lists each project and its thread prefix (Q, L). `sa_start_thread` takes `p_project` (Quiver when a client names none) and numbers threads per project; `sa_settle` numbers decisions per project. Quiver keeps its counters (`thread`, `decision`); Longshot counts under `thread:longshot` and `decision:longshot`. Work stays W-1 upward across projects.
+- Starting content: `npx tsx scripts/build-seed-sql.ts > supabase/seed_quiver.sql` and `npx tsx scripts/build-seed-sql.ts longshot > supabase/seed_longshot.sql` (idempotent).
 - Applied to production by POSTing the SQL to the Supabase pg-meta endpoint (`/pg/query`, service key), after a `pg_dumpall` on the box.
 - Hosting: Openship project `superapp-beta`, branch `main`, root `app/`: `npm run build` then `npm start` (serve on $PORT). Every push to `main` redeploys.
 - `e2e/live.cjs` runs the signed-in path against any Supabase with the migration (BASE, SUPA, ANON, SERVICE env).
@@ -86,11 +101,18 @@ Refresh the GitHub data (needs a `project-quiver` and `quiver-sdk` checkout, and
 QUIVER_SRC=/path/to/project-quiver QUIVER_SDK=/path/to/quiver-sdk npm run data
 ```
 
+Longshot's (a `project-longshot` checkout and `gh`): issues, pull requests and the BOM, then the BMSJ board. The 3D model has its own steps in `scripts/model/README.md`.
+
+```
+LONGSHOT_REPO=/path/to/project-longshot node scripts/build-longshot.mjs
+LONGSHOT_REPO=/path/to/project-longshot node scripts/build-pcbs.mjs longshot
+```
+
 Checks, against a build:
 
 ```
 npm run build
 npm run typecheck
-node e2e/flow.cjs    # zone → panel, vote, decide, fund → claim → accept, v1.1 spec, 3D model part proposals, retro pool, decline, defer, freeze, reload, reset
+node e2e/flow.cjs    # zone → panel, vote, decide, fund → claim → accept, v1.1 spec, 3D model part proposals, retro pool, decline, defer, freeze, reload, reset; then Longshot: project switch, L-numbering, its own register and freeze, Quiver threads from Longshot, model, boards, BOM
 node e2e/shots.cjs   # screenshots of the main screens to /tmp/superapp-shots
 ```

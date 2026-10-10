@@ -7,7 +7,7 @@ import { threadTypes, typeStyle } from './types';
 import type { Thread } from './data';
 import { ago, standing } from './store';
 import { zoneLabel } from '../../frame/nav';
-import { partById } from '../../data/quiver';
+import { partLabel } from '../../projects/parts';
 import { boardById } from '../../data/pcbs';
 
 // Threads as full-width rows: status, title, where it stands, activity.
@@ -37,7 +37,7 @@ const open = (id: string) => router.replace({ query: { ...route.query, thread: i
             <!-- What kind of thread, in its colour; named by its part when it is about one. -->
             <span class="tp" :style="typeStyle(t.type)" :title="threadTypes[t.type].label"><Icon :name="threadTypes[t.type].icon" :size="11" />
               <template v-if="t.pcb">{{ boardById(t.pcb.board)?.short }} {{ t.pcb.ref }}</template>
-              <template v-else-if="t.part">{{ partById(t.part)?.name.split(',')[0] ?? t.part }}</template>
+              <template v-else-if="t.part">{{ partLabel(t.part) ?? t.part }}</template>
               <template v-else>{{ threadTypes[t.type].label }}</template>
             </span><span class="dot">·</span>
             <template v-if="showZone"><span class="zone">{{ zoneLabel(t.zone) }}</span><span class="dot">·</span></template>

@@ -50,6 +50,8 @@ export interface Reopening {
 
 export interface Thread {
   id: string;
+  /** The project it belongs to (quiver, longshot); its zone is in that project. */
+  project?: string;
   /** The working zone this thread lives in. */
   zone: string;
   /** BOM number of the part it is about, when it is about one (clickable in the 3D model). */
@@ -352,6 +354,7 @@ const PARENT: Record<string, string> = {
 };
 export const threads: Thread[] = seeded.map((t) => ({
   ...t,
+  project: 'quiver',
   positions: [...t.positions, ...t.replies.map((r) => ({ id: r.id, text: r.text, authorId: r.authorId, source: r.source, at: r.at, parentId: PARENT[`${t.id}:${r.id}`] }))],
   replies: [],
 }));

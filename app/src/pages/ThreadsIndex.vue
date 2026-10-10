@@ -2,16 +2,19 @@
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
-import { areaOf, byActivity, isOpen, state } from '../modules/threads/store';
-import { tabs, zoneLabel } from '../frame/nav';
-import { partById } from '../data/quiver';
+import { areaOf, byActivity, isOpen, projectThreads } from '../modules/threads/store';
+import { projectTabs, zoneLabel } from '../frame/nav';
+import { partLabel } from '../projects/parts';
+import { useWorkspace } from '../frame/useWorkspace';
 
 // Every thread in one list, the same rows as the zones, opening the same
 // panel. Threads still live in their zones; this is the index over them.
 const route = useRoute();
 const router = useRouter();
+const { project } = useWorkspace();
+const tabs = computed(() => projectTabs(project.value?.id));
 const area = computed(() => (String(route.params.item).startsWith('area-') ? String(route.params.item).slice(5) : undefined));
-const areaLabel = computed(() => tabs.find((t) => t.id === area.value)?.label);
+const areaLabel = computed(() => tabs.value.find((t) => t.id === area.value)?.label);
 
 type Scope = 'open' | 'settled' | 'all';
 const scope = ref<Scope>('open');
@@ -25,7 +28,7 @@ function clearPart() {
   router.replace({ query: rest });
 }
 const matching = computed(() =>
-  state.threads
+  projectThreads.value
     .filter((t) => (area.value ? areaOf(t) === area.value : true))
     .filter((t) => !part.value || t.part === part.value)
     .filter((t) => {
@@ -40,8 +43,8 @@ const hidden = computed(() => matching.value.length - visible.value.length);
 // All threads group by area; an area groups by zone.
 const groups = computed(() => {
   const key = (t: (typeof visible.value)[number]) => (area.value ? t.zone : areaOf(t));
-  const label = (k: string) => (area.value ? zoneLabel(k) : tabs.find((t) => t.id === k)?.label ?? k);
-  const order = area.value ? [...new Set(visible.value.map(key))] : tabs.map((t) => t.id);
+  const label = (k: string) => (area.value ? zoneLabel(k) : tabs.value.find((t) => t.id === k)?.label ?? k);
+  const order = area.value ? [...new Set(visible.value.map(key))] : tabs.value.map((t) => t.id);
   return order.map((k) => ({ id: k, label: label(k), threads: visible.value.filter((t) => key(t) === k) })).filter((g) => g.threads.length);
 });
 </script>
@@ -67,7 +70,7 @@ const groups = computed(() => {
     </div>
     <div v-if="part" class="filter">
       <button type="button" class="chip" title="Show every thread" @click="clearPart">
-        About {{ partById(part)?.name.split(',')[0] ?? part }}
+        About {{ partLabel(part) ?? part }}
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 4.5 7 7m0-7-7 7" /></svg>
       </button>
     </div>

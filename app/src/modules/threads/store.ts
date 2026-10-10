@@ -1,9 +1,12 @@
 import { computed, reactive, ref, watch } from 'vue';
-import { LATER, NEXT, threads as seed, type Position, type SourceRef, type Thread } from './data';
+import { threads as quiverSeed, type Position, type SourceRef, type Thread } from './data';
+import { longshotThreads } from '../../projects/longshot/threads';
+import { planOf, plans } from '../../projects/plans';
 import { allocateRetro, proposerAward, type RetroAllocation, type Scored } from './retro';
 import { tally, voteWeight, weightingChangedWinner, type Role, type Tally, type Voter, type WeightBreakdown } from './weights';
 import { personById, type Hue, type Person } from '../../data/people';
-import { zoneTab } from '../../frame/nav';
+import { currentProject, projectOfZone, zoneTab } from '../../frame/nav';
+import { callItemById } from '../../data/calls';
 import { remote, sb } from '../../lib/backend';
 import { reload, requireSignIn, say, session, type Member } from '../../lib/session';
 
@@ -14,9 +17,14 @@ import { reload, requireSignIn, say, session, type Member } from '../../lib/sess
 // - live (the shared Arrow Supabase): remote.ts loads the workspace into this
 //   same state, and every write below goes through a checked database
 //   function, then reloads.
-const KEY = 'quiver-demo.threads.v7';
+// Every project's threads live in the same list; each knows its project, and
+// the views show the project on screen (projectThreads).
+const KEY = 'quiver-demo.threads.v8';
 /** The zones that make up the next Dev Kit revision, in page order. */
-export const V11_ZONES = ['airframe', 'gps-rf', 'propulsion', 'power', 'avionics', 'harness'];
+export const V11_ZONES = plans.quiver.nextZones;
+const seed: Thread[] = [...quiverSeed, ...longshotThreads];
+export const projectOf = (t: Thread) => t.project ?? 'quiver';
+export const planFor = (t: Thread) => planOf(projectOf(t));
 
 // Work drafted from a decision: a bounty (a fixed deliverable anyone can
 // claim) or a grant (scoped work for someone to take on). Carries the
@@ -49,7 +57,7 @@ export interface Work {
   history: { at: string; byId: string; note: string }[];
   createdAt: string;
 }
-/** The next version's plan: freeze date and retro pool, then the recorded freeze. */
+/** A next version's plan: freeze date and retro pool, then the recorded freeze. */
 export interface Release {
   pool?: number;
   freezeTarget?: string;
@@ -59,19 +67,30 @@ export interface Release {
 }
 
 interface Saved {
-  threads: Thread[]; role: Role; builder: boolean; nextThread: number; nextDecision: number;
-  work: Work[]; nextWork: number; release: Release;
+  threads: Thread[]; role: Role; builder: boolean;
+  /** The next thread and decision number, per project. */
+  nextThread: Record<string, number>; nextDecision: Record<string, number>;
+  work: Work[]; nextWork: number;
+  /** Freeze date, retro pool and recorded freeze, by version name. */
+  releases: Record<string, Release>;
 }
+const perProject = (f: (project: string) => number) => Object.fromEntries(Object.keys(plans).map((p) => [p, f(p)]));
 const fresh = (): Saved => ({
   threads: remote ? [] : structuredClone(seed),
   role: 'member',
   builder: false,
-  nextThread: seed.length + 1,
-  nextDecision: 1 + seed.filter((t) => t.settled).length,
+  nextThread: perProject((p) => 1 + seed.filter((t) => projectOf(t) === p).length),
+  nextDecision: perProject((p) => 1 + seed.filter((t) => projectOf(t) === p && t.settled).length),
   work: [],
   nextWork: 1,
-  release: {},
+  releases: {},
 });
+/** Take a project's next number and move its counter on. */
+const bump = (counters: Record<string, number>, project: string) => {
+  const n = counters[project] ?? 1;
+  counters[project] = n + 1;
+  return n;
+};
 function load(): Saved {
   if (remote) return fresh();
   try {
@@ -83,6 +102,11 @@ function load(): Saved {
 
 export const state = reactive<Saved>(load());
 if (!remote) watch(state, (s) => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* storage unavailable */ } }, { deep: true });
+
+/** The threads of the project on screen. */
+export const projectThreads = computed(() => state.threads.filter((t) => projectOf(t) === currentProject.value));
+/** A project's next version: its freeze date and retro pool, then the recorded freeze. */
+export const releaseOf = (project: string = currentProject.value): Release => state.releases[planOf(project).next] ?? {};
 
 /** Live writes: ask for sign-in, call the database function, then reload. Undefined on failure. */
 /** Why the last write failed, in words for the composer that sent it. */
@@ -109,7 +133,7 @@ export function resetDemo() {
   Object.assign(state, fresh());
 }
 /** True once anything differs from the seed, so the reset control can show. */
-export const touched = computed(() => JSON.stringify(state.threads) !== JSON.stringify(seed) || state.role !== 'member' || state.work.length > 0 || Object.keys(state.release).length > 0);
+export const touched = computed(() => JSON.stringify(state.threads) !== JSON.stringify(seed) || state.role !== 'member' || state.work.length > 0 || Object.keys(state.releases).length > 0);
 
 // People. In the demo, the visitor votes and everyone else is shown, never
 // scored. Live, accounts are workspace members with a role a lead sets;
@@ -240,7 +264,7 @@ export function settle(thread: Thread, positionId: string, note: string) {
   const { top } = leaderOf(thread);
   if (remote) { void call('sa_settle', { p_thread: thread.id, p_position: positionId, p_note: note, p_override: positionId !== top?.positionId }); return; }
   // Decided again after a reopen, a thread keeps its D-number.
-  const decision = thread.settled?.decision ?? [...(thread.history ?? [])].reverse().find((h) => h.decision)?.decision ?? `D-${String(state.nextDecision++).padStart(3, '0')}`;
+  const decision = thread.settled?.decision ?? [...(thread.history ?? [])].reverse().find((h) => h.decision)?.decision ?? `D-${String(bump(state.nextDecision, projectOf(thread))).padStart(3, '0')}`;
   thread.settled = { positionId, byId: 'me', at: now(), override: positionId !== top?.positionId, note, decision };
   thread.activeAt = now();
 }
@@ -267,12 +291,18 @@ export function reopen(thread: Thread, note?: string) {
 
 /** Open: neither adopted nor declined. Deferred threads stay open in their new version. */
 export const isOpen = (t: Thread) => !t.settled && !t.declined;
+/** The moment a project's next version freezes: the end (UTC) of the date a lead set. */
+export const freezeAt = (project: string = currentProject.value) => {
+  const target = releaseOf(project).freezeTarget;
+  return target ? new Date(`${target.slice(0, 10)}T23:59:59Z`) : undefined;
+};
+/** Where a new next-version thread goes: the next version until the freeze date passes or a lead records the freeze, then the one after. */
+export const openVersion = (project: string = currentProject.value) => {
+  const plan = planOf(project);
+  return releaseOf(project).frozenAt || (freezeAt(project)?.getTime() ?? Infinity) <= Date.now() ? plan.later : plan.next;
+};
 /** A frozen version's outcomes are locked. */
-/** The moment v1.1's design freezes: the end (UTC) of the date a lead set. */
-export const freezeAt = () => (state.release.freezeTarget ? new Date(`${state.release.freezeTarget.slice(0, 10)}T23:59:59Z`) : undefined);
-/** Where a new v1.1 thread goes: v1.1 until the freeze date passes or a lead records the freeze, then v1.2. */
-export const openVersion = () => (state.release.frozenAt || (freezeAt()?.getTime() ?? Infinity) <= Date.now() ? LATER : NEXT);
-export const locked = (t: Thread) => t.version === NEXT && !!state.release.frozenAt;
+export const locked = (t: Thread) => t.version === planFor(t).next && !!releaseOf(projectOf(t)).frozenAt;
 
 /** Lead only. Close without adopting anything; the reason is required. */
 export function decline(thread: Thread, note: string) {
@@ -280,11 +310,12 @@ export function decline(thread: Thread, note: string) {
   thread.declined = { byId: 'me', at: now(), note };
   thread.activeAt = now();
 }
-/** Lead only. Push to the version after v1.1; it stays open there. */
+/** Lead only. Push to the version after the next one; it stays open there. */
 export function defer(thread: Thread, note?: string) {
-  if (remote) { void call('sa_defer', { p_thread: thread.id, p_to: LATER, p_note: note ?? null }); return; }
-  (thread.deferrals ??= []).push({ from: thread.version, to: LATER, byId: 'me', at: now(), note });
-  thread.version = LATER;
+  const to = planFor(thread).later;
+  if (remote) { void call('sa_defer', { p_thread: thread.id, p_to: to, p_note: note ?? null }); return; }
+  (thread.deferrals ??= []).push({ from: thread.version, to, byId: 'me', at: now(), note });
+  thread.version = to;
   thread.activeAt = now();
 }
 
@@ -379,12 +410,14 @@ export const confirmProposer = (w: Work) => {
 };
 export const awardOf = (w: Work) => proposerAward(w.reward, w.proposerShare);
 
-// The v1.1 retro pool: every position on a v1.1 thread, adopted or not,
-// scored by weighted net support. Recipients are the person the position is
-// attributed to ('me' for the visitor), or its source when no person is named.
-export function retroContributions(): Scored[] {
+// A next version's retro pool: every position on one of its threads, adopted
+// or not, scored by weighted net support. Recipients are the person the
+// position is attributed to ('me' for the visitor), or its source when no
+// person is named.
+export function retroContributions(project: string = currentProject.value): Scored[] {
+  const next = planOf(project).next;
   return state.threads
-    .filter((t) => t.version === NEXT)
+    .filter((t) => projectOf(t) === project && t.version === next)
     .flatMap((t) => {
       const tallies = talliesOf(t);
       return liveComments(t).map((p) => ({
@@ -395,27 +428,29 @@ export function retroContributions(): Scored[] {
       }));
     });
 }
-export const retroPreview = () => (state.release.allocation ?? allocateRetro(state.release.pool ?? 0, retroContributions()));
-export const setReleasePlan = (plan: { pool?: number; freezeTarget?: string }) => {
-  if (remote) return void call('sa_set_release_plan', { p_version: NEXT, p_pool: plan.pool ?? null, p_freeze: plan.freezeTarget ?? null });
-  Object.assign(state.release, plan);
+export const retroPreview = (project: string = currentProject.value) => releaseOf(project).allocation ?? allocateRetro(releaseOf(project).pool ?? 0, retroContributions(project));
+export const setReleasePlan = (plan: { pool?: number; freezeTarget?: string }, project: string = currentProject.value) => {
+  const version = planOf(project).next;
+  if (remote) return void call('sa_set_release_plan', { p_version: version, p_pool: plan.pool ?? null, p_freeze: plan.freezeTarget ?? null });
+  state.releases[version] = { ...state.releases[version], ...plan };
 };
-/** Lead only, once every v1.1 thread is adopted, declined or deferred. */
-export function freezeRelease() {
+/** Lead only, once every thread on the next version is adopted, declined or deferred. */
+export function freezeRelease(project: string = currentProject.value) {
+  const version = planOf(project).next;
+  const a = allocateRetro(releaseOf(project).pool ?? 0, retroContributions(project));
   if (remote) {
     // Record recipients by account id, not 'me', so the split reads the same for everyone.
-    const a = allocateRetro(state.release.pool ?? 0, retroContributions());
     const lines = a.lines.map((l) => ({ ...l, recipient: l.recipient === 'me' ? session.userId : l.recipient }));
-    return void call('sa_freeze', { p_version: NEXT, p_allocation: { ...a, lines, at: now() } });
+    return void call('sa_freeze', { p_version: version, p_allocation: { ...a, lines, at: now() } });
   }
-  state.release.allocation = { ...allocateRetro(state.release.pool ?? 0, retroContributions()), at: now() };
-  state.release.frozenAt = now();
-  state.release.frozenBy = 'me';
+  state.releases[version] = { ...state.releases[version], allocation: { ...a, at: now() }, frozenAt: now(), frozenBy: 'me' };
 }
 /** Deferring what is left is how a lead clears the way to the freeze. */
-export const deferOpen = (note: string) => remote
-  ? void call('sa_defer_open', { p_version: NEXT, p_to: LATER, p_note: note })
-  : state.threads.filter((t) => t.version === NEXT && isOpen(t)).forEach((t) => defer(t, note));
+export const deferOpen = (note: string, project: string = currentProject.value) => {
+  const plan = planOf(project);
+  if (remote) return void call('sa_defer_open', { p_version: plan.next, p_to: plan.later, p_note: note });
+  state.threads.filter((t) => projectOf(t) === project && t.version === plan.next && isOpen(t)).forEach((t) => defer(t, note));
+};
 
 /** A top-level comment (a new option), or a reply under any comment. True once it is saved; live, the draft key makes a retry safe. */
 export async function comment(thread: Thread, text: string, parentId?: string, key?: string): Promise<boolean> {
@@ -427,20 +462,25 @@ export async function comment(thread: Thread, text: string, parentId?: string, k
 export const propose = (thread: Thread, text: string) => comment(thread, text);
 
 export async function startThread(input: { zone: string; title: string; body: string; type?: Thread['type']; fromCall?: string; version?: string; part?: string; pcb?: Thread['pcb']; key?: string }): Promise<Thread | undefined> {
-  const source: SourceRef | undefined = input.fromCall ? { kind: 'call', ref: input.fromCall, label: 'Sep 29 call' } : undefined;
+  // The zone says which project the thread belongs to.
+  const project = projectOfZone(input.zone) ?? currentProject.value;
+  const plan = planOf(project);
+  const call0 = input.fromCall ? callItemById(input.fromCall) : undefined;
+  const source: SourceRef | undefined = input.fromCall ? { kind: 'call', ref: input.fromCall, label: call0 ? `${call0.call.date} call` : 'Call notes' } : undefined;
   const version = (() => {
-    const v = input.version ?? (V11_ZONES.includes(input.zone) ? NEXT : '');
-    return v === NEXT ? openVersion() : v;
+    const v = input.version ?? (plan.nextZones.includes(input.zone) ? plan.next : '');
+    return v === plan.next ? openVersion(project) : v;
   })();
   if (remote) {
     const { data: id } = await call<string>('sa_start_thread', {
       p_zone: input.zone, p_title: input.title, p_body: input.body, p_type: input.type ?? 'question', p_version: version,
-      p_part: input.part ?? null, p_pcb: input.pcb ?? null, p_source: source ?? null, p_key: input.key ?? null,
+      p_part: input.part ?? null, p_pcb: input.pcb ?? null, p_source: source ?? null, p_key: input.key ?? null, p_project: project,
     });
     return id ? state.threads.find((t) => t.id === id) : undefined;
   }
   const t: Thread = {
-    id: `Q-${state.nextThread++}`,
+    id: `${plan.prefix}-${bump(state.nextThread, project)}`,
+    project,
     zone: input.zone,
     part: input.part,
     pcb: input.pcb,
@@ -449,8 +489,8 @@ export async function startThread(input: { zone: string; title: string; body: st
     kind: 'technical',
     type: input.type ?? 'question',
     system: input.zone,
-    // Threads in the next-revision zones are about v1.1 unless said otherwise;
-    // once v1.1 is frozen, new proposals go to the version after it.
+    // Threads in the next-version zones are about that version unless said
+    // otherwise; once it is frozen, new proposals go to the version after it.
     version,
     authorId: 'me',
     source,

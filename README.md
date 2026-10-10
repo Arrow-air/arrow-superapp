@@ -1,6 +1,6 @@
 # Arrow Superapp
 
-**The app:** [`app/`](app/), live at [superapp-beta.arrowair.com](https://superapp-beta.arrowair.com). The Quiver workspace: working zones for attachments, software, the next Dev Kit and selling; Reddit-style threads with weighted votes; decisions into a numbered register; bounties and grants funded from decisions; a retro pool split at each version freeze. Sign in with your flights.arrowair.com account (GitHub or email). How it works, how to run it, and how the database is set up: [`app/README.md`](app/README.md).
+**The app:** [`app/`](app/), live at [superapp-beta.arrowair.com](https://superapp-beta.arrowair.com). Two workspaces: Longshot, Arrow's battery pack (BMS, charging, Quiver and Spearhead integration, a 3D model of PT1), and Quiver: working zones for attachments, software, the next Dev Kit and selling; Reddit-style threads with weighted votes; decisions into a numbered register; bounties and grants funded from decisions; a retro pool split at each version freeze. Sign in with your flights.arrowair.com account (GitHub or email). How it works, how to run it, and how the database is set up: [`app/README.md`](app/README.md).
 
 The earlier Spearhead example workspace still runs at [specs.arrowair.com](https://specs.arrowair.com) from [`prototypes/spec-threads`](prototypes/spec-threads/PRODUCT-WORKSPACE.md).
 

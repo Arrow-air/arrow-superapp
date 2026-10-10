@@ -2,15 +2,17 @@
 import { computed } from 'vue';
 import StatusIcon from '../modules/threads/StatusIcon.vue';
 import SourceChip from '../modules/threads/SourceChip.vue';
-import { day, person, state, workFor } from '../modules/threads/store';
+import { day, person, projectThreads, workFor } from '../modules/threads/store';
 import { taskById } from '../data/quiver';
 import { zoneLabel } from '../frame/nav';
+import { useWorkspace } from '../frame/useWorkspace';
 
 // The decision register T-09 is funded to write: every settled thread, with
 // what was chosen, who decided, why, and whether it overrode the weighted
 // leader. In the demo it fills as you decide threads as a lead.
+const { project } = useWorkspace();
 const rows = computed(() =>
-  state.threads
+  projectThreads.value
     .filter((t) => t.settled)
     .map((t) => ({ t, s: t.settled!, p: t.positions.find((p) => p.id === t.settled!.positionId) }))
     .sort((a, b) => a.s.decision.localeCompare(b.s.decision)),
@@ -25,8 +27,9 @@ const nameOf = (id?: string) => (id === 'me' ? 'You' : person(id)?.name);
       <div>
         <h1 class="view-title">Decision register</h1>
         <p class="view-lede">
-          Every decided thread, numbered D-001 upward, with the choice, who made it, why, and whether it overrode the weighted leader. This is the register
-          <a v-if="t09" :href="t09.url" target="_blank" rel="noopener">T-09</a> is funded to produce; the app can write it as decisions happen instead of reconstructing it later.
+          Every decided {{ project?.label }} thread, numbered D-001 upward, with the choice, who made it, why, and whether it overrode the weighted leader.
+          <template v-if="project?.id === 'quiver'">This is the register <a v-if="t09" :href="t09.url" target="_blank" rel="noopener">T-09</a> is funded to produce; the app can write it as decisions happen instead of reconstructing it later.</template>
+          <template v-else>Each project keeps its own register and numbering.</template>
         </p>
       </div>
     </div>

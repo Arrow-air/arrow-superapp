@@ -2,7 +2,8 @@
 import { computed, nextTick, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import Avatar from '../modules/threads/Avatar.vue';
-import { calls } from '../data/calls';
+import { callsOf } from '../data/calls';
+import { useWorkspace } from '../frame/useWorkspace';
 import { personById } from '../data/people';
 import { zoneLabel, zonePath } from '../frame/nav';
 import { state } from '../modules/threads/store';
@@ -10,6 +11,8 @@ import { state } from '../modules/threads/store';
 // Call notes: reference material, not decisions. Each item names who said it
 // and links to the zone it belongs to and any thread that picked it up.
 const route = useRoute();
+const { project } = useWorkspace();
+const calls = computed(() => callsOf(project.value?.id ?? 'quiver'));
 const hit = computed(() => route.query.item as string | undefined);
 const kindLabel = { update: 'Update', question: 'Question', proposal: 'Proposal', agreement: 'Agreed', gap: 'Gap' } as const;
 const threadFor = (id: string, seeded?: string) =>
@@ -22,11 +25,13 @@ onMounted(async () => {
 
 <template>
   <div class="view">
+    <p v-if="!calls.length" class="vempty">No call notes for {{ project?.label }} yet.</p>
     <div v-for="c in calls" :key="c.id">
       <div class="view-head">
         <div>
           <h1 class="view-title">{{ c.title }}, {{ c.date }}</h1>
-          <p class="view-lede">Curated from the transcript: Quiver items only, in plain words. The recording and the full transcript are not in the app. A note is what someone said, not a decision; it becomes a thread when someone starts one.</p>
+          <p v-if="c.url" class="named muted"><a :href="c.url" target="_blank" rel="noopener" class="link">The published notes</a></p>
+          <p class="view-lede">{{ c.lede ?? 'Curated from the transcript: Quiver items only, in plain words. The recording and the full transcript are not in the app.' }} A note is what someone said, not a decision; it becomes a thread when someone starts one.</p>
           <p class="named muted">Named in these notes:
             <span v-for="n in c.named" :key="n" class="who"><Avatar :id="n" :size="16" /> {{ personById(n)?.name }}</span>
           </p>
