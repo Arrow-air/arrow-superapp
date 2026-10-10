@@ -17,7 +17,8 @@ const crumbs = computed<Crumb[]>(() => {
   const to = (id: string) => `${base.value}/${tab.value!.id}/${id}`;
   return [
     {
-      id: group.id,
+      // Groups and pages can share an id (Quiver's v1-1), so the group's crumb gets its own key.
+      id: `group:${group.id}`,
       label: group.label,
       current: item.value.id,
       menu: group.items.map((i) => ({ id: i.id, label: i.label, to: to(i.id) })),
