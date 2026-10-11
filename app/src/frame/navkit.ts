@@ -7,7 +7,7 @@ import type { IconName } from './icons';
 export type PageKind =
   | 'zone' | 'gate' | 'release' | 'model' | 'pcbs' | 'grants' | 'summary' | 'catalog' | 'bom' | 'work' | 'prs' | 'people' | 'sources' | 'threads' | 'suggested' | 'decisions'
   // Longshot's own views
-  | 'ls-summary' | 'ls-bom' | 'ls-github';
+  | 'ls-summary' | 'ls-bom' | 'ls-github' | 'ls-guide';
 
 export interface NavItem { id: string; label: string; icon: IconName; page?: PageKind }
 export interface NavGroup { id: string; label: string; sortable?: boolean; items: NavItem[] }

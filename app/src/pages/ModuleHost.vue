@@ -32,6 +32,7 @@ const views = {
   'ls-summary': page$(() => import('./longshot/SummaryPage.vue')),
   'ls-bom': page$(() => import('./longshot/BomPage.vue')),
   'ls-github': page$(() => import('./longshot/GithubPage.vue')),
+  'ls-guide': page$(() => import('./longshot/GuidePage.vue')),
 };
 // App.vue keys this host by route path, so each page gets its own host and
 // the page is fixed when it is created; only the query (?thread=) changes

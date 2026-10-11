@@ -47,6 +47,10 @@ const props = defineProps<{
   discussed: string[];
   explode: number;
   labels: Record<string, string>;
+  /** Parts drawn in the accent colour: what a build step adds. */
+  accent?: string[];
+  /** The accent's legend entry; when set it replaces the open-thread one. */
+  accentLabel?: string;
 }>();
 const emit = defineEmits<{ select: [id: string | null]; ready: [ids: string[], layers: Layer[]] }>();
 
@@ -68,7 +72,7 @@ function toggleGrid() {
 // Part colours by family (the model decides the families). On the dark
 // blueprint the structure is lifted so it reads.
 const dark = () => theme.value === 'dark' || (theme.value === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
-const colors = { discussed: '#ffc53d', selected: '#5472e4', ghost: '#5a6169' };
+const colors = { discussed: '#ffc53d', accent: '#ffc53d', selected: '#5472e4', ghost: '#5a6169' };
 const colorOf = (fam: string) => (dark() ? props.look.palette.dark : props.look.palette.light)[fam] ?? '#888888';
 const family = (id: string) => colorOf(props.look.familyOf(id));
 
@@ -143,8 +147,9 @@ function paint(instant = false) {
     const lit = isLit(p.id);
     const sel = p.id === props.selected, hov = lit && p.id === hover.value && !sel;
     const discussed = lit && props.discussed.includes(p.id);
+    const accented = lit && !sel && !!props.accent?.includes(p.id);
     looks.set(p.mesh, {
-      color: new THREE.Color(!lit ? colors.ghost : sel ? colors.selected : discussed ? colors.discussed : family(p.id)),
+      color: new THREE.Color(!lit ? colors.ghost : sel ? colors.selected : accented ? colors.accent : discussed ? colors.discussed : family(p.id)),
       opacity: lit ? 1 : 0.07,
       emissive: new THREE.Color(sel ? 0x1d2e62 : hov ? 0x243a6b : 0x000000),
     });
@@ -412,7 +417,7 @@ onBeforeUnmount(() => {
   delete (window as any).__arrowView;
 });
 
-watch(() => [props.discussed, props.hidden, props.lit, theme.value], () => paint(), { deep: true });
+watch(() => [props.discussed, props.hidden, props.lit, props.accent, theme.value], () => paint(), { deep: true });
 watch(() => props.selected, (s, prev) => { paint(); if (s || prev) fit(); });
 watch(() => props.lit, () => fit(), { deep: true });
 watch(() => props.explode, () => { place(); if (!glide) fit(view.value, true); });
@@ -441,7 +446,8 @@ watch(() => props.explode, () => { place(); if (!glide) fit(view.value, true); }
     <p v-else-if="hover" class="note hovering"><span class="mono">{{ hover }}</span> {{ labels[hover] }}</p>
     <p class="note legend">
       <span><i :style="{ background: colors.selected }"></i>Selected</span>
-      <span><i :style="{ background: colors.discussed }"></i>Open thread</span>
+      <span v-if="accentLabel"><i :style="{ background: colors.accent }"></i>{{ accentLabel }}</span>
+      <span v-else><i :style="{ background: colors.discussed }"></i>Open thread</span>
       <span v-for="l in look.legend" :key="l.family" :class="{ 'hide-sm': l.wide }"><i :style="{ background: colorOf(l.family) }"></i>{{ l.label }}</span>
     </p>
     <slot />
