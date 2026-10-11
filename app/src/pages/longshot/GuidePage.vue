@@ -119,22 +119,37 @@ function toPhase(id: string) {
   document.getElementById(`phase-${id}`)?.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' });
 }
 
-// Which step is being read: a thin band near the top of the reading area
-// (below the pinned model on a mid-size screen) picks it.
-let io: IntersectionObserver | undefined;
-function spy() {
-  io?.disconnect();
-  io = undefined;
-  if (!viewerOn.value) return;
-  const margin = wide.value ? '-12% 0px -80% 0px' : phone.value ? '-14% 0px -78% 0px' : '-52% 0px -40% 0px';
-  io = new IntersectionObserver((entries) => {
-    if (performance.now() < pausedUntil) return;
-    const hit = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-    if (hit) active.value = (hit.target as HTMLElement).dataset.step ?? active.value;
-  }, { rootMargin: margin });
-  root.value?.querySelectorAll<HTMLElement>('.step').forEach((el) => io!.observe(el));
+// Which step is being read: the last one whose top has passed a reading line
+// near the top of the reading area (below the pinned model on a mid-size
+// screen). Measured against the slot, which is what scrolls on a desktop; on
+// a phone the window scrolls and the line is near the top of the screen.
+let slotEl: HTMLElement | null = null;
+let lastPick = 0;
+let trailing = 0;
+function readingLine() {
+  if (phone.value || !slotEl) return 140;
+  const r = slotEl.getBoundingClientRect();
+  return r.top + (wide.value ? 110 : r.height * 0.42 + 60);
 }
-watch([viewerOn, wide, phone], () => void nextTick(spy));
+function pick() {
+  if (!viewerOn.value || performance.now() < pausedUntil) return;
+  const line = readingLine();
+  let id: string | undefined;
+  for (const el of root.value?.querySelectorAll<HTMLElement>('.step') ?? []) {
+    if (el.getBoundingClientRect().top <= line) id = el.dataset.step;
+    else break;
+  }
+  if (id && id !== active.value) active.value = id;
+}
+// Throttled, with a trailing call so where the scroll stops always counts.
+// Not tied to animation frames: the model's renderer can make those slow.
+const onScroll = () => {
+  const now = performance.now();
+  if (now - lastPick >= 60) { lastPick = now; pick(); }
+  window.clearTimeout(trailing);
+  trailing = window.setTimeout(pick, 120);
+};
+watch(viewerOn, (on) => { if (on) void nextTick(pick); });
 
 // Layout: the page's own width decides the side-by-side model; the window
 // decides the phone sheet (below 768px the window scrolls, not the slot).
@@ -146,6 +161,9 @@ onMounted(async () => {
   onMq();
   mq.addEventListener('change', onMq);
   const slot = root.value?.closest<HTMLElement>('.slot');
+  slotEl = slot ?? null;
+  slot?.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('scroll', onScroll, { passive: true });
   ro = new ResizeObserver(() => {
     // Hysteresis: the side-by-side layout changes the page's height, a scrollbar
     // can come or go, and the width would flip the layout back and forth.
@@ -167,7 +185,9 @@ onMounted(async () => {
 });
 onBeforeUnmount(() => {
   window.clearInterval(timer);
-  io?.disconnect();
+  window.clearTimeout(trailing);
+  slotEl?.removeEventListener('scroll', onScroll);
+  window.removeEventListener('scroll', onScroll);
   ro?.disconnect();
   mq.removeEventListener('change', onMq);
 });
@@ -342,6 +362,8 @@ const threadLink = (id: string) => ({ query: { ...route.query, thread: id } });
 .gp.phone.with-3d .gp-body { padding-bottom: calc(40dvh + 24px); }
 .gp:not(.wide):not(.phone) .step { scroll-margin-top: calc(var(--slot-h, 80vh) * 0.42 + 12px); }
 .step { scroll-margin-top: 12px; }
+/* On a phone the window scrolls under the frame's pinned top bar. */
+.gp.phone .step, .gp.phone .phase { scroll-margin-top: 76px; }
 
 .kicker { margin: 0 0 4px; font-size: var(--text-sm); color: var(--fg-faint); }
 .variant { margin: 8px 0 0; max-width: 720px; padding: 8px 10px; border-radius: 8px; background: var(--slate-a2); color: var(--fg-muted); font-size: var(--text-base); line-height: 1.5; }

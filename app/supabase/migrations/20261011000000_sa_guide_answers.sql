@@ -63,7 +63,7 @@ begin
     raise exception 'Unknown guide question';
   end if;
   if not exists (select 1 from public.sa_projects where id = p_project) then raise exception 'No such project'; end if;
-  loop
+  for attempt in 1..3 loop
     select * into a from public.sa_guide_answers
       where project = p_project and guide = p_guide and question = p_question and build = b and author_id = uid for update;
     if a.id is not null then
@@ -84,6 +84,8 @@ begin
       null;
     end;
   end loop;
+  -- Only reached outside READ COMMITTED, where the save that won stays out of sight.
+  raise exception 'Couldn''t save that answer; try again' using errcode = '40001';
 end $$;
 revoke execute on function public.sa_guide_answer(text, text, text, text, text, text) from anon, public;
 grant execute on function public.sa_guide_answer(text, text, text, text, text, text) to authenticated;

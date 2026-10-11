@@ -492,6 +492,9 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
 
   // Longshot's manufacturing guide: the build from the record, step by step,
   // the model following along, open questions answered in place, an export.
+  // Reduced motion: steps scroll into view at once instead of gliding, which
+  // under software WebGL can take seconds and race the checks.
+  await p.emulateMedia({ reducedMotion: 'reduce' });
   await p.goto(`${BASE}/longshot/build/guide`);
   await p.waitForSelector('.step[data-step]', { timeout: 8000 });
   const gSteps = await p.locator('.step[data-step]').count();
@@ -505,6 +508,9 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.getByRole('button', { name: 'Next step' }).click();
   await p.waitForTimeout(1200);
   check((await p.locator('[data-viewer-step]').innerText()).includes('voltage-sense'), 'the model steps on to the sense boards');
+  await p.evaluate(() => document.getElementById('step-balance-map').scrollIntoView({ block: 'start' }));
+  await p.waitForFunction(() => document.querySelector('[data-viewer-step]')?.textContent?.includes('SL board'), null, { timeout: 5000 }).catch(() => {});
+  check((await p.locator('[data-viewer-step]').innerText()).includes('Solder the SL board'), 'scrolling the guide moves the model along; a step without its own view shows the last one');
   const qv = p.locator('.qc[data-question="cell-voltage-window"]').first();
   await qv.scrollIntoViewIfNeeded();
   await qv.getByRole('button', { name: 'Answer' }).click();
@@ -539,6 +545,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.waitForTimeout(600);
   check(await p.locator('.shots input[type=checkbox]').first().isChecked(), 'shot-list ticks stay in this browser');
   await p.locator('.shots input[type=checkbox]').first().uncheck();
+  await p.emulateMedia({ reducedMotion: 'no-preference' });
   await p.goto(`${BASE}/longshot/build/bom`);
   const ph = await b.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   ph.on('pageerror', (e) => errors.push(String(e)));
