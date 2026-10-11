@@ -94,6 +94,7 @@ export const longshotTabs: Tab[] = [
         id: 'make',
         label: 'Build it',
         items: [
+          item('guide', 'Manufacturing guide', 'book', 'ls-guide'),
           item('bom', 'Bill of materials', 'list', 'ls-bom'),
           item('builds', 'Building packs', 'wrench'),
           item('sourcing', 'Suppliers & cost', 'truck'),

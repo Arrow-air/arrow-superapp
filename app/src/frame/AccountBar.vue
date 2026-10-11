@@ -141,10 +141,8 @@ const walletOpen = ref(false);
   .show-md { display: inline; }
 }
 @media (max-width: 767px) {
-  .hide-sm, .signin { height: 30px; padding: 0 14px; border-radius: 9px; background: var(--indigo-9); color: #fff; font-weight: 500; }
-.signin:hover { background: var(--indigo-10); }
-.rolechip { height: 18px; padding: 0 6px; border-radius: 5px; background: var(--indigo-a3); color: var(--indigo-11); font-size: 11px; line-height: 18px; font-weight: 500; }
-.show-md { display: none; }
+  .hide-sm { display: none; }
+  .show-md { display: none; }
   .who { padding-right: 3px; }
 }
 </style>
