@@ -32,6 +32,11 @@ export function guideMarkdown(g: Guide, list: Answer[], n: MarkdownNames, today:
       if (s.parts?.length) out.push('**Parts**', ...s.parts.map((p) => `- ${p.qty} × ${n.partName(p.id)} (\`${p.id}\`)`), '');
       if (s.tools?.length) out.push('**Tools and supplies**', ...s.tools.map((t) => `- ${line(t)}`), '');
       out.push('**How**', ...s.how.map((h, i) => `${i + 1}. ${line(h)}`), '');
+      for (const tb of s.tables ?? []) {
+        const cell = (c: string) => c.replace(/\|/g, '\\|');
+        out.push(`**${tb.title}**`, '', `| ${tb.columns.map(cell).join(' | ')} |`, `| ${tb.columns.map(() => '---').join(' | ')} |`, ...tb.rows.map((r) => `| ${r.map(cell).join(' | ')} |`), '');
+        if (tb.note || tb.source) out.push(`${tb.note ?? ''}${tb.source ? ` ([${tb.source.label}](${tb.source.url}))` : ''}`.trim(), '');
+      }
       if (s.checks?.length) out.push('**Check before moving on**', ...s.checks.map((c) => `- [ ] ${line(c)}`), '');
       if (s.safety?.length) out.push('**Safety**', ...s.safety.map((c) => `- ${line(c)}`), '');
       if (s.questions.length) {
@@ -50,6 +55,7 @@ export function guideMarkdown(g: Guide, list: Answer[], n: MarkdownNames, today:
         }
         out.push('');
       }
+      if (s.images?.length) out.push('**Pictures**', ...s.images.map((im) => `- [${im.caption}](${im.full ?? im.src}) ([${im.source.label}](${im.source.url}))`), '');
       if (s.shots?.length) out.push('**Photos to take**', ...s.shots.map((x) => `- [ ] ${x}`), '');
       const rel = [
         ...(s.issues ?? []).map((i) => `[#${i}](${n.issueUrl(i)})`),

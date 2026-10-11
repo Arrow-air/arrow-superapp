@@ -501,13 +501,14 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   const gQs = await p.locator('.step .qc[data-question]').count();
   check(gSteps >= 20 && gQs >= 50 && (await text()).includes('How to build a Longshot pack'), `the build tab's manufacturing guide lists its steps and their questions (${gSteps} steps, ${gQs} questions)`);
   check((await p.locator('.step a.src').count()) >= 30 && (await p.locator('.step .practice').count()) >= 10, 'guide lines carry their sources, and common practice is marked as such');
+  check((await p.locator('.step[data-step="load-cells"] .gtable tbody tr').count()) === 14 && (await p.locator('.step[data-step="weld"] .imgs img').count()) >= 1, 'the loading step carries the 14-group map, and the welding step a PT1 photo');
   await p.waitForSelector('.gp-3d .viewer[data-ready="true"]', { timeout: 30000 });
   await p.locator('.step[data-step="weld"]').getByRole('button', { name: /in 3D/ }).click();
   await p.waitForTimeout(1200);
   check((await p.locator('[data-viewer-step]').innerText()).includes('Weld the busbars'), 'the model follows the guide to the welding step');
   await p.getByRole('button', { name: 'Next step' }).click();
   await p.waitForTimeout(1200);
-  check((await p.locator('[data-viewer-step]').innerText()).includes('voltage-sense'), 'the model steps on to the sense boards');
+  check((await p.locator('[data-viewer-step]').innerText()).includes('sense taps'), 'the model steps on to the sense taps');
   await p.evaluate(() => document.getElementById('step-balance-map').scrollIntoView({ block: 'start' }));
   await p.waitForFunction(() => document.querySelector('[data-viewer-step]')?.textContent?.includes('SL board'), null, { timeout: 5000 }).catch(() => {});
   check((await p.locator('[data-viewer-step]').innerText()).includes('Solder the SL board'), 'scrolling the guide moves the model along; a step without its own view shows the last one');
@@ -533,7 +534,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   check(jTexts.length >= 30 && jTexts.every((t) => t.includes('Ask Julius')) && p.url().includes('show=julius'), `the questions list filters to Julius's (${jTexts.length}), in a link that can be shared`);
   const [dl] = await Promise.all([p.waitForEvent('download'), p.getByRole('button', { name: 'Export Markdown' }).click()]);
   const md = fs.readFileSync(await dl.path(), 'utf8');
-  check(/^# How to build a Longshot pack/.test(md) && md.includes('### Step 9: Weld the busbars') && md.includes('20 mV') && md.includes('[#23]'), 'the guide exports to Markdown, answers included');
+  check(/^# How to build a Longshot pack/.test(md) && md.includes('### Step 10: Weld the busbars') && md.includes('| S14 | Right |') && md.includes('20 mV') && md.includes('[#23]'), 'the guide exports to Markdown, answers included');
   await p.getByRole('radio', { name: 'Steps' }).click();
   await p.waitForTimeout(250);
   await p.locator('.qc[data-question="cell-voltage-window"]').first().getByRole('button', { name: 'Remove' }).click();

@@ -280,6 +280,16 @@ const threadLink = (id: string) => ({ query: { ...route.query, thread: id } });
               <h4>How</h4>
               <ol class="lines how"><li v-for="(h, i) in s.how" :key="i"><LineView :l="h" /></li></ol>
             </div>
+            <div v-for="(t, ti) in s.tables ?? []" :key="`t${ti}`" class="block">
+              <h4>{{ t.title }}</h4>
+              <div class="tscroll">
+                <table class="vt gtable">
+                  <thead><tr><th v-for="c in t.columns" :key="c">{{ c }}</th></tr></thead>
+                  <tbody><tr v-for="(r, ri) in t.rows" :key="ri"><td v-for="(v, ci) in r" :key="ci">{{ v }}</td></tr></tbody>
+                </table>
+              </div>
+              <p v-if="t.note || t.source" class="tnote">{{ t.note }} <a v-if="t.source" :href="t.source.url" target="_blank" rel="noopener" class="tsrc">{{ t.source.label }}</a></p>
+            </div>
             <div v-if="s.checks?.length" class="block">
               <h4>Check before moving on</h4>
               <ul class="lines checks"><li v-for="(c, i) in s.checks" :key="i"><LineView :l="c" /></li></ul>
@@ -290,7 +300,7 @@ const threadLink = (id: string) => ({ query: { ...route.query, thread: id } });
             </div>
             <div v-if="s.images?.length" class="imgs">
               <figure v-for="im in s.images" :key="im.src">
-                <a :href="im.src" target="_blank" rel="noopener"><img :src="im.src" :alt="im.caption" loading="lazy" /></a>
+                <a :href="im.full ?? im.src" target="_blank" rel="noopener"><img :src="im.src" :alt="im.caption" loading="lazy" /></a>
                 <figcaption>{{ im.caption }} <a :href="im.source.url" target="_blank" rel="noopener">{{ im.source.label }}</a></figcaption>
               </figure>
             </div>
@@ -417,6 +427,13 @@ const threadLink = (id: string) => ({ query: { ...route.query, thread: id } });
 .shots label { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; }
 .shots input { margin-top: 3px; accent-color: var(--jade-9, #29a383); }
 .rel { display: flex; flex-wrap: wrap; gap: 4px; margin: 12px 0 0 36px; }
+.tscroll { overflow-x: auto; border: 1px solid var(--slate-a4); border-radius: 8px; }
+.gtable { font-size: var(--text-base); }
+.gtable th, .gtable td { white-space: nowrap; }
+.gtable tr:last-child td { border-bottom: 0; }
+.tnote { margin: 6px 0 0; color: var(--fg-muted); font-size: var(--text-sm); line-height: 1.5; }
+.tsrc { display: inline-block; margin-left: 4px; padding: 0 5px; border-radius: 4px; background: var(--slate-a3); color: var(--fg-muted); text-decoration: none; white-space: nowrap; }
+.tsrc:hover { background: var(--slate-a5); color: var(--fg); }
 .end { margin: 28px 0 8px; font-size: var(--text-base); }
 
 .filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 6px 0 12px; }

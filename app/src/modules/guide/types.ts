@@ -29,7 +29,11 @@ export interface GuideQuestion {
   perBuild?: boolean;
 }
 
-export interface GuideImage { src: string; caption: string; source: GuideSource }
+/** A picture for a step; `src` is what's shown, `full` the full-size original to open. */
+export interface GuideImage { src: string; full?: string; caption: string; source: GuideSource }
+
+/** A reference table for a step: a group map, a pin map, a weight table. */
+export interface GuideTable { title: string; columns: string[]; rows: string[][]; note?: string; source?: GuideSource }
 
 export interface GuideStep {
   id: string;
@@ -43,6 +47,7 @@ export interface GuideStep {
   how: GuideLine[];
   checks?: GuideLine[];
   safety?: GuideLine[];
+  tables?: GuideTable[];
   images?: GuideImage[];
   questions: GuideQuestion[];
   /** Photos to take on build day, for the guide. */
