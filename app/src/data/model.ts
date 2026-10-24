@@ -1,7 +1,8 @@
 // The Dev Kit assembly as a 3D model: public/quiver.glb, exported from the
-// build123d CAD on project-quiver main (unchanged since 2026-06-12) and
-// compressed. Every mesh sits under a node named for its BOM number, so a
-// click on the model resolves to a part. Fasteners are not in the export.
+// build123d CAD on project-quiver main (65f46e3, 2026-10-24) by
+// scripts/model/export_quiver.py and compressed. Every mesh sits under a node
+// named for its BOM number, so a click on the model resolves to a part.
+// Fasteners are not in the export.
 //
 // Each part belongs to the v1.1 zone a change to it would be discussed in.
 export function zoneForPart(id: string): string {
