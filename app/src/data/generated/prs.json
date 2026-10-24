@@ -1,6 +1,46 @@
 {
- "generatedAt": "2026-09-29T22:39:28.047Z",
+ "generatedAt": "2026-10-24T23:27:48.229Z",
  "prs": [
+  {
+   "number": 276,
+   "title": "docs: SDK guide network map and CubeNode addressing, Ethernet note banner",
+   "author": "errrks",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/276",
+   "createdAt": "2026-10-01T04:04:31Z",
+   "updatedAt": "2026-10-01T04:05:09Z",
+   "excerpt": "## Summary Network documentation outside the configuration guide brought in line with the first unit. Three files, 26 insertions, 9 deletions. Backlog items SDK1, SDK2, SDK3, ETH1, plus the `NET_P1_TYPE` line that PR #273 added to the overlay. ## Changes | File | Change | Source "
+  },
+  {
+   "number": 275,
+   "title": "docs: Dev-Kit Engineering Report corrections ER1 to ER10",
+   "author": "errrks",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/275",
+   "createdAt": "2026-10-01T03:39:21Z",
+   "updatedAt": "2026-10-01T03:39:25Z",
+   "excerpt": "## Summary Corrections to the Dev-Kit Engineering Report from the first unit's configuration and flight record (June to September 2026). One file, 28 insertions and 17 deletions. The ten items are the Engineering Report section of the documentation backlog (ER1 to ER10) plus the "
+  },
+  {
+   "number": 274,
+   "title": "docs: Pilot's Handbook first pass and First Flight Checklist",
+   "author": "errrks",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/274",
+   "createdAt": "2026-09-30T06:51:59Z",
+   "updatedAt": "2026-09-30T07:09:05Z",
+   "excerpt": "## Summary Pilot's Handbook first pass since the July 9 first flights, plus the First Flight Checklist as a tracked file. Two commits, one per file. The Handbook keeps its standards (RC controls, mode map, GPS gate); the changes bring the procedures in line with what the first un"
+  },
+  {
+   "number": 273,
+   "title": "params: 4.8 arming check name, MR82 proximity instance, metric parameter names, FC TCP server",
+   "author": "errrks",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/273",
+   "createdAt": "2026-09-30T05:31:20Z",
+   "updatedAt": "2026-09-30T05:31:24Z",
+   "excerpt": "## Summary Two commits to the baseline parameter overlays. Nothing here changes tuning. Commit 1 (eight lines) fixes lines the current firmware ignores or lacks and adds the forward radar the baseline never configured. Commit 2 (22 lines) renames the navigation envelope to the me"
+  },
   {
    "number": 270,
    "title": "T-05 m1 milestones",
@@ -8,28 +48,18 @@
    "draft": false,
    "url": "https://github.com/Arrow-air/project-quiver/pull/270",
    "createdAt": "2026-09-23T13:21:44Z",
-   "updatedAt": "2026-09-29T20:59:48Z",
+   "updatedAt": "2026-10-06T21:00:18Z",
    "excerpt": "closes #252 M1 milestones"
   },
   {
    "number": 267,
-   "title": "CAD/BOM: Here4 and Holybro NEO-F9P primary GPS options; retire Wren",
+   "title": "CAD/BOM: Holybro NEO-F9P (default) and Here4 primary GPS options; retire Wren",
    "author": "thomasgarrison",
-   "draft": true,
+   "draft": false,
    "url": "https://github.com/Arrow-air/project-quiver/pull/267",
    "createdAt": "2026-09-19T04:09:43Z",
-   "updatedAt": "2026-09-19T04:24:54Z",
-   "excerpt": "## Summary Draft for Thomas's review; no wider review requested. **Stacked on [mechanical draft #266](https://github.com/Arrow-air/project-quiver/pull/266)** so this diff contains only GPS changes. Review #266 first; after it lands, retarget this PR to `main`. - Support **CubePil"
-  },
-  {
-   "number": 266,
-   "title": "CAD: sync verified mechanical changes from Fusion v148",
-   "author": "thomasgarrison",
-   "draft": true,
-   "url": "https://github.com/Arrow-air/project-quiver/pull/266",
-   "createdAt": "2026-09-19T04:05:45Z",
-   "updatedAt": "2026-09-19T04:24:51Z",
-   "excerpt": "## Summary Draft for Thomas's review before requesting wider review. **Do not treat this as a manufacturing release.** Sync the verified mechanical differences between `Quiver_PT3_Drone_Assembly` v148 (2026-07-30) and repository main `ef316bc`: - Update 2311 main-PCB adapter, 231"
+   "updatedAt": "2026-10-24T23:18:29Z",
+   "excerpt": "## Summary Targets `main` now that #266 is merged, so the diff contains only the GPS changes. - Support the exact **Holybro H-RTK NEO-F9P Rover, RM3100 compass, DroneCAN 4-Pin, SKU 12072** ([variant 44639194644669](https://holybro.com/products/h-rtk-neo-f9p-rover-rm3100-compass?v"
   },
   {
    "number": 247,
@@ -62,16 +92,6 @@
    "excerpt": "Companion to [payload-systems#2](https://github.com/Arrow-air/payload-systems/pull/2). - **`2112_attach_plate_payload_side.step`** — the payload-side clip half of the BOM 2112 COTS quick-release set (\"Replaceable Base\", 50×50 mm, exported from the Fusion master model). The existi"
   },
   {
-   "number": 244,
-   "title": "docs: remove dead Pixhawk log links from PT1 flight test reports",
-   "author": "thomasgarrison",
-   "draft": false,
-   "url": "https://github.com/Arrow-air/project-quiver/pull/244",
-   "createdAt": "2026-08-06T21:38:36Z",
-   "updatedAt": "2026-09-25T01:03:24Z",
-   "excerpt": "## Summary The **Markdown Broken Link Checker** job has failed on every PR since the flight-test archive landed on main: `flight-test/PT1/001–003.md` link Pixhawk DataFlash logs (`./assets/NNN/logs/00000075.BIN` etc.) that were never committed to main, so the links 404 for reader"
-  },
-  {
    "number": 235,
    "title": "docs: fix HAR-0014 bottom payload signal label (FMU_CH1, not FMU_CH7)",
    "author": "vector-arrow",
@@ -88,7 +108,7 @@
    "draft": false,
    "url": "https://github.com/Arrow-air/project-quiver/pull/232",
    "createdAt": "2026-07-09T01:26:00Z",
-   "updatedAt": "2026-09-22T19:32:10Z",
+   "updatedAt": "2026-10-01T03:38:48Z",
    "excerpt": "Comprehensive setup guide on a freshly built Quiver. Covers FC firmware flashing, parameter loading, CAN ID assignments, various sensor setup, etc."
   },
   {

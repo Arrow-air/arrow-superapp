@@ -65,10 +65,11 @@ const quiver: ModelConfig = {
     };
   },
   source: {
-    text: 'From the build123d CAD on project-quiver main; fasteners are left out. Fusion changes waiting in PR #266 appear once it merges.',
+    text: 'From the build123d CAD on project-quiver main at 65f46e3 (October 24, 2026), with the Fusion v148 sync from PR #266. Fasteners are left out, and the primary GPS is still drawn as the retired Wren Mini until PR #267 lands.',
     links: [
-      { label: 'build123d CAD', url: 'https://github.com/Arrow-air/project-quiver/tree/main/src/quiver' },
+      { label: 'build123d CAD', url: 'https://github.com/Arrow-air/project-quiver/tree/65f46e3/src/quiver' },
       { label: 'PR #266', url: 'https://github.com/Arrow-air/project-quiver/pull/266' },
+      { label: 'PR #267', url: 'https://github.com/Arrow-air/project-quiver/pull/267' },
     ],
   },
   bomPath: '/quiver/build/bom',
