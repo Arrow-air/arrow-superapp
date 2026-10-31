@@ -11,7 +11,7 @@
 
 ## Quiver
 
-`public/quiver.glb` was built from [Arrow-air/project-quiver](https://github.com/Arrow-air/project-quiver) main at `65f46e3` (the PR #266 merge, October 24, 2026) with build123d 0.10.0 on Python 3.12. Rebuild it whenever the CAD on main changes, and refresh the BOM facts from the same checkout:
+`public/quiver.glb` was built from [Arrow-air/project-quiver](https://github.com/Arrow-air/project-quiver) main at `7ea076a` (the PR #267 merge, October 30, 2026) with build123d 0.10.0 on Python 3.12. Rebuild it whenever the CAD on main changes, and refresh the BOM facts from the same checkout:
 
 ```sh
 # A checkout of main, and a Python with the repo's pinned CAD dependencies (as its CI installs them)
@@ -32,6 +32,7 @@ The export takes about a minute. It stops if a placed part has no BOM line, or i
 
 - Meters, Y up: the CAD's Z-up turned by -90° about X on the root node, CAD origin kept.
 - `Quiver Drone` > category (Airframe Structure, Supporting Structure, Equipment, Harness) > subassembly (Plates, Beams, Landing Gear …; the busbars sit directly under Harness) > one node per placed part, named by its CAD label: `1111_upper_plate`, `1310-VerticalTube`. Its first four digits are the BOM number the app keys parts on (`partOf` in `src/projects/models.ts`). Repeated parts share one mesh and keep the same name.
+- The primary GPS is the CAD's default (`make_assembly()` without `primary_gps`): the Holybro NEO-F9P on mount 2331. The Here4 alternative and its mount 2333 are BOM lines, not drawn.
 - Positions only, no normals, UVs or materials: the viewer shades flat. Vendor models with hundreds of bodies (motors, PCBs, battery, sensors) are tessellated coarser and simplified (`TESS` in the exporter).
 - Left out: fasteners, including the screws, threaded inserts and rubber spacers modeled inside the 2311 adapter STEP (only the printed adapter is kept), and a few vendor-model faces OCCT cannot mesh (one on the 2412 top cap, nine on the LiDAR, six on the main PCB, four on the battery).
 
