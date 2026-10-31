@@ -65,11 +65,10 @@ const quiver: ModelConfig = {
     };
   },
   source: {
-    text: 'From the build123d CAD on project-quiver main at 65f46e3 (October 24, 2026), with the Fusion v148 sync from PR #266. Fasteners are left out, and the primary GPS is still drawn as the retired Wren Mini until PR #267 lands.',
+    text: 'From the build123d CAD on project-quiver main at 7ea076a (October 30, 2026), with the Fusion v148 sync from PR #266. The primary GPS is the default Holybro NEO-F9P; fasteners are left out.',
     links: [
-      { label: 'build123d CAD', url: 'https://github.com/Arrow-air/project-quiver/tree/65f46e3/src/quiver' },
+      { label: 'build123d CAD', url: 'https://github.com/Arrow-air/project-quiver/tree/7ea076a/src/quiver' },
       { label: 'PR #266', url: 'https://github.com/Arrow-air/project-quiver/pull/266' },
-      { label: 'PR #267', url: 'https://github.com/Arrow-air/project-quiver/pull/267' },
     ],
   },
   bomPath: '/quiver/build/bom',

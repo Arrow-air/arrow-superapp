@@ -1,6 +1,16 @@
 {
- "generatedAt": "2026-10-24T23:27:48.229Z",
+ "generatedAt": "2026-10-31T03:43:54.875Z",
  "prs": [
+  {
+   "number": 281,
+   "title": "fix: add PWR_FLAG to +12V and GND in attach_pcb schematic",
+   "author": "trimaxlan98",
+   "draft": false,
+   "url": "https://github.com/Arrow-air/project-quiver/pull/281",
+   "createdAt": "2026-10-30T21:33:32Z",
+   "updatedAt": "2026-10-30T21:33:37Z",
+   "excerpt": "## What & why `kicad-cli sch erc` (KiCad 10.0.8) on `src/pcb/attach_pcb/QuiverAttachPCB.kicad_sch` reports two errors: ``` Input Power pin not driven by any Output Power pins Symbol #PWR01 Pin 1 [Power input] (+12V) Input Power pin not driven by any Output Power pins Symbol #PWR0"
+  },
   {
    "number": 276,
    "title": "docs: SDK guide network map and CubeNode addressing, Ethernet note banner",
@@ -8,7 +18,7 @@
    "draft": false,
    "url": "https://github.com/Arrow-air/project-quiver/pull/276",
    "createdAt": "2026-10-01T04:04:31Z",
-   "updatedAt": "2026-10-01T04:05:09Z",
+   "updatedAt": "2026-10-27T19:00:57Z",
    "excerpt": "## Summary Network documentation outside the configuration guide brought in line with the first unit. Three files, 26 insertions, 9 deletions. Backlog items SDK1, SDK2, SDK3, ETH1, plus the `NET_P1_TYPE` line that PR #273 added to the overlay. ## Changes | File | Change | Source "
   },
   {
@@ -18,7 +28,7 @@
    "draft": false,
    "url": "https://github.com/Arrow-air/project-quiver/pull/275",
    "createdAt": "2026-10-01T03:39:21Z",
-   "updatedAt": "2026-10-01T03:39:25Z",
+   "updatedAt": "2026-10-30T05:21:23Z",
    "excerpt": "## Summary Corrections to the Dev-Kit Engineering Report from the first unit's configuration and flight record (June to September 2026). One file, 28 insertions and 17 deletions. The ten items are the Engineering Report section of the documentation backlog (ER1 to ER10) plus the "
   },
   {
@@ -28,7 +38,7 @@
    "draft": false,
    "url": "https://github.com/Arrow-air/project-quiver/pull/274",
    "createdAt": "2026-09-30T06:51:59Z",
-   "updatedAt": "2026-09-30T07:09:05Z",
+   "updatedAt": "2026-10-27T19:00:50Z",
    "excerpt": "## Summary Pilot's Handbook first pass since the July 9 first flights, plus the First Flight Checklist as a tracked file. Two commits, one per file. The Handbook keeps its standards (RC controls, mode map, GPS gate); the changes bring the procedures in line with what the first un"
   },
   {
@@ -38,7 +48,7 @@
    "draft": false,
    "url": "https://github.com/Arrow-air/project-quiver/pull/273",
    "createdAt": "2026-09-30T05:31:20Z",
-   "updatedAt": "2026-09-30T05:31:24Z",
+   "updatedAt": "2026-10-27T19:00:48Z",
    "excerpt": "## Summary Two commits to the baseline parameter overlays. Nothing here changes tuning. Commit 1 (eight lines) fixes lines the current firmware ignores or lacks and adds the forward radar the baseline never configured. Commit 2 (22 lines) renames the navigation envelope to the me"
   },
   {
@@ -50,26 +60,6 @@
    "createdAt": "2026-09-23T13:21:44Z",
    "updatedAt": "2026-10-06T21:00:18Z",
    "excerpt": "closes #252 M1 milestones"
-  },
-  {
-   "number": 267,
-   "title": "CAD/BOM: Holybro NEO-F9P (default) and Here4 primary GPS options; retire Wren",
-   "author": "thomasgarrison",
-   "draft": false,
-   "url": "https://github.com/Arrow-air/project-quiver/pull/267",
-   "createdAt": "2026-09-19T04:09:43Z",
-   "updatedAt": "2026-10-24T23:18:29Z",
-   "excerpt": "## Summary Targets `main` now that #266 is merged, so the diff contains only the GPS changes. - Support the exact **Holybro H-RTK NEO-F9P Rover, RM3100 compass, DroneCAN 4-Pin, SKU 12072** ([variant 44639194644669](https://holybro.com/products/h-rtk-neo-f9p-rover-rm3100-compass?v"
-  },
-  {
-   "number": 247,
-   "title": "QGB-02: Obstacle Avoidance System — Test, Tune & Document",
-   "author": "karanp0202",
-   "draft": false,
-   "url": "https://github.com/Arrow-air/project-quiver/pull/247",
-   "createdAt": "2026-08-31T09:02:15Z",
-   "updatedAt": "2026-09-02T23:32:44Z",
-   "excerpt": "Iteration 14 — confirmed branch at `e6531c7` with concrete diff vs `main` (22 files, +991/−16); `make test` exit 0 with ` present. Committed `e6531c7`: added `oa-branch-check` to `.make/oa-analysis.mk` so verify fails when branch has no diff vs `main` (addresses QA “claimed progr"
   },
   {
    "number": 246,
@@ -118,18 +108,8 @@
    "draft": false,
    "url": "https://github.com/Arrow-air/project-quiver/pull/225",
    "createdAt": "2026-06-11T02:43:36Z",
-   "updatedAt": "2026-06-18T21:14:39Z",
+   "updatedAt": "2026-10-31T03:17:52Z",
    "excerpt": "**Stacked on #224** — the base branch here is `thomasg/oss-foundation-improvements`; once #224 merges, this can be retargeted to `main`. ## What & why Adds the quiver-side half of the interactive 3D viewer for the docs site (the viewer component lands in the website repo): - **`p"
-  },
-  {
-   "number": 223,
-   "title": "Added fusion link to project readme and manufacturing guide",
-   "author": "errrks",
-   "draft": false,
-   "url": "https://github.com/Arrow-air/project-quiver/pull/223",
-   "createdAt": "2026-05-29T14:06:07Z",
-   "updatedAt": "2026-08-06T21:24:02Z",
-   "excerpt": ""
   },
   {
    "number": 222,

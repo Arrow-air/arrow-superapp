@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-24T23:27:47.473Z",
+ "generatedAt": "2026-10-31T03:43:54.118Z",
  "sources": {
   "repo": "https://github.com/Arrow-air/project-quiver",
   "bomConfig": "Dev-Kit",
@@ -376,19 +376,19 @@
      "spec": null,
      "unitCostUsd": null,
      "designRef": "src/quiver/supporting_structure/equipment_mount/steps/2331_gnss_mount_base.step",
-     "notes": null,
+     "notes": "For the Holybro NEO-F9P Rover, the default primary GPS; omit for Here4. Existing F9P v6 geometry is retained; review stack-up and print fit before release.",
      "suppliers": []
     },
     {
-     "id": "2332",
-     "name": "GNSS Mount Clamp",
+     "id": "2333",
+     "name": "GNSS Mount, Here4",
      "qty": 1,
      "sourcing": "3d-print",
      "material": "PETG-CF",
      "spec": null,
      "unitCostUsd": null,
-     "designRef": "src/quiver/supporting_structure/equipment_mount/steps/2332_gnss_mount_clamp.step",
-     "notes": null,
+     "designRef": "src/quiver/supporting_structure/equipment_mount/steps/2333_gnss_mount_here4.step",
+     "notes": "Here4 option only; omit for Holybro. Imported from Fusion v148. Select one primary receiver and its matching mount, not both.",
      "suppliers": []
     },
     {
@@ -635,21 +635,21 @@
      "sourcing": "cots",
      "material": null,
      "spec": null,
-     "unitCostUsd": 288,
-     "designRef": "src/quiver/equipment/peripheral/steps/vendor/3250_gnss_wren_mini.step",
-     "notes": "Either listed module is acceptable. The CAD model still shows the retired Wren Mini; update the STEP on the next CAD export.",
+     "unitCostUsd": 199,
+     "designRef": "src/quiver/equipment/peripheral/steps/vendor/3250_gnss_holybro_neo_f9p.step",
+     "notes": "Select exactly one primary GPS. The default is the Holybro H-RTK NEO-F9P Rover (RM3100 compass, DroneCAN 4-Pin, SKU 12072) on mount 2331. The Here4 alternative uses mount 2333; its CAD is 3250_gnss_here4.step in the same vendor directory, and it cost $255 at IR-LOCK in October 2026. Wren Mini and its clamp 2332 are retired.",
      "suppliers": [
+      {
+       "name": "Holybro",
+       "partNumber": "H-RTK NEO-F9P Rover, DroneCAN 4-Pin, SKU 12072",
+       "url": "https://holybro.com/products/h-rtk-neo-f9p-rover-rm3100-compass?variant=44639194644669",
+       "note": null
+      },
       {
        "name": "IR-LOCK (CubePilot)",
        "partNumber": "Here4",
        "url": "https://irlock.com/products/here4-multiband-rtk-gnss",
-       "note": null
-      },
-      {
-       "name": "Holybro",
-       "partNumber": "H-RTK F9P (DroneCAN)",
-       "url": "https://holybro.com/",
-       "note": "equally acceptable alternative to the Here4"
+       "note": "alternative to the Holybro; uses mount 2333"
       }
      ]
     },
@@ -1617,8 +1617,8 @@
     "flight"
    ],
    "parts": [],
-   "comments": 1,
-   "updatedAt": "2026-10-03T11:10:11Z"
+   "comments": 2,
+   "updatedAt": "2026-10-30T05:42:57Z"
   },
   {
    "id": "T-04",
@@ -1643,8 +1643,8 @@
     "flight"
    ],
    "parts": [],
-   "comments": 5,
-   "updatedAt": "2026-10-07T23:12:26Z"
+   "comments": 6,
+   "updatedAt": "2026-10-27T19:11:20Z"
   },
   {
    "id": "T-05",
@@ -1685,23 +1685,23 @@
    "priceUsd": null,
    "fundingText": "QGB-05",
    "owner": "OPEN",
-   "deadline": "Milestone 0 by 2026-10-15, build flown by 2026-11-15",
+   "deadline": "Milestone 0 by 2026-11-30, build flown by 2027-01-31",
    "doneWhen": "The V2 multispectral camera attachment has flown on the attachment interface with a logged flight and its design files are merged.",
-   "status": "opens when the V1 information note lands",
-   "whoShouldClaim": "Someone with a printer and bench access. The V1 housing and mount were Alperen's designs, so his review of the V2 mechanical changes is expected whoever builds it.\r",
+   "status": "open to claim since 2026-10-30, T-11 complete",
+   "whoShouldClaim": "Someone with a printer and bench access. The V1 housing and mount were Alperen's designs, so his review of the V2 mechanical changes is expected whoever builds it.",
    "milestones": [
     {
      "n": 0,
      "title": "the scope, priced at $100",
-     "text": "Read the V1 note and its files. Post in this issue a one page V2 scope: what changes and why, the parts list with sources, the print or machining plan, the bench test before flight, the flight test that proves it, and a price for the build. Known V2 ideas from the meetup, not requirements: component protection, a repeatable mount, and the trigger path documented for the developer guide. The Project Lead accepts the scope and its price in this issue, and that becomes the build milestone.\r"
+     "text": "Read the V1 note and its files. Post in this issue a one page V2 scope: what changes and why, the parts list with sources, the print or machining plan, the bench test before flight, the flight test that proves it, and a price for the build. Known V2 ideas from the meetup, not requirements: component protection, a repeatable mount, and the trigger path documented for the developer guide. The Project Lead accepts the scope and its price in this issue, and that becomes the build milestone."
     },
     {
      "n": 1,
      "title": "the build, priced at milestone 0",
-     "text": "Build it, bench test it against the Attachment Developer Guide checklist once that exists (T-05), fly it on the attachment interface, upload the log, merge the design files and a short build note next to the V1 note.\r"
+     "text": "Build it, bench test it against the Attachment Developer Guide checklist once that exists (T-05), fly it on the attachment interface, upload the log, merge the design files and a short build note next to the V1 note."
     }
    ],
-   "body": "**Task board row T-06**\r\n\r\n| | |\r\n|---|---|\r\n| Price | Set at milestone 0 (below), from the QGB-05 Attachment Development allocation of $3,000, which funds this task and its sibling (T-07) together, with QGB-FLEX unassigned as overflow if the two scopes outgrow it |\r\n| Funding line | QGB-05 |\r\n| Owner | OPEN |\r\n| Deadline | Milestone 0 by 2026-10-15, build flown by 2026-11-15 |\r\n| Done when | The V2 multispectral camera attachment has flown on the attachment interface with a logged flight and its design files are merged. |\r\n\r\n**Status: opens when the V1 information note lands**\r\n\r\nThe V1 multispectral camera attachment was built and tested at the August meetup. Its information note and design files are task T-11 (#257), due September 30. Nothing about V2 is decided yet, on purpose. The V1 note is the input, and whoever claims this task writes the V2 scope from it. Do not start before T-11 merges.\r\n\r\n**What V1 is**\r\n\r\nA multispectral camera on the attachment interface with clean power, a native PWM trigger from the flight controller's aux channel, and a USB power configuration, on a mount designed by Alperen. Ground tested, then flown on Gray's Quiver at the meetup. Results went out in the Arrow account's tweet. Field usable, but the components are exposed.\r\n\r\n**Milestone 0, the scope, priced at $100**\r\n\r\nRead the V1 note and its files. Post in this issue a one page V2 scope: what changes and why, the parts list with sources, the print or machining plan, the bench test before flight, the flight test that proves it, and a price for the build. Known V2 ideas from the meetup, not requirements: component protection, a repeatable mount, and the trigger path documented for the developer guide. The Project Lead accepts the scope and its price in this issue, and that becomes the build milestone.\r\n\r\n**Milestone 1, the build, priced at milestone 0**\r\n\r\nBuild it, bench test it against the Attachment Developer Guide checklist once that exists (T-05), fly it on the attachment interface, upload the log, merge the design files and a short build note next to the V1 note.\r\n\r\n**Who should claim this**\r\n\r\nSomeone with a printer and bench access. The V1 housing and mount were Alperen's designs, so his review of the V2 mechanical changes is expected whoever builds it.\r\n\r\n**Acceptance and payment**\r\nMilestone 0 is accepted by the Project Lead in this issue and sets the price of the build. The build is accepted on the flight log. Payouts batch monthly through the CSV airdrop flow.\n\n\n**Working rules (added 2026-10-06, apply to every milestone of this task)**\n\n1. Milestones are sequential. Work on the next milestone starts only after the current one is accepted in this issue. Work submitted ahead of acceptance is not owed.\n2. Drafting tools are fine. Unverified output is not. Every factual claim you submit has been checked by you against the named source before it reaches review. One unverified claim returns the milestone. Review is not a verification service.\n3. Reviews are batched: one review per milestone, one revision. If the revision does not close every comment, the milestone returns to open.\n4. Assignment happens after a short call with the Project Lead on the Arrow Discord. Written applications on their own are not reviewed.\n5. Commits must be signed. The repository ruleset rejects unsigned pushes, so set up commit signing before your first push.\n6. Inputs the team owes you are listed in this issue and are delivered before you are assigned, not after.\n",
+   "body": "**Task board row T-06**\n\n| | |\n|---|---|\n| Price | Set at milestone 0 (below), from the QGB-05 Attachment Development allocation of $3,000, which funds this task and its sibling (T-07) together, with QGB-FLEX unassigned as overflow if the two scopes outgrow it |\n| Funding line | QGB-05 |\n| Owner | OPEN |\n| Deadline | Milestone 0 by 2026-11-30, build flown by 2027-01-31 |\n| Done when | The V2 multispectral camera attachment has flown on the attachment interface with a logged flight and its design files are merged. |\n\n**Status: open to claim since 2026-10-30, T-11 complete**\n\nThe V1 multispectral camera attachment was built and tested at the August meetup. Its information note and design files are task T-11 (#257), merged 2026-10-30 in Arrow-air/payload-systems. Nothing about V2 is decided yet, on purpose. The V1 note is the input, and whoever claims this task writes the V2 scope from it.\n\n**What V1 is**\n\nA multispectral camera on the attachment interface with clean power, a native PWM trigger from the flight controller's aux channel, and a USB power configuration, on a mount designed by Alperen. Ground tested, then flown on Gray's Quiver at the meetup. Results went out in the Arrow account's tweet. Field usable, but the components are exposed.\n\n**Milestone 0, the scope, priced at $100**\n\nRead the V1 note and its files. Post in this issue a one page V2 scope: what changes and why, the parts list with sources, the print or machining plan, the bench test before flight, the flight test that proves it, and a price for the build. Known V2 ideas from the meetup, not requirements: component protection, a repeatable mount, and the trigger path documented for the developer guide. The Project Lead accepts the scope and its price in this issue, and that becomes the build milestone.\n\n**Milestone 1, the build, priced at milestone 0**\n\nBuild it, bench test it against the Attachment Developer Guide checklist once that exists (T-05), fly it on the attachment interface, upload the log, merge the design files and a short build note next to the V1 note.\n\n**Who should claim this**\n\nSomeone with a printer and bench access. The V1 housing and mount were Alperen's designs, so his review of the V2 mechanical changes is expected whoever builds it.\n\n**Acceptance and payment**\nMilestone 0 is accepted by the Project Lead in this issue and sets the price of the build. The build is accepted on the flight log. Payouts batch monthly through the CSV airdrop flow.\n\n\n**Working rules (added 2026-10-06, apply to every milestone of this task)**\n\n1. Milestones are sequential. Work on the next milestone starts only after the current one is accepted in this issue. Work submitted ahead of acceptance is not owed.\n2. Drafting tools are fine. Unverified output is not. Every factual claim you submit has been checked by you against the named source before it reaches review. One unverified claim returns the milestone. Review is not a verification service.\n3. Reviews are batched: one review per milestone, one revision. If the revision does not close every comment, the milestone returns to open.\n4. Assignment happens after a short call with the Project Lead on the Arrow Discord. Written applications on their own are not reviewed.\n5. Commits must be signed. The repository ruleset rejects unsigned pushes, so set up commit signing before your first push.\n6. Inputs the team owes you are listed in this issue and are delivered before you are assigned, not after.\n\n",
    "topics": [
     "attachments",
     "flight"
@@ -1711,8 +1711,8 @@
     "2112",
     "3310"
    ],
-   "comments": 0,
-   "updatedAt": "2026-10-07T04:00:22Z"
+   "comments": 3,
+   "updatedAt": "2026-10-30T19:04:16Z"
   },
   {
    "id": "T-07",
@@ -1726,23 +1726,23 @@
    "priceUsd": null,
    "fundingText": "QGB-05",
    "owner": "OPEN",
-   "deadline": "Milestone 0 by 2026-10-15, build flown by 2026-11-15",
+   "deadline": "Milestone 0 by 2026-11-30, build flown by 2027-01-31",
    "doneWhen": "The V2 payload latch has flown on the attachment interface with a logged flight and its design files are merged.",
-   "status": "opens when the V1 information note lands",
-   "whoShouldClaim": "Someone with a printer and bench access. The V1 housing and mount were Alperen's designs, so his review of the V2 mechanical changes is expected whoever builds it.\r",
+   "status": "open to claim since 2026-10-30, T-11 complete",
+   "whoShouldClaim": "Someone with a printer and bench access. The V1 housing and mount were Alperen's designs, so his review of the V2 mechanical changes is expected whoever builds it.",
    "milestones": [
     {
      "n": 0,
      "title": "the scope, priced at $100",
-     "text": "Read the V1 note and its files. Post in this issue a one page V2 scope: what changes and why, the parts list with sources, the print or machining plan, the bench test before flight, the flight test that proves it, and a price for the build. Known V2 ideas from the meetup, not requirements: a fully 3D printed assembly, self sourced parts, a larger size, and the linkage twist designed out. The Project Lead accepts the scope and its price in this issue, and that becomes the build milestone.\r"
+     "text": "Read the V1 note and its files. Post in this issue a one page V2 scope: what changes and why, the parts list with sources, the print or machining plan, the bench test before flight, the flight test that proves it, and a price for the build. Known V2 ideas from the meetup, not requirements: a fully 3D printed assembly, self sourced parts, a larger size, and the linkage twist designed out. The Project Lead accepts the scope and its price in this issue, and that becomes the build milestone."
     },
     {
      "n": 1,
      "title": "the build, priced at milestone 0",
-     "text": "Build it, bench test it against the Attachment Developer Guide checklist once that exists (T-05), fly it on the attachment interface, upload the log, merge the design files and a short build note next to the V1 note.\r"
+     "text": "Build it, bench test it against the Attachment Developer Guide checklist once that exists (T-05), fly it on the attachment interface, upload the log, merge the design files and a short build note next to the V1 note."
     }
    ],
-   "body": "**Task board row T-07**\r\n\r\n| | |\r\n|---|---|\r\n| Price | Set at milestone 0 (below), from the QGB-05 Attachment Development allocation of $3,000, which funds this task and its sibling (T-06) together, with QGB-FLEX unassigned as overflow if the two scopes outgrow it |\r\n| Funding line | QGB-05 |\r\n| Owner | OPEN |\r\n| Deadline | Milestone 0 by 2026-10-15, build flown by 2026-11-15 |\r\n| Done when | The V2 payload latch has flown on the attachment interface with a logged flight and its design files are merged. |\r\n\r\n**Status: opens when the V1 information note lands**\r\n\r\nThe V1 payload latch was built and tested at the August meetup. Its information note and design files are task T-11 (#257), due September 30. Nothing about V2 is decided yet, on purpose. The V1 note is the input, and whoever claims this task writes the V2 scope from it. Do not start before T-11 merges.\r\n\r\n**What V1 is**\r\n\r\nA servo latch driven by PWM from the flight controller (the attachment interface pins were reconfigured from GPIO to PWM), the 12 V line regulated to 6 V on the payload side, in a housing designed by Alperen. Tested with cans and a first aid kit. A late test open and close fault traced to a twisted pin linkage on the PWM tester, straightened, with dust also suspected.\r\n\r\n**Milestone 0, the scope, priced at $100**\r\n\r\nRead the V1 note and its files. Post in this issue a one page V2 scope: what changes and why, the parts list with sources, the print or machining plan, the bench test before flight, the flight test that proves it, and a price for the build. Known V2 ideas from the meetup, not requirements: a fully 3D printed assembly, self sourced parts, a larger size, and the linkage twist designed out. The Project Lead accepts the scope and its price in this issue, and that becomes the build milestone.\r\n\r\n**Milestone 1, the build, priced at milestone 0**\r\n\r\nBuild it, bench test it against the Attachment Developer Guide checklist once that exists (T-05), fly it on the attachment interface, upload the log, merge the design files and a short build note next to the V1 note.\r\n\r\n**Who should claim this**\r\n\r\nSomeone with a printer and bench access. The V1 housing and mount were Alperen's designs, so his review of the V2 mechanical changes is expected whoever builds it.\r\n\r\n**Acceptance and payment**\r\nMilestone 0 is accepted by the Project Lead in this issue and sets the price of the build. The build is accepted on the flight log. Payouts batch monthly through the CSV airdrop flow.\n\n\n**Working rules (added 2026-10-06, apply to every milestone of this task)**\n\n1. Milestones are sequential. Work on the next milestone starts only after the current one is accepted in this issue. Work submitted ahead of acceptance is not owed.\n2. Drafting tools are fine. Unverified output is not. Every factual claim you submit has been checked by you against the named source before it reaches review. One unverified claim returns the milestone. Review is not a verification service.\n3. Reviews are batched: one review per milestone, one revision. If the revision does not close every comment, the milestone returns to open.\n4. Assignment happens after a short call with the Project Lead on the Arrow Discord. Written applications on their own are not reviewed.\n5. Commits must be signed. The repository ruleset rejects unsigned pushes, so set up commit signing before your first push.\n6. Inputs the team owes you are listed in this issue and are delivered before you are assigned, not after.\n",
+   "body": "**Task board row T-07**\n\n| | |\n|---|---|\n| Price | Set at milestone 0 (below), from the QGB-05 Attachment Development allocation of $3,000, which funds this task and its sibling (T-06) together, with QGB-FLEX unassigned as overflow if the two scopes outgrow it |\n| Funding line | QGB-05 |\n| Owner | OPEN |\n| Deadline | Milestone 0 by 2026-11-30, build flown by 2027-01-31 |\n| Done when | The V2 payload latch has flown on the attachment interface with a logged flight and its design files are merged. |\n\n**Status: open to claim since 2026-10-30, T-11 complete**\n\nThe V1 payload latch was built and tested at the August meetup. Its information note and design files are task T-11 (#257), merged 2026-10-30 in Arrow-air/payload-systems. Nothing about V2 is decided yet, on purpose. The V1 note is the input, and whoever claims this task writes the V2 scope from it.\n\n**What V1 is**\n\nA servo latch driven by PWM from the flight controller (the attachment interface pins were reconfigured from GPIO to PWM), the 12 V line regulated to 6 V on the payload side, in a housing designed by Alperen. Tested with cans and a first aid kit. A late test open and close fault traced to a twisted pin linkage on the PWM tester, straightened, with dust also suspected.\n\n**Milestone 0, the scope, priced at $100**\n\nRead the V1 note and its files. Post in this issue a one page V2 scope: what changes and why, the parts list with sources, the print or machining plan, the bench test before flight, the flight test that proves it, and a price for the build. Known V2 ideas from the meetup, not requirements: a fully 3D printed assembly, self sourced parts, a larger size, and the linkage twist designed out. The Project Lead accepts the scope and its price in this issue, and that becomes the build milestone.\n\n**Milestone 1, the build, priced at milestone 0**\n\nBuild it, bench test it against the Attachment Developer Guide checklist once that exists (T-05), fly it on the attachment interface, upload the log, merge the design files and a short build note next to the V1 note.\n\n**Who should claim this**\n\nSomeone with a printer and bench access. The V1 housing and mount were Alperen's designs, so his review of the V2 mechanical changes is expected whoever builds it.\n\n**Acceptance and payment**\nMilestone 0 is accepted by the Project Lead in this issue and sets the price of the build. The build is accepted on the flight log. Payouts batch monthly through the CSV airdrop flow.\n\n\n**Working rules (added 2026-10-06, apply to every milestone of this task)**\n\n1. Milestones are sequential. Work on the next milestone starts only after the current one is accepted in this issue. Work submitted ahead of acceptance is not owed.\n2. Drafting tools are fine. Unverified output is not. Every factual claim you submit has been checked by you against the named source before it reaches review. One unverified claim returns the milestone. Review is not a verification service.\n3. Reviews are batched: one review per milestone, one revision. If the revision does not close every comment, the milestone returns to open.\n4. Assignment happens after a short call with the Project Lead on the Arrow Discord. Written applications on their own are not reviewed.\n5. Commits must be signed. The repository ruleset rejects unsigned pushes, so set up commit signing before your first push.\n6. Inputs the team owes you are listed in this issue and are delivered before you are assigned, not after.\n\n",
    "topics": [
     "attachments",
     "flight"
@@ -1752,8 +1752,8 @@
     "2112",
     "3310"
    ],
-   "comments": 0,
-   "updatedAt": "2026-10-07T04:00:24Z"
+   "comments": 3,
+   "updatedAt": "2026-10-30T19:04:19Z"
   },
   {
    "id": "T-08",
@@ -1822,15 +1822,15 @@
     "docs"
    ],
    "parts": [],
-   "comments": 23,
-   "updatedAt": "2026-10-17T04:40:48Z"
+   "comments": 24,
+   "updatedAt": "2026-10-27T19:11:26Z"
   },
   {
    "id": "T-11",
    "number": 257,
    "url": "https://github.com/Arrow-air/project-quiver/issues/257",
    "title": "Information notes for the V1 payload latch and V1 multispectral camera",
-   "state": "OPEN",
+   "state": "CLOSED",
    "claimable": false,
    "fundingLabel": null,
    "priceText": "None. Retainer scope, documentation is what the lead retainer pays for.",
@@ -1850,8 +1850,8 @@
     "2112",
     "3331"
    ],
-   "comments": 1,
-   "updatedAt": "2026-09-30T06:42:12Z"
+   "comments": 2,
+   "updatedAt": "2026-10-30T18:41:35Z"
   },
   {
    "id": "T-12",
@@ -1885,7 +1885,7 @@
    "number": 259,
    "url": "https://github.com/Arrow-air/project-quiver/issues/259",
    "title": "Does the Ethernet switch build fly with clean GPS under the Houston operating setup? Recreate it, read the M9N, fly once",
-   "state": "OPEN",
+   "state": "CLOSED",
    "claimable": false,
    "fundingLabel": "fund-QGB-FLEX",
    "priceText": "$150 for the preparation, the readings, and the upload (sized at two hours). The flight itself is paid in $ARROW per validated log from the Flight Test Campaign pool under its V1 mechanics (#263).",
@@ -1908,8 +1908,8 @@
     "2331",
     "3313"
    ],
-   "comments": 1,
-   "updatedAt": "2026-10-03T15:31:16Z"
+   "comments": 3,
+   "updatedAt": "2026-10-27T20:13:35Z"
   },
   {
    "id": "T-14",
@@ -1984,8 +1984,8 @@
     "docs"
    ],
    "parts": [],
-   "comments": 0,
-   "updatedAt": "2026-10-22T15:44:28Z"
+   "comments": 1,
+   "updatedAt": "2026-10-27T19:11:47Z"
   },
   {
    "id": "T-17",
@@ -2009,8 +2009,8 @@
     "flight"
    ],
    "parts": [],
-   "comments": 0,
-   "updatedAt": "2026-09-30T06:42:21Z"
+   "comments": 1,
+   "updatedAt": "2026-10-30T19:07:05Z"
   },
   {
    "id": "T-18",
@@ -2036,8 +2036,110 @@
    "parts": [
     "3312"
    ],
+   "comments": 1,
+   "updatedAt": "2026-10-30T19:07:08Z"
+  },
+  {
+   "id": "T-19",
+   "number": 277,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/277",
+   "title": "Review PR #273, baseline parameter corrections (4.8 arming check name, MR82 proximity instance, metric parameter names, FC TCP server)",
+   "state": "OPEN",
+   "claimable": false,
+   "fundingLabel": "fund-retro",
+   "priceText": "427 $ARROW. One hour at AIP-004 Level 4 ($64/hour), converted at $0.150 per $ARROW (Uniswap ARROW/USDC, 2026-10-27).",
+   "priceUsd": null,
+   "fundingText": "Held $ARROW retro reserves on the Quiver Safe. Pays in the October batch with the monthly retro.",
+   "owner": "Zeynep (@ZeynepB5793)",
+   "deadline": "2026-11-03",
+   "doneWhen": "A GitHub review is submitted on #273 (Approve, or Request changes with line comments), and the author has replied to every comment.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-19**\n\n| | |\n|---|---|\n| Price | 427 $ARROW. One hour at AIP-004 Level 4 ($64/hour), converted at $0.150 per $ARROW (Uniswap ARROW/USDC, 2026-10-27). |\n| Funding line | Held $ARROW retro reserves on the Quiver Safe. Pays in the October batch with the monthly retro. |\n| Owner | Zeynep (@ZeynepB5793) |\n| Accepted by | Erick, on the review being submitted. The reviewer does not control the merge, so payment does not wait for it. |\n| Deadline | 2026-11-03 |\n| Done when | A GitHub review is submitted on #273 (Approve, or Request changes with line comments), and the author has replied to every comment. |\n\n**What is being asked**\n\nReview the parameter file changes in #273 against the flying Houston configuration and the 4.8.0-dev firmware the unit runs (git `20622a39`).\n\n1. Each renamed parameter exists under that name in 4.8 and the old name is gone from every file in `docs/Operations/firmware/parameters/`.\n2. The MR82 proximity instance and orientation match the as-built sensor layout (PRX2 on CAN2 RadarCAN, azimuth corrected 2026-08-04).\n3. The FC TCP server settings match the network map in the configuration guide (FC at `.51:5760`).\n4. Nothing in the diff contradicts the dense environment obstacle avoidance set validated on 2026-10-01.\n\nThe review is the deliverable. One hour is the budget, not a minimum. If the PR needs more than an hour to review properly, say so in this issue before spending it and the task is repriced.\n\n**Why this is a priced task**\n\nThe five documentation PRs opened on 2026-09-30 have waited four weeks without a review because review time has no compensation stream since the retainers ended. This is the first use of straight $ARROW task pricing, proposed on the 2026-10-05 call with no objection raised.\n\n**Acceptance and payment**\n\nErick accepts in this issue when the review is on the PR. Payouts batch monthly through the CSV airdrop flow to the Ethereum mainnet address on file for the reviewer.\n",
+   "topics": [
+    "software"
+   ],
+   "parts": [],
    "comments": 0,
-   "updatedAt": "2026-09-30T06:42:22Z"
+   "updatedAt": "2026-10-27T19:00:37Z"
+  },
+  {
+   "id": "T-20",
+   "number": 278,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/278",
+   "title": "Review PR #274, Pilot's Handbook first pass and First Flight Checklist",
+   "state": "OPEN",
+   "claimable": false,
+   "fundingLabel": "fund-retro",
+   "priceText": "427 $ARROW. One hour at AIP-004 Level 4 ($64/hour), converted at $0.150 per $ARROW (Uniswap ARROW/USDC, 2026-10-27).",
+   "priceUsd": null,
+   "fundingText": "Held $ARROW retro reserves on the Quiver Safe. Pays in the October batch with the monthly retro.",
+   "owner": "Zeynep (@ZeynepB5793)",
+   "deadline": "2026-11-03",
+   "doneWhen": "A GitHub review is submitted on #274 (Approve, or Request changes with line comments), and the author has replied to every comment.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-20**\n\n| | |\n|---|---|\n| Price | 427 $ARROW. One hour at AIP-004 Level 4 ($64/hour), converted at $0.150 per $ARROW (Uniswap ARROW/USDC, 2026-10-27). |\n| Funding line | Held $ARROW retro reserves on the Quiver Safe. Pays in the October batch with the monthly retro. |\n| Owner | Zeynep (@ZeynepB5793) |\n| Accepted by | Erick, on the review being submitted. The reviewer does not control the merge, so payment does not wait for it. |\n| Deadline | 2026-11-03 |\n| Done when | A GitHub review is submitted on #274 (Approve, or Request changes with line comments), and the author has replied to every comment. |\n\n**What is being asked**\n\nReview #274 as the pilot who will fly from it.\n\n1. The flight mode map, switch assignments and failsafe actions match the aircraft as configured (ch9 STABILIZE / LOITER / RTL, ch5 arm, ch8 kill with guard, ch10 RTL).\n2. The battery figures, GPS gate and SSR auto engage doctrine match the parameter files in #273.\n3. The First Flight Checklist is executable in order on a cold aircraft, with no step that depends on a later one.\n4. Anything a second operator would get wrong on the first read.\n\nThe review is the deliverable. One hour is the budget, not a minimum. If the PR needs more than an hour to review properly, say so in this issue before spending it and the task is repriced.\n\n**Why this is a priced task**\n\nThe five documentation PRs opened on 2026-09-30 have waited four weeks without a review because review time has no compensation stream since the retainers ended. This is the first use of straight $ARROW task pricing, proposed on the 2026-10-05 call with no objection raised.\n\n**Acceptance and payment**\n\nErick accepts in this issue when the review is on the PR. Payouts batch monthly through the CSV airdrop flow to the Ethereum mainnet address on file for the reviewer.\n",
+   "topics": [
+    "docs",
+    "flight"
+   ],
+   "parts": [],
+   "comments": 0,
+   "updatedAt": "2026-10-27T19:00:39Z"
+  },
+  {
+   "id": "T-21",
+   "number": 279,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/279",
+   "title": "Review PR #275, Dev-Kit Engineering Report corrections ER1 to ER10",
+   "state": "OPEN",
+   "claimable": false,
+   "fundingLabel": "fund-retro",
+   "priceText": "427 $ARROW. One hour at AIP-004 Level 4 ($64/hour), converted at $0.150 per $ARROW (Uniswap ARROW/USDC, 2026-10-27).",
+   "priceUsd": null,
+   "fundingText": "Held $ARROW retro reserves on the Quiver Safe. Pays in the October batch with the monthly retro.",
+   "owner": "KBM (@DowFisherKBM)",
+   "deadline": "2026-11-03",
+   "doneWhen": "A GitHub review is submitted on #275 (Approve, or Request changes with line comments), and the author has replied to every comment.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-21**\n\n| | |\n|---|---|\n| Price | 427 $ARROW. One hour at AIP-004 Level 4 ($64/hour), converted at $0.150 per $ARROW (Uniswap ARROW/USDC, 2026-10-27). |\n| Funding line | Held $ARROW retro reserves on the Quiver Safe. Pays in the October batch with the monthly retro. |\n| Owner | KBM (@DowFisherKBM) |\n| Accepted by | Erick, on the review being submitted. The reviewer does not control the merge, so payment does not wait for it. |\n| Deadline | 2026-11-03 |\n| Done when | A GitHub review is submitted on #275 (Approve, or Request changes with line comments), and the author has replied to every comment. |\n\n**What is being asked**\n\nReview the ten corrections in #275 against the as-built first unit and the repo sources they cite.\n\n1. Sensor loadout, lidar model, Remote ID build and firmware facts match the configuration guide and the parameter files.\n2. The BMS and 14S LiHV pack description matches the battery PCB and the Bat2 telemetry as flown.\n3. The GNSS interference finding is stated as a finding with its evidence, not as a settled cause.\n4. Internal consistency: no figure, table or section still carries the value a correction replaced.\n\nThe review is the deliverable. One hour is the budget, not a minimum. If the PR needs more than an hour to review properly, say so in this issue before spending it and the task is repriced.\n\n**Why this is a priced task**\n\nThe five documentation PRs opened on 2026-09-30 have waited four weeks without a review because review time has no compensation stream since the retainers ended. This is the first use of straight $ARROW task pricing, proposed on the 2026-10-05 call with no objection raised.\n\n**Acceptance and payment**\n\nErick accepts in this issue when the review is on the PR. Payouts batch monthly through the CSV airdrop flow to the Ethereum mainnet address on file for the reviewer.\n",
+   "topics": [
+    "docs"
+   ],
+   "parts": [],
+   "comments": 0,
+   "updatedAt": "2026-10-27T19:00:42Z"
+  },
+  {
+   "id": "T-22",
+   "number": 280,
+   "url": "https://github.com/Arrow-air/project-quiver/issues/280",
+   "title": "Review PR #276, SDK guide network map, CubeNode addressing and Ethernet note banner",
+   "state": "OPEN",
+   "claimable": false,
+   "fundingLabel": "fund-retro",
+   "priceText": "427 $ARROW. One hour at AIP-004 Level 4 ($64/hour), converted at $0.150 per $ARROW (Uniswap ARROW/USDC, 2026-10-27).",
+   "priceUsd": null,
+   "fundingText": "Held $ARROW retro reserves on the Quiver Safe. Pays in the October batch with the monthly retro.",
+   "owner": "Alex (@alexdada555)",
+   "deadline": "2026-11-03",
+   "doneWhen": "A GitHub review is submitted on #276 (Approve, or Request changes with line comments), and the author has replied to every comment.",
+   "status": null,
+   "whoShouldClaim": null,
+   "milestones": [],
+   "body": "**Task board row T-22**\n\n| | |\n|---|---|\n| Price | 427 $ARROW. One hour at AIP-004 Level 4 ($64/hour), converted at $0.150 per $ARROW (Uniswap ARROW/USDC, 2026-10-27). |\n| Funding line | Held $ARROW retro reserves on the Quiver Safe. Pays in the October batch with the monthly retro. |\n| Owner | Alex (@alexdada555) |\n| Accepted by | Erick, on the review being submitted. The reviewer does not control the merge, so payment does not wait for it. |\n| Deadline | 2026-11-03 |\n| Done when | A GitHub review is submitted on #276 (Approve, or Request changes with line comments), and the author has replied to every comment. |\n\n**What is being asked**\n\nReview #276 as the QuiverHub and SDK owner, since the guide declares this document canonical for the network map.\n\n1. The CubeNode procedure (static `.50`, FC lands at `.51`, full power cycle after an address change) matches what you will set up on the Houston unit on 2026-10-30 (T-18).\n2. No residual old addressing anywhere: CubeNode `.10`, Pi as gateway `.50`, `/20` masks, SiK radio.\n3. The MAVLink access paths (FC TCP `.51:5760`, SIYI link, Pi) are the ones QuiverHub actually uses.\n4. The Ethernet note banner points at the right guide section.\n\nThe review is the deliverable. One hour is the budget, not a minimum. If the PR needs more than an hour to review properly, say so in this issue before spending it and the task is repriced.\n\n**Why this is a priced task**\n\nThe five documentation PRs opened on 2026-09-30 have waited four weeks without a review because review time has no compensation stream since the retainers ended. This is the first use of straight $ARROW task pricing, proposed on the 2026-10-05 call with no objection raised.\n\n**Acceptance and payment**\n\nErick accepts in this issue when the review is on the PR. Payouts batch monthly through the CSV airdrop flow to the Ethereum mainnet address on file for the reviewer.\n",
+   "topics": [
+    "software",
+    "docs"
+   ],
+   "parts": [],
+   "comments": 0,
+   "updatedAt": "2026-10-27T19:00:45Z"
   }
  ],
  "issues": [
@@ -3469,9 +3571,9 @@
     "3210",
     "3290"
    ],
-   "comments": 6,
+   "comments": 8,
    "createdAt": "2026-04-20T14:14:22Z",
-   "updatedAt": "2026-08-30T21:47:32Z"
+   "updatedAt": "2026-10-25T10:36:19Z"
   },
   {
    "number": 206,
@@ -3523,9 +3625,9 @@
     "2112",
     "3310"
    ],
-   "comments": 16,
+   "comments": 17,
    "createdAt": "2026-07-09T14:18:16Z",
-   "updatedAt": "2026-07-11T11:54:09Z"
+   "updatedAt": "2026-10-25T12:30:47Z"
   },
   {
    "number": 234,
@@ -3700,9 +3802,13 @@
    "statedBudgetUsd": null,
    "statedBudgetSource": null,
    "pricedUsd": 0,
-   "unpriced": 1,
+   "unpriced": 5,
    "tasks": [
-    "T-17"
+    "T-17",
+    "T-19",
+    "T-20",
+    "T-21",
+    "T-22"
    ]
   }
  ],
@@ -3907,7 +4013,7 @@
    "group": "Build",
    "path": "docs/Manufacturing/Manufacturing-Guide.md",
    "title": "Dev-Kit Manufacturing Guide",
-   "lines": 1146,
+   "lines": 1158,
    "outline": [
     {
      "depth": 1,
