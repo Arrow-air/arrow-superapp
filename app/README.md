@@ -1,6 +1,6 @@
 # Arrow superapp
 
-The app: the Quiver and Longshot workspaces, live at [superapp-beta.arrowair.com](https://superapp-beta.arrowair.com). Sign in with the same GitHub or email account as flights.arrowair.com. The project switcher in the workspace header moves between them.
+The app: the Quiver and Longshot workspaces, live at [superapp.arrowair.com](https://superapp.arrowair.com). Sign in with the same GitHub or email account as flights.arrowair.com. The project switcher in the workspace header moves between them.
 
 Agreed with Gavin on 2026-10-01 as the canonical version. It began as `prototypes/quiver-demo`, a fork of Gavin's `prototypes/app-frame` (branch `sl33ty/explore/app-frame` at `31d499a`); the frame, tokens, command palette, drawers and the thread design are his. His later app-frame work (merged to main as #13, through `d28575e`) is ported in too: the CAD explorer, thread types, the new-thread composer, option cards, and the design freeze clock. His Back this / poll-bar voting was tried and reverted (Thomas, 2026-10-01): voting stays Reddit-style arrows.
 
@@ -68,7 +68,7 @@ How projects fit together: each project has its tabs (`src/frame/nav.ts`, `src/p
 | Decisions | The register |
 | Work | Grants and bounties; task board and open pull requests, read-only from GitHub |
 
-## Live (superapp-beta.arrowair.com)
+## Live (superapp.arrowair.com)
 
 With `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` set at build time, the app runs against the shared Arrow Supabase (the flight tracking app's), so people sign in with the same GitHub or email accounts. Reads are public; every write is a database function that checks who is signed in and, for lead actions, their role. Thomas and Erick are granted lead by GitHub account; leads set everyone else's role on the People page.
 
@@ -86,7 +86,7 @@ With `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` set at build time, 
 - Projects (`20261010000000_sa_projects.sql`): `sa_projects` lists each project and its thread prefix (Q, L). `sa_start_thread` takes `p_project` (Quiver when a client names none) and numbers threads per project; `sa_settle` numbers decisions per project. Quiver keeps its counters (`thread`, `decision`); Longshot counts under `thread:longshot` and `decision:longshot`. Work stays W-1 upward across projects.
 - Starting content: `npx tsx scripts/build-seed-sql.ts > supabase/seed_quiver.sql` and `npx tsx scripts/build-seed-sql.ts longshot > supabase/seed_longshot.sql` (idempotent).
 - Applied to production by POSTing the SQL to the Supabase pg-meta endpoint (`/pg/query`, service key), after a `pg_dumpall` on the box.
-- Hosting: Openship project `superapp-beta`, branch `main`, root `app/`: `npm run build` then `npm start` (serve on $PORT). Every push to `main` redeploys.
+- Hosting: Openship project `superapp-beta` (the project kept its old name), branch `main`, root `app/`: `npm run build` then `npm start` (serve on $PORT), always on. Every push to `main` redeploys. superapp.arrowair.com is the primary domain; superapp-beta.arrowair.com and specs.arrowair.com are redirect domains on the same project (301, path and query kept; browsers keep the `#/…` route), so old links still land. The retired `spec-threads` project stays disabled rather than deleted: it shares this project's GitHub deploy hook, and deleting it would remove the hook.
 - `e2e/live.cjs` runs the signed-in path against any Supabase with the migration (BASE, SUPA, ANON, SERVICE env).
 
 ## Run

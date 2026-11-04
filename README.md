@@ -1,8 +1,8 @@
 # Arrow Superapp
 
-**The app:** [`app/`](app/), live at [superapp-beta.arrowair.com](https://superapp-beta.arrowair.com). Two workspaces: Longshot, Arrow's battery pack (BMS, charging, Quiver and Spearhead integration, a 3D model of PT1), and Quiver: working zones for attachments, software, the next Dev Kit and selling; Reddit-style threads with weighted votes; decisions into a numbered register; bounties and grants funded from decisions; a retro pool split at each version freeze. Sign in with your flights.arrowair.com account (GitHub or email). How it works, how to run it, and how the database is set up: [`app/README.md`](app/README.md).
+**The app:** [`app/`](app/), live at [superapp.arrowair.com](https://superapp.arrowair.com). Two workspaces: Longshot, Arrow's battery pack (BMS, charging, Quiver and Spearhead integration, a 3D model of PT1), and Quiver: working zones for attachments, software, the next Dev Kit and selling; Reddit-style threads with weighted votes; decisions into a numbered register; bounties and grants funded from decisions; a retro pool split at each version freeze. Sign in with your flights.arrowair.com account (GitHub or email). How it works, how to run it, and how the database is set up: [`app/README.md`](app/README.md).
 
-The earlier Spearhead example workspace still runs at [specs.arrowair.com](https://specs.arrowair.com) from [`prototypes/spec-threads`](prototypes/spec-threads/PRODUCT-WORKSPACE.md).
+The earlier Spearhead example workspace ([`prototypes/spec-threads`](prototypes/spec-threads/PRODUCT-WORKSPACE.md)) was retired on 2026-11-04; specs.arrowair.com and the old superapp-beta.arrowair.com address now forward to the superapp.
 
 Working notes and prototypes for how Arrow could coordinate, decide, and fund work as one continuous loop.
 
@@ -58,4 +58,4 @@ Link to OPEN-QUESTIONS.md numbers.
 
 ## Next call
 
-No date set. The spec app is on `main` and deployed at [specs.arrowair.com](https://specs.arrowair.com) as an example workspace: PT2 discussions, weighted support, decisions that write the spec, work with rewards and proposer awards, and a freeze that splits a retro pool. Gavin and Alperen: try it as different people, then file reactions as ideas or questions.
+No date set. The superapp at [superapp.arrowair.com](https://superapp.arrowair.com) is the one place to try things now; file reactions as ideas or questions.
