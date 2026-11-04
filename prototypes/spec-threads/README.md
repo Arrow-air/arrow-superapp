@@ -1,6 +1,6 @@
 # Current: the Arrow workspace
 
-**Retired 2026-11-04.** specs.arrowair.com no longer serves this; it forwards to the superapp ([superapp.arrowair.com](https://superapp.arrowair.com)). The default build is the example Spearhead workspace: fictional contributors and about two weeks of PT2 activity on the real call and repository records, running entirely in the visitor's browser. Pick someone under “Explore as” to act as the lead (settle discussions, accept work, freeze PT2) or as a contributor. Changes stay in that browser; “Reset the example” restores it.
+**Retired 2026-11-04.** specs.arrowair.com no longer serves this; it forwards to the superapp ([app.arrowair.com](https://app.arrowair.com)). The default build is the example Spearhead workspace: fictional contributors and about two weeks of PT2 activity on the real call and repository records, running entirely in the visitor's browser. Pick someone under “Explore as” to act as the lead (settle discussions, accept work, freeze PT2) or as a contributor. Changes stay in that browser; “Reset the example” restores it.
 
 ```bash
 npm install
