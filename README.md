@@ -1,8 +1,8 @@
 # Arrow Superapp
 
-**The app:** [`app/`](app/), live at [superapp.arrowair.com](https://superapp.arrowair.com). Two workspaces: Longshot, Arrow's battery pack (BMS, charging, Quiver and Spearhead integration, a 3D model of PT1), and Quiver: working zones for attachments, software, the next Dev Kit and selling; Reddit-style threads with weighted votes; decisions into a numbered register; bounties and grants funded from decisions; a retro pool split at each version freeze. Sign in with your flights.arrowair.com account (GitHub or email). How it works, how to run it, and how the database is set up: [`app/README.md`](app/README.md).
+**The app:** [`app/`](app/), live at [app.arrowair.com](https://app.arrowair.com). Two workspaces: Longshot, Arrow's battery pack (BMS, charging, Quiver and Spearhead integration, a 3D model of PT1), and Quiver: working zones for attachments, software, the next Dev Kit and selling; Reddit-style threads with weighted votes; decisions into a numbered register; bounties and grants funded from decisions; a retro pool split at each version freeze. Sign in with your flights.arrowair.com account (GitHub or email). How it works, how to run it, and how the database is set up: [`app/README.md`](app/README.md).
 
-The earlier Spearhead example workspace ([`prototypes/spec-threads`](prototypes/spec-threads/PRODUCT-WORKSPACE.md)) was retired on 2026-11-04; specs.arrowair.com and the old superapp-beta.arrowair.com address now forward to the superapp.
+The earlier Spearhead example workspace ([`prototypes/spec-threads`](prototypes/spec-threads/PRODUCT-WORKSPACE.md)) was retired on 2026-11-04; specs.arrowair.com and the old superapp-beta.arrowair.com and superapp.arrowair.com addresses now forward to the superapp at app.arrowair.com.
 
 Working notes and prototypes for how Arrow could coordinate, decide, and fund work as one continuous loop.
 
@@ -58,4 +58,4 @@ Link to OPEN-QUESTIONS.md numbers.
 
 ## Next call
 
-No date set. The superapp at [superapp.arrowair.com](https://superapp.arrowair.com) is the one place to try things now; file reactions as ideas or questions.
+No date set. The superapp at [app.arrowair.com](https://app.arrowair.com) is the one place to try things now; file reactions as ideas or questions.
