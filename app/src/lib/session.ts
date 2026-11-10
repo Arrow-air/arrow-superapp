@@ -17,7 +17,17 @@ export const session = reactive({
   signInOpen: false,
   /** 'forum' while the forum (dao.arrowair.com) is waiting on this sign-in. */
   signInFor: '' as '' | 'forum',
+  /** A reset link signed them in: they still have to choose a password. */
+  newPassword: false,
   notice: '',
+});
+
+// supabase-js reports a reset link while it reads the address, before
+// initSession runs, so this listens from the start.
+sb?.auth.onAuthStateChange((event) => {
+  if (event !== 'PASSWORD_RECOVERY') return;
+  session.newPassword = true;
+  session.signInOpen = true;
 });
 
 let reloadHook: () => Promise<void> = async () => {};
@@ -86,16 +96,30 @@ export async function signInWithPassword(email: string, password: string) {
   if (!error) session.signInOpen = false;
   return error?.message ?? null;
 }
+/** Joins someone who signed in on the forum page and then stayed in the app. */
+export async function joinIfSignedIn() {
+  if (!sb || !session.userId || session.member) return;
+  const { data, error } = await sb.rpc('sa_join');
+  if (!error) session.member = data as Member;
+}
 /** A new Arrow account. The confirmation link signs them in here. */
 export async function signUpWithPassword(email: string, password: string) {
   const { error } = await sb!.auth.signUp({ email, password, options: { emailRedirectTo: `${location.origin}/` } });
   return error?.message ?? null;
 }
-/** The reset link opens flights.arrowair.com, which asks for the new password;
- * the session it starts there is this app's too. */
+/** The reset link comes back here (PKCE: to the browser that asked), which
+ * then asks for the new password. */
 export async function sendPasswordReset(email: string) {
-  const { error } = await sb!.auth.resetPasswordForEmail(email, { redirectTo: 'https://flights.arrowair.com/login' });
+  const { error } = await sb!.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/` });
   return error?.message ?? null;
+}
+/** After a reset link signed them in: the password they'll use from now on. */
+export async function setNewPassword(password: string) {
+  const { error } = await sb!.auth.updateUser({ password });
+  if (error) return error.message;
+  session.newPassword = false;
+  session.signInOpen = false;
+  return null;
 }
 export async function signOut() {
   await sb!.auth.signOut();

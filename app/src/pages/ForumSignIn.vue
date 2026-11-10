@@ -2,10 +2,10 @@
 // #/forum/sign-in: where the forum (dao.arrowair.com) sends people to sign in
 // with their Arrow account. Signed in already: straight back to the forum.
 // Otherwise the sign-in box, then back.
-import { onMounted, ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { remote, sb } from '../lib/backend';
-import { session } from '../lib/session';
+import { joinIfSignedIn, session } from '../lib/session';
 import { FORUM, forgetForumRequest, forumAnswer, pendingForumRequest, rememberForumRequest, type ForumRequest } from '../lib/forum';
 
 const route = useRoute();
@@ -22,6 +22,8 @@ async function finish(r: ForumRequest) {
   state.value = 'going';
   const res = await forumAnswer(r);
   if ('error' in res) {
+    // A bad or stale request shouldn't catch the next GitHub or email landing.
+    forgetForumRequest();
     state.value = 'error';
     error.value = res.error;
     return;
@@ -55,6 +57,9 @@ onMounted(async () => {
   state.value = 'signin';
   openSignIn();
 });
+
+// Staying in the app instead of going back to the forum: join the workspace.
+onBeforeUnmount(() => void joinIfSignedIn());
 
 // Signed in through the box: carry on to the forum.
 watch(() => session.userId, (id) => {

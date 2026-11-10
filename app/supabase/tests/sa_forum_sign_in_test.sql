@@ -33,24 +33,44 @@ select vault.update_secret((select id from vault.secrets where name = 'sa_forum_
 select repeat('5ec7e7', 10) || 'abcd' as secret \gset
 
 -- Throwaway accounts:
---   f1 GitHub, confirmed, a name and login with non-ASCII letters and a plus in the email
---   f2 email only, confirmed, metadata claiming to be errrks
+--   f1 GitHub, confirmed, the email GitHub verified, a name and login with non-ASCII letters and a plus in the email
+--   f2 email only, confirmed without any email sent (as every sign-up was before 2026-11-09), metadata claiming to be errrks
 --   f3 email only, not confirmed
 --   f4 GitHub, confirmed, banned
-insert into auth.users (id, aud, role, email, email_confirmed_at, banned_until, raw_user_meta_data, raw_app_meta_data, created_at, updated_at) values
-  ('00000000-0000-4000-8000-0000000000f1', 'authenticated', 'authenticated', 'sa-forum+gh@example.invalid', now(), null,
+--   f5 email only, confirmed by the link it was sent
+--   f6 email only, confirmed without any email sent, vouched for
+--   f7 GitHub, but GitHub hadn't verified the email
+--   f8 GitHub, verified, but for another address than the account's
+--   f9 confirmed without any email sent, then sent a link it never opened
+insert into auth.users (id, aud, role, email, confirmation_sent_at, email_confirmed_at, banned_until, raw_user_meta_data, raw_app_meta_data, created_at, updated_at) values
+  ('00000000-0000-4000-8000-0000000000f1', 'authenticated', 'authenticated', 'sa-forum+gh@example.invalid', null, now(), null,
    '{"user_name": "sa-forum-gh"}', '{"provider": "github"}', now(), now()),
-  ('00000000-0000-4000-8000-0000000000f2', 'authenticated', 'authenticated', 'sa-forum-mail@example.invalid', now(), null,
+  ('00000000-0000-4000-8000-0000000000f2', 'authenticated', 'authenticated', 'sa-forum-mail@example.invalid', null, now(), null,
    '{"user_name": "errrks", "full_name": "Not Erick", "avatar_url": "https://avatars.githubusercontent.com/u/113721398?v=4"}', '{"provider": "email"}', now(), now()),
-  ('00000000-0000-4000-8000-0000000000f3', 'authenticated', 'authenticated', 'sa-forum-new@example.invalid', null, null,
+  ('00000000-0000-4000-8000-0000000000f3', 'authenticated', 'authenticated', 'sa-forum-new@example.invalid', now(), null, null,
    '{}', '{"provider": "email"}', now(), now()),
-  ('00000000-0000-4000-8000-0000000000f4', 'authenticated', 'authenticated', 'sa-forum-banned@example.invalid', now(), now() + interval '1 day',
-   '{}', '{"provider": "github"}', now(), now());
+  ('00000000-0000-4000-8000-0000000000f4', 'authenticated', 'authenticated', 'sa-forum-banned@example.invalid', null, now(), now() + interval '1 day',
+   '{}', '{"provider": "github"}', now(), now()),
+  ('00000000-0000-4000-8000-0000000000f5', 'authenticated', 'authenticated', 'sa-forum-link@example.invalid', now() - interval '1 hour', now(), null,
+   '{}', '{"provider": "email"}', now(), now()),
+  ('00000000-0000-4000-8000-0000000000f6', 'authenticated', 'authenticated', 'sa-forum-vouched@example.invalid', null, now(), null,
+   '{}', '{"provider": "email"}', now(), now()),
+  ('00000000-0000-4000-8000-0000000000f7', 'authenticated', 'authenticated', 'sa-forum-unverified@example.invalid', null, now(), null,
+   '{}', '{"provider": "github"}', now(), now()),
+  ('00000000-0000-4000-8000-0000000000f8', 'authenticated', 'authenticated', 'sa-forum-other@example.invalid', null, now(), null,
+   '{}', '{"provider": "github"}', now(), now()),
+  ('00000000-0000-4000-8000-0000000000f9', 'authenticated', 'authenticated', 'sa-forum-unopened@example.invalid', now(), now() - interval '1 day', null,
+   '{}', '{"provider": "email"}', now(), now());
 insert into auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at) values
   ('999000201', '00000000-0000-4000-8000-0000000000f1',
-   '{"sub": "999000201", "user_name": "sa-forum-gh", "full_name": "Zoë Ångström & Co=1", "avatar_url": "https://example.invalid/f1.png?s=40&v=4"}', 'github', now(), now(), now()),
+   '{"sub": "999000201", "user_name": "sa-forum-gh", "full_name": "Zoë Ångström & Co=1", "avatar_url": "https://example.invalid/f1.png?s=40&v=4", "email": "SA-Forum+gh@example.invalid", "email_verified": true}', 'github', now(), now(), now()),
   ('999000204', '00000000-0000-4000-8000-0000000000f4',
-   '{"sub": "999000204", "user_name": "sa-forum-banned"}', 'github', now(), now(), now());
+   '{"sub": "999000204", "user_name": "sa-forum-banned"}', 'github', now(), now(), now()),
+  ('999000207', '00000000-0000-4000-8000-0000000000f7',
+   '{"sub": "999000207", "user_name": "sa-forum-unverified", "email": "sa-forum-unverified@example.invalid", "email_verified": false}', 'github', now(), now(), now()),
+  ('999000208', '00000000-0000-4000-8000-0000000000f8',
+   '{"sub": "999000208", "user_name": "sa-forum-other", "email": "someone-else@example.invalid", "email_verified": true}', 'github', now(), now(), now());
+insert into public.sa_forum_vouched (user_id, note) values ('00000000-0000-4000-8000-0000000000f6', 'test: checked by hand');
 
 select sso, sig from pg_temp.request(:'secret', '0123456789abcdef0123456789abcdef') \gset
 
@@ -88,6 +108,29 @@ reset role;
 select pg_temp.check('an email account sends its email and id only; claimed metadata is ignored',
   pg_temp.field(:'url2', 'email') = 'sa-forum-mail@example.invalid' and pg_temp.field(:'url2', 'external_id') = '00000000-0000-4000-8000-0000000000f2'
   and pg_temp.field(:'url2', 'username') is null and pg_temp.field(:'url2', 'name') is null and pg_temp.field(:'url2', 'avatar_url') is null);
+select pg_temp.check('confirmed without an email sent: the forum must not link by email (require_activation=true)',
+  pg_temp.field(:'url2', 'require_activation') = 'true');
+
+-- Which addresses count as proven, as the forum hears it.
+create function pg_temp.activation(uid text, sso text, sig text) returns text language plpgsql as $$
+declare url text;
+begin
+  perform set_config('request.jwt.claims', json_build_object('sub', uid, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  url := public.sa_forum_sign_in(sso, sig);
+  reset role;
+  return pg_temp.field(url, 'require_activation');
+end $$;
+select pg_temp.check('confirmed by the link it was sent: proven',
+  pg_temp.activation('00000000-0000-4000-8000-0000000000f5', :'sso', :'sig') = 'false');
+select pg_temp.check('vouched for: proven',
+  pg_temp.activation('00000000-0000-4000-8000-0000000000f6', :'sso', :'sig') = 'false');
+select pg_temp.check('GitHub hadn''t verified the email: not proven',
+  pg_temp.activation('00000000-0000-4000-8000-0000000000f7', :'sso', :'sig') = 'true');
+select pg_temp.check('GitHub verified another address: not proven',
+  pg_temp.activation('00000000-0000-4000-8000-0000000000f8', :'sso', :'sig') = 'true');
+select pg_temp.check('a link sent after an automatic confirmation and never opened: not proven',
+  pg_temp.activation('00000000-0000-4000-8000-0000000000f9', :'sso', :'sig') = 'true');
 
 -- Requests the forum didn't sign, or that point somewhere else.
 select sso as evil_sso, sig as evil_sig from pg_temp.request(:'secret', 'abad1dea', 'https://evil.example/session/sso_login') \gset
@@ -120,6 +163,12 @@ select pg_temp.check('signed-in accounts can ask for a forum sign-in; visitors a
   and not has_function_privilege('anon', 'public.sa_forum_sign_in(text, text)', 'execute')
   and not has_function_privilege('authenticated', 'public.sa_forum_urlencode(text)', 'execute')
   and not has_function_privilege('anon', 'public.sa_forum_urldecode(text)', 'execute'));
+select pg_temp.check('nobody but the forum sign-in reads who is proven or vouched for',
+  not has_function_privilege('authenticated', 'public.sa_forum_email_proven(uuid)', 'execute')
+  and not has_function_privilege('anon', 'public.sa_forum_email_proven(uuid)', 'execute')
+  and not has_table_privilege('authenticated', 'public.sa_forum_vouched', 'select')
+  and not has_table_privilege('authenticated', 'public.sa_forum_vouched', 'insert')
+  and not has_table_privilege('anon', 'public.sa_forum_vouched', 'select'));
 select pg_temp.check('there is exactly one forum secret', (select count(*) from vault.secrets where name = 'sa_forum_connect') = 1);
 select pg_temp.check('the encoders round-trip every byte',
   public.sa_forum_urldecode(public.sa_forum_urlencode(x)) = x)

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { sendPasswordReset, session, signInWithGitHub, signInWithPassword, signUpWithPassword } from '../lib/session';
+import { useRouter } from 'vue-router';
+import { pendingForumRequest } from '../lib/forum';
+import { sendPasswordReset, session, setNewPassword, signInWithGitHub, signInWithPassword, signUpWithPassword } from '../lib/session';
 
 // Sign in with the same account as flights.arrowair.com: GitHub, or the email
 // and password you use there. New people can make an account here too; the
@@ -12,6 +14,7 @@ const sent = ref('');
 const busy = ref(false);
 const showEmail = ref(false);
 const mode = ref<'signin' | 'signup' | 'reset'>('signin');
+const router = useRouter();
 function to(m: typeof mode.value) {
   mode.value = m;
   error.value = '';
@@ -20,6 +23,16 @@ function to(m: typeof mode.value) {
 function close() {
   session.signInOpen = false;
   session.signInFor = '';
+  session.newPassword = false;
+}
+async function choosePassword() {
+  busy.value = true;
+  error.value = (await setNewPassword(password.value)) ?? '';
+  busy.value = false;
+  if (error.value) return;
+  password.value = '';
+  // Reset from the forum's sign-in: carry on to the forum.
+  if (pendingForumRequest()) void router.replace('/forum/sign-in');
 }
 async function withPassword() {
   busy.value = true;
@@ -33,7 +46,7 @@ async function withPassword() {
     if (!error.value) sent.value = `Check ${address}: open the link we sent to confirm it, and you're signed in.`;
   } else {
     error.value = (await sendPasswordReset(address)) ?? '';
-    if (!error.value) sent.value = `If ${address} has an Arrow account, a reset link is on its way. It opens flights.arrowair.com to choose a new password.`;
+    if (!error.value) sent.value = `If ${address} has an Arrow account, a reset link is on its way. Open it in this browser to choose a new password.`;
   }
   busy.value = false;
 }
@@ -46,7 +59,17 @@ async function withGitHub() {
 
 <template>
   <div v-if="session.signInOpen" class="scrim" @click.self="close">
-    <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="signin-title">
+    <div v-if="session.newPassword" class="dlg" role="dialog" aria-modal="true" aria-labelledby="signin-title">
+      <h2 id="signin-title">Choose a new password</h2>
+      <p class="sub">The reset link signed you in. Pick the password you'll use from now on, here and on flights.arrowair.com.</p>
+      <form class="pw" @submit.prevent="choosePassword">
+        <input v-model="password" type="password" autocomplete="new-password" placeholder="New password" aria-label="New password" required />
+        <button class="primary" type="submit" :disabled="busy || !password">Save password</button>
+      </form>
+      <p v-if="error" class="err">{{ error }}</p>
+      <button class="close" type="button" aria-label="Close" @click="close">✕</button>
+    </div>
+    <div v-else class="dlg" role="dialog" aria-modal="true" aria-labelledby="signin-title">
       <template v-if="session.signInFor === 'forum'">
         <h2 id="signin-title">Sign in to the Arrow forum</h2>
         <p class="sub">Use your Arrow account, the same one as <a href="https://flights.arrowair.com" target="_blank" rel="noopener">flights.arrowair.com</a>. Already on the forum? Use the email address you use there and you keep your forum account.</p>

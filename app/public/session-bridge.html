@@ -16,11 +16,35 @@
 // #/forum/sign-in instead).
 (() => {
   if (window.parent === window) return;
-  // Served over plain http only on a developer's machine; production is https.
-  const dev = location.protocol === 'http:';
-  const allowed = (origin) => origin === 'https://flights.arrowair.com' || (dev && origin.startsWith('http://'));
-  const key = /^sb-[a-z0-9-]+-auth-token(-user|-code-verifier|-flow-[A-Za-z0-9_-]+-code-verifier)?$/;
+  // Plain http only on a developer's machine (localhost, or *.arrowair.test
+  // pointed at it), answering only pages there; production is https.
+  const local = /^(localhost|127\.0\.0\.1|[a-z0-9-]+\.arrowair\.test)$/;
+  const dev = location.protocol === 'http:' && local.test(location.hostname);
+  const allowed = (origin) => {
+    if (origin === 'https://flights.arrowair.com') return true;
+    if (!dev) return false;
+    try {
+      const u = new URL(origin);
+      return u.protocol === 'http:' && local.test(u.hostname);
+    } catch {
+      return false;
+    }
+  };
+  const key = /^sb-[a-z0-9-]+-auth-token(-user|-code-verifier|-flows-code-verifier|-flow-[A-Za-z0-9_-]+-code-verifier)?$/;
   let peer = null; // the app that asked; the only one told about changes
+
+  // The app marks its storage whenever it opens as a page of its own
+  // (src/main.ts). Seeing the mark from in here means this frame shares that
+  // storage. Safari and every iPhone browser give a frame under another
+  // address storage of its own, which the app never sees and which is gone
+  // when the browser closes; flights then keeps its own sign-in.
+  const shared = () => {
+    try {
+      return localStorage.getItem('arrow-session-hub') !== null;
+    } catch {
+      return false;
+    }
+  };
 
   addEventListener('message', (e) => {
     if (e.source !== window.parent || !allowed(e.origin)) return;
@@ -28,7 +52,7 @@
     if (!m || m.arrowSession !== 1 || typeof m.id !== 'string') return;
     peer = e.origin;
     const reply = (body) => window.parent.postMessage(Object.assign({ arrowSession: 1, id: m.id }, body), e.origin);
-    if (m.op === 'hello') return reply({ ok: true });
+    if (m.op === 'hello') return reply({ ok: true, shared: shared() });
     if (typeof m.key !== 'string' || !key.test(m.key)) return reply({ error: 'That key is not shared.' });
     try {
       if (m.op === 'get') return reply({ value: localStorage.getItem(m.key) });
