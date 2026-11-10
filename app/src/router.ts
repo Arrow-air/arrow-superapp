@@ -10,6 +10,8 @@ export const router = createRouter({
     { path: '/', redirect: homePath(projects[0]) },
     // Deliberately broken page, to prove a failing module can't take the frame down.
     { path: '/broken', component: () => import('./pages/Broken.vue') },
+    // Where dao.arrowair.com sends people to sign in with their Arrow account.
+    { path: '/forum/sign-in', component: () => import('./pages/ForumSignIn.vue') },
     {
       path: '/:project/:tab/:item?',
       component: () => import('./pages/ModuleHost.vue'),

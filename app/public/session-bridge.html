@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<title>Arrow sign-in</title>
+</head>
+<body>
+<script>
+// Sign in once across Arrow apps. flights.arrowair.com loads this page in a
+// hidden frame and keeps its sign-in here, in app.arrowair.com's storage, so
+// both apps share one session: sign in or out on either and the other follows.
+// Only the apps listed below get an answer, and only Supabase's sign-in keys
+// can be read or written. Nothing goes to the rest of arrowair.com: the forum
+// and the website are hosted elsewhere (the forum signs in through
+// #/forum/sign-in instead).
+(() => {
+  if (window.parent === window) return;
+  // Served over plain http only on a developer's machine; production is https.
+  const dev = location.protocol === 'http:';
+  const allowed = (origin) => origin === 'https://flights.arrowair.com' || (dev && origin.startsWith('http://'));
+  const key = /^sb-[a-z0-9-]+-auth-token(-user|-code-verifier|-flow-[A-Za-z0-9_-]+-code-verifier)?$/;
+  let peer = null; // the app that asked; the only one told about changes
+
+  addEventListener('message', (e) => {
+    if (e.source !== window.parent || !allowed(e.origin)) return;
+    const m = e.data;
+    if (!m || m.arrowSession !== 1 || typeof m.id !== 'string') return;
+    peer = e.origin;
+    const reply = (body) => window.parent.postMessage(Object.assign({ arrowSession: 1, id: m.id }, body), e.origin);
+    if (m.op === 'hello') return reply({ ok: true });
+    if (typeof m.key !== 'string' || !key.test(m.key)) return reply({ error: 'That key is not shared.' });
+    try {
+      if (m.op === 'get') return reply({ value: localStorage.getItem(m.key) });
+      if (m.op === 'set' && typeof m.value === 'string') { localStorage.setItem(m.key, m.value); return reply({ ok: true }); }
+      if (m.op === 'remove') { localStorage.removeItem(m.key); return reply({ ok: true }); }
+      reply({ error: 'Unknown request.' });
+    } catch (err) {
+      reply({ error: String(err) });
+    }
+  });
+
+  // Signed in or out in an app.arrowair.com tab: tell the app that asked.
+  addEventListener('storage', (e) => {
+    if (peer && e.key && key.test(e.key)) window.parent.postMessage({ arrowSession: 1, changed: e.key }, peer);
+  });
+})();
+</script>
+</body>
+</html>
