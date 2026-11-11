@@ -8,6 +8,7 @@ The Quiver workspace graduated from here (`quiver-demo`) to [`/app`](../app/) on
 |---|---|---|
 | [`app-frame/`](app-frame/) | Gavin's frame: can one shell (bar, section nav, wallet, side panel, page header) host every Arrow module? | The app forked from it at `31d499a`; Gavin keeps iterating on branch `sl33ty/explore/app-frame`. |
 | [`spec-threads/`](spec-threads/) | Prototype 1: do weighted public spec threads, with the lead keeping the final say, beat one lead deciding alone? Prototype 2 (branch `spec-threads-v2`): if contributions target the next version and the lead must resolve every thread at a freeze (reject, spec, grant, defer), does the discussion write the specs and grants by itself? | Retired 2026-11-04: the app is off and specs.arrowair.com forwards to the superapp, which carried its ideas forward (threads to decisions to funded work, the freeze and the retro pool). The code stays here for reference; history in [`ROADMAP.md`](spec-threads/ROADMAP.md). |
+| [`registry-onboarding/`](registry-onboarding/) | If every way into Arrow points at one three-minute profile and a person answers every one, do newcomers stay and find work, and can the team find the right person when a project needs one? Static mockups, invented people. | Mockups for Thomas, 2026-11-11. Nothing decided. |
 
 ## Candidates not yet built
 

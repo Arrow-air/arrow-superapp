@@ -1,0 +1,1249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arrow · contributor registry and onboarding (mockups)</title>
+<link rel="icon" href="data:,">
+<style>
+/* Colours are the app's own (app/src/styles/tokens.css, Radix dark scales).
+   Discipline colours are Gavin's category palette from the onboarding wizard. */
+:root {
+  color-scheme: dark;
+  --slate-1:#111113; --slate-2:#18191b; --slate-3:#212225; --slate-4:#272a2d; --slate-5:#2e3135; --slate-6:#363a3f;
+  --slate-7:#43484e; --slate-8:#5a6169; --slate-9:#696e77; --slate-10:#777b84; --slate-11:#b0b4ba; --slate-12:#edeef0;
+  --slate-a2:#d8f4f609; --slate-a3:#ddeaf814; --slate-a4:#d3edf81d; --slate-a5:#d9edfe25; --slate-a6:#d6ebfd30; --slate-a7:#d9edff40;
+  --indigo-3:#182449; --indigo-8:#435db1; --indigo-9:#3e63dd; --indigo-10:#5472e4; --indigo-11:#9eb1ff; --indigo-12:#d6e1ff;
+  --indigo-a3:#2f62ff3c; --indigo-a4:#3566ff57; --indigo-a5:#4171fd6b;
+  --jade-9:#29a383; --jade-11:#1fd8a4; --jade-a3:#02f99920; --jade-a5:#11ffb63b;
+  --amber-9:#ffc53d; --amber-11:#ffca16; --amber-12:#ffe7b3; --amber-a2:#fd9b000d; --amber-a3:#fa820022; --amber-a4:#fc820032; --amber-a5:#fd8b0041; --amber-a7:#ffab2567;
+  --sky-11:#75c7f0; --sky-a3:#1184fc33; --sky-a5:#1c9dfd5d;
+  --plum-9:#ab4aba; --plum-11:#e796f3;
+  --red-11:#ff9592; --red-a3:#ff173f2d;
+  --grass-11:#71d083; --grass-a3:#3ff9391c;
+
+  --bg: var(--slate-1); --surface: var(--slate-2); --surface-header: var(--slate-3); --panel: #141416;
+  --border: var(--slate-a6); --border-soft: var(--slate-a4);
+  --fg: var(--slate-12); --fg-2: var(--slate-11); --fg-3: var(--slate-10); --fg-muted: var(--slate-9); --fg-faint: var(--slate-8);
+  --accent: var(--indigo-9); --link: var(--indigo-11);
+  --team: var(--amber-11); --team-bg: var(--amber-a2); --team-line: var(--amber-a5);
+  --brand-fill: linear-gradient(180deg, var(--indigo-10), var(--indigo-9) 55%, var(--indigo-8));
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--fg-2); font: 13px/1.5 var(--font-sans); -webkit-font-smoothing: antialiased; }
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font: inherit; color: inherit; }
+svg.i { width: 15px; height: 15px; flex: none; vertical-align: -3px; }
+svg.i.s { width: 13px; height: 13px; vertical-align: -2px; }
+svg.i.l { width: 18px; height: 18px; }
+h1, h2, h3, h4 { color: var(--fg); margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+p { margin: 0; }
+.muted { color: var(--fg-muted); }
+.faint { color: var(--fg-faint); }
+.mono { font-family: var(--font-mono); font-size: 11.5px; }
+.small { font-size: 12px; }
+.row { display: flex; align-items: center; gap: 8px; }
+.wrap { flex-wrap: wrap; }
+.grow { flex: 1; min-width: 0; }
+.sp { justify-content: space-between; }
+
+/* ---- the mockup's own strip (not part of the app) ---- */
+.mockbar { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 14px; padding: 8px 16px; background: #e9e4d8; color: #2a2620; font-size: 12px; border-bottom: 1px solid #c9c1ae; }
+.mockbar b { color: #14110c; }
+.mocktag { font: 600 10.5px/1 var(--font-mono); letter-spacing: 0.08em; padding: 4px 6px; border-radius: 4px; background: #2a2620; color: #e9e4d8; }
+.mocknav { display: flex; gap: 2px; margin-left: auto; flex-wrap: wrap; }
+.mocknav a { color: #4a4438; padding: 4px 8px; border-radius: 6px; text-decoration: none; white-space: nowrap; }
+.mocknav a:hover { background: #ddd6c6; }
+.mocknav a.on { background: #2a2620; color: #f4efe4; }
+.mocknav .who { font: 600 9.5px/1 var(--font-mono); letter-spacing: 0.06em; color: #8a8270; padding: 0 2px 0 8px; align-self: center; }
+
+/* ---- the app frame (topbar, workspace card, sidebar, footer) ---- */
+.app { min-height: calc(100vh - 41px); display: flex; flex-direction: column; }
+.topbar { display: flex; align-items: center; gap: 10px; padding: 10px 12px 8px; }
+.logo { display: flex; align-items: center; gap: 4px; padding: 3px; border: 1px solid var(--border-soft); border-radius: 10px; background: var(--surface); }
+.logo .mark { width: 26px; height: 26px; border-radius: 7px; background: var(--brand-fill); display: grid; place-items: center; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28), 0 1px 2px rgb(0 0 0 / 0.5); }
+.logo .mark svg { width: 11px; height: 13px; }
+.search { display: flex; align-items: center; gap: 8px; width: 230px; height: 34px; padding: 0 10px; border: 1px solid var(--border-soft); border-radius: 10px; background: var(--surface); color: var(--fg-muted); }
+.search .k { margin-left: auto; font: 10px var(--font-mono); color: var(--fg-faint); border: 1px solid var(--border-soft); border-radius: 4px; padding: 1px 4px; }
+.topbar .right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+.toplink { display: flex; align-items: center; gap: 7px; color: var(--fg-2); }
+.toplink.on { color: var(--fg); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--slate-a3); color: var(--fg); cursor: pointer; white-space: nowrap; font-size: 12.5px; }
+.btn:hover { background: var(--slate-a4); }
+.btn.primary { background: var(--brand-fill); border-color: transparent; color: #fff; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 1px 2px rgb(0 0 0 / 0.4); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--fg-2); }
+.btn.ghost:hover { background: var(--slate-a3); }
+.btn.sm { height: 26px; padding: 0 9px; font-size: 12px; border-radius: 7px; }
+.btn.lg { height: 38px; padding: 0 18px; font-size: 13.5px; border-radius: 10px; }
+.btn.team { background: var(--amber-a3); border-color: var(--amber-a5); color: var(--amber-12); }
+.av { display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; color: #fff; font: 600 11px/1 var(--font-sans); background: linear-gradient(135deg, hsl(var(--h) 70% 62%), hsl(calc(var(--h) + 40) 60% 42%)); }
+.av.xs { width: 20px; height: 20px; font-size: 9px; }
+.av.lg { width: 56px; height: 56px; font-size: 19px; }
+
+.ws { margin: 0 8px; flex: 1; display: flex; flex-direction: column; border: 1px solid var(--border-soft); border-radius: 14px; background: var(--surface); overflow: hidden; }
+.wshead { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--surface-header); border-bottom: 1px solid var(--border-soft); }
+.switcher { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 10px 0 4px; border: 1px solid var(--border); border-radius: 10px; background: var(--slate-2); color: var(--fg); font-weight: 500; }
+.switcher .thumb { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; background: var(--brand-fill); }
+.switcher .thumb svg { width: 10px; height: 12px; }
+.tabs { margin-left: auto; display: flex; gap: 2px; padding: 3px; border: 1px solid var(--border-soft); border-radius: 10px; background: var(--slate-1); }
+.tabs a { display: flex; align-items: center; gap: 5px; height: 28px; padding: 0 11px; border-radius: 7px; color: var(--fg-muted); text-decoration: none; }
+.tabs a:hover { color: var(--fg-2); }
+.tabs a.on { color: #fff; background: var(--brand-fill); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 1px 2px rgb(0 0 0 / 0.5); }
+.tabs .lk { color: var(--amber-11); opacity: 0.85; }
+.tabs a.on .lk { color: #fff; }
+.wsbody { flex: 1; display: grid; grid-template-columns: 216px minmax(0, 1fr); min-height: 0; }
+.side { padding: 18px 10px; border-right: 1px solid var(--border-soft); }
+.side h5 { margin: 0 0 6px; padding: 0 8px; font: 500 10.5px/1 var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-faint); }
+.side h5 + .nav { margin-bottom: 18px; }
+.nav a { display: flex; align-items: center; gap: 9px; padding: 6px 8px; border-radius: 8px; color: var(--fg-muted); font-size: 13px; text-decoration: none; }
+.nav a:hover { color: var(--fg-2); background: var(--slate-a2); }
+.nav a.on { color: var(--indigo-11); background: var(--indigo-a3); }
+.nav a .n { margin-left: auto; font: 11px var(--font-mono); color: var(--fg-faint); }
+.nav a .dot { width: 8px; height: 8px; border-radius: 3px; background: var(--c); }
+.main { padding: 14px 18px 28px; min-width: 0; }
+.crumb { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: var(--fg-muted); }
+.crumb b { color: var(--fg-2); font-weight: 500; }
+.card { border: 1px solid var(--border-soft); border-radius: 12px; background: var(--panel); }
+.pad { padding: 20px 24px; }
+.lede { margin-top: 6px; max-width: 760px; color: var(--fg-muted); font-size: 13.5px; }
+.statusbar { display: flex; align-items: center; gap: 18px; margin-top: 8px; padding: 7px 14px; background: #050505; color: var(--fg-muted); font-size: 11.5px; }
+
+/* ---- shared pieces ---- */
+.dchip { display: inline-flex; align-items: center; gap: 4px; height: 21px; padding: 0 7px; border-radius: 6px; font-size: 11.5px; white-space: nowrap; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); border: 1px solid color-mix(in srgb, var(--c) 28%, transparent); }
+.dchip.learn { background: transparent; border-style: dashed; border-color: color-mix(in srgb, var(--c) 55%, transparent); }
+.dchip.checked::after { content: '✓'; font-size: 10px; margin-left: 1px; }
+.tag { display: inline-flex; align-items: center; gap: 5px; height: 21px; padding: 0 7px; border-radius: 6px; font-size: 11.5px; color: var(--fg-2); background: var(--slate-a3); border: 1px solid var(--border-soft); white-space: nowrap; }
+.pill { display: inline-flex; align-items: center; gap: 5px; height: 20px; padding: 0 8px; border-radius: 99px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+.pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pill.sky { color: var(--sky-11); background: var(--sky-a3); }
+.pill.amber { color: var(--amber-11); background: var(--amber-a3); }
+.pill.indigo { color: var(--indigo-11); background: var(--indigo-a3); }
+.pill.jade { color: var(--jade-11); background: var(--jade-a3); }
+.pill.slate { color: var(--fg-3); background: var(--slate-a3); }
+.pill.red { color: var(--red-11); background: var(--red-a3); }
+.teamtag { display: inline-flex; align-items: center; gap: 5px; font: 600 10px/1 var(--font-mono); letter-spacing: 0.08em; color: var(--team); text-transform: uppercase; }
+.teampanel { border: 1px solid var(--team-line); border-radius: 12px; background: var(--team-bg); }
+.callout { display: flex; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--slate-a2); border: 1px solid var(--border-soft); color: var(--fg-2); font-size: 12.5px; }
+.callout.team { background: var(--amber-a2); border-color: var(--team-line); color: var(--amber-12); }
+.callout.indigo { background: var(--indigo-a3); border-color: var(--indigo-a4); color: var(--indigo-12); }
+.why { font-size: 12px; color: var(--fg-muted); }
+.sec { margin-top: 22px; }
+.sec > h3 { font-size: 13.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.sec > h3 .n { font: 11px var(--font-mono); color: var(--fg-faint); font-weight: 400; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.tile { padding: 14px 16px; border: 1px solid var(--border-soft); border-radius: 12px; background: var(--slate-a2); }
+.tile h4 { font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+.kv { display: grid; grid-template-columns: 120px 1fr; gap: 6px 14px; font-size: 12.5px; }
+.kv dt { color: var(--fg-muted); }
+.kv dd { margin: 0; color: var(--fg-2); }
+.input, textarea.input, select.input { width: 100%; min-height: 34px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--slate-1); color: var(--fg); font: inherit; }
+textarea.input { resize: vertical; line-height: 1.55; }
+.label { display: block; margin: 0 0 5px; font-size: 12px; color: var(--fg-muted); }
+.toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+.toggle .sw { width: 30px; height: 18px; border-radius: 99px; background: var(--slate-6); position: relative; transition: background 0.15s; flex: none; }
+.toggle .sw::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform 0.15s; }
+.toggle.on .sw { background: var(--indigo-9); }
+.toggle.on .sw::after { transform: translateX(12px); }
+.seg { display: inline-flex; padding: 2px; gap: 2px; border: 1px solid var(--border-soft); border-radius: 8px; background: var(--slate-1); }
+.seg button { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border: 0; border-radius: 6px; background: transparent; color: var(--fg-muted); cursor: pointer; font-size: 12px; }
+.seg button.on { background: var(--slate-5); color: var(--fg); }
+table.t { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+table.t th { text-align: left; font-weight: 500; color: var(--fg-faint); font-size: 11px; letter-spacing: 0.04em; padding: 8px 10px; border-bottom: 1px solid var(--border-soft); white-space: nowrap; }
+table.t td { padding: 9px 10px; border-bottom: 1px solid var(--border-soft); vertical-align: middle; }
+table.t tr.click { cursor: pointer; }
+table.t tr.click:hover td { background: var(--slate-a2); }
+.note-count { display: inline-flex; align-items: center; gap: 4px; color: var(--team); font: 11px var(--font-mono); }
+.hide { display: none !important; }
+
+/* ---- screens ---- */
+.screen { display: none; flex: 1; flex-direction: column; }
+.screen.on { display: flex; }
+
+/* read me */
+.readme { max-width: 1060px; margin: 0 auto; padding: 26px 24px 40px; }
+.readme h1 { font-size: 24px; }
+.readme .big { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0 8px; }
+.stat { padding: 16px 18px; border-radius: 12px; border: 1px solid var(--border-soft); background: var(--surface); }
+.stat b { display: block; font-size: 30px; line-height: 1.1; color: var(--fg); font-weight: 600; letter-spacing: -0.02em; }
+.stat span { color: var(--fg-muted); font-size: 12.5px; }
+.stat.hot b { color: var(--amber-11); }
+.flow { display: flex; align-items: stretch; gap: 8px; margin: 10px 0 4px; flex-wrap: wrap; }
+.flow .step { flex: 1; min-width: 130px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border-soft); background: var(--surface); font-size: 12.5px; }
+.flow .step b { display: block; color: var(--fg); font-size: 12.5px; margin-bottom: 2px; }
+.flow .step.t { border-color: var(--team-line); background: var(--team-bg); }
+.flow .arr { align-self: center; color: var(--fg-faint); }
+.screens-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.screens-list a { display: block; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border-soft); background: var(--surface); color: var(--fg-2); text-decoration: none; }
+.screens-list a:hover { border-color: var(--indigo-a5); }
+.screens-list a b { color: var(--fg); display: flex; gap: 8px; align-items: center; margin-bottom: 2px; }
+.screens-list .num { font: 600 11px/1 var(--font-mono); color: var(--indigo-11); }
+ol.qs { margin: 8px 0 0; padding-left: 20px; }
+ol.qs li { margin-bottom: 8px; }
+ol.qs li b { color: var(--fg); }
+
+/* capture */
+.cap { display: grid; grid-template-columns: 1.15fr 1fr; gap: 14px; }
+.discord { background: #313338; border-radius: 10px; padding: 14px 16px; color: #dbdee1; font: 14px/1.4 'gg sans', 'Noto Sans', system-ui, sans-serif; }
+.discord .ch { display: flex; align-items: center; gap: 6px; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid #3f4147; color: #f2f3f5; font-weight: 600; }
+.discord .ch span { color: #80848e; font-weight: 400; }
+.dmsg { display: flex; gap: 12px; }
+.dmsg .bot { width: 40px; height: 40px; border-radius: 50%; background: var(--brand-fill); display: grid; place-items: center; flex: none; }
+.dmsg .bot svg { width: 13px; height: 16px; }
+.dname { color: #f2f3f5; font-weight: 600; }
+.dbadge { font: 600 10px/1 system-ui; background: #5865f2; color: #fff; padding: 2px 4px; border-radius: 3px; margin-left: 4px; vertical-align: 1px; }
+.dtime { color: #949ba4; font-size: 12px; margin-left: 6px; }
+.dbody { margin-top: 2px; }
+.dbody p { margin: 0 0 8px; }
+.dbtns { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.dbtn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 16px; border-radius: 4px; font-size: 14px; font-weight: 500; }
+.dbtn.link { background: #4e5058; color: #fff; }
+.dbtn.blurple { background: #5865f2; color: #fff; }
+.gh { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #e6edf3; font: 14px/1.5 -apple-system, 'Segoe UI', sans-serif; }
+.gh .bar { padding: 8px 14px; border-bottom: 1px solid #30363d; font: 600 13px/1.4 -apple-system, sans-serif; color: #e6edf3; display: flex; gap: 8px; align-items: center; }
+.gh .bd { padding: 12px 16px 14px; }
+.gh h2 { font-size: 20px; border-bottom: 1px solid #30363d; padding-bottom: 6px; margin-bottom: 10px; color: #e6edf3; }
+.gh code { background: #6e768166; padding: 1px 5px; border-radius: 5px; font-size: 12px; }
+.ghbadge { display: inline-flex; font: 11px/1 Verdana, sans-serif; border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+.ghbadge span { padding: 4px 6px; }
+.ghbadge span:first-child { background: #555; color: #fff; }
+.ghbadge span:last-child { background: #3e63dd; color: #fff; }
+.xpost { background: #000; border: 1px solid #2f3336; border-radius: 14px; padding: 12px 14px; color: #e7e9ea; font: 14.5px/1.4 -apple-system, 'Segoe UI', sans-serif; }
+.xpost .who { display: flex; align-items: center; gap: 8px; }
+.xpost .who b { color: #e7e9ea; }
+.xpost .who span { color: #71767b; }
+.xcard { margin-top: 10px; border: 1px solid #2f3336; border-radius: 14px; overflow: hidden; }
+.xcard .img { height: 92px; background: radial-gradient(ellipse at 30% 40%, #1b2a45, #0e1526 75%); display: grid; place-items: center; color: #9eb1ff; font: 600 13px var(--font-mono); letter-spacing: 0.05em; }
+.xcard .meta { padding: 8px 12px; color: #71767b; font-size: 13px; }
+.site { background: #0b0b0d; border: 1px solid var(--border-soft); border-radius: 10px; padding: 18px; }
+.site .kicker { font: 600 10.5px/1 var(--font-mono); letter-spacing: 0.12em; color: var(--indigo-11); margin-bottom: 8px; }
+.site h3 { font-size: 20px; letter-spacing: -0.02em; }
+
+/* join wizard */
+.wiz { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px 16px 30px; }
+.wizcard { width: min(720px, 100%); }
+.wizprog { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; color: var(--fg-faint); font: 11px var(--font-mono); }
+.wizprog .bar { flex: 1; height: 3px; border-radius: 3px; background: var(--slate-4); overflow: hidden; }
+.wizprog .bar i { display: block; height: 100%; background: var(--indigo-9); border-radius: 3px; transition: width 0.25s; }
+.wizq { font-size: 26px; line-height: 1.2; letter-spacing: -0.02em; color: var(--fg); font-weight: 600; text-align: center; }
+.wizsub { margin: 8px auto 22px; text-align: center; color: var(--fg-muted); font-size: 14px; max-width: 560px; }
+.opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.opt { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--slate-a2); cursor: pointer; text-align: left; }
+.opt:hover { border-color: var(--slate-a7); }
+.opt.on { border-color: var(--indigo-9); background: var(--indigo-a3); }
+.opt .ic { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; background: var(--slate-a3); color: var(--fg-2); flex: none; }
+.opt.on .ic { background: var(--indigo-9); color: #fff; }
+.opt b { display: block; color: var(--fg); font-size: 13.5px; font-weight: 500; }
+.opt span { color: var(--fg-muted); font-size: 12.5px; }
+.opt .box { margin-left: auto; width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--slate-7); flex: none; display: grid; place-items: center; }
+.opt.on .box { background: var(--indigo-9); border-color: var(--indigo-9); }
+.wiznav { display: flex; align-items: center; gap: 10px; margin-top: 26px; }
+.wiznav .skip { margin-left: auto; color: var(--fg-faint); font-size: 12px; }
+.taxcat { margin-bottom: 12px; }
+.taxcat h6 { margin: 0 0 6px; font-size: 11.5px; font-weight: 500; color: var(--fg-muted); display: flex; gap: 8px; align-items: baseline; }
+.taxcat h6 span { color: var(--fg-faint); font-weight: 400; }
+.taxchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.tchip { height: 28px; padding: 0 11px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--fg-2); cursor: pointer; font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px; }
+.tchip:hover { border-color: var(--slate-a7); }
+.tchip.can { color: var(--c); background: color-mix(in srgb, var(--c) 16%, transparent); border-color: color-mix(in srgb, var(--c) 45%, transparent); }
+.tchip.learn { color: var(--c); border-style: dashed; border-color: color-mix(in srgb, var(--c) 70%, transparent); }
+.tchip small { font: 9.5px var(--font-mono); letter-spacing: 0.04em; opacity: 0.85; text-transform: uppercase; }
+.legend { display: flex; gap: 14px; justify-content: center; margin: -8px 0 16px; font-size: 12px; color: var(--fg-muted); }
+.legend .tchip { pointer-events: none; height: 22px; font-size: 11.5px; --c: #89a5e3; }
+.storybox { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 14px; }
+.hint { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border-soft); background: var(--slate-a2); font-size: 12.5px; color: var(--fg-muted); }
+.hint b { color: var(--fg-2); font-weight: 500; display: block; margin-bottom: 4px; }
+.shopgrid { display: flex; flex-wrap: wrap; gap: 6px; }
+.pick { height: 30px; padding: 0 11px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--fg-2); cursor: pointer; font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px; }
+.pick.on { border-color: var(--indigo-9); background: var(--indigo-a3); color: var(--indigo-12); }
+.formgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.formgrid .wide { grid-column: 1 / -1; }
+.vis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.vis .lvl { padding: 12px; border-radius: 12px; border: 1px solid var(--border-soft); background: var(--slate-a2); font-size: 12px; }
+.vis .lvl h4 { font-size: 12.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.vis .lvl ul { margin: 0; padding-left: 16px; color: var(--fg-muted); }
+.vis .lvl.team { border-color: var(--team-line); background: var(--team-bg); }
+.vis .lvl.team h4 { color: var(--amber-12); }
+.pcard { padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--slate-2); }
+.pcard .nm { color: var(--fg); font-weight: 600; font-size: 14px; }
+.donehero { text-align: center; }
+.donehero .ok { width: 46px; height: 46px; border-radius: 50%; margin: 0 auto 14px; display: grid; place-items: center; background: var(--jade-a3); color: var(--jade-11); }
+.next3 { display: grid; gap: 8px; margin-top: 20px; }
+.next3 .it { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border-soft); background: var(--slate-a2); }
+.next3 .it .k { font: 600 11px/1 var(--font-mono); color: var(--indigo-11); padding-top: 3px; }
+.next3 .it b { color: var(--fg); font-weight: 500; display: block; }
+
+/* your arrow */
+.you { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; }
+.check { display: flex; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--border-soft); align-items: flex-start; }
+.check:last-child { border-bottom: 0; }
+.check .cb { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--slate-7); flex: none; display: grid; place-items: center; margin-top: 1px; }
+.check.done .cb { background: var(--jade-9); border-color: var(--jade-9); color: #fff; }
+.check.done b { color: var(--fg-muted); text-decoration: line-through; text-decoration-color: var(--slate-7); }
+.check b { color: var(--fg); font-weight: 500; }
+.draftbox { margin-top: 8px; padding: 10px 12px; border-radius: 8px; background: #2b2d31; color: #dbdee1; font: 13px/1.45 'gg sans', system-ui, sans-serif; border-left: 3px solid #5865f2; }
+.match { display: flex; gap: 12px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border-soft); background: var(--slate-a2); margin-bottom: 8px; }
+.match .proj { font: 600 10px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-faint); margin-bottom: 4px; }
+.match b { color: var(--fg); font-weight: 500; }
+.match .because { font-size: 11.5px; color: var(--fg-faint); margin-top: 4px; }
+
+/* registry */
+.toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 14px 0 10px; }
+.toolbar .search2 { display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--slate-1); width: 280px; color: var(--fg-muted); }
+.toolbar .search2 input { border: 0; outline: 0; background: transparent; color: var(--fg); font: inherit; width: 100%; }
+.fchip { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px; border-radius: 8px; border: 1px dashed var(--border); color: var(--fg-muted); font-size: 12px; cursor: pointer; background: transparent; }
+.fchip.on { border-style: solid; color: var(--fg); background: var(--slate-a3); }
+.weekstrip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border: 1px solid var(--border-soft); border-radius: 12px; overflow: hidden; margin-top: 16px; }
+.weekstrip div { padding: 10px 14px; border-right: 1px solid var(--border-soft); }
+.weekstrip div:last-child { border-right: 0; }
+.weekstrip b { display: block; color: var(--fg); font-size: 18px; font-weight: 600; }
+.weekstrip span { color: var(--fg-muted); font-size: 11.5px; }
+.weekstrip .warn b { color: var(--amber-11); }
+.pcell { display: flex; align-items: center; gap: 9px; }
+.pcell .nm { color: var(--fg); font-weight: 500; }
+.pcell .hd { color: var(--fg-faint); font-size: 11.5px; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.shopmini { color: var(--fg-muted); font-size: 11.5px; }
+.mapwrap { position: relative; border: 1px solid var(--border-soft); border-radius: 12px; background: radial-gradient(ellipse at 50% 40%, #151d30, #0d111b 75%); overflow: hidden; }
+.mapwrap svg { display: block; width: 100%; height: auto; }
+.mapwrap .land circle { fill: #2a3550; }
+.mapwrap .ppl circle.p { fill: var(--indigo-10); stroke: #0d111b; stroke-width: 1.5; cursor: pointer; }
+.mapwrap .ppl circle.p.call { fill: var(--amber-9); }
+.mapwrap .ppl circle.halo { fill: var(--indigo-9); opacity: 0.18; }
+.mapwrap .ppl text { fill: var(--fg-2); font: 9px var(--font-sans); pointer-events: none; }
+.mapwrap .ppl text.cnt { fill: #0d111b; font: 700 8.5px var(--font-sans); }
+.maplegend { position: absolute; left: 12px; bottom: 10px; display: flex; gap: 14px; font-size: 11.5px; color: var(--fg-muted); background: rgb(13 17 27 / 0.8); padding: 6px 10px; border-radius: 8px; }
+.maplegend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
+.mapcard { position: absolute; width: 250px; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--slate-2); box-shadow: 0 8px 30px rgb(0 0 0 / 0.5); }
+.drawer { position: fixed; top: 41px; right: 0; bottom: 0; width: 460px; z-index: 40; background: var(--slate-2); border-left: 1px solid var(--border); box-shadow: -20px 0 60px rgb(0 0 0 / 0.5); padding: 18px 20px; overflow: auto; transform: translateX(105%); transition: transform 0.2s; }
+.drawer.open { transform: none; }
+.mres { padding: 12px; border-radius: 10px; border: 1px solid var(--border-soft); background: var(--slate-a2); margin-bottom: 8px; display: flex; gap: 10px; }
+.mres.pick1 { border-color: var(--indigo-a5); }
+.mres .score { font: 600 11px/1 var(--font-mono); color: var(--jade-11); }
+.mres ul { margin: 6px 0 0; padding-left: 15px; font-size: 12px; color: var(--fg-muted); }
+.mres ul li.miss { color: var(--fg-faint); }
+.mres ul li.team { color: var(--amber-12); }
+
+/* person */
+.person { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 16px; align-items: start; }
+.phead { display: flex; gap: 16px; align-items: flex-start; }
+.phead h1 { font-size: 22px; }
+.phead .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 6px; color: var(--fg-muted); font-size: 12.5px; }
+.phead .meta span { display: inline-flex; gap: 5px; align-items: center; }
+.layer { margin-top: 16px; padding: 16px 18px; border: 1px solid var(--border-soft); border-radius: 12px; background: var(--slate-a2); }
+.layer > header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+.layer > header h3 { font-size: 13.5px; }
+.layer > header span { color: var(--fg-faint); font-size: 12px; }
+.quote { margin: 0; padding: 2px 0 2px 14px; border-left: 2px solid var(--indigo-8); color: var(--fg-2); font-size: 13.5px; line-height: 1.6; }
+.linkrow { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-soft); font-size: 12.5px; }
+.linkrow:last-child { border-bottom: 0; }
+.linkrow .src { width: 82px; color: var(--fg-muted); flex: none; }
+.linkrow .ok { margin-left: auto; color: var(--jade-11); font-size: 11.5px; display: inline-flex; gap: 4px; align-items: center; white-space: nowrap; }
+.tp { padding: 14px 16px; }
+.tp + .tp { border-top: 1px solid var(--team-line); }
+.tnote { padding: 10px 0; border-bottom: 1px solid var(--amber-a3); }
+.tnote:last-child { border-bottom: 0; }
+.tnote .by { display: flex; gap: 8px; align-items: center; font-size: 12px; color: var(--amber-12); }
+.tnote .by .k { font: 600 9.5px/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 5px; border-radius: 4px; background: var(--amber-a3); color: var(--amber-11); }
+.tnote .by .d { margin-left: auto; color: var(--fg-faint); font-size: 11.5px; }
+.tnote p { margin-top: 5px; color: var(--fg-2); font-size: 12.5px; line-height: 1.55; }
+.skillrow { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 12.5px; }
+.skillrow .who { margin-left: auto; color: var(--fg-faint); font-size: 11.5px; }
+.compose { margin-top: 8px; padding: 10px; border-radius: 10px; border: 1px solid var(--team-line); background: rgb(0 0 0 / 0.2); }
+.compose textarea { border: 0; background: transparent; min-height: 54px; padding: 0; color: var(--fg); }
+.compose .seg button.on { background: var(--amber-a4); color: var(--amber-12); }
+.tl { position: relative; margin: 0; padding: 0 0 0 16px; list-style: none; font-size: 12.5px; }
+.tl::before { content: ''; position: absolute; left: 4px; top: 6px; bottom: 6px; width: 1px; background: var(--slate-6); }
+.tl li { position: relative; padding: 4px 0; color: var(--fg-2); }
+.tl li::before { content: ''; position: absolute; left: -15px; top: 11px; width: 7px; height: 7px; border-radius: 50%; background: var(--slate-8); }
+.tl li.t::before { background: var(--amber-9); }
+.tl li .d { color: var(--fg-faint); font: 11px var(--font-mono); margin-right: 8px; }
+
+/* calls */
+.modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.mode { padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border-soft); background: var(--slate-a2); position: relative; }
+.mode.mine { border-color: var(--indigo-9); background: var(--indigo-a3); }
+.mode .badge { position: absolute; top: 12px; right: 12px; font: 600 9.5px/1 var(--font-mono); letter-spacing: 0.08em; padding: 4px 6px; border-radius: 4px; background: var(--indigo-9); color: #fff; }
+.mode h4 { font-size: 13.5px; margin-bottom: 6px; }
+.mode ul { margin: 6px 0 0; padding-left: 16px; font-size: 12px; color: var(--fg-muted); }
+.mode ul li.plus::marker { content: '+  '; color: var(--jade-11); }
+.mode ul li.minus::marker { content: '−  '; color: var(--red-11); }
+.pipe { display: flex; gap: 6px; margin: 18px 0 12px; }
+.pipe div { flex: 1; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-soft); background: var(--slate-a2); font-size: 12px; color: var(--fg-muted); }
+.pipe div b { color: var(--fg); font-size: 16px; margin-right: 6px; }
+.pipe div.on { border-color: var(--indigo-a5); }
+.calls { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 14px; align-items: start; }
+.qcard { padding: 12px; border-radius: 12px; border: 1px solid var(--border-soft); background: var(--slate-a2); margin-bottom: 8px; cursor: pointer; }
+.qcard.on { border-color: var(--indigo-9); background: var(--indigo-a3); }
+.qcard .ex { margin-top: 6px; color: var(--fg-muted); font-size: 12px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.qcard .tzl { margin-top: 6px; font-size: 11.5px; color: var(--fg-faint); display: flex; gap: 5px; align-items: center; }
+.composer { padding: 16px 18px; border-radius: 12px; border: 1px solid var(--border); background: var(--slate-2); }
+.composer .msg { min-height: 178px; font-size: 13.5px; line-height: 1.6; }
+.slot { display: inline-flex; flex-direction: column; gap: 1px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--indigo-a5); background: var(--indigo-a3); font-size: 12px; color: var(--indigo-12); }
+.slot small { color: var(--fg-muted); font-size: 11px; }
+.slot.add { border-style: dashed; border-color: var(--border); background: transparent; color: var(--fg-muted); justify-content: center; }
+.afterform { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+/* funnel */
+.fbar { display: grid; grid-template-columns: 210px minmax(0, 1fr) 70px; gap: 12px; align-items: center; padding: 7px 0; font-size: 12.5px; }
+.fbar .track { height: 22px; border-radius: 6px; background: var(--slate-a2); overflow: hidden; }
+.fbar .track i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--indigo-9), var(--indigo-10)); }
+.fbar.t .track i { background: linear-gradient(90deg, #a67b16, var(--amber-9)); }
+.fbar .v { text-align: right; color: var(--fg); font-family: var(--font-mono); font-size: 12px; }
+.fbar .v small { color: var(--fg-faint); }
+</style>
+</head>
+<body>
+
+<div class="mockbar">
+  <span class="mocktag">MOCKUP</span>
+  <span><b>Arrow contributor registry and onboarding</b> · sample data, 12 invented people · not the app</span>
+  <nav class="mocknav" id="mocknav">
+    <a href="#readme">Read me</a>
+    <span class="who">NEWCOMER</span>
+    <a href="#capture">1 Ways in</a>
+    <a href="#join/0">2 Join</a>
+    <a href="#you">3 Your Arrow</a>
+    <span class="who">TEAM</span>
+    <a href="#people">4 Registry</a>
+    <a href="#person/maya">5 Person + notes</a>
+    <a href="#calls">6 Intro calls</a>
+    <a href="#funnel">7 Funnel</a>
+  </nav>
+</div>
+
+<div class="app">
+  <header class="topbar">
+    <div class="logo"><span class="mark"><svg viewBox="0 0 163 194"><path fill="#fff" d="M162.9,120.1l-50.36-11.17-31.09,84.49-31.09-84.49L0,120.1,81.45,0l81.45,120.1Z"/></svg></span><i data-i="chevr" class="faint"></i></div>
+    <div class="search"><i data-i="search"></i> Search Arrow... <span class="k">⌘ K</span></div>
+    <div class="right" id="topright"></div>
+  </header>
+
+  <!-- ===================================================== READ ME -->
+  <section class="screen" data-s="readme">
+    <div class="readme">
+      <div class="faint mono" style="margin-bottom:8px">FOR THOMAS · NOV 11 · NOTHING BUILT OR PUSHED</div>
+      <h1>Catch people when they show up, and keep what we learn about them</h1>
+      <p class="lede" style="max-width:860px">X brings people to Discord, the site and the repos. Nothing writes them down. These mockups add one link every way in points to, a three-minute profile, a registry the team can search, intro calls you start, and notes only the team can see.</p>
+      <div class="big">
+        <div class="stat"><b>1,651</b><span>members in Arrow's Discord today (public invite count)</span></div>
+        <div class="stat"><b>8</b><span>people signed in to app.arrowair.com, the core team included</span></div>
+        <div class="stat hot"><b>2</b><span>people on Gavin's contributor map since it opened in August: Gavin and Alperen</span></div>
+      </div>
+      <p class="muted small">The map's only sign-up is <span class="mono">/new-contributor</span>, a Discord slash command explained on the map page. You have to go looking for it. That's the leak in one number.</p>
+
+      <div class="sec"><h3>The loop</h3>
+        <div class="flow">
+          <div class="step"><b>Ways in</b>Discord welcome, site, repo READMEs, X posts: one link, tagged by source</div><span class="arr"><i data-i="arrowr"></i></span>
+          <div class="step"><b>Join</b>3 minutes, one question a screen, sign in with Discord</div><span class="arr"><i data-i="arrowr"></i></span>
+          <div class="step"><b>Matched</b>3 places to start, from their skills and shop</div><span class="arr"><i data-i="arrowr"></i></span>
+          <div class="step t"><b>A human answers</b>The team reads every profile; you invite some to a call</div><span class="arr"><i data-i="arrowr"></i></span>
+          <div class="step t"><b>Notes</b>What the team learns stays with the person, for the next assignment</div>
+        </div>
+      </div>
+
+      <div class="sec"><h3>Built on what Gavin already made</h3>
+        <ul style="margin:0;padding-left:18px">
+          <li>The disciplines taxonomy v1.0 (9 groups, 43 disciplines, community-approved in July) is the skill list everywhere here.</li>
+          <li>His contributor map (website issue #180) becomes the registry's public face. The registry is the store; the map reads people who chose to be on it. His open PR #254 (a live grid of everyone with commits in Arrow's repos) is the start of the earned layer.</li>
+          <li>His September onboarding wizard (website branch <span class="mono">sl33ty/explore/superapp</span>) is the pattern for Join: one big question a screen, contribute or just follow, disciplines, experience, place, time, how you heard. His quests become the checklist on Your Arrow, without token rewards (Q28).</li>
+          <li>Your Sept 26 profile note: said, linked and earned stay separate, the "something you built and what went wrong" question, and per-field visibility.</li>
+        </ul>
+      </div>
+
+      <div class="sec"><h3>Screens</h3>
+        <div class="screens-list">
+          <a href="#capture"><b><span class="num">1</span> Ways in</b>The Discord welcome, the site, a README and an X post all point at /join.</a>
+          <a href="#join/0"><b><span class="num">2</span> Join</b>The wizard, filled in as Maya, a battery builder from Houston. Click through it.</a>
+          <a href="#you"><b><span class="num">3</span> Your Arrow</b>What she sees the next day: a short checklist, matched work, what happens next.</a>
+          <a href="#people"><b><span class="num">4</span> Registry</b>Team view: filters, saved views, a map, and "Find people for a build day".</a>
+          <a href="#person/maya"><b><span class="num">5</span> Person + notes</b>Said, linked, earned; team-only notes, skill checks, "good for".</a>
+          <a href="#calls"><b><span class="num">6</span> Intro calls</b>Three ways to run them, the queue, the invite you send, logging the call.</a>
+          <a href="#funnel"><b><span class="num">7</span> Funnel</b>Which posts bring people who stay, and whether we keep the "we read every profile" promise.</a>
+        </div>
+      </div>
+
+      <div class="sec"><h3>Who sees what</h3>
+        <div class="vis">
+          <div class="lvl"><h4><i data-i="globe" class="s"></i> Public</h4><ul><li>Name, city or country, local time</li><li>Up to 3 disciplines</li><li>140-character blurb (the map's rules)</li></ul></div>
+          <div class="lvl"><h4><i data-i="users" class="s"></i> Signed-in members</h4><ul><li>The full profile: the story, links, shop, time</li><li>What they've done in Arrow</li></ul></div>
+          <div class="lvl team"><h4><i data-i="lock" class="s"></i> Core team and leads</h4><ul><li>Team notes, call notes, skill checks</li><li>Call status, owner, next step</li><li>Never shown to the person; they can ask for it</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================== 1 CAPTURE -->
+  <section class="screen" data-s="capture">
+    <div class="readme" style="max-width:1180px">
+      <div class="faint mono" style="margin-bottom:8px">1 · WAYS IN</div>
+      <h1>Every way in points to one link</h1>
+      <p class="lede"><span class="mono">app.arrowair.com/join?ref=…</span>: the ref says where they came from, so the funnel can tell which post brought people who stayed.</p>
+      <div class="cap" style="margin-top:18px">
+        <div>
+          <div class="discord">
+            <div class="ch"><span>#</span> welcome <span>· or a DM from the Arrow bot when someone joins</span></div>
+            <div class="dmsg">
+              <div class="bot"><svg viewBox="0 0 163 194"><path fill="#fff" d="M162.9,120.1l-50.36-11.17-31.09,84.49-31.09-84.49L0,120.1,81.45,0l81.45,120.1Z"/></svg></div>
+              <div>
+                <div><span class="dname">Arrow</span><span class="dbadge">APP</span><span class="dtime">Today at 9:14 AM</span></div>
+                <div class="dbody">
+                  <p>Welcome to Arrow, <span style="color:#c9cdfb;background:#5865f24d;border-radius:3px;padding:0 2px">@maya.builds</span>. We build open-source aircraft in the open: Quiver, Spearhead, Longshot and Caribou.</p>
+                  <p>Tell us what you can do and what you'd like to build. It takes 3 minutes, and someone on the core team reads every one.</p>
+                  <div class="dbtns"><span class="dbtn blurple">Join the contributor registry ↗</span><span class="dbtn link">What we're building now</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="why" style="margin-top:8px">Sent by Vector or a small Arrow bot on join. "Sign in with Discord" makes it one click, and the bot can give the Registered role when the profile is done, so #introductions and the welcome call can follow.</p>
+
+          <div class="site" style="margin-top:14px">
+            <div class="kicker">ARROWAIR.COM · GET INVOLVED</div>
+            <h3>Build aircraft with us</h3>
+            <p class="muted" style="margin:6px 0 12px;max-width:520px">Engineers, pilots, machinists, writers. Tell us what you can do, and we'll find you a place on a project, or a build near you.</p>
+            <div class="row"><span class="btn primary">Join the registry</span><span class="btn">See who's on the map</span></div>
+            <p class="why" style="margin-top:10px">The contributor map page gets the same button, beside the slash command.</p>
+          </div>
+        </div>
+        <div>
+          <div class="gh">
+            <div class="bar"><i data-i="note" class="s"></i> README.md · Arrow-air/project-longshot</div>
+            <div class="bd">
+              <h2>Contributing</h2>
+              <div class="ghbadge"><span>arrow</span><span>join the registry</span></div>
+              <p style="margin:0 0 8px">New here? Start at <a href="#">app.arrowair.com/join?ref=gh-longshot</a>: 3 minutes, and we'll point you at an open question or a build that fits.</p>
+              <p style="margin:0;color:#9198a1">Already know what you want to fix? Open an issue or a draft PR, and say hello in <code>#longshot</code>.</p>
+            </div>
+          </div>
+          <div class="xpost" style="margin-top:14px">
+            <div class="who"><span class="av xs" style="--h:228">A</span><b>Arrow</b><span>@ArrowAir_ · 2h</span></div>
+            <p style="margin:8px 0 0">Longshot pack teardown: 126 cells, 14S9P, and every place it fought us. Want to build one? 👇</p>
+            <div class="xcard"><div class="img">LONGSHOT · 14S9P</div><div class="meta">app.arrowair.com/join?ref=x-longshot-teardown</div></div>
+          </div>
+          <div class="callout indigo" style="margin-top:14px"><i data-i="spark"></i><div>Same link, different ref, everywhere. Discord can't tell us which post someone came from; the ref can.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================== 2 JOIN -->
+  <section class="screen" data-s="join">
+    <div class="wiz"><div class="wizcard" id="wiz"></div></div>
+  </section>
+
+  <!-- ===================================================== 3 YOUR ARROW -->
+  <section class="screen" data-s="you">
+    <div class="ws">
+      <div class="wshead">
+        <div class="switcher"><span class="thumb"><svg viewBox="0 0 163 194"><path fill="#fff" d="M162.9,120.1l-50.36-11.17-31.09,84.49-31.09-84.49L0,120.1,81.45,0l81.45,120.1Z"/></svg></span>Your Arrow</div>
+        <span class="muted small" style="margin-left:6px">the top bar's Contributor Dashboard</span>
+      </div>
+      <div class="main" style="padding:18px 22px">
+        <div class="you">
+          <div>
+            <h1 style="font-size:22px">Morning, Maya</h1>
+            <p class="lede">You joined yesterday. Here's where to start.</p>
+            <div class="sec"><h3>Getting started <span class="n">2 of 5</span></h3>
+              <div class="card">
+                <div class="check done"><span class="cb"><i data-i="check" class="s"></i></span><div><b>Fill in your profile</b></div></div>
+                <div class="check done"><span class="cb"><i data-i="check" class="s"></i></span><div><b>Connect Discord</b> <span class="muted small">· you signed in with it</span></div></div>
+                <div class="check"><span class="cb"></span><div class="grow"><b>Say hello in #introductions</b><div class="muted small">We drafted one from your answers. Edit it, or write your own.</div>
+                  <div class="draftbox">Hi all, I'm Maya, a utility field tech in Houston. I built a 14S e-bike pack from salvaged cells (and learned about sense-wire chafing the hard way). I'd like to help build Longshot packs and maybe one for a Quiver of my own.</div>
+                  <div class="row" style="margin-top:8px"><span class="btn sm primary">Post to Discord</span><span class="btn sm ghost">Edit first</span></div></div></div>
+                <div class="check"><span class="cb"></span><div class="grow"><b>Come to a welcome call</b><div class="muted small">Thursdays at 11:00 your time, 30 minutes, anyone new. You get the Member role on Discord. Next one: Nov 13.</div></div><span class="btn sm">Add to calendar</span></div>
+                <div class="check"><span class="cb"></span><div class="grow"><b>Do one real thing</b><div class="muted small">Answer a guide question, weigh in on a thread, post a build log, or open a PR.</div></div></div>
+              </div>
+              <p class="why" style="margin-top:8px">None of these pay ARROW. Real work does: retro grants at each freeze, and bounties and grants from decisions. (Gavin's Q28: paying for follows and intros attracts farmers.)</p>
+            </div>
+            <div class="sec"><h3>Matched for you <span class="n">from Electrical, Power, Assembly and your spot welder</span></h3>
+              <div class="match"><div class="grow"><div class="proj">Longshot · Build</div><b>The pack manufacturing guide has 6 open questions on assembly and sense taps</b><div class="because">because: Electrical, Assembly · you've built a 14S pack</div></div><span class="btn sm">Open</span></div>
+              <div class="match"><div class="grow"><div class="proj">Longshot · Pack</div><b>Busbars: copper or brass? The sources disagree</b><div class="because">because: Power · open thread, 4 comments</div></div><span class="btn sm">Open</span></div>
+              <div class="match"><div class="grow"><div class="proj">Quiver · Dev Kit v1.2</div><b>Harness and wiring: what should change in the next revision</b><div class="because">because: Electrical · targets the next version, so ideas land</div></div><span class="btn sm">Open</span></div>
+              <div class="match" style="border-color:var(--indigo-a5)"><div class="grow"><div class="proj">Near you · sample event</div><b>Longshot PT2 pack build weekend, Texas, January · 4 seats</b><div class="because">because: you said you'd build hardware and travel up to 300 km</div></div><span class="btn sm primary">I'm interested</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="callout indigo"><i data-i="users"></i><div><b style="color:var(--fg)">What happens next</b><br>A person on the core team reads every profile. If there's a fit, Thomas or a project lead will message you on Discord, usually within a week.</div></div>
+            <div class="sec"><h3>Your card</h3>
+              <div class="pcard" id="mycard"></div>
+              <p class="why" style="margin-top:6px">Public, on the map. Members also see your story, links and shop.</p>
+              <div class="row wrap" style="margin-top:10px"><span class="btn sm">Edit profile</span><span class="btn sm ghost">Who sees what</span></div>
+            </div>
+            <div class="sec"><h3>Your record</h3>
+              <ul class="tl"><li><span class="d">Nov 4</span>Joined from the Longshot teardown post</li><li><span class="d">Nov 4</span>Profile done</li></ul>
+              <p class="why" style="margin-top:6px">Earned work shows up here: threads, guide answers, PRs, builds, grants.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================== 4 REGISTRY -->
+  <section class="screen" data-s="people">
+    <div class="ws">
+      <div class="wshead" data-wshead="people"></div>
+      <div class="wsbody">
+        <aside class="side" data-side="people"></aside>
+        <div class="main">
+          <div class="crumb"><span>Community</span><i data-i="chevr" class="s"></i><b id="viewname">All people</b></div>
+          <div class="card pad">
+            <div class="row sp" style="align-items:flex-start">
+              <div><h1 style="font-size:19px">People</h1><p class="lede" style="font-size:13px">Everyone who filled in the registry. Members see profiles; notes, call status and the owner are for the core team.</p></div>
+              <span class="btn primary" id="findbtn"><i data-i="spark"></i> Find people for…</span>
+            </div>
+            <div class="weekstrip">
+              <div><b>37</b><span>joined Discord this week</span></div>
+              <div><b>14</b><span>opened /join</span></div>
+              <div><b>9</b><span>finished a profile</span></div>
+              <div><b>4</b><span>open to a call</span></div>
+              <div class="warn"><b>2</b><span>waiting 7+ days for a human</span></div>
+            </div>
+            <div class="toolbar">
+              <div class="search2"><i data-i="search"></i><input id="q" placeholder="Names, skills, places, tools"></div>
+              <button class="fchip" data-f="disc"><i data-i="filter" class="s"></i> Discipline</button>
+              <button class="fchip" data-f="can">Can do or learning</button>
+              <button class="fchip" data-f="shop">Has a shop</button>
+              <button class="fchip" data-f="call">Open to a call</button>
+              <button class="fchip">Within…</button>
+              <button class="fchip">Status</button>
+              <div class="seg" style="margin-left:auto"><button data-v="list" class="on"><i data-i="list" class="s"></i> List</button><button data-v="map"><i data-i="globe" class="s"></i> Map</button></div>
+            </div>
+            <div id="listview">
+              <table class="t"><thead><tr><th>Person</th><th>Place</th><th>Can do · <span style="border-bottom:1px dashed">learning</span></th><th>Shop</th><th>Time</th><th>Status</th><th><span class="teamtag" style="font-size:9.5px"><i data-i="lock" class="s"></i>Notes</span></th></tr></thead><tbody id="rows"></tbody></table>
+            </div>
+            <div id="mapview" class="hide">
+              <div class="mapwrap" id="mapwrap">
+                <svg viewBox="0 0 960 500" id="mapsvg"><g class="land"><!--MAP_DOTS--></g><g class="ppl" id="ppl"></g></svg>
+                <div class="maplegend"><span><i style="background:var(--indigo-10)"></i>on the map</span><span><i style="background:var(--amber-9)"></i>open to a call</span><span class="faint">country-only people sit at the country's centre</span></div>
+                <div class="mapcard hide" id="mapcard"></div>
+              </div>
+              <p class="why" style="margin-top:8px">Gavin's contributor map (a globe on the site), reading the registry. The public version shows only people who chose to be on it, at the precision they chose; nearby people share one dot.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="drawer" id="drawer">
+      <div class="row sp"><h3 style="font-size:15px">Find people for…</h3><span class="btn sm ghost" id="drawerx">✕</span></div>
+      <p class="muted small" style="margin:4px 0 14px">From a project, a thread, a bounty or a build day. Sample: a Longshot pack build.</p>
+      <dl class="kv" style="grid-template-columns:96px 1fr">
+        <dt>For</dt><dd style="color:var(--fg)">Longshot PT2 pack build weekend · Austin, TX · Jan 17–18</dd>
+        <dt>Can do</dt><dd class="chips"><span class="dchip" style="--c:#89a5e3">Electrical</span><span class="dchip" style="--c:#d4b882">Assembly</span><span class="faint small">either</span></dd>
+        <dt>Has</dt><dd class="chips"><span class="tag">Soldering station</span><span class="tag">or Spot welder</span></dd>
+        <dt>Where</dt><dd>within 400 km, or will travel</dd>
+      </dl>
+      <div class="sec"><h3>4 people <span class="n">best first</span></h3><div id="matches"></div></div>
+      <div class="row" style="margin-top:10px"><span class="btn primary"><i data-i="send" class="s"></i> Invite the 2 picked</span><span class="btn">Save as a view</span></div>
+      <p class="why" style="margin-top:10px">Notes count: Julius's review of Maya's pack work ranks her first. Agents can draft the list; a person sends the invite.</p>
+    </div>
+  </section>
+
+  <!-- ===================================================== 5 PERSON -->
+  <section class="screen" data-s="person">
+    <div class="ws">
+      <div class="wshead" data-wshead="person"></div>
+      <div class="wsbody">
+        <aside class="side" data-side="person"></aside>
+        <div class="main" id="personmain"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================== 6 CALLS -->
+  <section class="screen" data-s="calls">
+    <div class="ws">
+      <div class="wshead" data-wshead="calls"></div>
+      <div class="wsbody">
+        <aside class="side" data-side="calls"></aside>
+        <div class="main">
+          <div class="crumb"><span>Community</span><i data-i="chevr" class="s"></i><b>Intro calls</b><span class="teamtag" style="margin-left:6px"><i data-i="lock" class="s"></i>team only</span></div>
+          <div class="card pad">
+            <h1 style="font-size:19px">Intro calls</h1>
+            <p class="lede" style="font-size:13px">People opt in on their profile ("open to a 20-minute intro call"). Nobody gets a call by asking an agent; a person on the team picks them and writes to them.</p>
+            <div class="modes">
+              <div class="mode mine"><span class="badge">MY PICK</span><h4>A · You reach out</h4><p class="small muted">A queue of people who opted in, best signal first. You (or a lead) send a DM in your own words with two or three times.</p><ul><li class="plus">Your time goes to people you chose</li><li class="plus">A message from you is the welcome</li><li class="minus">Only as fast as you write them</li></ul></div>
+              <div class="mode"><h4>B · They book</h4><p class="small muted">A booking link on the done screen for people with a finished profile and one work link, capped at a few slots a week.</p><ul><li class="plus">Scales without you</li><li class="minus">Your calendar fills with whoever clicks first</li><li class="minus">Feels like a sales funnel</li></ul></div>
+              <div class="mode"><h4>C · Weekly welcome call</h4><p class="small muted">Gavin's quest: one open call a week for everyone new, run by anyone on the team. Earns the Member role.</p><ul><li class="plus">Everyone meets a human in week one</li><li class="plus">Shows you who to pick for A</li><li class="minus">Group calls hide quiet people</li></ul></div>
+            </div>
+            <p class="why" style="margin-top:8px">A and C together: C for everyone, A for the people you want to know. B stays off unless the queue outgrows you.</p>
+
+            <div class="pipe">
+              <div class="on"><b>3</b>to invite</div><div><b>2</b>invited</div><div><b>1</b>call booked</div><div><b>3</b>talked</div><div style="border-color:var(--team-line)"><b style="color:var(--amber-11)">1</b>call notes due</div>
+            </div>
+            <div class="calls">
+              <div id="queue"></div>
+              <div>
+                <div class="composer" id="composer"></div>
+                <div class="teampanel tp" style="margin-top:14px">
+                  <div class="row sp"><span class="teamtag"><i data-i="lock" class="s"></i>After the call · Omar Farouk, Nov 7</span><span class="pill red">notes due</span></div>
+                  <p class="muted small" style="margin:6px 0 10px">Three prompts, a minute each. Saved as a team note on Omar's page, with the status and next step.</p>
+                  <div class="afterform">
+                    <div><label class="label">What they're good at</label><textarea class="input" rows="3">Firmware on STM32, wrote CAN drivers at his last job. Clear explainer.</textarea></div>
+                    <div><label class="label">What they want</label><textarea class="input" rows="3">Paid work, 2 to 5 h a week. Curious about QuiverHub.</textarea></div>
+                    <div><label class="label">Next step</label><textarea class="input" rows="3">Intro to Erick for the QuiverHub CAN thread.</textarea></div>
+                  </div>
+                  <div class="row wrap" style="margin-top:10px"><span class="small muted">Good for</span><span class="tag">QuiverHub</span><span class="tag">BMS telemetry</span><span class="tag faint">+ add</span><span class="small muted" style="margin-left:12px">Status</span><span class="pill jade">Talked</span><span class="btn sm team" style="margin-left:auto">Save note</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================== 7 FUNNEL -->
+  <section class="screen" data-s="funnel">
+    <div class="ws">
+      <div class="wshead" data-wshead="funnel"></div>
+      <div class="wsbody">
+        <aside class="side" data-side="funnel"></aside>
+        <div class="main">
+          <div class="crumb"><span>Community</span><i data-i="chevr" class="s"></i><b>Funnel</b><span class="teamtag" style="margin-left:6px"><i data-i="lock" class="s"></i>team only</span></div>
+          <div class="card pad">
+            <div class="row sp"><div><h1 style="font-size:19px">Funnel <span class="muted" style="font-weight:400;font-size:14px">· last 30 days · sample numbers</span></h1><p class="lede" style="font-size:13px">Where people drop off, and which posts bring people who stay.</p></div><div class="seg"><button>7 days</button><button class="on">30 days</button><button>Since launch</button></div></div>
+            <div class="sec">
+              <div class="fbar"><span>Joined Discord</span><div class="track"><i style="width:100%"></i></div><span class="v">142</span></div>
+              <div class="fbar"><span>Opened /join</span><div class="track"><i style="width:43%"></i></div><span class="v">61 <small>43%</small></span></div>
+              <div class="fbar"><span>Finished a profile</span><div class="track"><i style="width:27%"></i></div><span class="v">38 <small>62%</small></span></div>
+              <div class="fbar t"><span>Heard from a human</span><div class="track"><i style="width:23%"></i></div><span class="v">33 <small>87%</small></span></div>
+              <div class="fbar t"><span>Intro call</span><div class="track"><i style="width:6%"></i></div><span class="v">9</span></div>
+              <div class="fbar"><span>Did one real thing</span><div class="track"><i style="width:9%"></i></div><span class="v">13</span></div>
+              <div class="fbar"><span>Still active at 30 days</span><div class="track"><i style="width:5%"></i></div><span class="v">7</span></div>
+            </div>
+            <div class="grid2 sec">
+              <div>
+                <h3 style="font-size:13.5px;margin-bottom:8px">By where they came from</h3>
+                <table class="t"><thead><tr><th>Ref</th><th>Opened</th><th>Profiles</th><th>Active</th></tr></thead><tbody>
+                  <tr><td>x-longshot-teardown</td><td class="mono">22</td><td class="mono">14</td><td class="mono">4</td></tr>
+                  <tr><td>x-spearhead-wing-test</td><td class="mono">11</td><td class="mono">6</td><td class="mono">1</td></tr>
+                  <tr><td>discord-welcome</td><td class="mono">17</td><td class="mono">9</td><td class="mono">1</td></tr>
+                  <tr><td>gh-quiver, gh-longshot</td><td class="mono">6</td><td class="mono">5</td><td class="mono">1</td></tr>
+                  <tr><td>site-get-involved</td><td class="mono">5</td><td class="mono">4</td><td class="mono">0</td></tr>
+                </tbody></table>
+                <p class="why" style="margin-top:8px">Build posts bring builders. The teardown post brought a third of the profiles and most of the people still around.</p>
+              </div>
+              <div>
+                <h3 style="font-size:13.5px;margin-bottom:8px">The promise: a human reads every profile</h3>
+                <div class="grid2" style="gap:10px">
+                  <div class="stat"><b>2.4 days</b><span>median from profile to first message</span></div>
+                  <div class="stat hot"><b>2</b><span>waiting more than 7 days</span></div>
+                </div>
+                <div class="callout team" style="margin-top:10px"><i data-i="lock"></i><div>Lena Hofmann (Munich, industrial design) and Hannah Lee (Auckland, composites) have heard nothing for 8 and 9 days. <a href="#people" style="color:var(--amber-12);text-decoration:underline">Assign an owner</a></div></div>
+                <p class="why" style="margin-top:8px">If the done screen promises a reply, this is the number that keeps us honest. An agent can nag the owner; it shouldn't write the reply.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="statusbar"><span id="foot">Signed in as thomasg · lead</span><span>Sample data</span><span style="margin-left:auto" class="faint">Mockup · prototypes/registry-onboarding</span></footer>
+</div>
+
+<script>
+// ---------------------------------------------------------------- icons
+const I = {
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  lock: '<rect x="4.5" y="11" width="15" height="10" rx="2"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/>',
+  chev: '<path d="m6 9 6 6 6-6"/>', chevr: '<path d="m9 6 6 6-6 6"/>', updown: '<path d="m8 9 4-4 4 4M8 15l4 4 4-4"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  pin: '<path d="M12 21s7-6.5 7-11.5a7 7 0 0 0-14 0C5 14.5 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.6a3.5 3.5 0 0 1 0 6.8M21.5 20c0-2.8-1.6-4.9-4-5.7"/>',
+  video: '<rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="m15.5 10.5 6-3.5v10l-6-3.5"/>',
+  cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  note: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>',
+  link: '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>',
+  send: '<path d="m21.5 2.5-7 19-4-8.5-8.5-4z"/><path d="M21.5 2.5 10.5 13"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  list: '<path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+  filter: '<path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/>',
+  spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
+  arrowr: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  chart: '<path d="M4 20V11M10 20V5M16 20v-7M21 20H3"/>',
+  build: '<path d="M14.5 6.5l3 3L8 19H5v-3z"/><path d="M13 8l3 3M3 21h18"/>',
+  fly: '<circle cx="5.5" cy="5.5" r="2.5"/><circle cx="18.5" cy="5.5" r="2.5"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/><path d="M7.5 7.5l3 3M16.5 7.5l-3 3M7.5 16.5l3-3M16.5 16.5l-3-3"/><rect x="10" y="10" width="4" height="4" rx="1"/>',
+  make: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>',
+  code: '<path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
+  story: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/>',
+  dao: '<path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6"/>',
+  eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  wrench: '<path d="M14.7 6.3a4 4 0 0 0 5.2 5.2l-8.6 8.6a2.1 2.1 0 0 1-3-3l8.6-8.6a4 4 0 0 1-2.2-2.2z" transform="translate(-2 -1)"/>',
+  agent: '<rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4M9 12h.01M15 12h.01M9.5 16h5"/>',
+  discord: '<path fill="currentColor" stroke="none" d="M19.8 5.2A16.4 16.4 0 0 0 15.7 4l-.5 1a15.2 15.2 0 0 0-6.4 0l-.5-1a16.4 16.4 0 0 0-4.1 1.2C1.6 9.1.9 12.9 1.2 16.7a16.6 16.6 0 0 0 5 2.5l1.1-1.7a10.7 10.7 0 0 1-1.7-.8l.4-.3a11.8 11.8 0 0 0 10 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.7a16.5 16.5 0 0 0 5-2.5c.4-4.4-.7-8.2-2.9-11.5zM8.7 14.4c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2zm6.6 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2z"/>',
+  github: '<path fill="currentColor" stroke="none" d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.2-3.4-1.2-.4-1.1-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.2-.4-1.2.1-2.6 0 0 .8-.3 2.8 1a9.5 9.5 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.6.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/>',
+  x: '<path fill="currentColor" stroke="none" d="M17.5 3h3l-7.1 8.1L21.7 21h-6.5l-4.6-6-5.3 6H2.3l7.6-8.7L2 3h6.6l4.2 5.5L17.5 3zm-1.1 16.2h1.7L7.7 4.7H5.9l10.5 14.5z"/>',
+};
+const ic = (n, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${I[n] || ''}</svg>`;
+const paintIcons = (root = document) => root.querySelectorAll('i[data-i]').forEach((el) => { el.outerHTML = ic(el.dataset.i, el.className); });
+const ARROWMARK = '<svg viewBox="0 0 163 194"><path fill="#fff" d="M162.9,120.1l-50.36-11.17-31.09,84.49-31.09-84.49L0,120.1,81.45,0l81.45,120.1Z"/></svg>';
+
+// ---------------------------------------------------------------- the taxonomy (website src/data/disciplines.json v1.0, Gavin's colours)
+const TAX = [
+  ['Engineering', 'Design and build the aircraft', '#89a5e3', ['Mechanical', 'CAD', 'Electrical', 'Aerodynamics', 'Power', 'Propulsion', 'Certification', 'Safety']],
+  ['Flight Systems', 'The brains in the air', '#7ab3bd', ['Firmware', 'Software', 'Controls', 'Autonomy', 'Telemetry', 'Simulation']],
+  ['Flight Ops', 'Fly, test and keep them flying', '#e89982', ['Piloting', 'Flight Test', 'Maintenance', 'Support', 'Regulatory', 'Missions']],
+  ['Manufacturing', 'Make and ship real parts', '#d4b882', ['3D Printing', 'Machining', 'Composites', 'Assembly', 'Sourcing', 'Quality']],
+  ['Design', 'How Arrow looks and feels', '#ce95b2', ['Industrial', 'Interface', 'Graphics']],
+  ['Content', 'Teach and tell the story', '#af9ddd', ['Documentation', 'Media', 'Social Media']],
+  ['Growth', 'Bring the world in', '#86bda6', ['Marketing', 'Community', 'Business Development']],
+  ['Local', 'Run Arrow where you live', '#b2bc8f', ['Hosting', 'Workshops', 'Vertiports']],
+  ['Operations', 'Run the DAO machinery', '#9fa4ac', ['Governance', 'Tokenomics', 'Coordination', 'Legal', 'Tooling']],
+];
+const colorOf = (d) => (TAX.find((t) => t[3].includes(d)) || [, , '#9fa4ac'])[2];
+const catOf = (d) => (TAX.find((t) => t[3].includes(d)) || ['Other'])[0];
+const dchip = (d, kind = '') => `<span class="dchip ${kind}" style="--c:${colorOf(d)}">${d}</span>`;
+const SHOP = { fdm: 'FDM printer', resin: 'Resin printer', cnc: 'CNC router', mill: 'Mill', lathe: 'Lathe', laser: 'Laser cutter', solder: 'Soldering station', spot: 'Spot welder', scope: 'Scope and bench supply', composite: 'Composite layup', weld: 'Welder', field: 'A field to fly', aircraft: 'Own drone, 25 kg class' };
+const SHORT = { fdm: 'FDM', resin: 'resin', cnc: 'CNC', mill: 'mill', lathe: 'lathe', laser: 'laser', solder: 'solder', spot: 'spot welder', scope: 'scope', composite: 'layup', weld: 'welder', field: 'field', aircraft: 'drone' };
+const STATUS = { new: ['New', 'sky'], invited: ['Invited', 'amber'], booked: ['Call booked', 'indigo'], talked: ['Talked', 'jade'], active: ['Active', 'jade'], quiet: ['Quiet', 'slate'] };
+const pill = (s) => `<span class="pill ${STATUS[s][1]}">${STATUS[s][0]}</span>`;
+const av = (p, cls = '') => `<span class="av ${cls}" style="--h:${p.h}">${p.name.split(' ').map((w) => w[0]).join('').slice(0, 2)}</span>`;
+const ME_TZ = 'America/Chicago';
+
+// ---------------------------------------------------------------- sample people (invented)
+const PEOPLE = [
+  { id: 'maya', name: 'Maya Okafor', h: 18, handle: 'maya.builds', gh: 'mokafor', city: 'Houston', country: 'United States', lat: 29.76, lng: -95.37, tz: 'America/Chicago',
+    can: ['Electrical', 'Power', 'Assembly'], learn: ['Firmware'], shop: ['solder', 'spot', 'scope', 'fdm'], hours: '5–10 h/wk', when: 'Weekday evenings', status: 'talked', call: true, owner: 'Thomas',
+    source: 'X · Longshot pack teardown', ref: 'x-longshot-teardown', joined: 'Nov 4', last: 'yesterday', notes: 2, travel: 'up to 300 km', wants: ['Learning', 'Paid work', 'Build my own'],
+    blurb: 'Utility field tech in Houston. Built a 14S e-bike pack from salvaged cells. Here to build Longshot packs.',
+    story: 'I built a 48 V, 14S5P e-bike pack from salvaged laptop cells. My first capacitor spot welder kept blowing through the nickel strip, so I rebuilt it around a car battery and a timed relay. The first pack ran three months, then a sense lead chafed through on the frame and took the BMS with it. Pack two has fused sense leads and strain relief on every wire. It is at 4,000 km now.',
+    build: ['Build my own Longshot pack', 'Help at a build day'] },
+  { id: 'jake', name: 'Jake Whitfield', h: 32, handle: 'jwhitfield', gh: null, city: 'San Antonio', country: 'United States', lat: 29.42, lng: -98.49, tz: 'America/Chicago',
+    can: ['Machining', 'Assembly', '3D Printing'], learn: ['Composites'], shop: ['lathe', 'mill', 'weld', 'fdm'], hours: '5–10 h/wk', when: 'Weekends', status: 'new', call: true,
+    source: 'Word of mouth', ref: 'discord-welcome', joined: 'Nov 9', last: '2 days ago', notes: 0, travel: 'anywhere in Texas', wants: ['The mission', 'Paid work'],
+    blurb: 'Machinist, 20 years in oilfield tooling. Lathe, mill and a TIG welder in the garage.',
+    story: 'I turned a set of spindle adapters for a 1940s South Bend lathe when nobody made them anymore. The first set chattered because I trusted the old ways and skipped indicating the chuck; the second set runs true to two tenths. I like parts that have to fit something that already exists.',
+    build: ['Make parts for the project', 'Help at a build day'] },
+  { id: 'diego', name: 'Diego Ramírez', h: 205, handle: 'diegofpv', gh: 'dramirez-fpv', city: 'Monterrey', country: 'Mexico', lat: 25.69, lng: -100.32, tz: 'America/Monterrey',
+    can: ['Piloting', 'Flight Test', 'Maintenance'], learn: ['Telemetry'], shop: ['field', 'aircraft', 'solder'], hours: '10+ h/wk', when: 'Flexible', status: 'new', call: true,
+    source: 'Discord', ref: 'discord-welcome', joined: 'Nov 8', last: '3 days ago', notes: 0, travel: 'up to 1,000 km', wants: ['Paid work', 'A job'],
+    blurb: 'Ag-spray drone pilot. 900 hours on 25 kg-class aircraft. Looking for flight test work.',
+    story: 'I fly a 30 L spray drone for orange growers. Last season a motor ESC browned out mid-field and I landed on five motors; afterwards I logged every flight and found the ESC ran 20 C hotter on the side facing the sun. We moved it under the frame and it never happened again.',
+    build: ['Fly and test'] },
+  { id: 'hannah', name: 'Hannah Lee', h: 160, handle: 'hannah.lee', gh: null, city: 'Auckland', country: 'New Zealand', lat: -36.85, lng: 174.76, tz: 'Pacific/Auckland',
+    can: ['Composites', 'Assembly'], learn: ['Aerodynamics'], shop: ['composite', 'fdm'], hours: '5–10 h/wk', when: 'Weekday evenings', status: 'new', call: true,
+    source: 'X', ref: 'x-spearhead-wing-test', joined: 'Nov 2', last: '9 days ago', notes: 0, travel: 'Auckland only', wants: ['Learning', 'The mission'],
+    blurb: 'Boatbuilder turned composites tech. Vacuum bagging, moulds, carbon layups.',
+    story: 'I built the moulds for a 6 m racing dinghy foil. The first foil delaminated at the root because the core was too cold when we laid up; now I heat the shop overnight before any layup and log humidity.',
+    build: ['Make parts for the project'] },
+  { id: 'tomasz', name: 'Tomasz Wiśniewski', h: 0, handle: 'tomwis', gh: 'twisniewski', city: 'Gdańsk', country: 'Poland', lat: 54.35, lng: 18.65, tz: 'Europe/Warsaw',
+    can: ['CAD', 'Mechanical'], learn: ['Composites'], shop: ['cnc', 'fdm'], hours: '2–5 h/wk', when: 'Weekends', status: 'invited', call: true, owner: 'Alperen',
+    source: 'GitHub · project-quiver', ref: 'gh-quiver', joined: 'Oct 30', last: '5 days ago', notes: 1, travel: 'Europe', wants: ['Learning'],
+    blurb: 'Mechanical engineer, ship systems. build123d convert.', story: 'Rebuilt a 3D-printer frame in build123d so every bracket regenerates from three numbers.', build: ['Make parts for the project'] },
+  { id: 'noor', name: 'Noor Haddad', h: 280, handle: 'noorh', gh: 'noorhaddad', city: 'Amman', country: 'Jordan', lat: 31.95, lng: 35.93, tz: 'Asia/Amman',
+    can: ['Aerodynamics', 'Simulation'], learn: ['CAD'], shop: [], hours: '5–10 h/wk', when: 'Weekday days', status: 'booked', call: true, owner: 'Thomas',
+    source: 'X · Spearhead wing test', ref: 'x-spearhead-wing-test', joined: 'Oct 28', last: 'today', notes: 1, travel: 'no', wants: ['Learning', 'Paid work'],
+    blurb: 'Aero grad, OpenFOAM and XFLR5. Wants a real wing to work on.', story: 'Wrote my thesis on low-Reynolds airfoils for small UAVs and ran the wind tunnel myself.', build: [] },
+  { id: 'omar', name: 'Omar Farouk', h: 120, handle: 'ofarouk', gh: 'ofarouk', city: 'Austin', country: 'United States', lat: 30.27, lng: -97.74, tz: 'America/Chicago',
+    can: ['Firmware', 'Controls'], learn: ['Autonomy'], shop: ['solder', 'scope', 'fdm'], hours: '2–5 h/wk', when: 'Weekday evenings', status: 'talked', call: true, owner: 'Thomas',
+    source: 'GitHub · quiver-sdk', ref: 'gh-quiver', joined: 'Oct 26', last: 'today', notes: 2, travel: 'up to 300 km', wants: ['Paid work'],
+    blurb: 'Embedded engineer. CAN, STM32, too many logic analysers.', story: 'Wrote a CAN bootloader that survived a brownout test of 10,000 power cycles on the second try.', build: ['Help at a build day'] },
+  { id: 'aiko', name: 'Aiko Tanaka', h: 335, handle: 'aiko.t', gh: 'aikotanaka', city: 'Osaka', country: 'Japan', lat: 34.69, lng: 135.5, tz: 'Asia/Tokyo',
+    can: ['Software', 'Autonomy'], learn: ['Simulation'], shop: ['fdm'], hours: '5–10 h/wk', when: 'Weekends', status: 'active', call: false, owner: 'Erick',
+    source: 'X · QuiverHub demo', ref: 'x-quiverhub', joined: 'Oct 12', last: 'today', notes: 3, travel: 'no', wants: ['Learning', 'The mission'],
+    blurb: 'ROS 2 and path planning by day. QuiverHub contributor.', story: 'Built an obstacle-avoidance stack for a warehouse robot that kept seeing ghosts in reflective tape.', build: [] },
+  { id: 'samuel', name: 'Samuel Kiprono', h: 95, handle: 'skiprono', gh: null, city: 'Nairobi', country: 'Kenya', lat: -1.29, lng: 36.82, tz: 'Africa/Nairobi',
+    can: ['Missions', 'Business Development', 'Regulatory'], learn: ['Piloting'], shop: [], hours: '5–10 h/wk', when: 'Flexible', status: 'active', call: false, owner: 'Thomas',
+    source: 'Word of mouth', ref: null, joined: 'Sep 30', last: 'yesterday', notes: 4, travel: 'East Africa', wants: ['Starting a business'],
+    blurb: 'Medical-supply logistics. Exploring drone delivery routes upcountry.', story: 'Ran cold-chain vaccine delivery for county clinics on motorbikes.', build: ['Host a build day'] },
+  { id: 'lena', name: 'Lena Hofmann', h: 300, handle: 'lenah', gh: null, city: 'Munich', country: 'Germany', lat: 48.14, lng: 11.58, tz: 'Europe/Berlin',
+    can: ['Industrial', 'Interface'], learn: ['Composites'], shop: ['laser', 'fdm'], hours: '2–5 h/wk', when: 'Weekday evenings', status: 'new', call: false,
+    source: 'arrowair.com', ref: 'site-get-involved', joined: 'Nov 3', last: '8 days ago', notes: 0, travel: 'Europe', wants: ['The mission'],
+    blurb: 'Industrial designer, consumer hardware. Would love to design a ground station.', story: 'Designed a handheld meter that passed a 1.5 m drop test on the fourth housing.', build: [] },
+  { id: 'priya', name: 'Priya Raman', h: 45, handle: 'priya.r', gh: 'priyaraman', city: null, country: 'India', lat: 22.5, lng: 79.0, tz: 'Asia/Kolkata',
+    can: ['Documentation', 'Media'], learn: ['CAD'], shop: [], hours: '2–5 h/wk', when: 'Weekends', status: 'quiet', call: false, owner: 'Gavin',
+    source: 'YouTube', ref: null, joined: 'Sep 14', last: '41 days ago', notes: 1, travel: 'no', wants: ['Learning'],
+    blurb: 'Technical writer. Turns build logs into guides.', story: 'Wrote the assembly guide for a kit telescope that cut support emails in half.', build: [] },
+  { id: 'rafael', name: 'Rafael Costa', h: 140, handle: 'rcosta', gh: null, city: 'São José dos Campos', country: 'Brazil', lat: -23.18, lng: -45.88, tz: 'America/Sao_Paulo',
+    can: ['Certification', 'Safety', 'Aerodynamics'], learn: ['Regulatory'], shop: [], hours: '2–5 h/wk', when: 'Weekday evenings', status: 'invited', call: true, owner: 'Thomas',
+    source: 'LinkedIn', ref: null, joined: 'Nov 1', last: '4 days ago', notes: 0, travel: 'no', wants: ['The mission'],
+    blurb: 'Certification engineer, 12 years on business jets.', story: 'Led the compliance plan for a cabin change that needed 31 test reports.', build: [] },
+];
+const byId = Object.fromEntries(PEOPLE.map((p) => [p.id, p]));
+
+// ---------------------------------------------------------------- time helpers
+const NOW = new Date();
+const localTime = (tz) => new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit' }).format(NOW);
+const offsetMin = (tz) => { const s = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'shortOffset' }).formatToParts(NOW).find((x) => x.type === 'timeZoneName').value; const m = s.match(/GMT([+-]\d+)(?::(\d+))?/); return m ? (+m[1]) * 60 + Math.sign(+m[1] || 1) * (+(m[2] || 0)) : 0; };
+const diffText = (tz) => { const d = (offsetMin(tz) - offsetMin(ME_TZ)) / 60; return d === 0 ? 'same time as you' : `${d > 0 ? '+' : ''}${d} h from you`; };
+const overlapText = (tz) => { const d = (offsetMin(tz) - offsetMin(ME_TZ)) / 60; if (d === 0) return 'Same zone as you'; const h = (x) => { const v = ((x % 24) + 24) % 24; return `${v % 12 || 12}${v < 12 ? ' am' : ' pm'}`; }; return `Your 8 am = their ${h(8 + d)} · your 4 pm = their ${h(16 + d)}`; };
+const km = (a, b) => { const R = 6371, r = Math.PI / 180, dl = (b.lat - a.lat) * r, dn = (b.lng - a.lng) * r; const x = Math.sin(dl / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dn / 2) ** 2; return Math.round(2 * R * Math.asin(Math.sqrt(x))); };
+const place = (p) => (p.city ? `${p.city}, ${p.country === 'United States' ? 'US' : p.country}` : `${p.country} <span class="faint">(country only)</span>`);
+
+// ---------------------------------------------------------------- the community workspace frame
+const WSTABS = [['map', 'Map', '#people?v=map', false], ['people', 'People', '#people', false], ['calls', 'Intro calls', '#calls', true], ['funnel', 'Funnel', '#funnel', true]];
+function wshead(active) {
+  return `<div class="switcher"><span class="thumb">${ARROWMARK}</span>Arrow · Community ${ic('updown', 's faint')}</div>
+    <span class="muted small" style="margin-left:4px">beside Quiver and Longshot in the switcher</span>
+    <nav class="tabs">${WSTABS.map(([id, label, href, team]) => `<a href="${href}" class="${id === active ? 'on' : ''}">${label}${team ? `<span class="lk">${ic('lock', 's')}</span>` : ''}</a>`).join('')}</nav>`;
+}
+function side(active) {
+  const n = (f) => PEOPLE.filter(f).length;
+  const views = [
+    ['all', 'All people', n(() => true)], ['new', 'New this week', n((p) => p.status === 'new')], ['call', 'Open to a call', n((p) => p.call && ['new', 'invited'].includes(p.status))],
+    ['shop', 'Has a shop', n((p) => p.shop.length >= 3)], ['near', 'Near Austin, TX', n((p) => p.city && km(p, { lat: 30.27, lng: -97.74 }) < 400)], ['waiting', 'Waiting on us', n((p) => p.status === 'new' && /[89] days/.test(p.last))], ['quiet', 'Quiet 30+ days', n((p) => p.status === 'quiet')],
+  ];
+  const cats = TAX.map(([c, , col, tags]) => [c, col, PEOPLE.filter((p) => p.can.some((d) => tags.includes(d))).length]).filter((x) => x[2]);
+  return `<h5>People</h5><div class="nav">${views.map(([id, l, c]) => `<a href="#people?view=${id}" class="${active === id ? 'on' : ''}">${ic(id === 'call' ? 'video' : id === 'shop' ? 'wrench' : id === 'near' ? 'pin' : id === 'waiting' ? 'clock' : id === 'quiet' ? 'eye' : id === 'new' ? 'spark' : 'users', 's')}${l}<span class="n">${c}</span></a>`).join('')}</div>
+    <h5>Can do</h5><div class="nav">${cats.map(([c, col, k]) => `<a href="#people?cat=${encodeURIComponent(c)}" class="${active === c ? 'on' : ''}"><span class="dot" style="--c:${col}"></span>${c}<span class="n">${k}</span></a>`).join('')}</div>
+    <h5>Team</h5><div class="nav"><a href="#calls" class="${active === 'calls' ? 'on' : ''}">${ic('video', 's')}Intro calls<span class="n">3</span></a><a href="#funnel" class="${active === 'funnel' ? 'on' : ''}">${ic('chart', 's')}Funnel</a><a href="#person/maya">${ic('note', 's')}Notes I wrote<span class="n">5</span></a></div>`;
+}
+
+// ---------------------------------------------------------------- registry
+let regState = { view: 'all', cat: null, q: '', call: false, shop: false, mode: 'list' };
+function filtered() {
+  let ps = PEOPLE.slice();
+  const v = regState.view;
+  if (v === 'new') ps = ps.filter((p) => p.status === 'new');
+  if (v === 'call') ps = ps.filter((p) => p.call && ['new', 'invited'].includes(p.status));
+  if (v === 'shop' || regState.shop) ps = ps.filter((p) => p.shop.length >= 3);
+  if (v === 'near') ps = ps.filter((p) => p.city && km(p, { lat: 30.27, lng: -97.74 }) < 400);
+  if (v === 'waiting') ps = ps.filter((p) => p.status === 'new' && /[89] days/.test(p.last));
+  if (v === 'quiet') ps = ps.filter((p) => p.status === 'quiet');
+  if (regState.call) ps = ps.filter((p) => p.call);
+  if (regState.cat) { const tags = TAX.find((t) => t[0] === regState.cat)[3]; ps = ps.filter((p) => p.can.some((d) => tags.includes(d))); }
+  if (regState.q) { const q = regState.q.toLowerCase(); ps = ps.filter((p) => [p.name, p.city, p.country, p.blurb, ...p.can, ...p.learn, ...p.shop.map((s) => SHOP[s])].join(' ').toLowerCase().includes(q)); }
+  return ps;
+}
+function renderRegistry() {
+  const s = document.querySelector('[data-s="people"]');
+  s.querySelector('[data-wshead]').innerHTML = wshead(regState.mode === 'map' ? 'map' : 'people');
+  s.querySelector('[data-side]').innerHTML = side(regState.cat || regState.view);
+  const names = { all: 'All people', new: 'New this week', call: 'Open to a call', shop: 'Has a shop', near: 'Near Austin, TX', waiting: 'Waiting on us', quiet: 'Quiet 30+ days' };
+  document.getElementById('viewname').textContent = regState.cat ? `Can do: ${regState.cat}` : names[regState.view];
+  const ps = filtered();
+  document.getElementById('rows').innerHTML = ps.map((p) => `<tr class="click" onclick="location.hash='#person/${p.id}'">
+      <td><div class="pcell">${av(p)}<div><div class="nm">${p.name}</div><div class="hd">@${p.handle} · ${p.source}</div></div></div></td>
+      <td>${place(p)}<div class="faint small">${localTime(p.tz)} · ${diffText(p.tz)}</div></td>
+      <td><div class="chips">${p.can.map((d) => dchip(d)).join('')}${p.learn.map((d) => dchip(d, 'learn')).join('')}</div></td>
+      <td class="shopmini">${p.shop.map((x) => SHORT[x]).join(' · ') || '<span class="faint">none</span>'}</td>
+      <td class="small">${p.hours}<div class="faint">${p.when}</div></td>
+      <td>${pill(p.status)}${p.call && ['new', 'invited'].includes(p.status) ? `<div class="faint small" style="margin-top:3px">${ic('video', 's')} open to a call</div>` : ''}${p.owner ? `<div class="faint small" style="margin-top:3px">owner: ${p.owner}</div>` : ''}</td>
+      <td>${p.notes ? `<span class="note-count">${ic('note', 's')}${p.notes}</span>` : '<span class="faint">·</span>'}</td></tr>`).join('') || '<tr><td colspan="7" class="muted" style="padding:20px">Nobody matches.</td></tr>';
+  document.getElementById('listview').classList.toggle('hide', regState.mode !== 'list');
+  document.getElementById('mapview').classList.toggle('hide', regState.mode !== 'map');
+  s.querySelectorAll('.seg [data-v]').forEach((b) => b.classList.toggle('on', b.dataset.v === regState.mode));
+  s.querySelector('[data-f="call"]').classList.toggle('on', regState.call);
+  s.querySelector('[data-f="shop"]').classList.toggle('on', regState.shop);
+  renderMap(ps);
+  paintIcons(s);
+}
+const FIT = { scale: 175.4781, tx: 480, ty: 249.6 };
+function project(lng, lat) { const r = Math.PI / 180, l = lng * r, f = lat * r, f2 = f * f, f4 = f2 * f2;
+  const x = l * (0.8707 - 0.131979 * f2 + f4 * (-0.013791 + f4 * (0.003971 * f2 - 0.001529 * f4)));
+  const y = f * (1.007226 + f2 * (0.015085 + f4 * (-0.044475 + 0.028874 * f2 - 0.005916 * f4)));
+  return [x * FIT.scale + FIT.tx, -y * FIT.scale + FIT.ty]; }
+const isCall = (p) => p.call && ['new', 'invited'].includes(p.status);
+function renderMap(ps) {
+  const g = document.getElementById('ppl');
+  // Dots are places, not people (Gavin's rule): people close together share one dot with a count.
+  const clusters = [];
+  ps.forEach((p) => { const [x, y] = project(p.lng, p.lat); const c = clusters.find((k) => Math.hypot(k.x - x, k.y - y) < 16); if (c) c.ps.push(p); else clusters.push({ x, y, ps: [p] }); });
+  g.innerHTML = clusters.map((c, i) => { const call = c.ps.some(isCall), one = c.ps.length === 1, p = c.ps[0];
+    if (one) return `<g><circle class="halo" cx="${c.x}" cy="${c.y}" r="${p.city ? 9 : 13}"/><circle class="p ${call ? 'call' : ''}" data-c="${i}" cx="${c.x}" cy="${c.y}" r="4.5" ${p.city ? '' : 'fill-opacity="0.55"'}/><text x="${c.x + 8}" y="${c.y + 3}">${p.name.split(' ')[0]}</text></g>`;
+    return `<g><circle class="halo" cx="${c.x}" cy="${c.y}" r="15"/><circle class="p ${call ? 'call' : ''}" data-c="${i}" cx="${c.x}" cy="${c.y}" r="7.5"/><text class="cnt" x="${c.x}" y="${c.y + 3}" text-anchor="middle">${c.ps.length}</text><text x="${c.x + 11}" y="${c.y + 3}">${c.ps.map((q) => q.name.split(' ')[0]).join(', ')}</text></g>`; }).join('');
+  g.querySelectorAll('circle.p').forEach((dot) => dot.addEventListener('click', (e) => {
+    const c = clusters[+dot.dataset.c], card = document.getElementById('mapcard'), wrap = document.getElementById('mapwrap').getBoundingClientRect(), r = dot.getBoundingClientRect();
+    card.innerHTML = c.ps.map((p, k) => `${k ? '<div style="height:1px;background:var(--border-soft);margin:10px 0"></div>' : ''}<div class="row">${av(p)}<div><div style="color:var(--fg);font-weight:600">${p.name}</div><div class="faint small">${place(p)} · ${localTime(p.tz)}</div></div></div><div class="chips" style="margin-top:8px">${p.can.slice(0, 3).map((d) => dchip(d)).join('')}</div>${c.ps.length === 1 ? `<p class="small" style="margin-top:8px">${p.blurb}</p>` : ''}<div class="row" style="margin-top:8px"><a class="btn sm" href="#person/${p.id}">Open profile</a></div>`).join('');
+    card.classList.remove('hide');
+    card.style.left = Math.min(r.left - wrap.left + 14, wrap.width - 262) + 'px'; card.style.top = Math.max(8, Math.min(r.top - wrap.top - 20, wrap.height - card.offsetHeight - 8)) + 'px';
+    e.stopPropagation(); }));
+}
+function renderMatches() {
+  const site = { lat: 30.27, lng: -97.74 };
+  const M = [
+    ['maya', 96, ['Electrical and Assembly: can do', 'Spot welder, soldering station', `${km(byId.maya, site)} km from Austin, will travel 300 km`], 'Julius (review): "would trust her assembling a Longshot pack from the guide"', true],
+    ['jake', 81, ['Assembly: can do', 'Soldering: not listed', `${km(byId.jake, site)} km, will travel anywhere in Texas`], null, true],
+    ['omar', 64, ['Electrical: not listed (Firmware, Controls)', 'Soldering station, scope', 'Austin, 0 km'], 'Thomas (call): "great with CAN; ask him about BMS telemetry"', false],
+    ['diego', 52, ['Assembly: not listed', 'Soldering station', `${km(byId.diego, site)} km, will travel 1,000 km`], null, false],
+  ];
+  document.getElementById('matches').innerHTML = M.map(([id, sc, why, note, picked]) => { const p = byId[id];
+    return `<div class="mres ${picked ? 'pick1' : ''}"><input type="checkbox" ${picked ? 'checked' : ''} style="margin-top:6px;accent-color:#3e63dd">${av(p)}<div class="grow"><div class="row sp"><b style="color:var(--fg);font-weight:500">${p.name}</b><span class="score">${sc}</span></div><div class="faint small">${place(p)} · ${p.hours}</div>
+      <ul>${why.map((w) => `<li class="${/not listed/.test(w) ? 'miss' : ''}">${w}</li>`).join('')}${note ? `<li class="team">${ic('lock', 's')} ${note}</li>` : ''}</ul></div></div>`; }).join('');
+}
+
+// ---------------------------------------------------------------- person page
+const NOTES = {
+  maya: [
+    ['Call', 'Thomas', 'Nov 6', '20 minutes. Field tech at a utility, evenings free. Wants a pack for her own Quiver first, then to build packs for others. Straight about what she doesn\'t know. Next: invite her to the Longshot PT2 build weekend, and intro to Julius.'],
+    ['Review', 'Julius', 'Nov 5', 'Watched her pack build video. Welds are even, sense leads fused and strain-relieved. I would trust her assembling a Longshot pack from the guide. Not BMS design yet, and she says so herself.'],
+  ],
+  omar: [['Call', 'Thomas', 'Nov 7', 'Great with CAN; ask him about BMS telemetry. Wants paid work, small chunks.'], ['Note', 'Erick', 'Oct 29', 'Opened a clean PR to quiver-sdk (docs only). Responsive in review.']],
+  aiko: [['Note', 'Erick', 'Nov 2', 'Owns the QuiverHub obstacle-avoidance thread now. Reliable; ships on weekends.'], ['Call', 'Thomas', 'Oct 15', 'Wants to learn simulation. Point her at the SITL setup.'], ['Review', 'Erick', 'Oct 20', 'Second PR merged. Tests included without being asked.']],
+  tomasz: [['Note', 'Alperen', 'Nov 1', 'His build123d bracket PR is good. Invited him to talk about Spearhead PT2 structure.']],
+  noor: [['Note', 'Thomas', 'Oct 30', 'Call booked for Thu. Ask about the Spearhead wing test data.']],
+  samuel: [['Call', 'Thomas', 'Oct 2', 'Serious about delivery routes. Needs aircraft and regulatory help, not money.'], ['Note', 'Thomas', 'Oct 20', 'Introduced to KBM for the Kenya CAA question.'], ['Note', 'Gavin', 'Oct 22', 'Would write a community solution post about the route survey.'], ['Review', 'Thomas', 'Nov 5', 'Route survey doc is excellent. Retro candidate.']],
+  priya: [['Note', 'Gavin', 'Oct 1', 'Did a great first pass on the Quiver pilot handbook, then went quiet. Check in?']],
+};
+const SKILLS = { maya: [['Electrical', 'seen their work', 'Julius, Nov 5'], ['Assembly', 'seen their work', 'Julius, Nov 5'], ['Power', 'said so', '—'], ['Firmware', 'learning', '—']] };
+function renderPerson(id) {
+  const p = byId[id] || byId.maya;
+  const s = document.querySelector('[data-s="person"]');
+  s.querySelector('[data-wshead]').innerHTML = wshead('people');
+  s.querySelector('[data-side]').innerHTML = side('');
+  const notes = NOTES[p.id] || [];
+  const skills = SKILLS[p.id] || p.can.map((d) => [d, 'said so', '—']).concat(p.learn.map((d) => [d, 'learning', '—']));
+  const isMaya = p.id === 'maya';
+  const earned = isMaya
+    ? `<ul class="tl"><li><span class="d">Nov 9</span>Answered a pack guide question: how to fuse the sense taps <a href="#">Longshot · Build</a></li><li><span class="d">Nov 7</span>Comment on "Busbars: copper or brass?" <span class="faint">+4 weighted</span></li><li><span class="d">Nov 4</span>Joined from <span class="mono">x-longshot-teardown</span></li></ul><p class="why" style="margin-top:8px">No merged PRs, bounties or retro grants yet. This layer takes over from the other two as it fills.</p>`
+    : `<p class="muted small">${p.status === 'active' ? 'Threads, PRs and builds would list here.' : 'Nothing yet. Empty on day one is fine; the other two layers carry the start.'}</p>`;
+  document.getElementById('personmain').innerHTML = `
+    <div class="crumb"><span>Community</span>${ic('chevr', 's')}<a href="#people">People</a>${ic('chevr', 's')}<b>${p.name}</b></div>
+    <div class="person">
+      <div class="card pad">
+        <div class="phead">${av(p, 'lg')}<div class="grow">
+          <div class="row sp"><h1>${p.name}</h1><div class="row">${pill(p.status)}</div></div>
+          <div class="meta"><span>${ic('discord', 's')}@${p.handle}</span>${p.gh ? `<span>${ic('github', 's')}${p.gh}</span>` : ''}<span>${ic('pin', 's')}${place(p)}</span><span>${ic('clock', 's')}${localTime(p.tz)} · ${diffText(p.tz)}</span><span>${ic('flag', 's')}joined ${p.joined} via ${p.source}</span></div>
+          <p style="margin-top:10px;color:var(--fg-2)">${p.blurb}</p>
+        </div></div>
+
+        <section class="layer"><header><h3>Said</h3><span>what ${p.name.split(' ')[0]} told us; carries little weight on its own</span></header>
+          <p class="label">Something they built, and what went wrong along the way</p>
+          <blockquote class="quote">${p.story}</blockquote>
+          <div class="grid2" style="margin-top:14px">
+            <dl class="kv"><dt>Can do</dt><dd class="chips">${p.can.map((d) => dchip(d)).join('')}</dd><dt>Learning</dt><dd class="chips">${p.learn.map((d) => dchip(d, 'learn')).join('') || '—'}</dd><dt>Wants</dt><dd>${p.wants.join(', ')}</dd><dt>Time</dt><dd>${p.hours}, ${p.when.toLowerCase()}</dd></dl>
+            <dl class="kv"><dt>Shop</dt><dd>${p.shop.map((x) => SHOP[x]).join(', ') || '—'}</dd><dt>Would build</dt><dd>${p.build.join(', ') || '—'}</dd><dt>Travel</dt><dd>${p.travel}</dd><dt>Intro call</dt><dd>${p.call ? 'Open to one, weekday evenings' : 'Not asked for'}</dd></dl>
+          </div>
+        </section>
+
+        <section class="layer"><header><h3>Linked</h3><span>evidence someone can check; fetched, not typed</span></header>
+          ${isMaya ? `
+          <div class="linkrow"><span class="src">${ic('github', 's')} GitHub</span><span class="grow">mokafor · 14 public repos · <b style="color:var(--fg-2);font-weight:500">vesc-pack-logger</b> (Python, 38 stars)</span><span class="ok">${ic('check', 's')}signed in with it</span></div>
+          <div class="linkrow"><span class="src">${ic('story', 's')} YouTube</span><span class="grow">"14S e-bike pack from scrap cells" · 12k views · Mar 2025</span><span class="ok">${ic('check', 's')}channel links back</span></div>
+          <div class="linkrow"><span class="src">${ic('make', 's')} Printables</span><span class="grow">23 models · cell holders, a spot-welder jig</span><span class="ok">${ic('check', 's')}same handle</span></div>
+          <div class="linkrow"><span class="src">${ic('x', 's')} X</span><span class="grow">@mayabuilds</span><span class="faint small">not checked</span></div>` : `<div class="linkrow"><span class="src">${ic('discord', 's')} Discord</span><span class="grow">@${p.handle}</span><span class="ok">${ic('check', 's')}signed in with it</span></div>${p.gh ? `<div class="linkrow"><span class="src">${ic('github', 's')} GitHub</span><span class="grow">${p.gh}</span><span class="ok">${ic('check', 's')}linked</span></div>` : ''}`}
+        </section>
+
+        <section class="layer"><header><h3>Earned</h3><span>what happened in Arrow; nobody types this</span></header>${earned}</section>
+      </div>
+
+      <aside class="teampanel">
+        <div class="tp">
+          <div class="row sp"><span class="teamtag">${ic('lock', 's')}Team only</span><span class="faint small">core and leads</span></div>
+          <p class="small" style="margin-top:8px;color:var(--amber-12)">${p.name.split(' ')[0]} never sees this panel, but can ask what we hold. Write every note as if they'll read it.</p>
+          <dl class="kv" style="margin-top:12px;grid-template-columns:86px 1fr"><dt>Owner</dt><dd>${p.owner || '<span class="faint">nobody yet</span> <a href="#">take it</a>'}</dd><dt>Status</dt><dd>${pill(p.status)}</dd><dt>Next step</dt><dd>${isMaya ? 'Invite to the Longshot PT2 build weekend; intro to Julius' : p.status === 'new' ? '<span class="faint">none yet</span>' : 'Follow up after the call'}</dd>
+          <dt>Good for</dt><dd class="chips">${isMaya ? '<span class="tag">Longshot pack build</span><span class="tag">Harness and wiring</span>' : '<span class="faint">—</span>'}</dd></dl>
+          <div class="row wrap" style="margin-top:12px"><a class="btn sm team" href="#calls">${ic('video', 's')} Invite to a call</a><span class="btn sm">${ic('spark', 's')} Suggest for…</span></div>
+        </div>
+        <div class="tp">
+          <div class="row sp"><b style="color:var(--fg);font-size:12.5px;font-weight:600">Skills</b><span class="faint small">checked by the team</span></div>
+          ${skills.map(([d, how, who]) => `<div class="skillrow">${dchip(d, how === 'learning' ? 'learn' : how === 'seen their work' ? 'checked' : '')}<span class="${how === 'seen their work' ? '' : 'faint'}" style="${how === 'seen their work' ? 'color:var(--jade-11)' : ''}">${how}</span><span class="who">${who}</span></div>`).join('')}
+          <p class="why" style="margin-top:6px">Open question: does a check show on the public card as "checked by Arrow"? It would feed the expertise weight in votes.</p>
+        </div>
+        <div class="tp">
+          <div class="row sp"><b style="color:var(--fg);font-size:12.5px;font-weight:600">Notes</b><span class="faint small">${notes.length}</span></div>
+          ${notes.map(([k, by, d, t]) => `<div class="tnote"><div class="by"><span class="k">${k}</span>${by}<span class="d">${d}</span></div><p>${t}</p></div>`).join('') || '<p class="faint small" style="padding:8px 0">No notes yet.</p>'}
+          <div class="compose"><div class="seg"><button class="on">Note</button><button>Call</button><button>Review</button><button>Skill check</button></div>
+            <textarea class="input" placeholder="What did you learn about ${p.name.split(' ')[0]}? Facts and what you saw, not verdicts."></textarea>
+            <div class="row sp"><span class="faint small">${ic('lock', 's')} core and leads</span><span class="btn sm team">Add note</span></div></div>
+        </div>
+        <div class="tp">
+          <b style="color:var(--fg);font-size:12.5px;font-weight:600">History</b>
+          <ul class="tl" style="margin-top:8px">${isMaya ? '<li class="t"><span class="d">Nov 6</span>Intro call with Thomas</li><li class="t"><span class="d">Nov 5</span>Thomas invited her (Discord DM)</li><li class="t"><span class="d">Nov 5</span>Julius checked Electrical, Assembly</li><li><span class="d">Nov 4</span>Profile done, open to a call</li><li><span class="d">Nov 4</span>Joined Discord from x-longshot-teardown</li>' : `<li><span class="d">${p.joined}</span>Profile done</li>`}</ul>
+        </div>
+      </aside>
+    </div>`;
+}
+
+// ---------------------------------------------------------------- intro calls
+let callSel = 'jake';
+const HOOK = {
+  jake: 'Your note about turning spindle adapters for a 1940s South Bend caught my eye. We need people who can make parts that fit something that already exists, which is most of what we do.',
+  diego: 'Nine hundred hours on 25 kg spray drones, and you logged your way to a hot ESC. That is the flight-test habit we need on Quiver.',
+  hannah: 'A foil root that delaminated because the core was cold is exactly the lesson Spearhead\'s wing will need.',
+};
+const SLOTS = { jake: [['Thu', '10:00 am'], ['Thu', '4:30 pm'], ['Fri', '11:00 am']], diego: [['Thu', '9:30 am'], ['Fri', '2:00 pm'], ['Mon', '10:00 am']], hannah: [['Wed', '3:00 pm'], ['Thu', '2:30 pm'], ['Thu', '4:00 pm']] };
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+// A slot in Thomas's zone, as the other person reads it: their day and time.
+function shift(day, t, tz) { const d = (offsetMin(tz) - offsetMin(ME_TZ)) / 60; const m = t.match(/(\d+):(\d+) (am|pm)/); let h = (+m[1] % 12) + (m[3] === 'pm' ? 12 : 0) + d; const dd = Math.floor(h / 24); h = ((h % 24) + 24) % 24; return `${DAYS[(DAYS.indexOf(day) + dd + 7) % 7]} ${h % 12 || 12}:${m[2]} ${h < 12 ? 'am' : 'pm'}`; }
+function renderCalls() {
+  const s = document.querySelector('[data-s="calls"]');
+  s.querySelector('[data-wshead]').innerHTML = wshead('calls');
+  s.querySelector('[data-side]').innerHTML = side('calls');
+  const q = ['jake', 'diego', 'hannah'].map((id) => byId[id]);
+  document.getElementById('queue').innerHTML = `<div class="row sp" style="margin-bottom:8px"><b style="color:var(--fg);font-size:12.5px">To invite</b><span class="faint small">best signal first</span></div>` + q.map((p) => `<div class="qcard ${p.id === callSel ? 'on' : ''}" data-id="${p.id}">
+      <div class="row">${av(p, 'xs')}<b style="color:var(--fg);font-weight:500">${p.name}</b><span class="faint small" style="margin-left:auto">${p.last}</span></div>
+      <div class="chips" style="margin-top:6px">${p.can.slice(0, 3).map((d) => dchip(d)).join('')}</div>
+      <div class="ex">${p.story}</div>
+      <div class="tzl">${ic('clock', 's')}${place(p)} · ${overlapText(p.tz)}</div></div>`).join('') +
+    `<p class="why" style="margin-top:6px">Ranked by: a story with specifics, links that check out, skills a project needs now, and how long they've waited.</p>`;
+  s.querySelectorAll('.qcard').forEach((c) => c.addEventListener('click', () => { callSel = c.dataset.id; renderCalls(); }));
+  const p = byId[callSel];
+  const first = p.name.split(' ')[0];
+  const slots = SLOTS[p.id];
+  const same = offsetMin(p.tz) === offsetMin(ME_TZ);
+  const msg = `Hey ${first}, Thomas from Arrow here.\n\n${HOOK[p.id]}\n\nUp for a 20-minute call this week? A few times that work for me${same ? '' : ' (your time)'}: ${slots.map(([d, t]) => shift(d, t, p.tz)).join(', ')}. Or send me a couple that suit you.\n\nThomas`;
+  document.getElementById('composer').innerHTML = `
+    <div class="row sp"><div class="row">${av(p)}<div><b style="color:var(--fg);font-weight:600">Invite ${p.name}</b><div class="faint small">${place(p)} · ${localTime(p.tz)} there</div></div></div><a class="btn sm ghost" href="#person/${p.id}">Profile ${ic('arrowr', 's')}</a></div>
+    <div class="row" style="margin:14px 0 8px"><span class="small muted" style="width:44px">From</span><div class="seg"><button class="on">${ic('discord', 's')} You, on Discord</button><button>${ic('mail', 's')} Email</button><button>Arrow bot</button></div></div>
+    <textarea class="input msg">${msg}</textarea>
+    <p class="why" style="margin:6px 0 12px">${ic('agent', 's')} Drafted from ${first}'s profile so the first line is about them. Rewrite it however you like; it goes out as you, from your account.</p>
+    <div class="row wrap" style="gap:8px"><span class="small muted" style="width:44px">Times</span>${slots.map(([d, t]) => `<span class="slot">${d} ${t} <small>${same ? 'same for them' : `${shift(d, t, p.tz)} for ${first}`}</small></span>`).join('')}<span class="slot add">${ic('cal', 's')} from my calendar</span></div>
+    <div class="row" style="margin-top:12px"><span class="toggle"><span class="sw"></span><span class="small muted">Send a one-time booking link instead</span></span>
+      <span class="btn primary" style="margin-left:auto">${ic('send', 's')} Send DM</span></div>`;
+  paintIcons(s);
+}
+
+// ---------------------------------------------------------------- join wizard
+const LANES = [
+  ['engineer', 'build', 'Design and engineer', 'CAD, electronics, aero, software for the aircraft'],
+  ['hardware', 'make', 'Build hardware near me', 'Print, machine, solder or assemble real parts and kits'],
+  ['fly', 'fly', 'Fly and test', 'Flight tests, logs, maintenance, missions'],
+  ['code', 'code', 'Write software', 'Firmware, QuiverHub, the SDK, tools like this one'],
+  ['story', 'story', 'Tell the story', 'Docs, video, design, community'],
+  ['dao', 'dao', 'Govern and fund', 'Proposals, treasury, tokenomics'],
+  ['follow', 'eye', 'Just following along', 'No work questions. Updates, votes, cheering'],
+];
+const W = { step: 0, lanes: ['hardware', 'engineer'], can: ['Electrical', 'Power', 'Assembly'], learn: ['Firmware'], shop: ['solder', 'spot', 'scope', 'fdm'], build: ['own', 'day'], call: true, map: true };
+const STEPS = ['signin', 'lanes', 'skills', 'story', 'shop', 'time', 'links', 'visibility', 'done'];
+function wizShell(q, sub, body, opts = {}) {
+  const n = STEPS.length - 1, k = W.step;
+  return `${k > 0 && k < n ? `<div class="wizprog"><span>${k} / ${n - 1}</span><div class="bar"><i style="width:${(k / (n - 1)) * 100}%"></i></div><span>${['', 'You', 'Skills', 'Story', 'Shop', 'Time', 'Links', 'Who sees what'][k]}</span></div>` : '<div style="height:20px"></div>'}
+    <div class="wizq">${q}</div><div class="wizsub">${sub}</div>${body}
+    ${opts.nonav ? '' : `<div class="wiznav">${k > 0 ? `<a class="btn ghost" href="#join/${k - 1}">Back</a>` : ''}${opts.skip ? `<span class="skip">${opts.skip}</span>` : '<span class="skip"></span>'}<a class="btn primary lg" href="#join/${k + 1}">${opts.next || 'Continue'}</a></div>`}`;
+}
+function renderWizard(step) {
+  W.step = Math.max(0, Math.min(STEPS.length - 1, step | 0));
+  const el = document.getElementById('wiz');
+  const id = STEPS[W.step];
+  let h = '';
+  if (id === 'signin') {
+    h = wizShell('Join Arrow', 'Tell us what you can do and what you\'d like to build. Three minutes, one question at a time. A person on the core team reads every profile.',
+      `<div style="display:grid;gap:10px;max-width:380px;margin:0 auto">
+        <a class="btn lg primary" href="#join/1" style="background:#5865f2">${ic('discord')} Continue with Discord</a>
+        <a class="btn lg" href="#join/1">${ic('github')} Continue with GitHub</a>
+        <a class="btn lg" href="#join/1">${ic('mail')} Continue with email</a>
+        <p class="why" style="text-align:center;margin-top:4px">One Arrow account for this app, flights.arrowair.com and the forum. Discord is new here: most people arrive from it, and it lets the bot give you the right role when you finish.</p>
+      </div>`, { nonav: true });
+  } else if (id === 'lanes') {
+    h = wizShell('What brings you here?', 'Pick any. "Just following" skips the work questions.',
+      `<div class="opts">${LANES.map(([v, i, t, d]) => `<div class="opt ${W.lanes.includes(v) ? 'on' : ''}" data-lane="${v}"><span class="ic">${ic(i)}</span><div><b>${t}</b><span>${d}</span></div><span class="box">${W.lanes.includes(v) ? ic('check', 's') : ''}</span></div>`).join('')}
+       <div class="opt" style="border-style:dashed"><span class="ic">${ic('agent')}</span><div><b>Have your own agent?</b><span>Give it app.arrowair.com/join.json. It drafts, you approve every answer before it's saved.</span></div></div></div>`);
+  } else if (id === 'skills') {
+    h = wizShell('What can you do, and what do you want to learn?', 'Tap once for can do, twice for want to learn. Arrow\'s discipline list, the same one bounties and the map use.',
+      `<div class="legend"><span class="tchip can">Electrical <small>can do</small></span><span class="tchip learn">Firmware <small>learning</small></span></div>
+      ${TAX.map(([c, d, col, tags]) => `<div class="taxcat"><h6>${c} <span>${d}</span></h6><div class="taxchips">${tags.map((t) => { const k = W.can.includes(t) ? 'can' : W.learn.includes(t) ? 'learn' : ''; return `<button class="tchip ${k}" style="--c:${col}" data-tax="${t}">${t}${k ? ` <small>${k === 'can' ? 'can do' : 'learning'}</small>` : ''}</button>`; }).join('')}</div></div>`).join('')}
+      <div class="row" style="justify-content:center;margin-top:6px"><span class="faint small">${W.can.length} can do · ${W.learn.length} learning</span></div>
+      <div class="formgrid" style="margin-top:14px;max-width:560px;margin-left:auto;margin-right:auto"><div class="wide"><label class="label">How much experience, across the ones you can do?</label><div class="seg"><button>Learning</button><button>Hobbyist</button><button class="on">Did it for a living</button><button>Could lead it</button></div></div></div>`);
+  } else if (id === 'story') {
+    h = wizShell('Tell us about something you\'ve built, and what went wrong along the way.', 'The one question we really read. Specifics beat polish.',
+      `<div class="storybox"><div><textarea class="input" rows="9" style="font-size:14px">${byId.maya.story}</textarea>
+        <div class="row" style="margin-top:8px"><span class="btn sm">${ic('link', 's')} Add a link or photo</span><span class="faint small" style="margin-left:auto">${byId.maya.story.length} characters</span></div></div>
+        <div class="hint"><b>Why this question</b>A story with specifics is easy to follow up on and hard to fake. Name the thing, what broke, and what you changed.<br><br><b>Using an AI?</b>Fine. Edit it until it sounds like you. We weigh links and real work far more than polish.</div></div>`);
+  } else if (id === 'shop') {
+    h = wizShell('Where are you, and what can you build with?', 'This is how we find people for builds near them.',
+      `<div class="formgrid"><div><label class="label">City (optional)</label><input class="input" value="Houston, Texas"></div><div><label class="label">Country</label><input class="input" value="United States"></div>
+        <div class="wide"><label class="label">On the map, show</label><div class="seg"><button class="on">My city</button><button>Country only</button><button>Don't show me</button></div></div>
+        <div class="wide"><label class="label">Tools you can use</label><div class="shopgrid">${Object.entries(SHOP).map(([k, v]) => `<button class="pick ${W.shop.includes(k) ? 'on' : ''}" data-shop="${k}">${W.shop.includes(k) ? ic('check', 's') : ''}${v}</button>`).join('')}</div></div>
+        <div class="wide"><label class="label">Would you build Arrow hardware?</label><div class="shopgrid">${[['own', 'Build my own Quiver or Longshot pack'], ['parts', 'Make parts for the project'], ['day', 'Help at a build day'], ['host', 'Host a build day or workshop'], ['no', 'Not now']].map(([k, v]) => `<button class="pick ${W.build.includes(k) ? 'on' : ''}" data-build="${k}">${W.build.includes(k) ? ic('check', 's') : ''}${v}</button>`).join('')}</div></div>
+        <div class="wide"><label class="label">For the right build, you'd travel</label><div class="seg"><button>Stay local</button><button class="on">Up to 300 km</button><button>Anywhere in my country</button><button>Anywhere</button></div></div></div>`);
+  } else if (id === 'time') {
+    h = wizShell('How much time, and what do you want out of it?', 'Be honest. We only suggest work that fits.',
+      `<div class="formgrid"><div class="wide"><label class="label">Time</label><div class="shopgrid">${['A few hours a month', '2 to 5 h a week', '5 to 10 h a week', '10+ h a week', 'This is my main thing'].map((t, i) => `<button class="pick ${i === 2 ? 'on' : ''}">${t}</button>`).join('')}</div></div>
+        <div class="wide"><label class="label">When</label><div class="shopgrid">${['Weekday days', 'Weekday evenings', 'Weekends', 'Flexible'].map((t, i) => `<button class="pick ${i === 1 ? 'on' : ''}">${t}</button>`).join('')}</div></div>
+        <div><label class="label">Timezone</label><input class="input" value="America/Chicago (from your city)"></div><div></div>
+        <div class="wide"><label class="label">What do you want out of it?</label><div class="shopgrid">${['Learning', 'Paid work (bounties, grants)', 'The mission', 'A job', 'A business around Arrow hardware', 'Fun'].map((t, i) => `<button class="pick ${[0, 1].includes(i) ? 'on' : ''}">${t}</button>`).join('')}</div></div>
+        <div class="wide"><label class="label">Anything you never want to be asked to do? (optional)</label><input class="input" placeholder="e.g. social media, cold outreach"></div></div>`);
+  } else if (id === 'links') {
+    h = wizShell('Where can we see your work?', 'Links carry more weight than anything you write about yourself.',
+      `<div class="formgrid"><div><label class="label">${ic('discord', 's')} Discord</label><input class="input" value="@maya.builds · signed in" disabled></div><div><label class="label">${ic('github', 's')} GitHub</label><input class="input" value="mokafor"></div>
+        <div><label class="label">${ic('x', 's')} X</label><input class="input" value="@mayabuilds"></div><div><label class="label">LinkedIn</label><input class="input" placeholder="linkedin.com/in/…"></div>
+        <div class="wide"><label class="label">Projects, videos, CAD, a portfolio</label><input class="input" value="youtube.com/watch?v=… (14S e-bike pack from scrap cells)"><input class="input" style="margin-top:6px" value="printables.com/@mokafor"><input class="input" style="margin-top:6px" placeholder="Add another"></div>
+        <div class="wide"><label class="label">How did you hear about Arrow?</label><div class="shopgrid">${['X', 'YouTube', 'Discord', 'GitHub', 'A friend', 'An event', 'Search', 'Other'].map((t, i) => `<button class="pick ${i === 0 ? 'on' : ''}">${t}</button>`).join('')}</div><p class="why" style="margin-top:6px">Filled in from your link (x-longshot-teardown). Change it if that's wrong.</p></div></div>`);
+  } else if (id === 'visibility') {
+    const p = byId.maya;
+    h = wizShell('Last thing: who sees what', 'You can change all of this later, or remove yourself.',
+      `<div class="grid2" style="align-items:start">
+        <div><label class="label">Your public card, on the map</label>
+          <div class="pcard"><div class="row">${av(p)}<div><div class="nm">Maya Okafor</div><div class="faint small">Houston, US · ${localTime(p.tz)} local</div></div></div><div class="chips" style="margin-top:8px">${p.can.map((d) => dchip(d)).join('')}</div><p class="small" style="margin-top:8px">${p.blurb}</p><div class="faint small" style="margin-top:8px">${ic('discord', 's')} maya.builds · ${ic('github', 's')} mokafor · since Nov 2026</div></div>
+          <p class="why" style="margin-top:6px">Up to 3 disciplines and 140 characters, no links: the map's rules.</p></div>
+        <div style="display:grid;gap:12px">
+          <span class="toggle on"><span class="sw"></span><span>Show me on the contributor map</span></span>
+          <span class="toggle on"><span class="sw"></span><span>I'm up for a 20-minute intro call with the core team</span></span>
+          <div style="padding-left:38px;margin-top:-4px"><div class="shopgrid">${['Weekday mornings', 'Weekday afternoons', 'Weekday evenings', 'Weekends'].map((t, i) => `<button class="pick ${i === 2 ? 'on' : ''}" style="height:26px;font-size:12px">${t}</button>`).join('')}</div></div>
+          <div class="callout"><i data-i="eye" class="s"></i><div><b style="color:var(--fg);font-weight:500">Members</b> see your full profile: the story, links, tools and time.<br><b style="color:var(--fg);font-weight:500">The core team</b> keeps notes from calls and reviews to match you with work. You can ask to see them, or to delete everything.</div></div>
+        </div></div>`, { next: 'Finish' });
+  } else {
+    h = `<div class="donehero"><div class="ok">${ic('check', 'l')}</div><div class="wizq">You're in, Maya</div><div class="wizsub">You're on the map. A person on the core team reads every profile; if there's a fit, Thomas or a project lead will message you on Discord, usually within a week.</div></div>
+      <div class="next3">
+        <div class="it"><span class="k">01</span><div class="grow"><b>The Longshot pack guide has 6 open questions on assembly and sense taps</b><span class="muted small">You've built a 14S pack. Your answer goes straight into the guide.</span></div><span class="btn sm">Open</span></div>
+        <div class="it"><span class="k">02</span><div class="grow"><b>Say hello in #introductions</b><span class="muted small">We drafted a hello from your answers. Edit it and post.</span></div><span class="btn sm">See draft</span></div>
+        <div class="it"><span class="k">03</span><div class="grow"><b>Welcome call, Thursday 11:00 your time</b><span class="muted small">30 minutes with whoever's new this week. You get the Member role.</span></div><span class="btn sm">Add to calendar</span></div>
+      </div>
+      <div class="wiznav"><a class="btn ghost" href="#join/${W.step - 1}">Back</a><span class="skip"></span><a class="btn primary lg" href="#you">Go to your dashboard</a></div>`;
+  }
+  el.innerHTML = h;
+  paintIcons(el);
+  el.querySelectorAll('[data-lane]').forEach((o) => o.addEventListener('click', () => { const v = o.dataset.lane; W.lanes = W.lanes.includes(v) ? W.lanes.filter((x) => x !== v) : W.lanes.concat(v); renderWizard(W.step); }));
+  el.querySelectorAll('[data-tax]').forEach((b) => b.addEventListener('click', () => { const t = b.dataset.tax; if (W.can.includes(t)) { W.can = W.can.filter((x) => x !== t); W.learn.push(t); } else if (W.learn.includes(t)) { W.learn = W.learn.filter((x) => x !== t); } else W.can.push(t); renderWizard(W.step); }));
+  el.querySelectorAll('[data-shop]').forEach((b) => b.addEventListener('click', () => { const k = b.dataset.shop; W.shop = W.shop.includes(k) ? W.shop.filter((x) => x !== k) : W.shop.concat(k); renderWizard(W.step); }));
+  el.querySelectorAll('[data-build]').forEach((b) => b.addEventListener('click', () => { const k = b.dataset.build; W.build = W.build.includes(k) ? W.build.filter((x) => x !== k) : W.build.concat(k); renderWizard(W.step); }));
+  el.querySelectorAll('.seg').forEach((sg) => sg.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { sg.querySelectorAll('button').forEach((x) => x.classList.remove('on')); b.classList.add('on'); })));
+  el.querySelectorAll('button.pick:not([data-shop]):not([data-build])').forEach((b) => b.addEventListener('click', () => b.classList.toggle('on')));
+  el.querySelectorAll('.toggle').forEach((t) => t.addEventListener('click', () => t.classList.toggle('on')));
+}
+
+// ---------------------------------------------------------------- your arrow card
+function renderYou() {
+  const p = byId.maya;
+  document.getElementById('mycard').innerHTML = `<div class="row">${av(p)}<div><div class="nm">Maya Okafor</div><div class="faint small">Houston, US · ${localTime(p.tz)} local</div></div></div><div class="chips" style="margin-top:8px">${p.can.map((d) => dchip(d)).join('')}</div><p class="small" style="margin-top:8px">${p.blurb}</p>`;
+}
+
+// ---------------------------------------------------------------- top bar + router
+function topright(kind) {
+  const me = kind === 'newcomer' ? { name: 'Maya Okafor', h: 18 } : { name: 'thomasg', h: 228 };
+  const signedOut = kind === 'out';
+  document.getElementById('topright').innerHTML = `<a class="toplink ${kind === 'newcomer' ? 'on' : ''}" href="#you">${ic('grid', 's')} Contributor Dashboard</a>${signedOut ? '<span class="btn primary">Sign in</span>' : `<span class="row" style="gap:8px">${av(me, 'xs')}<span class="small" style="color:var(--fg-2)">${me.name}</span></span>`}`;
+  document.getElementById('foot').textContent = signedOut ? 'Not signed in' : kind === 'newcomer' ? 'Signed in as Maya Okafor · member' : 'Signed in as thomasg · lead';
+}
+function route() {
+  const raw = location.hash.slice(1) || 'readme';
+  const [path, query] = raw.split('?');
+  const parts = path.split('/');
+  const sid = parts[0];
+  const qs = new URLSearchParams(query || '');
+  document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('on', s.dataset.s === sid));
+  if (!document.querySelector('.screen.on')) { document.querySelector('[data-s="readme"]').classList.add('on'); }
+  document.querySelectorAll('#mocknav a').forEach((a) => { const h = a.getAttribute('href').slice(1).split('/')[0]; a.classList.toggle('on', h === sid); });
+  document.getElementById('drawer').classList.remove('open');
+  if (sid === 'join') { topright(+(parts[1] || 0) === 0 ? 'out' : 'newcomer'); renderWizard(+(parts[1] || 0)); }
+  else if (sid === 'you') { topright('newcomer'); renderYou(); }
+  else if (sid === 'capture' || sid === 'readme') topright('out');
+  else topright('team');
+  if (sid === 'people') {
+    regState.view = qs.get('view') || (qs.get('cat') ? null : 'all'); regState.cat = qs.get('cat');
+    regState.mode = qs.get('v') === 'map' ? 'map' : 'list';
+    renderRegistry(); renderMatches();
+    if (qs.get('find')) document.getElementById('drawer').classList.add('open');
+  }
+  if (sid === 'person') renderPerson(parts[1] || 'maya');
+  if (sid === 'calls') { if (parts[1] && byId[parts[1]]) callSel = parts[1]; renderCalls(); }
+  if (sid === 'funnel') { const s = document.querySelector('[data-s="funnel"]'); s.querySelector('[data-wshead]').innerHTML = wshead('funnel'); s.querySelector('[data-side]').innerHTML = side('funnel'); paintIcons(s); }
+  paintIcons();
+  window.scrollTo(0, 0);
+}
+document.getElementById('q').addEventListener('input', (e) => { regState.q = e.target.value; renderRegistry(); });
+document.querySelectorAll('[data-s="people"] .seg [data-v]').forEach((b) => b.addEventListener('click', () => { regState.mode = b.dataset.v; renderRegistry(); }));
+document.querySelector('[data-f="call"]').addEventListener('click', () => { regState.call = !regState.call; renderRegistry(); });
+document.querySelector('[data-f="shop"]').addEventListener('click', () => { regState.shop = !regState.shop; renderRegistry(); });
+document.getElementById('findbtn').addEventListener('click', () => document.getElementById('drawer').classList.add('open'));
+document.getElementById('drawerx').addEventListener('click', () => document.getElementById('drawer').classList.remove('open'));
+document.addEventListener('click', (e) => { const c = document.getElementById('mapcard'); if (c && !c.contains(e.target)) c.classList.add('hide'); });
+window.addEventListener('hashchange', route);
+paintIcons();
+route();
+</script>
+</body>
+</html>
