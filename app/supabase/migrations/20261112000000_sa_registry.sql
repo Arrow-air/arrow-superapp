@@ -5,10 +5,15 @@
 -- Who reads what:
 -- - anyone: the map's public cards (sa_registry_cards), only of people who
 --   have an account, finished their profile and chose the map, at the
---   precision they chose;
--- - signed-in members (a row in sa_members): the full profiles of people who
---   have accounts (sa_registry_people, sa_registry_person), never emails,
+--   precision they chose. A card carries a GitHub or Discord handle only
+--   when a sign-in (or the team's lookup) proved it: the *_id is set;
+-- - signed-in members (a row in sa_members, which any confirmed account can
+--   join): the profiles of people who finished one, and their own
+--   (sa_registry_people, sa_registry_person), with place only at the
+--   precision the person chose for the map; never "never ask me", emails,
 --   people the team added, or anything the team wrote;
+-- - the person: all of their own record, including what they typed as their
+--   Discord handle (sa_profiles.discord_said, "said, not checked");
 -- - core and leads: everything, through the same functions.
 -- Nothing reads the tables directly: RLS is on, there are no policies, and
 -- the API roles have no grants. Unlike every sa_ table before it, none of
@@ -23,12 +28,24 @@
 -- links to the account whose GitHub or Discord numeric id it holds (from
 -- auth.identities, never user_metadata), or whose email it holds when the
 -- account's email is proven (the forum sign-in's rule, sa_forum_email_proven).
--- Anything weaker gives a lead a "same person?" card (sa_possible_matches).
--- A record, once claimed, never moves to another account.
+-- Anything weaker gives a lead a "same person?" card (sa_possible_matches),
+-- at most 5 open per record, and only for workspace members; it makes no row
+-- for the account, so a sign-in shows nothing about which records exist. A
+-- lead can't link a record that holds a GitHub or Discord id the account
+-- doesn't sign in with. On a claim or a link, the place the team typed moves
+-- to the team's guesses and handles the team never resolved are dropped.
+-- A record, once claimed, moves to another account only through a lead's
+-- unlink (sa_unlink_person), which gives the account its own row back.
+--
+-- Deleting: a person deletes their profile (sa_delete_my_profile) and a lead
+-- deletes a record (sa_delete_person). When an account goes, or deletes its
+-- profile, a row it made itself goes with everything on it; a record the team
+-- added loses the profile and the place, goes back to unclaimed, and keeps
+-- the team's notes (sa_people_account_gone).
 
 -- Vocabularies -----------------------------------------------------------
 -- Taxonomy v1.0: the 43 disciplines of the website's list.
-create or replace function public.sa_taxonomy() returns text[] language sql immutable as $$
+create or replace function public.sa_taxonomy() returns text[] language sql immutable set search_path = public, pg_temp as $$
   select array[
     'Mechanical', 'CAD', 'Electrical', 'Aerodynamics', 'Power', 'Propulsion', 'Certification', 'Safety',
     'Firmware', 'Software', 'Controls', 'Autonomy', 'Telemetry', 'Simulation',
@@ -41,12 +58,18 @@ create or replace function public.sa_taxonomy() returns text[] language sql immu
     'Governance', 'Tokenomics', 'Coordination', 'Legal', 'Tooling']::text[]
 $$;
 -- Tools someone can use (the mockup's SHOP keys).
-create or replace function public.sa_registry_tools() returns text[] language sql immutable as $$
+create or replace function public.sa_registry_tools() returns text[] language sql immutable set search_path = public, pg_temp as $$
   select array['fdm', 'resin', 'cnc', 'mill', 'lathe', 'laser', 'solder', 'spot', 'scope', 'composite', 'weld', 'field', 'aircraft']::text[]
 $$;
--- A blurb is plain words: no links (the map's rule).
-create or replace function public.sa_registry_has_url(t text) returns boolean language sql immutable as $$
-  select coalesce(t ~* '(https?://|www\.|discord\.gg|\m[a-z0-9-]+\.(com|net|org|io|co|gg|me|ly|xyz|app|dev|ai|link|to|so|sh)(/|\M))', false)
+-- A blurb is plain words: no links (the map's rule). Also catches any TLD
+-- followed by a path, spaced and spelled-out dots, and full-width dots.
+create or replace function public.sa_registry_has_url(t text) returns boolean language sql immutable set search_path = public, pg_temp as $$
+  select coalesce(t ~* (
+      '(https?:|www\.|discord\.gg|t\.me/'
+      || '|[a-z0-9-]\s*[。．｡]\s*[a-z]{2,}'                                       -- full-width dots
+      || '|[a-z0-9-]\s*(\(dot\)|\[dot\]|\s\.\s|\sdot\s)\s*[a-z]{2,}'             -- "evil . com", "evil dot com"
+      || '|[a-z0-9-]\.[a-z]{2,}/\S'                                                -- anything.tld/path
+      || '|\m[a-z0-9-]+\.(com|net|org|io|co|gg|me|ly|xyz|app|dev|ai|link|to|so|sh|ru|cc|tk|info|biz|top|site|online|shop|club|live|eu|uk|de|in|us|ca|au|fr|nl|pw|cn|vip|fun|lol|art)(/|\M))'), false)
 $$;
 
 -- People -----------------------------------------------------------------
@@ -99,6 +122,9 @@ create table if not exists public.sa_profiles (
   call_ok boolean not null default false,
   call_windows text check (length(call_windows) <= 300),
   agent_drafted boolean not null default false,
+  -- The Discord handle they typed: shown to members as "said, not checked",
+  -- never on the public card (a proven one lives on sa_people).
+  discord_said text check (length(discord_said) between 1 and 40),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   finished_at timestamptz,
@@ -141,11 +167,17 @@ create table if not exists public.sa_outreach (
   primary key (person_id, kind)
 );
 -- The team's guess at what someone does, for people who haven't said. Never
--- shown as theirs.
+-- shown as theirs. The place the team typed moves here when the record links
+-- to its person's account.
 create table if not exists public.sa_team_guesses (
   person_id uuid primary key references public.sa_people (id) on delete cascade,
   disciplines text[] not null default '{}' check (disciplines <@ public.sa_taxonomy()),
   tools text[] not null default '{}' check (tools <@ public.sa_registry_tools()),
+  city text check (length(city) <= 80),
+  country text check (length(country) <= 60),
+  lat double precision check (lat between -90 and 90),
+  lng double precision check (lng between -180 and 180),
+  tz text check (length(tz) <= 64),
   updated_at timestamptz not null default now(),
   updated_by uuid references auth.users (id) on delete set null
 );
@@ -200,16 +232,18 @@ begin
   return uid;
 end $$;
 
--- Trimmed text, null when empty, with a readable error when too long.
-create or replace function public.sa_reg_text(label text, v text, maxlen int) returns text language plpgsql immutable as $$
+-- Trimmed text, null when empty, with a readable error when too long (and
+-- before any regex work when it's far too long).
+create or replace function public.sa_reg_text(label text, v text, maxlen int) returns text language plpgsql immutable set search_path = public, pg_temp as $$
 begin
+  if octet_length(v) > maxlen * 4 + 64 then raise exception '% is too long (% characters at most)', label, maxlen using errcode = '22001'; end if;
   v := nullif(regexp_replace(coalesce(v, ''), '^\s+|\s+$', '', 'g'), '');
   if length(v) > maxlen then raise exception '% is too long (% characters at most)', label, maxlen using errcode = '22001'; end if;
   return v;
 end $$;
 
 -- A list from a fixed vocabulary: deduplicated, in the order given.
-create or replace function public.sa_reg_list(label text, v text[], allowed text[], maxn int) returns text[] language plpgsql immutable as $$
+create or replace function public.sa_reg_list(label text, v text[], allowed text[], maxn int) returns text[] language plpgsql immutable set search_path = public, pg_temp as $$
 declare bad text; out text[];
 begin
   out := array(select x from unnest(coalesce(v, '{}')) with ordinality u(x, i) where x is not null group by x order by min(i));
@@ -221,15 +255,16 @@ begin
   return out;
 end $$;
 
--- A JSON array of strings as text[] (null and JSON null are empty).
-create or replace function public.sa_reg_jarr(label text, j jsonb) returns text[] language plpgsql immutable as $$
+-- A JSON array of strings as text[] (null and JSON null are empty), 60 at most.
+create or replace function public.sa_reg_jarr(label text, j jsonb) returns text[] language plpgsql immutable set search_path = public, pg_temp as $$
 begin
   if j is null or jsonb_typeof(j) = 'null' then return '{}'; end if;
   if jsonb_typeof(j) <> 'array' then raise exception '% should be a list', label using errcode = '22023'; end if;
+  if jsonb_array_length(j) > 60 then raise exception '% is too long a list', label using errcode = '22023'; end if;
   return array(select jsonb_array_elements_text(j));
 end $$;
 
-create or replace function public.sa_reg_tz(v text) returns text language plpgsql stable as $$
+create or replace function public.sa_reg_tz(v text) returns text language plpgsql stable set search_path = public, pg_temp as $$
 begin
   v := public.sa_reg_text('Time zone', v, 64);
   if v is not null and not exists (select 1 from pg_timezone_names where name = v) then
@@ -238,7 +273,7 @@ begin
   return v;
 end $$;
 
-create or replace function public.sa_reg_email(v text) returns text language plpgsql immutable as $$
+create or replace function public.sa_reg_email(v text) returns text language plpgsql immutable set search_path = public, pg_temp as $$
 begin
   v := lower(public.sa_reg_text('Email', v, 200));
   if v is not null and v !~ '^[^@\s]+@[^@\s]+\.[^@\s]+$' then raise exception 'That email doesn''t look right' using errcode = '22023'; end if;
@@ -246,7 +281,7 @@ begin
 end $$;
 
 -- A numeric id from text (auth.identities.provider_id), or null.
-create or replace function public.sa_reg_id(v text) returns bigint language sql immutable as $$
+create or replace function public.sa_reg_id(v text) returns bigint language sql immutable set search_path = public, pg_temp as $$
   select case when v ~ '^[1-9][0-9]{0,18}$' and v::numeric <= 9223372036854775807 then v::bigint end
 $$;
 
@@ -265,7 +300,9 @@ begin
 end $$;
 
 -- What each level sees of a person (p) and their profile (pr, may be null).
-create or replace function public.sa_reg_card(p public.sa_people, pr public.sa_profiles) returns jsonb language sql stable as $$
+-- The public card: place at the precision they chose, and only the handles a
+-- sign-in (or the team's lookup) proved.
+create or replace function public.sa_reg_card(p public.sa_people, pr public.sa_profiles) returns jsonb language sql stable set search_path = public, pg_temp as $$
   select jsonb_build_object(
     'id', p.id,
     'name', p.display_name,
@@ -276,40 +313,48 @@ create or replace function public.sa_reg_card(p public.sa_people, pr public.sa_p
     'tz', case when p.map in ('city', 'country') then p.tz end,
     'disciplines', to_jsonb(coalesce(pr.map_disciplines, '{}'::text[])),
     'blurb', pr.blurb,
-    'discord', p.discord_username,
-    'github', p.github_login,
+    'discord', case when p.discord_id is not null then p.discord_username end,
+    'github', case when p.github_id is not null then p.github_login end,
     'joined', to_char(coalesce(p.claimed_at, p.created_at) at time zone 'UTC', 'YYYY-MM'))
 $$;
 
-create or replace function public.sa_reg_member_view(p public.sa_people, pr public.sa_profiles) returns jsonb language sql stable as $$
+-- What members see: the card's place (at the map's precision, none when the
+-- map is off) and their profile, but not "never ask me". A Discord handle
+-- they typed shows as what they said (the app labels it "said, not checked").
+create or replace function public.sa_reg_member_view(p public.sa_people, pr public.sa_profiles) returns jsonb language sql stable set search_path = public, pg_temp as $$
   select public.sa_reg_card(p, pr) || jsonb_build_object(
-    'city', p.city, 'country', p.country, 'tz', p.tz,
     'has_account', p.user_id is not null,
     'profile', case when pr.person_id is not null then jsonb_build_object(
       'wants_to_build', pr.wants_to_build, 'lanes', pr.lanes, 'can', pr.can, 'learn', pr.learn,
       'experience', pr.experience, 'story', pr.story, 'tools', pr.tools, 'build', pr.build,
       'travel', pr.travel, 'hours', pr.hours, 'availability', pr.availability, 'wants', pr.wants,
-      'never', pr.never, 'links', pr.links, 'blurb', pr.blurb, 'map_disciplines', pr.map_disciplines,
+      'links', pr.links, 'blurb', pr.blurb, 'map_disciplines', pr.map_disciplines,
+      'discord_said', pr.discord_said,
       'agent_drafted', pr.agent_drafted, 'updated_at', pr.updated_at, 'finished_at', pr.finished_at) end)
 $$;
 
--- Their own record: the member view plus their choices about the map and calls.
-create or replace function public.sa_reg_self_view(p public.sa_people, pr public.sa_profiles) returns jsonb language sql stable as $$
+-- Their own record: the member view plus their whole place, "never ask me",
+-- and their choices about the map and calls.
+create or replace function public.sa_reg_self_view(p public.sa_people, pr public.sa_profiles) returns jsonb language sql stable set search_path = public, pg_temp as $$
   select public.sa_reg_member_view(p, pr)
-    || jsonb_build_object('lat', p.lat, 'lng', p.lng, 'map', p.map, 'ref', p.ref, 'claimed_at', p.claimed_at)
+    || jsonb_build_object('city', p.city, 'country', p.country, 'tz', p.tz,
+         'lat', p.lat, 'lng', p.lng, 'map', p.map, 'ref', p.ref, 'claimed_at', p.claimed_at)
     || case when pr.person_id is not null then jsonb_build_object('profile', public.sa_reg_member_view(p, pr)->'profile'
-         || jsonb_build_object('call_ok', pr.call_ok, 'call_windows', pr.call_windows, 'heard_from', pr.heard_from)) else '{}'::jsonb end
+         || jsonb_build_object('never', pr.never, 'call_ok', pr.call_ok, 'call_windows', pr.call_windows, 'heard_from', pr.heard_from)) else '{}'::jsonb end
 $$;
 
 create or replace function public.sa_reg_team_view(p public.sa_people, pr public.sa_profiles) returns jsonb language sql stable security definer set search_path = public, pg_temp as $$
   select public.sa_reg_self_view(p, pr) || jsonb_build_object(
     'email', p.email, 'source', p.source, 'added_by', p.added_by, 'user_id', p.user_id, 'created_at', p.created_at,
-    -- The resolved ids (Discord's as text: a snowflake is past what JSON numbers keep exactly).
+    -- The handles as the record holds them, resolved or not, and the resolved
+    -- ids (Discord's as text: a snowflake is past what JSON numbers keep exactly).
+    'github', p.github_login, 'discord', p.discord_username,
     'github_id', p.github_id, 'discord_id', p.discord_id::text,
     'outreach', coalesce((select jsonb_agg(jsonb_build_object('kind', o.kind, 'owner_id', o.owner_id, 'status', o.status,
         'next_step', o.next_step, 'good_for', o.good_for, 'intro_queue', o.intro_queue, 'updated_at', o.updated_at) order by o.kind)
       from public.sa_outreach o where o.person_id = p.id), '[]'),
-    'guess', (select jsonb_build_object('disciplines', g.disciplines, 'tools', g.tools, 'updated_at', g.updated_at)
+    'guess', (select jsonb_build_object('disciplines', g.disciplines, 'tools', g.tools,
+        'city', g.city, 'country', g.country, 'lat', g.lat, 'lng', g.lng, 'tz', g.tz, 'updated_at', g.updated_at)
       from public.sa_team_guesses g where g.person_id = p.id),
     'note_count', (select count(*) from public.sa_person_notes n where n.person_id = p.id),
     'call_notes', (select count(*) from public.sa_person_notes n where n.person_id = p.id and n.kind = 'call'),
@@ -328,7 +373,8 @@ create or replace function public.sa_reg_account_name(uid uuid) returns text lan
 $$;
 
 -- A person row of their own, made from the account. Ids their sign-in
--- identities prove are recorded when no other row holds them.
+-- identities prove are recorded when no other row holds them. A "same
+-- person?" card filed before the account had a row points at it once made.
 create or replace function public.sa_reg_own_row(uid uuid, p_ref text) returns uuid language plpgsql security definer set search_path = public, pg_temp as $$
 declare gh record; dc record; gh_id bigint; dc_id bigint; pid uuid;
 begin
@@ -348,11 +394,14 @@ begin
   on conflict (user_id) do nothing
   returning id into pid;
   if pid is null then select id into pid from public.sa_people where user_id = uid; end if;
+  update public.sa_possible_matches set account_person_id = pid where user_id = uid and account_person_id is null;
   return pid;
 end $$;
 
 -- Linking ------------------------------------------------------------------
--- Finds the record an account belongs to. Returns {person_id, linked, how, possible}.
+-- Finds the record an account belongs to. Returns {person_id, linked, how}:
+-- person_id is the account's record when it has one (null after a weak match,
+-- which files a card and says nothing about it).
 create or replace function public.sa_registry_link(uid uuid, p_ref text) returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
 declare
   mine public.sa_people;
@@ -362,9 +411,9 @@ declare
   gh_id bigint;
   dc_id bigint;
   mail text;
+  proven boolean;
   nm text;
   v_how text;
-  n int := 0;
   c record;
 begin
   select * into gh from public.sa_github(uid);
@@ -372,14 +421,25 @@ begin
   gh_id := public.sa_reg_id(gh.github_id);
   dc_id := public.sa_reg_id(dc.discord_id);
   select lower(email) into mail from auth.users where id = uid;
+  proven := mail is not null and public.sa_forum_email_proven(uid);
   nm := public.sa_reg_account_name(uid);
 
-  select * into mine from public.sa_people where user_id = uid;
+  select * into mine from public.sa_people where user_id = uid for update;
   if mine.id is not null then
-    -- Already theirs. A GitHub rename follows the id.
-    if gh_id is not null and mine.github_id = gh_id and gh.login is not null and mine.github_login is distinct from gh.login then
-      update public.sa_people set github_login = left(gh.login, 39), updated_at = now() where id = mine.id;
-    end if;
+    -- Already theirs. Record the ids their sign-in proves, when no other row
+    -- holds them; a proven handle follows its id (a GitHub rename too).
+    update public.sa_people set
+      github_id = case when github_id is null and gh_id is not null and not exists (select 1 from public.sa_people x where x.github_id = gh_id) then gh_id else github_id end,
+      discord_id = case when discord_id is null and dc_id is not null and not exists (select 1 from public.sa_people x where x.discord_id = dc_id) then dc_id else discord_id end
+    where id = mine.id
+    returning * into mine;
+    update public.sa_people set
+      github_login = case when gh_id is not null and github_id = gh_id and gh.login is not null then left(gh.login, 39) else github_login end,
+      discord_username = case when dc_id is not null and discord_id = dc_id and dc.username is not null then left(dc.username, 40) else discord_username end,
+      updated_at = now()
+    where id = mine.id
+      and ((gh_id is not null and github_id = gh_id and github_login is distinct from left(gh.login, 39))
+        or (dc_id is not null and discord_id = dc_id and discord_username is distinct from left(dc.username, 40)));
     -- A record the team added after they joined, holding an account of
     -- theirs: a lead folds the two together.
     insert into public.sa_possible_matches (person_id, user_id, account_person_id, reason)
@@ -388,10 +448,9 @@ begin
     from public.sa_people p
     where p.user_id is null and p.claimed_at is null
       and ((gh_id is not null and p.github_id = gh_id) or (dc_id is not null and p.discord_id = dc_id)
-        or (mail is not null and lower(p.email) = mail and public.sa_forum_email_proven(uid)))
+        or (proven and lower(p.email) = mail))
     on conflict (person_id, user_id) do nothing;
-    get diagnostics n = row_count;
-    return jsonb_build_object('person_id', mine.id, 'linked', false, 'how', null, 'possible', n);
+    return jsonb_build_object('person_id', mine.id, 'linked', false, 'how', null);
   end if;
 
   -- 1. The GitHub or Discord account the team resolved when it added them,
@@ -407,7 +466,7 @@ begin
   if hit.id is not null then
     v_how := case when hit.github_id = gh_id then 'github' else 'discord' end;
   -- 2. The email on the record, when the account's email is proven.
-  elsif mail is not null and public.sa_forum_email_proven(uid) then
+  elsif proven then
     select * into hit from public.sa_people p
       where p.user_id is null and p.claimed_at is null and lower(p.email) = mail
         and not (p.github_id is not null and gh_id is not null and p.github_id <> gh_id)
@@ -420,28 +479,41 @@ begin
     update public.sa_people set
       user_id = uid, claimed_at = now(), updated_at = now(),
       github_id = coalesce(github_id, case when not exists (select 1 from public.sa_people x where x.github_id = gh_id) then gh_id end),
-      github_login = case when gh_id is not null and coalesce(github_id, gh_id) = gh_id then coalesce(left(gh.login, 39), github_login) else github_login end,
+      -- A handle the team typed but never resolved isn't shown as theirs.
+      github_login = case when gh_id is not null and coalesce(github_id, gh_id) = gh_id then coalesce(left(gh.login, 39), github_login)
+                          when github_id is not null then github_login end,
       discord_id = coalesce(discord_id, case when not exists (select 1 from public.sa_people x where x.discord_id = dc_id) then dc_id end),
-      discord_username = case when dc_id is not null and coalesce(discord_id, dc_id) = dc_id then coalesce(left(dc.username, 40), discord_username) else discord_username end,
+      discord_username = case when dc_id is not null and coalesce(discord_id, dc_id) = dc_id then coalesce(left(dc.username, 40), discord_username)
+                              when discord_id is not null then discord_username end,
+      -- The team's idea of where they are stays with the team until they say.
+      city = null, country = null, lat = null, lng = null, tz = null,
       ref = coalesce(ref, case when lower(p_ref) ~ '^[a-z0-9][a-z0-9._-]{0,63}$' then lower(p_ref) end)
     where id = hit.id and user_id is null and claimed_at is null;
     if found then
-      -- Anyone else proposed for this record can't be them now.
+      if num_nonnulls(hit.city, hit.country, hit.lat, hit.lng, hit.tz) > 0 then
+        insert into public.sa_team_guesses (person_id) values (hit.id) on conflict (person_id) do nothing;
+        update public.sa_team_guesses set city = coalesce(city, hit.city), country = coalesce(country, hit.country),
+          lat = coalesce(lat, hit.lat), lng = coalesce(lng, hit.lng), tz = coalesce(tz, hit.tz), updated_at = now()
+        where person_id = hit.id;
+      end if;
+      -- Anyone else proposed for this record, and this account's other cards, are settled.
       update public.sa_possible_matches set settled_at = now(), outcome = 'superseded'
-        where person_id = hit.id and settled_at is null;
-      return jsonb_build_object('person_id', hit.id, 'linked', true, 'how', v_how, 'possible', 0);
+        where (person_id = hit.id or user_id = uid) and settled_at is null;
+      return jsonb_build_object('person_id', hit.id, 'linked', true, 'how', v_how);
     end if;
   end if;
 
   -- 3. Weaker: the same name, a handle the team couldn't resolve to an id, an
-  --    email that isn't proven. A lead decides; the account gets its own row.
+  --    email that isn't proven. A lead decides. No row is made for the account
+  --    here, so a sign-in shows nothing about which records exist; a record
+  --    holds at most 5 open cards.
   for c in
     select p.id, concat_ws(', ',
         case when lower(p.display_name) = lower(nm) then 'same name' end,
         case when gh.login is not null and p.github_id is null and lower(p.github_login) = lower(gh.login) then 'same GitHub login, unresolved' end,
         case when dc.username is not null and p.discord_id is null and lower(p.discord_username) = lower(dc.username) then 'same Discord username, unresolved' end,
         case when mail is not null and lower(p.email) = mail then
-          case when public.sa_forum_email_proven(uid) then 'same email, but another GitHub or Discord account' else 'same email, not proven' end end,
+          case when proven then 'same email, but another GitHub or Discord account' else 'same email, not proven' end end,
         case when (gh_id is not null and p.github_id = gh_id) or (dc_id is not null and p.discord_id = dc_id) then 'same GitHub or Discord account, but the other differs' end
       ) as why
     from public.sa_people p
@@ -452,27 +524,31 @@ begin
       or (mail is not null and lower(p.email) = mail)
       or (gh_id is not null and p.github_id = gh_id)
       or (dc_id is not null and p.discord_id = dc_id))
+      and (select count(*) from public.sa_possible_matches pm where pm.person_id = p.id and pm.settled_at is null) < 5
     order by p.created_at
     limit 5
   loop
-    if mine.id is null then mine.id := public.sa_reg_own_row(uid, p_ref); end if;
     insert into public.sa_possible_matches (person_id, user_id, account_person_id, reason)
-    values (c.id, uid, mine.id, c.why)
+    values (c.id, uid, null, c.why)
     on conflict (person_id, user_id) do nothing;
-    n := n + 1;
   end loop;
-  return jsonb_build_object('person_id', mine.id, 'linked', false, 'how', null, 'possible', n);
+  return jsonb_build_object('person_id', null, 'linked', false, 'how', null);
 end $$;
 
--- The app calls this right after sign-in (beside sa_join).
+-- The app calls this right after sign-in (beside sa_join). Workspace members
+-- only: a flights-only account never writes to the registry.
 create or replace function public.sa_registry_claim(p_ref text default null) returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
+declare uid uuid := public.sa_uid();
 begin
-  return public.sa_registry_link(public.sa_uid(), p_ref);
+  if not exists (select 1 from public.sa_members where user_id = uid) then return null; end if;
+  return public.sa_registry_link(uid, p_ref);
 end $$;
 
 -- A lead settles a "same person?" card. Same: the account's own row (and the
 -- profile they wrote) folds into the team's record, which keeps its notes,
--- outreach and guesses. Returns the person the account ends up with.
+-- outreach and guesses. Refused when the record holds a GitHub or Discord
+-- account the account doesn't sign in with: that person links by themselves
+-- when they sign in with it. Returns the person the account ends up with.
 create or replace function public.sa_link_person(p_match uuid, p_same boolean) returns uuid language plpgsql security definer set search_path = public, pg_temp as $$
 declare
   uid uuid := public.sa_require_lead();
@@ -480,6 +556,8 @@ declare
   rec public.sa_people;
   mine public.sa_people;
   said boolean;
+  gh_id bigint;
+  dc_id bigint;
 begin
   select * into m from public.sa_possible_matches where id = p_match for update;
   if m.id is null then raise exception 'No such match'; end if;
@@ -497,6 +575,14 @@ begin
   if mine.id is not null and mine.added_by is not null then
     raise exception 'That account is already linked to a record the team added' using errcode = '42501';
   end if;
+  select public.sa_reg_id(g.github_id) into gh_id from public.sa_github(m.user_id) g;
+  select public.sa_reg_id(d.discord_id) into dc_id from public.sa_discord(m.user_id) d;
+  if rec.github_id is not null and rec.github_id is distinct from gh_id then
+    raise exception 'This record holds a GitHub account that this account doesn''t sign in with. If it''s them, they sign in with that GitHub and it links by itself; if the record is wrong, fix it first.' using errcode = '42501';
+  end if;
+  if rec.discord_id is not null and rec.discord_id is distinct from dc_id then
+    raise exception 'This record holds a Discord account that this account doesn''t sign in with. If it''s them, they sign in with that Discord and it links by itself; if the record is wrong, fix it first.' using errcode = '42501';
+  end if;
 
   said := exists (select 1 from public.sa_profiles where person_id = mine.id);
   if mine.id is not null then
@@ -510,25 +596,61 @@ begin
     update public.sa_possible_matches set account_person_id = rec.id where account_person_id = mine.id;
     delete from public.sa_people where id = mine.id;
   end if;
-  -- What they said about themselves wins over what the team typed (their name
+  -- The place the team typed moves to the team's guesses.
+  if num_nonnulls(rec.city, rec.country, rec.lat, rec.lng, rec.tz) > 0 then
+    insert into public.sa_team_guesses (person_id) values (rec.id) on conflict (person_id) do nothing;
+    update public.sa_team_guesses set city = coalesce(city, rec.city), country = coalesce(country, rec.country),
+      lat = coalesce(lat, rec.lat), lng = coalesce(lng, rec.lng), tz = coalesce(tz, rec.tz), updated_at = now(), updated_by = uid
+    where person_id = rec.id;
+  end if;
+  -- What they said about themselves replaces what the team typed (their name
   -- only once they've saved a profile: before that it's the account's); the
-  -- ids the team resolved stay.
+  -- ids the team resolved stay, and handles nobody resolved are dropped.
   update public.sa_people set
     user_id = m.user_id, claimed_at = now(), updated_at = now(),
     display_name = case when said then mine.display_name else display_name end,
-    github_login = case when github_id is null and mine.github_id is not null then mine.github_login else coalesce(github_login, mine.github_login) end,
+    github_login = case when github_id is not null then github_login when mine.github_id is not null then mine.github_login end,
     github_id = coalesce(github_id, mine.github_id),
-    discord_username = case when discord_id is null and mine.discord_id is not null then mine.discord_username else coalesce(discord_username, mine.discord_username) end,
+    discord_username = case when discord_id is not null then discord_username when mine.discord_id is not null then mine.discord_username end,
     discord_id = coalesce(discord_id, mine.discord_id),
-    city = coalesce(mine.city, city), country = coalesce(mine.country, country),
-    lat = coalesce(mine.lat, lat), lng = coalesce(mine.lng, lng), tz = coalesce(mine.tz, tz),
+    city = mine.city, country = mine.country, lat = mine.lat, lng = mine.lng, tz = mine.tz,
     map = coalesce(mine.map, 'off'),
     ref = coalesce(mine.ref, ref)
   where id = rec.id;
   update public.sa_possible_matches set settled_at = now(), settled_by = uid, outcome = 'same' where id = p_match;
   update public.sa_possible_matches set settled_at = now(), settled_by = uid, outcome = 'superseded'
-    where person_id = rec.id and settled_at is null;
+    where (person_id = rec.id or user_id = m.user_id) and settled_at is null;
   return rec.id;
+end $$;
+
+-- A lead undoes a wrong link: the account gets its own row back with the
+-- profile it wrote; the team's record is unclaimed again and keeps its notes.
+-- Returns the account's new row.
+create or replace function public.sa_unlink_person(p_person uuid) returns uuid language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := public.sa_require_lead();
+  rec public.sa_people;
+  acct uuid;
+  pid uuid := gen_random_uuid();
+begin
+  select * into rec from public.sa_people where id = p_person for update;
+  if rec.id is null or rec.user_id is null then raise exception 'That record isn''t linked to an account'; end if;
+  if rec.added_by is null then raise exception 'That is their own record, not one the team added' using errcode = '42501'; end if;
+  acct := rec.user_id;
+  insert into public.sa_people (id, display_name, city, country, lat, lng, tz, map, source, ref, claimed_at)
+    values (pid, case when exists (select 1 from public.sa_profiles where person_id = rec.id) then rec.display_name else public.sa_reg_account_name(acct) end,
+      rec.city, rec.country, rec.lat, rec.lng, rec.tz, rec.map, 'Signed up', rec.ref, now());
+  update public.sa_profiles set person_id = pid where person_id = rec.id;
+  -- Ids the account's own sign-in proves go back with it.
+  update public.sa_people set user_id = null,   -- sa_people_account_gone unclaims it
+    github_id = case when github_id = (select public.sa_reg_id(g.github_id) from public.sa_github(acct) g) then null else github_id end,
+    discord_id = case when discord_id = (select public.sa_reg_id(d.discord_id) from public.sa_discord(acct) d) then null else discord_id end
+  where id = rec.id;
+  update public.sa_people set user_id = acct where id = pid;
+  perform public.sa_registry_link(acct, null);   -- records those ids on the account's row
+  update public.sa_possible_matches set settled_at = now(), settled_by = uid, outcome = 'different'
+    where person_id = rec.id and user_id = acct and outcome = 'same';
+  return pid;
 end $$;
 
 -- The person's own profile -------------------------------------------------
@@ -547,6 +669,7 @@ begin
   if not exists (select 1 from public.sa_members where user_id = uid) then
     raise exception 'Join the workspace first' using errcode = '42501';
   end if;
+  if octet_length(p::text) > 65536 then raise exception 'That profile is too big' using errcode = '22001'; end if;
   if jsonb_typeof(p) <> 'object' then raise exception 'A profile is a set of fields' using errcode = '22023'; end if;
   select k into bad from jsonb_object_keys(p) k where k <> all (array['ref', 'display_name', 'discord', 'city', 'country', 'lat', 'lng', 'tz', 'map',
     'wants_to_build', 'lanes', 'can', 'learn', 'experience', 'story', 'tools', 'build', 'travel', 'hours', 'availability', 'wants',
@@ -568,12 +691,11 @@ begin
   end if;
   update public.sa_people set
     display_name = coalesce(v_name, display_name),
-    -- A Discord handle they type is theirs to state; one their sign-in proves wins.
-    discord_username = case when p ? 'discord' and discord_id is null then ltrim(public.sa_reg_text('Discord username', p->>'discord', 40), '@') else discord_username end,
     city = case when p ? 'city' then public.sa_reg_text('City', p->>'city', 80) else city end,
     country = case when p ? 'country' then public.sa_reg_text('Country', p->>'country', 60) else country end,
-    lat = case when p ? 'lat' then (p->>'lat')::double precision else lat end,
-    lng = case when p ? 'lng' then (p->>'lng')::double precision else lng end,
+    -- A new city or country without coordinates clears the old ones.
+    lat = case when p ? 'lat' then (p->>'lat')::double precision when p ? 'city' or p ? 'country' then null else lat end,
+    lng = case when p ? 'lng' then (p->>'lng')::double precision when p ? 'city' or p ? 'country' then null else lng end,
     tz = case when p ? 'tz' then public.sa_reg_tz(p->>'tz') else tz end,
     map = case when p ? 'map' then p->>'map' else map end,
     updated_at = now()
@@ -621,6 +743,8 @@ begin
     call_ok = case when p ? 'call_ok' then coalesce((p->>'call_ok')::boolean, false) else call_ok end,
     call_windows = case when p ? 'call_windows' then public.sa_reg_text('Call times', p->>'call_windows', 300) else call_windows end,
     agent_drafted = case when p ? 'agent_drafted' then coalesce((p->>'agent_drafted')::boolean, false) else agent_drafted end,
+    -- A Discord handle they type is what they said, not what a sign-in proved.
+    discord_said = case when p ? 'discord' then nullif(ltrim(public.sa_reg_text('Discord username', p->>'discord', 40), '@'), '') else discord_said end,
     updated_at = now()
   where person_id = pid;
   if coalesce(p_finish, false) then
@@ -648,8 +772,8 @@ create or replace function public.sa_my_profile() returns jsonb language sql sta
   where p.user_id = auth.uid()
 $$;
 
--- The registry list: members see people with accounts; core and leads see
--- everyone, with what the team knows.
+-- The registry list: members see people who finished a profile, and
+-- themselves; core and leads see everyone, with what the team knows.
 create or replace function public.sa_registry_people() returns setof jsonb language plpgsql stable security definer set search_path = public, pg_temp as $$
 declare r text := public.sa_registry_role();
 begin
@@ -662,7 +786,7 @@ begin
   else
     return query select case when p.user_id = auth.uid() then public.sa_reg_self_view(p, pr) else public.sa_reg_member_view(p, pr) end
       from public.sa_people p left join public.sa_profiles pr on pr.person_id = p.id
-      where p.user_id is not null
+      where p.user_id is not null and (p.user_id = auth.uid() or pr.finished_at is not null)
       order by p.claimed_at desc;
   end if;
 end $$;
@@ -678,8 +802,10 @@ declare
 begin
   if r is null then raise exception 'Members only' using errcode = '42501'; end if;
   select * into p from public.sa_people where id = p_person;
-  if p.id is null or (r not in ('core', 'lead') and p.user_id is null) then raise exception 'No such person'; end if;
   select * into pr from public.sa_profiles where person_id = p.id;
+  if p.id is null or (r not in ('core', 'lead') and (p.user_id is null or (p.user_id <> uid and pr.finished_at is null))) then
+    raise exception 'No such person';
+  end if;
   if r not in ('core', 'lead') then
     return case when p.user_id = uid then public.sa_reg_self_view(p, pr) else public.sa_reg_member_view(p, pr) end;
   end if;
@@ -691,21 +817,35 @@ begin
       from public.sa_person_notes n where n.person_id = p.id), '[]'),
     'outreach', coalesce((select jsonb_agg(to_jsonb(o) - 'person_id' order by o.kind) from public.sa_outreach o where o.person_id = p.id), '[]'),
     'skill_checks', coalesce((select jsonb_agg(to_jsonb(s) - 'person_id' order by s.checked_at desc) from public.sa_skill_checks s where s.person_id = p.id), '[]'),
-    'matches', coalesce((select jsonb_agg(jsonb_build_object('id', m.id, 'user_id', m.user_id, 'account_person_id', m.account_person_id,
-        'account_name', (select display_name from public.sa_people a where a.id = m.account_person_id), 'reason', m.reason, 'created_at', m.created_at) order by m.created_at)
+    'matches', coalesce((select jsonb_agg(public.sa_reg_match(m) order by m.created_at)
       from public.sa_possible_matches m where m.person_id = p.id and m.settled_at is null), '[]'));
 end $$;
+
+-- A "same person?" card with what a lead needs to judge it: the account's
+-- email, GitHub and Discord as its sign-in proved them, and when it was made;
+-- what the record holds, and whether each handle was resolved to an id.
+create or replace function public.sa_reg_match(m public.sa_possible_matches) returns jsonb language sql stable security definer set search_path = public, pg_temp as $$
+  select jsonb_build_object('id', m.id, 'person_id', m.person_id, 'person_name', p.display_name,
+    'user_id', m.user_id, 'account_person_id', m.account_person_id,
+    'account_name', coalesce(a.display_name, public.sa_reg_account_name(m.user_id)),
+    'account_email', u.email, 'account_created_at', u.created_at,
+    'account_github', (select g.login from public.sa_github(m.user_id) g),
+    'account_discord', (select d.username from public.sa_discord(m.user_id) d),
+    'record_email', p.email, 'record_github', p.github_login, 'record_github_resolved', p.github_id is not null,
+    'record_discord', p.discord_username, 'record_discord_resolved', p.discord_id is not null,
+    'reason', m.reason, 'created_at', m.created_at)
+  from public.sa_people p
+  join auth.users u on u.id = m.user_id
+  left join public.sa_people a on a.id = m.account_person_id
+  where p.id = m.person_id
+$$;
 
 -- "Same person?" cards waiting for a lead.
 create or replace function public.sa_registry_matches() returns setof jsonb language plpgsql stable security definer set search_path = public, pg_temp as $$
 begin
   perform public.sa_require_team();
-  return query select jsonb_build_object('id', m.id, 'person_id', m.person_id, 'person_name', p.display_name,
-    'user_id', m.user_id, 'account_person_id', m.account_person_id, 'account_name', a.display_name,
-    'reason', m.reason, 'created_at', m.created_at)
+  return query select public.sa_reg_match(m)
   from public.sa_possible_matches m
-  join public.sa_people p on p.id = m.person_id
-  left join public.sa_people a on a.id = m.account_person_id
   where m.settled_at is null
   order by m.created_at;
 end $$;
@@ -932,7 +1072,51 @@ begin
   where person_id = p_person and kind = v_kind;
 end $$;
 
+-- Deleting -----------------------------------------------------------------
+-- When an account goes (deleted, its profile deleted, or a lead's unlink), its
+-- profile goes with it. A row it made itself is deleted with everything on it;
+-- a record the team added goes back to unclaimed, without the place, and keeps
+-- the team's notes, outreach and guesses. Fires for the user_id foreign key's
+-- "on delete set null" too.
+create or replace function public.sa_people_account_gone() returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if old.user_id is not null and new.user_id is null then
+    delete from public.sa_profiles where person_id = new.id;
+    if new.added_by is null then
+      delete from public.sa_people where id = new.id;
+    else
+      update public.sa_people set claimed_at = null, map = 'off', city = null, country = null, lat = null, lng = null, tz = null,
+        ref = null, updated_at = now() where id = new.id;
+    end if;
+  end if;
+  return null;
+end $$;
+drop trigger if exists sa_people_account_gone on public.sa_people;
+create trigger sa_people_account_gone after update of user_id on public.sa_people
+  for each row execute function public.sa_people_account_gone();
+
+-- A lead deletes a record and everything on it (profile, notes, outreach,
+-- guesses, checks, cards). The account, if any, stays.
+create or replace function public.sa_delete_person(p_person uuid) returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare uid uuid := public.sa_require_lead();
+begin
+  delete from public.sa_people where id = p_person;
+  if not found then raise exception 'No such person'; end if;
+end $$;
+
+-- A person deletes their profile. Their account stays; sa_people_account_gone
+-- removes their row or unclaims the team's record.
+create or replace function public.sa_delete_my_profile() returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare uid uuid := public.sa_uid(); pid uuid;
+begin
+  select id into pid from public.sa_people where user_id = uid;
+  if pid is null then return; end if;
+  update public.sa_people set user_id = null where id = pid;
+end $$;
+
 -- Who may call what ------------------------------------------------------
+-- Default privileges here grant EXECUTE on every new public function to anon
+-- and authenticated, so each one is revoked by name.
 revoke execute on function
   public.sa_taxonomy(), public.sa_registry_tools(), public.sa_registry_has_url(text),
   public.sa_registry_role(), public.sa_require_team(), public.sa_reg_text(text, text, int), public.sa_reg_list(text, text[], text[], int),
@@ -940,17 +1124,20 @@ revoke execute on function
   public.sa_reg_card(public.sa_people, public.sa_profiles), public.sa_reg_member_view(public.sa_people, public.sa_profiles),
   public.sa_reg_self_view(public.sa_people, public.sa_profiles), public.sa_reg_team_view(public.sa_people, public.sa_profiles),
   public.sa_reg_account_name(uuid), public.sa_reg_own_row(uuid, text), public.sa_registry_link(uuid, text),
-  public.sa_registry_claim(text), public.sa_link_person(uuid, boolean), public.sa_save_profile(jsonb, boolean),
-  public.sa_registry_cards(), public.sa_my_profile(), public.sa_registry_people(), public.sa_registry_person(uuid), public.sa_registry_matches(),
+  public.sa_registry_claim(text), public.sa_link_person(uuid, boolean), public.sa_unlink_person(uuid), public.sa_save_profile(jsonb, boolean),
+  public.sa_registry_cards(), public.sa_my_profile(), public.sa_registry_people(), public.sa_registry_person(uuid),
+  public.sa_reg_match(public.sa_possible_matches), public.sa_registry_matches(),
   public.sa_find_people(text, text, text, text, bigint, bigint),
   public.sa_add_person(text, text, text, bigint, text, bigint, text, text, text, double precision, double precision, text, text[], text[], uuid, text, boolean, text[]),
   public.sa_update_person(uuid, jsonb), public.sa_add_note(uuid, text, text, text, text), public.sa_edit_note(uuid, text),
-  public.sa_set_outreach(uuid, text, text, uuid, text, text[], boolean, text, boolean)
+  public.sa_set_outreach(uuid, text, text, uuid, text, text[], boolean, text, boolean),
+  public.sa_people_account_gone(), public.sa_delete_person(uuid), public.sa_delete_my_profile()
 from public, anon, authenticated;
 -- The vocabularies (the table checks use them) and the map are public.
 grant execute on function public.sa_taxonomy(), public.sa_registry_tools(), public.sa_registry_has_url(text), public.sa_registry_cards() to anon, authenticated;
 grant execute on function
-  public.sa_registry_claim(text), public.sa_link_person(uuid, boolean), public.sa_save_profile(jsonb, boolean),
+  public.sa_registry_claim(text), public.sa_link_person(uuid, boolean), public.sa_unlink_person(uuid), public.sa_save_profile(jsonb, boolean),
+  public.sa_delete_person(uuid), public.sa_delete_my_profile(),
   public.sa_my_profile(), public.sa_registry_people(), public.sa_registry_person(uuid), public.sa_registry_matches(),
   public.sa_find_people(text, text, text, text, bigint, bigint),
   public.sa_add_person(text, text, text, bigint, text, bigint, text, text, text, double precision, double precision, text, text[], text[], uuid, text, boolean, text[]),
