@@ -62,14 +62,18 @@ create or replace function public.sa_registry_tools() returns text[] language sq
   select array['fdm', 'resin', 'cnc', 'mill', 'lathe', 'laser', 'solder', 'spot', 'scope', 'composite', 'weld', 'field', 'aircraft']::text[]
 $$;
 -- A blurb is plain words: no links (the map's rule). Also catches any TLD
--- followed by a path, spaced and spelled-out dots, and full-width dots.
+-- followed by a path, (dot) and [dot], full-width dots, and a spaced or
+-- spelled-out dot when a known TLD follows it ("evil . com", "evil dot com"),
+-- so "polka dot dress" and a sentence's full stop stay fine.
 create or replace function public.sa_registry_has_url(t text) returns boolean language sql immutable set search_path = public, pg_temp as $$
   select coalesce(t ~* (
       '(https?:|www\.|discord\.gg|t\.me/'
       || '|[a-z0-9-]\s*[。．｡]\s*[a-z]{2,}'                                       -- full-width dots
-      || '|[a-z0-9-]\s*(\(dot\)|\[dot\]|\s\.\s|\sdot\s)\s*[a-z]{2,}'             -- "evil . com", "evil dot com"
+      || '|[a-z0-9-]\s*(\(dot\)|\[dot\])\s*[a-z]{2,}'                           -- "evil(dot)com"
+      || '|[a-z0-9-](\s\.\s|\s+dot\s+)\s*' || tlds || '\M'                      -- "evil . com", "evil dot com"
       || '|[a-z0-9-]\.[a-z]{2,}/\S'                                                -- anything.tld/path
-      || '|\m[a-z0-9-]+\.(com|net|org|io|co|gg|me|ly|xyz|app|dev|ai|link|to|so|sh|ru|cc|tk|info|biz|top|site|online|shop|club|live|eu|uk|de|in|us|ca|au|fr|nl|pw|cn|vip|fun|lol|art)(/|\M))'), false)
+      || '|\m[a-z0-9-]+\.' || tlds || '(/|\M))'), false)
+  from (select '(com|net|org|io|co|gg|me|ly|xyz|app|dev|ai|link|to|so|sh|ru|cc|tk|info|biz|top|site|online|shop|club|live|eu|uk|de|in|us|ca|au|fr|nl|pw|cn|vip|fun|lol|art)'::text as tlds) v
 $$;
 
 -- People -----------------------------------------------------------------

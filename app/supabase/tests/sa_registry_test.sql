@@ -555,6 +555,9 @@ select pg_temp.expect_error($q$select public.sa_save_profile('{"blurb": "Cheap p
 select pg_temp.expect_error($q$select public.sa_save_profile('{"blurb": "see evil.ru/a"}')$q$, 'Keep links out of the blurb');
 select pg_temp.expect_error($q$select public.sa_save_profile('{"blurb": "arrow。pay for packs"}')$q$, 'Keep links out of the blurb');
 select pg_temp.expect_error($q$select public.sa_save_profile('{"blurb": "find me at arrowpay dot com"}')$q$, 'Keep links out of the blurb');
+select pg_temp.expect_error($q$select public.sa_save_profile('{"blurb": "packs at evil(dot)com"}')$q$, 'Keep links out of the blurb');
+select pg_temp.check('[L1] "polka dot" and a full stop before a short word are not links',
+  public.sa_save_profile('{"blurb": "Polka dot dress designer. I live in Houston. In my spare time I fly."}')->'profile'->>'blurb' like 'Polka%');
 select pg_temp.check('[L1] an ordinary blurb with dots is still fine',
   public.sa_save_profile('{"blurb": "Utility field tech in Houston. Built a 14S e-bike pack. Node.js and C."}')->'profile'->>'blurb' like 'Utility%');
 select pg_temp.expect_error($q$select public.sa_save_profile(jsonb_build_object('story', repeat('a ', 40000)))$q$, 'That profile is too big');
