@@ -60,10 +60,10 @@ async function settle(m: Match, same: boolean) {
           <tbody>
             <tr v-for="e in evidence(m)" :key="e.label" :data-ev="e.label.toLowerCase()">
               <th>{{ e.label }}</th>
-              <td>{{ e.acct || '—' }}<span v-if="e.acct && e.label !== 'Email'" class="faint"> · signed in with</span></td>
-              <td>{{ e.rec || '—' }}<span v-if="e.resolved !== null" :class="e.resolved ? 'ok' : 'faint'"> · {{ e.resolved ? 'resolved to an account' : 'typed, not resolved' }}</span></td>
+              <td data-l="Account">{{ e.acct || '—' }}<span v-if="e.acct && e.label !== 'Email'" class="faint"> · signed in with</span></td>
+              <td data-l="Record">{{ e.rec || '—' }}<span v-if="e.resolved !== null" :class="e.resolved ? 'ok' : 'faint'"> · {{ e.resolved ? 'resolved to an account' : 'typed, not resolved' }}</span></td>
             </tr>
-            <tr data-ev="created"><th>Account made</th><td>{{ day(m.account_created_at) || '—' }}</td><td></td></tr>
+            <tr data-ev="created"><th>Account made</th><td data-l="Account">{{ day(m.account_created_at) || '—' }}</td><td class="none"></td></tr>
           </tbody>
         </table>
         <p v-if="refused[m.id]" class="err" role="alert" data-refused>Not linked: {{ refused[m.id] }}</p>
@@ -82,7 +82,7 @@ async function settle(m: Match, same: boolean) {
 .same { display: grid; gap: 8px; margin-top: 14px; }
 .match { align-items: flex-start; }
 .ev { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: var(--text-sm); }
-.ev th, .ev td { padding: 3px 8px 3px 0; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.ev th, .ev td { padding: 3px 8px 3px 0; text-align: left; vertical-align: top; overflow-wrap: break-word; }
 .ev thead th { color: var(--fg-faint); font-weight: 500; }
 .ev tbody th { width: 92px; color: var(--fg-muted); font-weight: 500; }
 .ev .ok { color: var(--jade-11); }
@@ -93,6 +93,12 @@ async function settle(m: Match, same: boolean) {
 .err { margin: 0; }
 @media (max-width: 767px) {
   .match { flex-wrap: wrap; }
-  .match .grow { flex-basis: calc(100% - 100px); }
+  .match .grow { flex-basis: 100%; }
+  /* Phones: each line of evidence stacks, the account's side then the record's. */
+  .ev thead { display: none; }
+  .ev tr { display: block; padding: 4px 0; border-top: 1px solid var(--border-soft); }
+  .ev tbody th, .ev td { display: block; width: auto; padding: 1px 0; overflow-wrap: break-word; }
+  .ev td::before { content: attr(data-l) ': '; color: var(--fg-faint); }
+  .ev td.none { display: none; }
 }
 </style>
