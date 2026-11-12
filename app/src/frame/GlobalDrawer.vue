@@ -12,6 +12,9 @@ import { useWorkspace } from './useWorkspace';
 const router = useRouter();
 const { project } = useWorkspace();
 
+// The aircraft and the pack; Community isn't hardware.
+const hardware = projects.filter((p) => p.versions.length);
+
 function goTo(id: string) {
   const p = findProject(id);
   if (p) router.push(homePath(p));
@@ -35,7 +38,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
       <h3 class="label caps">Hardware</h3>
       <div class="craft">
         <button
-          v-for="p in projects"
+          v-for="p in hardware"
           :key="p.id"
           type="button"
           class="craft-card"
@@ -47,7 +50,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
             <span v-else class="craft-sketch" :class="{ pack: p.id === 'longshot' }"></span>
           </span>
           <span class="craft-name">{{ p.label }}</span>
-          <span class="craft-ver">{{ defaultVersion(p).code }}</span>
+          <span class="craft-ver">{{ defaultVersion(p)?.code }}</span>
         </button>
       </div>
     </section>

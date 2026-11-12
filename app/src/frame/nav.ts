@@ -10,8 +10,9 @@
 // attachment catalog, the BOM, the task board, the decision register.
 // Zone ids are unique across projects, so a thread's zone names its project.
 import { ref } from 'vue';
-import { isZone, item, type Project, type Tab } from './navkit';
+import { isZone, item, type Project, type Tab, type Version } from './navkit';
 import { longshot } from '../projects/longshot/nav';
+import { community } from '../projects/community/nav';
 
 export * from './navkit';
 
@@ -231,12 +232,13 @@ const quiver: Project = {
   home: 'overview/v1-1',
 };
 
-export const projects: Project[] = [quiver, longshot];
+export const projects: Project[] = [quiver, longshot, community];
 /** Quiver's tabs, for the pages that are only Quiver's. */
 export const tabs = quiverTabs;
 
-// The version a project opens on: its current release, or whatever it has.
-export const defaultVersion = (p: Project) => p.versions.find((v) => v.status === 'current') ?? p.versions[0];
+// The version a project opens on: its current release, or whatever it has
+// (nothing, for Community).
+export const defaultVersion = (p: Project): Version | undefined => p.versions.find((v) => v.status === 'current') ?? p.versions[0];
 
 /** The project on screen, kept in step with the route (router.ts), for code outside components. */
 export const currentProject = ref('quiver');
@@ -246,7 +248,7 @@ export const projectTabs = (id: unknown = currentProject.value) => findProject(i
 export const findTab = (id: unknown, project: unknown = currentProject.value) => projectTabs(project).find((t) => t.id === id);
 export const findItem = (tab: Tab | undefined, id: unknown) =>
   tab?.groups.flatMap((g) => g.items).find((i) => i.id === id);
-export const firstItem = (tab: Tab) => tab.groups[0].items[0];
+export const firstItem = (tab: Tab) => tab.groups[0]?.items[0];
 export const homePath = (p: Project) => `/${p.id}/${p.home}`;
 
 // Zones by id, across every project. A zone id appears once in the whole app.

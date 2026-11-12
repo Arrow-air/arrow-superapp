@@ -45,8 +45,8 @@ const all = computed<Section[]>(() => [
     results: projects.map((p) => ({
       id: `project:${p.id}`,
       label: p.label,
-      hint: `${p.kind} · ${defaultVersion(p).code}`,
-      icon: (p.id === 'longshot' ? 'battery' : 'plane') as IconName,
+      hint: [p.kind, defaultVersion(p)?.code].filter(Boolean).join(' · '),
+      icon: (p.id === 'longshot' ? 'battery' : p.id === 'community' ? 'people' : 'plane') as IconName,
       action: 'Switch project',
       run: () => router.push(homePath(p)),
     })),

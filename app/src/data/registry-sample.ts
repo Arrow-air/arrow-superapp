@@ -55,6 +55,7 @@ export const SAMPLE_PEOPLE: SamplePerson[] = [
     source: 'X · Longshot pack teardown', ref: 'x-longshot-teardown', wantsToBuild: 'A Longshot pack for my own Quiver first, then packs for other people\'s', lanes: ['hardware', 'engineer'],
     can: ['Electrical', 'Power', 'Assembly'], learn: ['Firmware'], tools: ['solder', 'spot', 'scope', 'fdm'], build: ['own', 'day'], hours: '5–10 h/wk', when: 'Weekday evenings', travel: 'up to 300 km',
     wants: ['learning', 'paid', 'own'], callOk: true, status: 'talked', owner: 'u-thomas',
+    next: 'Invite to the Longshot PT2 build weekend; intro to Julius', goodFor: ['Longshot pack build', 'Harness and wiring'],
     blurb: 'Utility field tech in Houston. Built a 14S e-bike pack from salvaged cells. Here to build Longshot packs.',
     story: 'I built a 48 V, 14S5P e-bike pack from salvaged laptop cells. My first capacitor spot welder kept blowing through the nickel strip, so I rebuilt it around a car battery and a timed relay. The first pack ran three months, then a sense lead chafed through on the frame and took the BMS with it. Pack two has fused sense leads and strain relief on every wire. It is at 4,000 km now.' },
   { id: 'jake', name: 'Jake Whitfield', joined: '2026-11-09', discord: 'jwhitfield', github: null, city: 'San Antonio', country: 'United States', lat: 29.42, lng: -98.49, tz: 'America/Chicago', map: 'city',

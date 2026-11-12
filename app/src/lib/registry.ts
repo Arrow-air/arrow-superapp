@@ -332,7 +332,18 @@ interface DemoState {
   matches: (Match & { person_id: string; settled: boolean })[];
 }
 
-export const registryDemo = reactive({ role: 'lead' as Role });
+const SIGNED_OUT = 'superapp:registry.signed-out';
+/** role follows the demo menu's View as (modules/registry/community.ts keeps
+ * it in step); signedOut is its "Signed out", kept for this tab only. */
+export const registryDemo = reactive({
+  role: 'lead' as Role,
+  signedOut: (() => { try { return sessionStorage.getItem(SIGNED_OUT) === '1'; } catch { return false; } })(),
+});
+/** The demo menu's "Signed out": the registry answers as it would a visitor. */
+export function setDemoSignedOut(on: boolean) {
+  registryDemo.signedOut = on;
+  try { if (on) sessionStorage.setItem(SIGNED_OUT, '1'); else sessionStorage.removeItem(SIGNED_OUT); } catch { /* storage unavailable */ }
+}
 export const DEMO_ME = 'me';
 const DEMO_KEY = 'superapp:registry.v1';
 const iso = (d: string) => new Date(`${d}T15:00:00Z`).toISOString();
@@ -370,6 +381,12 @@ function seed(): DemoState {
   for (const [pid, checks] of Object.entries(SAMPLE_SKILLS)) {
     for (const [discipline, verdict, by, on] of checks) s.skills.push({ id: newId(), person_id: pid, discipline, verdict, note_id: null, checked_by: by, checked_at: iso(on) });
   }
+  // A "same person?" card for a lead: someone signed up with GitHub under
+  // Rosa's name, with an email that isn't the one on the record Thomas added.
+  const on = iso('2026-11-11');
+  s.people.push({ id: 'rosa-gh', user_id: 'u-rosa-gh', display_name: 'Rosa Delgado', github_login: 'rdelgado-waco', discord_username: null, email: null,
+    city: null, country: null, lat: null, lng: null, tz: null, map: 'off', source: 'Signed up', ref: null, added_by: null, created_at: on, claimed_at: on });
+  s.matches.push({ id: 'm-rosa', person_id: 'rosa', user_id: 'u-rosa-gh', account_person_id: 'rosa-gh', account_name: 'Rosa Delgado', reason: 'same name', created_at: on, settled: false });
   return s;
 }
 let demo: DemoState | null = null;
@@ -383,6 +400,8 @@ const persist = () => { try { localStorage.setItem(DEMO_KEY, JSON.stringify(demo
 export function resetRegistryDemo() { demo = seed(); persist(); }
 /** The demo's core team, for owner pickers and note authors. */
 export const demoTeam = SAMPLE_TEAM;
+/** Who the demo visitor is on the team: Thomas as a lead, Julius as core. */
+export const demoTeamMe = () => (registryDemo.role === 'lead' ? 'u-thomas' : 'u-julius');
 
 const round2 = (n: number | null) => (n == null ? null : Math.round(n * 100) / 100);
 function card(r: Row): Card {
@@ -416,16 +435,19 @@ function teamView(r: Row): Person {
   };
 }
 const viewFor = (r: Row) => (isTeam() ? teamView(r) : r.user_id === DEMO_ME ? selfView(r) : memberView(r));
-const requireTeam = () => { if (!isTeam()) demoFail('Only core or a lead can do that'); };
+const requireTeam = () => { requireMember(); if (!isTeam()) demoFail('Only core or a lead can do that'); };
+const requireMember = () => { if (registryDemo.signedOut) demoFail('Members only'); };
 const row = (id: string) => db().people.find((p) => p.id === id) ?? demoFail('No such person');
 
 function demoCards(): Card[] {
   return db().people.filter((r) => r.user_id && r.map !== 'off' && db().profiles[r.id]?.finished_at).map(card);
 }
 function demoPeople(): Person[] {
+  requireMember();
   return db().people.filter((r) => isTeam() || r.user_id).map(viewFor);
 }
 function demoPerson(id: string): PersonDetail {
+  requireMember();
   const r = row(id);
   if (!isTeam()) { if (!r.user_id) demoFail('No such person'); return viewFor(r); }
   const s = db();
@@ -509,8 +531,6 @@ function demoAdd(p: NewPerson): string {
   persist();
   return id;
 }
-/** In the demo, team actions are Thomas's (a lead) or Julius's (core). */
-const demoTeamMe = () => (registryDemo.role === 'lead' ? 'u-thomas' : 'u-julius');
 function demoUpdate(id: string, f: PersonFields): void {
   requireTeam();
   const r = row(id);
@@ -569,16 +589,36 @@ function demoMatches(): Match[] {
   return s.matches.filter((m) => !m.settled).map(({ settled: _s, ...m }) => ({ ...m, person_name: s.people.find((p) => p.id === m.person_id)?.display_name }));
 }
 function demoLink(match: string, same: boolean): string | null {
+  requireMember();
   if (registryDemo.role !== 'lead') demoFail('Only a lead can do that');
   const s = db();
   const m = s.matches.find((x) => x.id === match) ?? demoFail('No such match');
   if (m.settled) demoFail('That was settled already');
-  m.settled = true;
-  if (!same) { persist(); return m.account_person_id; }
+  if (!same) { m.settled = true; persist(); return m.account_person_id; }
   const rec = row(m.person_id);
   if (rec.user_id) demoFail('That record is already linked to an account');
+  // As sa_link_person: the account's own row folds into the team's record.
+  // What they said wins; the handles and place the team had stay as fallbacks.
+  const mine = s.people.find((p) => p.user_id === m.user_id);
+  if (mine?.added_by) demoFail('That account is already linked to a record the team added');
+  const said = !!(mine && s.profiles[mine.id]);
+  if (mine) {
+    if (said) { s.profiles[rec.id] = s.profiles[mine.id]!; delete s.profiles[mine.id]; }
+    for (const n of s.notes) if (n.person_id === mine.id) n.person_id = rec.id;
+    for (const k of s.skills) if (k.person_id === mine.id) k.person_id = rec.id;
+    s.outreach = s.outreach.filter((o) => o.person_id !== mine.id || !s.outreach.some((x) => x.person_id === rec.id && x.kind === o.kind));
+    for (const o of s.outreach) if (o.person_id === mine.id) o.person_id = rec.id;
+    for (const x of s.matches) if (x.account_person_id === mine.id) x.account_person_id = rec.id;
+    s.people = s.people.filter((p) => p.id !== mine.id);
+    if (said) rec.display_name = mine.display_name;
+    rec.github_login ??= mine.github_login;
+    rec.discord_username ??= mine.discord_username;
+    rec.city = mine.city ?? rec.city; rec.country = mine.country ?? rec.country; rec.tz = mine.tz ?? rec.tz;
+    rec.lat = mine.lat ?? rec.lat; rec.lng = mine.lng ?? rec.lng; rec.map = mine.map; rec.ref = mine.ref ?? rec.ref;
+  }
   rec.user_id = m.user_id;
   rec.claimed_at = new Date().toISOString();
+  for (const x of s.matches) if (x.person_id === rec.id) x.settled = true;
   persist();
   return rec.id;
 }

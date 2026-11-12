@@ -40,6 +40,7 @@ function switchProject(id: string) {
           <span class="thumb" aria-hidden="true">
             <img v-if="project?.thumb" :src="project.thumb" alt="" width="48" height="21" />
             <span v-else-if="project?.id === 'longshot'" class="sketch pack"></span>
+            <span v-else-if="project?.id === 'community'" class="sketch people"></span>
             <span v-else class="sketch"></span>
           </span>
           <span class="name">{{ project?.label ?? 'Select project' }}</span>
@@ -102,6 +103,10 @@ function switchProject(id: string) {
 /* A battery pack: a box of cells with its connector. */
 .sketch.pack {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 20' fill='none' stroke='%23b0b4ba' stroke-width='1.2' stroke-linecap='round'%3E%3Crect x='6' y='4' width='30' height='13' rx='1.5'/%3E%3Cpath d='M36 8.5h3v4h-3M11 7.5v6M16 7.5v6M21 7.5v6M26 7.5v6M31 7.5v6'/%3E%3C/svg%3E");
+}
+/* Community: three people. */
+.sketch.people {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 20' fill='none' stroke='%23b0b4ba' stroke-width='1.2' stroke-linecap='round'%3E%3Ccircle cx='22' cy='7' r='3'/%3E%3Cpath d='M16 17a6 6 0 0 1 12 0'/%3E%3Ccircle cx='12' cy='9' r='2.4'/%3E%3Cpath d='M7.5 17a4.6 4.6 0 0 1 7-3.6'/%3E%3Ccircle cx='32' cy='9' r='2.4'/%3E%3Cpath d='M36.5 17a4.6 4.6 0 0 0-7-3.6'/%3E%3C/svg%3E");
 }
 /* The chevron's glyph sits inside a 12px box with blank space either side;
    pull the box in so the gap after it matches the gap before the lit dot. */

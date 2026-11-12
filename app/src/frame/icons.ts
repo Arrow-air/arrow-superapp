@@ -64,6 +64,17 @@ export const icons = {
   sun: 'M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm-1-6h2v3h-2Zm0 19h2v3h-2ZM1 11h3v2H1Zm19 0h3v2h-3ZM4.2 5.6l1.4-1.4 2.1 2.1-1.4 1.4Zm12.1 12.1 1.4-1.4 2.1 2.1-1.4 1.4ZM4.2 18.4l2.1-2.1 1.4 1.4-2.1 2.1Zm12.1-12.1 2.1-2.1 1.4 1.4-2.1 2.1Z',
   moon: 'M14.5 2A9 9 0 1 0 22 14.5 7 7 0 0 1 14.5 2Z',
   monitor: 'M2 4h20v13H2Zm2 2v9h16V6ZM8 19h8v2H8Z',
+  // The registry's: team-only things, search, places and times, reaching out.
+  lock: 'M7 10V7a5 5 0 0 1 10 0v3h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Zm2 0h6V7a3 3 0 0 0-6 0Zm2 4v4h2v-4Z',
+  search: 'M10.5 3a7.5 7.5 0 0 1 6 12l4.8 4.8-1.4 1.4-4.8-4.8A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z',
+  clock: 'M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm-1 3h2v4.6l3.2 3.2-1.4 1.4L11 12.4Z',
+  pin: 'M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7Zm0 4.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z',
+  plus: 'M11 4h2v7h7v2h-7v7h-2v-7H4v-2h7Z',
+  send: 'M2 21 23 12 2 3v7l15 2-15 2Z',
+  video: 'M3 6h12a1 1 0 0 1 1 1v3l5-3v10l-5-3v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z',
+  note: 'M5 3h10l4 4v14H5Zm2 6v2h10V9Zm0 4v2h10v-2Zm0 4v2h6v-2Z',
+  mail: 'M2 5h20v2.2l-10 6.3L2 7.2Zm0 4.6 10 6.3 10-6.3V19H2Z',
+  spark: 'M12 2 14.2 8.8 21 11l-6.8 2.2L12 20l-2.2-6.8L3 11l6.8-2.2Z',
 } as const;
 
 export type IconName = keyof typeof icons;

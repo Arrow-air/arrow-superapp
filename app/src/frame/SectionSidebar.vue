@@ -1,10 +1,22 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import Icon from './Icon.vue';
 import { useWorkspace } from './useWorkspace';
 import { sidebarCollapsed as collapsed, toggleSidebar } from './layout';
+import { communitySidebar, type SideGroup } from '../modules/registry/community';
 
-const { tab, item, base, route } = useWorkspace();
+const { project, tab, item, base, route } = useWorkspace();
+
+// A project's tabs list their pages; Community's sidebar is its saved views
+// and the taxonomy, with counts from the registry.
+const groups = computed<(SideGroup & { sortable?: boolean })[]>(() => {
+  if (project.value?.id === 'community') return communitySidebar(route, typeof route.query.from === 'string' ? `view:${route.query.from}` : undefined);
+  return (tab.value?.groups ?? []).map((g) => ({
+    id: g.id, label: g.label, sortable: g.sortable,
+    items: g.items.map((i) => ({ id: i.id, label: i.label, icon: i.icon, to: `${base.value}/${tab.value!.id}/${i.id}`, active: i.id === item.value?.id })),
+  }));
+});
+const current = computed(() => groups.value.flatMap((g) => g.items).find((i) => i.active));
 
 // On phones the sidebar collapses behind a toggle showing the current page.
 const open = ref(false);
@@ -14,13 +26,14 @@ watch(() => route.fullPath, () => (open.value = false));
 <template>
   <aside class="sidebar" :class="{ open, collapsed }" aria-label="Section">
     <button class="toggle control" type="button" :aria-expanded="open" @click="open = !open">
-      <Icon v-if="item" :name="item.icon" :size="16" class="toggle-icon" />
-      <span>{{ item?.label ?? tab?.label }}</span>
+      <Icon v-if="current?.icon" :name="current.icon" :size="16" class="toggle-icon" />
+      <span v-else-if="current?.dot" class="dot" :style="{ '--c': current.dot }"></span>
+      <span>{{ current?.label ?? tab?.label }}</span>
       <Icon name="chevrons-v" :size="14" class="muted" />
     </button>
 
     <div class="groups">
-      <section v-for="g in tab?.groups" :key="g.id" class="group">
+      <section v-for="g in groups" :key="g.id" class="group">
         <h2 class="group-label caps">
           {{ g.label }}
           <button v-if="g.sortable" class="sort" type="button" aria-label="Sort"><Icon name="sort" :size="12" /></button>
@@ -28,14 +41,18 @@ watch(() => route.fullPath, () => (open.value = false));
         <RouterLink
           v-for="i in g.items"
           :key="i.id"
-          :to="`${base}/${tab!.id}/${i.id}`"
+          :to="i.to"
           class="item"
-          :class="{ active: i.id === item?.id }"
-          :title="collapsed ? i.label : undefined"
+          :class="{ active: i.active }"
+          :aria-current="i.active ? 'page' : undefined"
+          :title="collapsed ? i.label : i.title"
           :aria-label="collapsed ? i.label : undefined"
+          :data-side="i.id"
         >
-          <Icon :name="i.icon" :size="16" />
+          <Icon v-if="i.icon" :name="i.icon" :size="16" />
+          <span v-else class="dot" :style="{ '--c': i.dot }" aria-hidden="true"></span>
           <span class="label">{{ i.label }}</span>
+          <span v-if="i.count !== undefined" class="n">{{ i.count }}</span>
         </RouterLink>
       </section>
     </div>
@@ -93,6 +110,11 @@ watch(() => route.fullPath, () => (open.value = false));
   text-decoration: none;
 }
 .item:hover { color: var(--fg-2); background: var(--surface-hover); }
+/* A taxonomy group: its colour where an icon would be. */
+.dot { display: grid; place-items: center; width: 16px; height: 16px; flex: none; }
+.dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.n { margin-left: auto; padding-left: var(--space-2); color: var(--fg-faint); font: 11px var(--font-mono); }
+.collapsed .n { display: none; }
 .item.active { color: var(--accent-text); background: var(--surface-active); }
 
 /* Collapsed: an icon rail. Labels fade, group headings become hairlines. */

@@ -15,6 +15,12 @@ export const router = createRouter({
     // The contributor registry: the join wizard (/join?ref=… is every way in), and Your Arrow.
     { path: '/join', component: () => import('./pages/JoinPage.vue') },
     { path: '/you', component: () => import('./pages/YouPage.vue') },
+    // Community: the People list (?view, ?cat, ?q, ?shop, ?call), each person's
+    // page, and Reach out (core and leads; phase 1d fills it in). Inside the
+    // workspace frame: the params name the project and tab like any other page.
+    { path: '/:project(community)/:tab(people)', component: () => import('./pages/community/PeoplePage.vue') },
+    { path: '/:project(community)/:tab(people)/:person', component: () => import('./pages/community/PersonPage.vue') },
+    { path: '/:project(community)/:tab(reach-out)', component: () => import('./pages/community/ReachOutPage.vue') },
     {
       path: '/:project/:tab/:item?',
       component: () => import('./pages/ModuleHost.vue'),
@@ -33,5 +39,7 @@ router.beforeEach((to) => {
   if (project) currentProject.value = project.id;
   const tab = project && findTab(to.params.tab, project.id);
   if (!project || !tab) return true; // NotFound handles it
-  if (!findItem(tab, to.params.item)) return `/${project.id}/${tab.id}/${firstItem(tab).id}`;
+  const first = firstItem(tab);
+  if (!first) return true; // a one-page tab (Community's) has no items
+  if (!findItem(tab, to.params.item)) return `/${project.id}/${tab.id}/${first.id}`;
 });
