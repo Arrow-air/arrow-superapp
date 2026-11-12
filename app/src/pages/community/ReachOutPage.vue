@@ -88,13 +88,13 @@ async function loadDetail() {
   const id = current.value?.id ?? '';
   if (id !== detailFor) detail.value = null;
   detailFor = id;
-  if (!id) return;
+  if (!id || !onTeam.value) return;
   try {
     const d = await loadPerson(id);
     if (detailFor === id) detail.value = d;
   } catch { /* the list's copy is enough to draft from */ }
 }
-watch(() => current.value?.id, () => void loadDetail(), { immediate: true });
+watch([() => current.value?.id, onTeam], () => void loadDetail(), { immediate: true });
 const who = computed<Person | null>(() => (detail.value && detail.value.id === current.value?.id ? detail.value : current.value));
 const first = computed(() => (who.value ? firstName(who.value.name) || who.value.name : ''));
 const newestNote = computed(() => (detail.value?.id === who.value?.id ? detail.value?.notes?.[0] ?? null : null));
