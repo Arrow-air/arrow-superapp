@@ -231,6 +231,8 @@ function buildNotNow() { d.buildNotNow = !d.buildNotNow; if (d.buildNotNow) d.bu
 const hoursOptions = computed(() => (d.hours && !HOURS.includes(d.hours) ? [...HOURS, d.hours] : HOURS));
 const travelOptions = computed(() => (d.travel && !TRAVEL.includes(d.travel) ? [...TRAVEL, d.travel] : TRAVEL));
 const mapChoice = computed(() => (!d.mapOn ? 'off' : d.mapAt));
+/** Where they are, as signed-in people see it: the map's precision. */
+const seenPlace = computed(() => ({ off: 'not where you are (you\'re off the map)', country: 'your country and local time, as on the map', city: 'your city and local time, as on the map' })[mapOf(d)]);
 function setMap(v: 'city' | 'country' | 'off') { if (v === 'off') d.mapOn = false; else { d.mapOn = true; d.mapAt = v; } }
 const zones = (() => { try { return Intl.supportedValuesOf('timeZone'); } catch { return [] as string[]; } })();
 const tzOptions = computed(() => (zones.includes(d.tz) || !d.tz ? zones : [d.tz, ...zones]));
@@ -505,7 +507,7 @@ const doneName = computed(() => firstName(me.value?.name ?? d.name));
                 </div>
                 <p class="why">Your time zone: {{ d.tz.replace(/_/g, ' ') }}.</p>
               </div>
-              <div class="callout"><Icon name="eye" :size="14" /><div><b>Members</b> see your full profile: what you want to build, the story, links, tools and time. Everyone else sees only your card, and only if you're on the map.</div></div>
+              <div class="callout" data-who-sees><Icon name="eye" :size="14" /><div><b>Anyone signed in to Arrow</b> sees your profile: what you want to build, the story, what you can do, links, tools and time, and {{ seenPlace }}. What you never want to be asked and your call times stay with you and the core team. Everyone else sees only your card, and only if you're on the map.</div></div>
             </div>
           </div>
         </section>

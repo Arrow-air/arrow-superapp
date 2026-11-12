@@ -2,7 +2,9 @@
 // The team's side of a person's page, as the mockups' screen 5: owner,
 // status, next step and what they're good for (sa_set_outreach); what the
 // team knows of someone who hasn't said (their guesses, sa_update_person);
-// skill checks; notes, with a composer and edits; and the history.
+// skill checks; notes, with a composer and edits; and the history. Leads
+// also get Unlink (a record the team added that an account linked to) and
+// Delete this record (one with no account), each behind a confirm.
 // Only rendered for core and leads, from fields only they get from
 // sa_registry_person: a member's page never has any of this in it.
 import { computed, ref, watch } from 'vue';
@@ -10,15 +12,15 @@ import Icon from '../../frame/Icon.vue';
 import DisciplineChip from './DisciplineChip.vue';
 import TaxonomyPicker from './TaxonomyPicker.vue';
 import StatusPill from './StatusPill.vue';
-import { STATUS, cap, day, intro, myTeamId, teamAdded, teamMembers, teamName, viewer, whose } from './community';
+import { STATUS, cap, day, intro, myTeamId, shortPlace, teamAdded, teamMembers, teamName, viewer, whose } from './community';
 import { firstName } from './you';
 import {
-  DISCIPLINES, TOOLS, addNote, editNote, setOutreach, updatePerson,
+  DISCIPLINES, TOOLS, addNote, deletePerson, editNote, setOutreach, unlinkPerson, updatePerson,
   type Note, type NoteKind, type OutreachStatus, type PersonDetail, type Tool, type Verdict,
 } from '../../lib/registry';
 
 const props = defineProps<{ person: PersonDetail }>();
-const emit = defineEmits<{ changed: [] }>();
+const emit = defineEmits<{ changed: []; deleted: [] }>();
 
 const p = computed(() => props.person);
 const first = computed(() => firstName(p.value.name) || p.value.name);
@@ -75,6 +77,24 @@ function editKnow() {
 const toggleTool = (t: Tool) => { kTools.value = kTools.value.includes(t) ? kTools.value.filter((x) => x !== t) : [...kTools.value, t]; };
 async function saveKnow() {
   if (await run('know', () => updatePerson(p.value.id, { source: kSource.value.trim(), guess_disciplines: kGuess.value, guess_tools: kTools.value }))) editingKnow.value = false;
+}
+
+/** Where the team thought they were, before they said (moved here when the record linked). */
+const guessPlace = computed(() => shortPlace(p.value.guess?.city, p.value.guess?.country));
+
+// Leads: unlink a wrong link, delete a record ---------------------------------------------------
+const canUnlink = computed(() => isLead.value && p.value.has_account && !!p.value.added_by);
+const canDelete = computed(() => isLead.value && teamAdded(p.value));
+const confirming = ref<'' | 'unlink' | 'delete'>('');
+const leadMsg = ref('');
+watch(() => p.value.id, () => { leadMsg.value = ''; confirming.value = ''; });
+async function unlink() {
+  if (await run('unlink', () => unlinkPerson(p.value.id))) { confirming.value = ''; leadMsg.value = `Unlinked. The account has its own record again, with what it wrote; this record has no account.`; }
+}
+async function del() {
+  busy.value = 'delete';
+  err.value = '';
+  try { await deletePerson(p.value.id); confirming.value = ''; emit('deleted'); } catch (e) { err.value = (e as Error).message; } finally { busy.value = ''; }
 }
 
 // Skill checks ------------------------------------------------------------------------------
@@ -204,6 +224,7 @@ const history = computed(() => {
           <span v-else class="faint">not known</span>
         </dd>
         <dt>Tools</dt><dd>{{ (p.guess?.tools ?? []).map((t) => TOOLS[t]).join(', ') || 'not known' }}</dd>
+        <template v-if="guessPlace && p.has_account"><dt>Place</dt><dd data-guess-place>{{ guessPlace }} <span class="faint small">typed before {{ first }} joined; not shown as theirs</span></dd></template>
         <template v-if="p.source"><dt>From</dt><dd>{{ p.source }}</dd></template>
         <template v-if="p.added_by"><dt>Added by</dt><dd>{{ cap(teamName(p.added_by)) }}<template v-if="p.created_at">, {{ day(p.created_at) }}</template></dd></template>
       </dl>
@@ -273,6 +294,26 @@ const history = computed(() => {
         <li v-for="(h, i) in history" :key="i" :class="{ t: h.team }"><span class="d">{{ day(h.at) }}</span>{{ h.text }}</li>
       </ul>
     </div>
+
+    <div v-if="canUnlink || canDelete || leadMsg" class="tp" data-lead-actions>
+      <div class="row sp"><b class="h">Lead</b><span class="faint small">leads only</span></div>
+      <p v-if="leadMsg" class="done small" role="status" data-unlinked>{{ leadMsg }}</p>
+      <template v-if="canUnlink">
+        <p class="faint small pad">Linked {{ first }}'s account to this record by mistake? Unlink gives the account its own record back, with the profile it wrote. This record keeps the team's notes and has no account again.</p>
+        <div v-if="confirming === 'unlink'" class="confirm" data-confirm-unlink>
+          <p class="small">Unlink {{ p.name }}'s account from this record?</p>
+          <div class="row"><button class="btn sm danger" type="button" :disabled="!!busy" data-confirm @click="unlink">Unlink</button><button class="btn sm ghost" type="button" @click="confirming = ''">Cancel</button></div>
+        </div>
+        <div v-else class="row"><button class="btn sm" type="button" :disabled="!!busy" data-unlink @click="confirming = 'unlink'">Unlink</button></div>
+      </template>
+      <template v-if="canDelete">
+        <div v-if="confirming === 'delete'" class="confirm" data-confirm-delete>
+          <p class="small">Delete {{ p.name }}'s record? Its notes, outreach, guesses and skill checks go with it, for good.</p>
+          <div class="row"><button class="btn sm danger" type="button" :disabled="!!busy" data-confirm @click="del">Delete for good</button><button class="btn sm ghost" type="button" @click="confirming = ''">Cancel</button></div>
+        </div>
+        <div v-else class="row"><button class="btn sm danger" type="button" :disabled="!!busy" data-delete-record @click="confirming = 'delete'">Delete this record</button></div>
+      </template>
+    </div>
   </aside>
 </template>
 
@@ -317,4 +358,9 @@ const history = computed(() => {
 .compose .seg button { height: 24px; padding: 0 8px; font-size: var(--text-sm); }
 .skillpick { display: flex; flex-wrap: wrap; gap: 6px; }
 .hist { margin-top: 8px; font-size: var(--text-base); }
+.confirm { margin-top: 8px; padding: 8px 10px; border: 1px solid var(--red-a6); border-radius: 8px; background: var(--red-a2); }
+.confirm p { margin: 0; color: var(--fg); }
+.done { margin: 8px 0 0; color: var(--jade-11); }
+.teampanel .btn.danger { border-color: var(--red-a7); color: var(--red-11); }
+.teampanel .btn.danger:hover { background: var(--red-a3); }
 </style>

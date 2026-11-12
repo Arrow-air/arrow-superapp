@@ -4,13 +4,15 @@
 // #introductions drafted from their answers, the welcome call once those are
 // scheduled, one real thing); work matched to what they said; their public
 // card; and their record here. Signed out, it's the join wizard instead.
+// At the bottom, Delete my profile, behind a confirm that says what goes.
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Icon from '../frame/Icon.vue';
 import ProfileCard from '../modules/registry/ProfileCard.vue';
 import { matchedFrom, matchesFor } from '../modules/registry/matching';
 import { DISCORD_INVITE, WELCOME_CALL, firstName, greeting, helloDraft, useTick } from '../modules/registry/you';
-import { myProfile, type Card, type Person } from '../lib/registry';
+import { deleteMyProfile, myProfile, type Card, type Person } from '../lib/registry';
+import { forgetDraft } from '../modules/registry/join';
 import { remote } from '../lib/backend';
 import { session } from '../lib/session';
 import { useDraft } from '../lib/drafts';
@@ -105,6 +107,28 @@ const doneCount = computed(() => steps.value.filter(Boolean).length);
 const interests = computed(() => ({ can: pr.value?.can ?? [], learn: pr.value?.learn ?? [], tools: pr.value?.tools ?? [], lanes: pr.value?.lanes ?? [], build: pr.value?.build ?? [] }));
 const following = computed(() => interests.value.lanes.length === 1 && interests.value.lanes[0] === 'follow');
 const matches = computed(() => matchesFor(interests.value, threadState.threads, longshotGuide.steps, (q) => answers.list.some((a) => a.question === q)));
+
+// Deleting their profile: their account stays.
+const confirmDelete = ref(false);
+const deleting = ref(false);
+const deleteError = ref('');
+const deletedNote = ref(false);
+async function deleteProfile() {
+  deleting.value = true;
+  deleteError.value = '';
+  try {
+    await deleteMyProfile();
+    forgetDraft();
+    helloText.value = '';
+    confirmDelete.value = false;
+    deletedNote.value = true;
+    me.value = await myProfile();
+  } catch (e) {
+    deleteError.value = (e as Error).message;
+  } finally {
+    deleting.value = false;
+  }
+}
 
 // Their card, as the map shows it.
 const card = computed<Card | null>(() => {
@@ -204,7 +228,9 @@ const card = computed<Card | null>(() => {
         <section class="sec" aria-labelledby="c-h">
           <h2 id="c-h">Your card</h2>
           <ProfileCard v-if="card" :card="card" />
-          <p class="why">{{ me!.map === 'off' ? 'Not on the map. Members see your full profile.' : 'Public, on the map. Members also see your story, links and shop.' }}</p>
+          <p class="why" data-card-why>{{ me!.map === 'off'
+            ? 'Not on the map. Anyone signed in to Arrow sees your profile: what you want to build, the story, what you can do, links, tools and time, but not where you are.'
+            : `Public, on the map. Anyone signed in to Arrow also sees your story, what you can do, links, tools and time, and your ${me!.map === 'city' ? 'city' : 'country'} as on the map.` }}</p>
           <div class="row">
             <RouterLink class="btn sm" to="/join">Edit profile</RouterLink>
             <RouterLink class="btn sm ghost" :to="{ path: '/join', query: { step: 'visibility' } }">Who sees what</RouterLink>
@@ -221,11 +247,36 @@ const card = computed<Card | null>(() => {
         </section>
       </aside>
     </div>
+
+    <p v-if="phase === 'ready' && deletedNote && !me" class="why gone" role="status" data-profile-deleted>Your profile is deleted. Your Arrow account is still here; fill in a new profile whenever you like.</p>
+    <section v-if="phase === 'ready' && me" class="sec del" aria-labelledby="del-h" data-delete-mine>
+      <h2 id="del-h">Delete my profile</h2>
+      <template v-if="confirmDelete">
+        <div class="confirm" data-confirm-delete>
+          <p><b>Delete your profile for good?</b></p>
+          <p>What goes: everything you told us here (what you want to build, your story, what you can do, links, tools, time), your card on the map, and where you are.</p>
+          <p>What stays: your Arrow account, so you stay signed in to the app, flights and the forum; and threads, comments and guide answers you wrote, where you wrote them. You can fill in a new profile any time.</p>
+          <div class="row">
+            <button class="btn sm danger" type="button" :disabled="deleting" data-confirm @click="deleteProfile">Delete my profile</button>
+            <button class="btn sm ghost" type="button" :disabled="deleting" @click="confirmDelete = false">Keep it</button>
+          </div>
+        </div>
+      </template>
+      <button v-else class="btn sm ghost danger" type="button" data-delete-profile @click="confirmDelete = true">Delete my profile…</button>
+      <p v-if="deleteError" class="err" role="alert">{{ deleteError }}</p>
+    </section>
   </div>
 </template>
 
 <style scoped>
 .youp { padding: 22px 24px 40px; }
+.del { max-width: 1180px; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border-soft); }
+.del .confirm { max-width: 560px; padding: 12px 14px; border: 1px solid var(--red-a6); border-radius: 10px; background: var(--red-a2); }
+.del .confirm p { margin: 0 0 8px; color: var(--fg-2); line-height: 1.5; }
+.del .row { display: flex; flex-wrap: wrap; gap: 8px; }
+.youp .btn.danger { border-color: var(--red-a7); color: var(--red-11); }
+.youp .btn.danger:hover { background: var(--red-a3); }
+.gone { margin-top: 12px; }
 .state { padding: 24px 0; color: var(--fg-muted); }
 .start { max-width: 560px; padding: 20px 0; }
 .start .btn { margin-top: 16px; }

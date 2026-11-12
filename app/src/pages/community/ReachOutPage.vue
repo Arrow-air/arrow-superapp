@@ -331,7 +331,7 @@ const afterOpen = computed(() => !!who.value && (showAfter.value || status.value
                   <button class="btn primary" type="button" :disabled="!text.trim()" data-copy @click="copy"><Icon :name="copied ? 'check-circle' : 'file'" :size="14" />{{ copied ? 'Copied' : 'Copy' }}</button>
                   <a v-if="dm" class="btn" :href="dm" target="_blank" rel="noopener" data-open-discord><Icon name="discord" :size="14" />Open in Discord</a>
                   <a v-if="mailto" class="btn" :href="mailto" data-open-mail><Icon name="mail" :size="14" />Open in your email</a>
-                  <span v-if="!dm && who.discord" class="faint small" data-no-discord-id>No Discord id for @{{ who.discord }} yet: find them in Arrow's Discord.</span>
+                  <span v-if="!dm && (who.discord || who.profile?.discord_said)" class="faint small" data-no-discord-id>No Discord id for @{{ who.discord || who.profile?.discord_said }}<template v-if="!who.discord"> (said, not checked)</template> yet: find them in Arrow's Discord.</span>
                 </div>
               </template>
               <p v-else class="later" data-later>

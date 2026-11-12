@@ -72,7 +72,7 @@ export function blankDraft(): JoinDraft {
   return {
     v: 1, userId: null, step: 'signin', edit: false, updatedAt: new Date().toISOString(),
     wants_to_build: '', lanes: [], can: [], learn: [], experience: '', story: '',
-    city: '', country: '', mapAt: 'city', mapOn: true, tools: [], build: [], buildNotNow: false, travel: '',
+    city: '', country: '', mapAt: 'city', mapOn: false, tools: [], build: [], buildNotNow: false, travel: '',
     hours: '', when: [], tz: browserTz(), wants: [], never: '',
     discord: '', x: '', linkedin: '', github: '', work: [''], heard_from: '',
     name: '', blurb: '', map_disciplines: [], mapPicked: false, call_ok: false, call_windows: [],
@@ -191,13 +191,14 @@ export function fieldsUpTo(step: StepId, d: JoinDraft, steps: StepId[]): Profile
 /** The card's disciplines: their pick, else the first three they can do. */
 export const mapDisciplines = (d: JoinDraft) => (d.mapPicked ? d.map_disciplines : d.can).filter((x) => d.can.includes(x) || d.learn.includes(x)).slice(0, 3);
 
-/** Their public card as the map would show it. */
-export function cardOf(d: JoinDraft, extra: { github?: string | null; joined?: string } = {}): Card {
+/** Their public card as the map would show it: a GitHub or Discord handle only
+ * when their sign-in proved it, never the one they typed. */
+export function cardOf(d: JoinDraft, extra: { github?: string | null; discord?: string | null; joined?: string } = {}): Card {
   const map = mapOf(d);
   return {
     id: 'preview', name: d.name.trim() || 'Your name', city: map === 'city' ? d.city.trim() : null, country: map !== 'off' ? d.country.trim() || null : null,
     lat: null, lng: null, tz: map !== 'off' ? d.tz : null, disciplines: mapDisciplines(d), blurb: d.blurb.trim() || null,
-    discord: d.discord.trim().replace(/^@/, '') || null, github: extra.github ?? null, joined: extra.joined ?? new Date().toISOString().slice(0, 7),
+    discord: extra.discord ?? null, github: extra.github ?? null, joined: extra.joined ?? new Date().toISOString().slice(0, 7),
   };
 }
 
@@ -281,7 +282,7 @@ export function draftFrom(me: Person, base = blankDraft()): JoinDraft {
     mapAt: me.map === 'country' ? 'country' : 'city', mapOn: me.map ? me.map !== 'off' : base.mapOn,
     tools: pr?.tools ?? [], build: pr?.build ?? [], buildNotNow: !!pr?.finished_at && !(pr?.build ?? []).length, travel: pr?.travel ?? '',
     hours: pr?.hours ?? '', when: splitList(pr?.availability, WHEN), tz: me.tz ?? base.tz, wants: pr?.wants ?? [], never: pr?.never ?? '',
-    discord: me.discord ?? '', x: handleFrom(take('X'), /^https:\/\/(?:x|twitter)\.com\/([A-Za-z0-9_]+)\/?$/), linkedin: take('LinkedIn'),
+    discord: pr?.discord_said ?? me.discord ?? '', x: handleFrom(take('X'), /^https:\/\/(?:x|twitter)\.com\/([A-Za-z0-9_]+)\/?$/), linkedin: take('LinkedIn'),
     github: handleFrom(take('GitHub'), /^https:\/\/github\.com\/([A-Za-z0-9-]+)\/?$/), work: work.length ? work : [''],
     heard_from: pr?.heard_from ?? '',
     // 'You' is the demo's stand-in until they give a name.

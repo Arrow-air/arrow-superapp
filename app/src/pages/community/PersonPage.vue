@@ -5,11 +5,13 @@
 // also get the team panel. Someone the team added who hasn't joined gets the
 // "No account yet" banner and an empty Said.
 // What renders is what the API returned for this viewer: signed out, the
-// public card; members, the profile; the team, everything. A change of
+// public card; signed in, the profile (place at the map's precision); the
+// team, everything. A Discord handle someone typed shows as "said, not
+// checked"; only one a sign-in proved (discord_id) is shown as theirs. A change of
 // viewer clears the page before it loads again, so nothing from one level
 // stays on screen for another.
 import { computed, onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import Icon from '../../frame/Icon.vue';
 import DisciplineChip from '../../modules/registry/DisciplineChip.vue';
 import PersonAvatar from '../../modules/registry/PersonAvatar.vue';
@@ -24,6 +26,7 @@ import {
   BUILD_OPTIONS, DEMO_ME, LANES, TOOLS, WANTS, loadCards, loadPerson, type Card, type PersonDetail,
 } from '../../lib/registry';
 import { remote } from '../../lib/backend';
+import { SAMPLE_LABEL } from '../../data/registry-sample';
 import { session } from '../../lib/session';
 import { state as threadState, liveComments } from '../../modules/threads/store';
 import { answers, loadAnswers } from '../../modules/guide/store';
@@ -33,6 +36,7 @@ import '../../modules/registry/registry.css';
 import '../../modules/registry/community.css';
 
 const route = useRoute();
+const router = useRouter();
 const id = computed(() => String(route.params.person));
 const from = computed(() => (typeof route.query.from === 'string' ? findView(route.query.from, viewer.value) : null));
 
@@ -69,6 +73,11 @@ async function load() {
 async function changed() {
   await load();
   void loadCommunity(true);
+}
+/** A lead deleted this record: back to the list. */
+async function deleted() {
+  void loadCommunity(true);
+  await router.push('/community/people');
 }
 onMounted(() => {
   void load();
@@ -115,6 +124,10 @@ const linksBy = computed(() => {
   if (x.email) return 'the email on this record, once they confirm it';
   return '';
 });
+/** The Discord handle they typed themselves, when no sign-in proved one. */
+const said = computed(() => (p.value && !p.value.discord ? p.value.profile?.discord_said ?? '' : ''));
+/** For the team: a handle on the record nobody resolved to an account. */
+const discordUnchecked = computed(() => !!p.value?.discord && p.value.discord_id === null);
 /** A handle the team couldn't turn into an id links nothing by itself. */
 const unchecked = computed(() => {
   const x = p.value;
@@ -159,7 +172,7 @@ const earned = computed<Entry[]>(() => {
 
     <p v-if="phase === 'loading'" class="state" role="status">Loading…</p>
     <div v-else-if="phase === 'missing'" class="state rg" data-missing>
-      <p v-if="viewer === 'public'">This person isn't on Arrow's public map. Members see everyone with an account; sign in to see their profile.</p>
+      <p v-if="viewer === 'public'">This person isn't on Arrow's public map. Anyone signed in to Arrow sees everyone who finished a profile; sign in to see theirs.</p>
       <p v-else>Nobody here by that link. They may have been merged with another record.</p>
       <div class="row">
         <RouterLink class="btn" to="/community/people">All people</RouterLink>
@@ -174,7 +187,7 @@ const earned = computed<Entry[]>(() => {
     <!-- Signed out: the public card, and nothing more. -->
     <div v-else-if="card" class="public rg" data-public>
       <ProfileCard :card="card" />
-      <div class="callout indigo"><Icon name="people" :size="16" /><div><b>This is {{ first }}'s public card.</b> Members of Arrow see their full profile: what they want to build, their story, links and tools.
+      <div class="callout indigo"><Icon name="people" :size="16" /><div><b>This is {{ first }}'s public card.</b> Anyone signed in to Arrow sees more of their profile: what they want to build, their story, links, tools and time.
         <div class="row"><RouterLink class="btn sm primary" :to="{ path: '/join', query: { ref: 'community' } }">Join Arrow</RouterLink><button v-if="remote" class="btn sm" type="button" @click="session.signInOpen = true">Sign in</button></div></div></div>
     </div>
 
@@ -187,11 +200,13 @@ const earned = computed<Entry[]>(() => {
               <h1 data-name>{{ p.name }}</h1>
               <div class="pills">
                 <span v-if="added" class="pill plum">No account</span>
+                <span v-if="!remote && p.id !== DEMO_ME" class="pill slate" data-sample-label>{{ SAMPLE_LABEL }}</span>
                 <StatusPill v-if="showTeam && intro(p)" :status="intro(p)!.status" />
               </div>
             </div>
             <div class="meta">
               <span v-if="p.discord"><Icon name="discord" :size="13" />@{{ p.discord }}</span>
+              <span v-else-if="said" data-said-handle><Icon name="discord" :size="13" />@{{ said }} <span class="faint">(said, not checked)</span></span>
               <span v-if="p.github"><Icon name="github" :size="13" />{{ p.github }}</span>
               <span><Icon name="pin" :size="13" />{{ place || 'place unknown' }}<template v-if="p.country && !p.city"> <span class="faint">(country only)</span></template></span>
               <span v-if="clock"><Icon name="clock" :size="13" />{{ clock }}</span>
@@ -259,17 +274,23 @@ const earned = computed<Entry[]>(() => {
             <a class="grow link" :href="`https://github.com/${encodeURIComponent(p.github)}`" target="_blank" rel="noopener">{{ p.github }}</a>
             <span v-if="added" class="faint small">added by the team</span>
           </div>
-          <div v-if="p.discord" class="linkrow">
+          <div v-if="p.discord" class="linkrow" data-discord>
             <span class="src"><Icon name="discord" :size="12" /> Discord</span>
             <span class="grow">@{{ p.discord }}</span>
-            <span v-if="added" class="faint small">added by the team</span>
+            <span v-if="added" class="faint small">added by the team{{ discordUnchecked ? ', not checked' : '' }}</span>
+            <span v-else-if="discordUnchecked" class="faint small">not checked</span>
+          </div>
+          <div v-else-if="said" class="linkrow" data-discord-said>
+            <span class="src"><Icon name="discord" :size="12" /> Discord</span>
+            <span class="grow">@{{ said }}</span>
+            <span class="faint small">said, not checked</span>
           </div>
           <div v-if="p.email" class="linkrow" data-email>
             <span class="src"><Icon name="mail" :size="12" /> Email</span>
             <span class="grow">{{ p.email }} <span class="teamtag"><Icon name="lock" :size="10" />team only</span></span>
             <span v-if="added" class="faint small">not confirmed by {{ first }} yet</span>
           </div>
-          <p v-if="!(pr?.links?.length) && !p.github && !p.discord && !p.email" class="muted">Nothing linked yet.</p>
+          <p v-if="!(pr?.links?.length) && !p.github && !p.discord && !said && !p.email" class="muted">Nothing linked yet.</p>
         </section>
 
         <section class="layer" data-earned>
@@ -281,7 +302,7 @@ const earned = computed<Entry[]>(() => {
         </section>
       </div>
 
-      <TeamPanel v-if="showTeam" :person="p" @changed="changed" />
+      <TeamPanel v-if="showTeam" :person="p" @changed="changed" @deleted="deleted" />
     </div>
   </div>
 </template>

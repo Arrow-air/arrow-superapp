@@ -22,6 +22,7 @@ import {
 import { localTime } from '../../modules/registry/taxonomy';
 import { TOOLS, type Person, type Tool } from '../../lib/registry';
 import { remote } from '../../lib/backend';
+import { SAMPLE_LABEL } from '../../data/registry-sample';
 import { session } from '../../lib/session';
 import '../../modules/registry/registry.css';
 import '../../modules/registry/community.css';
@@ -74,10 +75,10 @@ const clock = (tz: string | null) => [localTime(tz), fromYou(tz)].filter(Boolean
 
     <div class="head">
       <div>
-        <h1>People</h1>
-        <p v-if="v === 'public'" class="lede">People who chose to be on Arrow's contributor map, at the precision they chose. Sign in to see members' full profiles: what they want to build, their stories, links and tools.</p>
-        <p v-else-if="v === 'member'" class="lede">Everyone in Arrow's registry with an account: what they want to build, what they can do, and the tools they have.</p>
-        <p v-else class="lede">Everyone who filled in the registry, and people the team added before they signed up. Members see profiles; notes, call status, owners and team-added people are for the core team.</p>
+        <h1>People <span v-if="!remote" class="pill slate sample" data-sample-label>{{ SAMPLE_LABEL }}</span></h1>
+        <p v-if="v === 'public'" class="lede">People who chose to be on Arrow's contributor map, at the precision they chose. Anyone signed in to Arrow sees more of each profile: what they want to build, their stories, links, tools and time.</p>
+        <p v-else-if="v === 'member'" class="lede">Everyone who finished a profile: what they want to build, what they can do, and the tools they have. Where they are shows only as precisely as each chose for the map.</p>
+        <p v-else class="lede">Everyone who filled in the registry, and people the team added before they signed up. Anyone signed in sees finished profiles, with place only as precisely as each chose for the map; notes, call status, owners, what people never want to be asked, and team-added people are for the core team.</p>
       </div>
       <div v-if="onTeam" class="rg actions">
         <RouterLink class="btn" to="/community/people/add" data-add-person><Icon name="plus" :size="14" />Add a person</RouterLink>

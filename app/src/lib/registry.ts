@@ -48,14 +48,21 @@ export const WANTS: Record<Want, string> = {
   learning: 'Learning', paid: 'Paid work', mission: 'The mission', job: 'A job', business: 'Starting a business', own: 'Build my own',
 };
 export const BLURB_MAX = 140;
-/** The database's rule for blurbs: plain words, no links. */
-export const blurbHasLink = (t: string) =>
-  /(https?:\/\/|www\.|discord\.gg|\b[a-z0-9-]+\.(com|net|org|io|co|gg|me|ly|xyz|app|dev|ai|link|to|so|sh)(\/|\b))/i.test(t);
+/** The database's rule for blurbs (sa_registry_has_url): plain words, no links,
+ * spelled-out or spaced dots, full-width dots, or anything.tld/path. */
+export const blurbHasLink = (t: string) => new RegExp([
+  'https?:', 'www\\.', 'discord\\.gg', 't\\.me/',
+  '[a-z0-9-]\\s*[。．｡]\\s*[a-z]{2,}',
+  '[a-z0-9-]\\s*(\\(dot\\)|\\[dot\\]|\\s\\.\\s|\\sdot\\s)\\s*[a-z]{2,}',
+  '[a-z0-9-]\\.[a-z]{2,}/\\S',
+  '\\b[a-z0-9-]+\\.(com|net|org|io|co|gg|me|ly|xyz|app|dev|ai|link|to|so|sh|ru|cc|tk|info|biz|top|site|online|shop|club|live|eu|uk|de|in|us|ca|au|fr|nl|pw|cn|vip|fun|lol|art)(/|\\b)',
+].join('|'), 'i').test(t);
 
 // Shapes -------------------------------------------------------------------
 export interface Link { label?: string; url: string }
 
-/** The map's public card. City, lat and lng only at city precision. */
+/** The map's public card. City, lat and lng only at city precision; a GitHub
+ * or Discord handle only when a sign-in (or the team's lookup) proved it. */
 export interface Card {
   id: string;
   name: string;
@@ -85,13 +92,16 @@ export interface Profile {
   hours: string | null;
   availability: string | null;
   wants: Want[];
-  never: string | null;
+  /** What they never want to be asked: only to the person and the team. */
+  never?: string | null;
   links: Link[];
   blurb: string | null;
   map_disciplines: string[];
   agent_drafted: boolean;
   updated_at: string;
   finished_at: string | null;
+  /** The Discord handle they typed: "said, not checked", never on the card. */
+  discord_said?: string | null;
   /** Only to the person and the team. */
   call_ok?: boolean;
   call_windows?: string | null;
@@ -109,8 +119,10 @@ export interface Outreach {
   history?: { at: string; by: string; status?: string; owner?: string; next_step?: string; intro_queue?: boolean; note?: string }[];
 }
 
-/** A person as members see them; the optional parts are for themselves (map, ref)
- * and for core and leads (the rest). */
+/** A person as members see them (place at the precision they chose for the map);
+ * the optional parts are for themselves (map, ref, their whole place) and for
+ * core and leads (the rest). For the team, discord and github are what the
+ * record holds, resolved or not: github_id and discord_id say which. */
 export interface Person extends Card {
   has_account: boolean;
   profile: Profile | null;
@@ -126,11 +138,17 @@ export interface Person extends Card {
   github_id?: number | null;
   discord_id?: string | null;
   outreach?: Outreach[];
-  guess?: { disciplines: string[]; tools: Tool[]; updated_at: string } | null;
+  /** The team's guesses; the place is what the team typed before the record linked. */
+  guess?: Guess | null;
   note_count?: number;
   /** Notes of kind call. */
   call_notes?: number;
   open_matches?: number;
+}
+
+export interface Guess {
+  disciplines: string[]; tools: Tool[]; updated_at: string;
+  city?: string | null; country?: string | null; lat?: number | null; lng?: number | null; tz?: string | null;
 }
 
 export interface Note {
@@ -150,6 +168,17 @@ export interface Match {
   user_id: string;
   account_person_id: string | null;
   account_name: string | null;
+  /** What the lead judges by: the account as its sign-in proved it... */
+  account_email?: string | null;
+  account_created_at?: string | null;
+  account_github?: string | null;
+  account_discord?: string | null;
+  /** ...and what the record holds, and whether each handle was resolved to an id. */
+  record_email?: string | null;
+  record_github?: string | null;
+  record_github_resolved?: boolean;
+  record_discord?: string | null;
+  record_discord_resolved?: boolean;
   reason: string;
   created_at: string;
 }
@@ -160,7 +189,9 @@ export interface PersonDetail extends Person {
   matches?: Match[];
 }
 
-export interface ClaimResult { person_id: string | null; linked: boolean; how: 'github' | 'discord' | 'email' | null; possible: number }
+/** person_id is the account's record, or null (no record yet, or only a weak
+ * match, which files a card for a lead and says nothing about it). */
+export interface ClaimResult { person_id: string | null; linked: boolean; how: 'github' | 'discord' | 'email' | null }
 
 /** What sa_save_profile takes: only the fields being saved. */
 export type ProfileFields = Partial<{
@@ -247,7 +278,7 @@ export async function loadCards(): Promise<Card[]> {
   if (!remote) return demoCards();
   return (await rpc<Card[]>('sa_registry_cards')) ?? [];
 }
-/** Members: people with accounts. Core and leads: everyone, with what the team knows. */
+/** Members: people who finished a profile, and themselves. Core and leads: everyone, with what the team knows. */
 export async function loadPeople(): Promise<Person[]> {
   if (!remote) return demoPeople();
   return (await rpc<Person[]>('sa_registry_people')) ?? [];
@@ -318,6 +349,24 @@ export async function linkPerson(match: string, same: boolean): Promise<string |
   if (!remote) return demoLink(match, same);
   return rpc<string | null>('sa_link_person', { p_match: match, p_same: same });
 }
+/** Leads: undoes a link. The account gets its own row back with the profile it
+ * wrote; the team's record is unclaimed again and keeps its notes. */
+export async function unlinkPerson(person: string): Promise<string> {
+  if (!remote) return demoUnlink(person);
+  return rpc<string>('sa_unlink_person', { p_person: person });
+}
+/** Leads: deletes a record with its notes, outreach, guesses and cards. */
+export async function deletePerson(person: string): Promise<void> {
+  if (!remote) return demoDeletePerson(person);
+  await rpc('sa_delete_person', { p_person: person });
+}
+/** The signed-in person deletes their profile. The account stays. A row they
+ * made themselves goes with everything on it; a record the team added goes
+ * back to unclaimed and keeps the team's notes. */
+export async function deleteMyProfile(): Promise<void> {
+  if (!remote) return demoDeleteMine();
+  await rpc('sa_delete_my_profile');
+}
 
 // Demo -----------------------------------------------------------------------
 // The database's tables, in this browser, seeded from the mockups. The
@@ -333,9 +382,9 @@ interface DemoState {
   profiles: Record<string, Profile & { call_ok: boolean; call_windows: string | null; heard_from: string | null }>;
   notes: (Note & { person_id: string })[];
   outreach: (Outreach & { person_id: string })[];
-  guesses: Record<string, { disciplines: string[]; tools: Tool[]; updated_at: string }>;
+  guesses: Record<string, Guess>;
   skills: (SkillCheck & { person_id: string })[];
-  matches: (Match & { person_id: string; settled: boolean })[];
+  matches: (Match & { person_id: string; settled: boolean; outcome?: 'same' | 'different' | 'superseded' })[];
 }
 
 const SIGNED_OUT = 'superapp:registry.signed-out';
@@ -351,7 +400,7 @@ export function setDemoSignedOut(on: boolean) {
   try { if (on) sessionStorage.setItem(SIGNED_OUT, '1'); else sessionStorage.removeItem(SIGNED_OUT); } catch { /* storage unavailable */ }
 }
 export const DEMO_ME = 'me';
-const DEMO_KEY = 'superapp:registry.v2';
+const DEMO_KEY = 'superapp:registry.v3';
 const iso = (d: string) => new Date(`${d}T15:00:00Z`).toISOString();
 const newId = () => `r${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 const isTeam = () => registryDemo.role === 'core' || registryDemo.role === 'lead';
@@ -361,9 +410,11 @@ function seed(): DemoState {
   const s: DemoState = { people: [], profiles: {}, notes: [], outreach: [], guesses: {}, skills: [], matches: [] };
   for (const p of SAMPLE_PEOPLE) {
     const created = iso(p.joined ?? p.added!.on);
+    // Someone who joined typed their Discord handle (Discord sign-in isn't on
+    // yet): it's what they said. The team's typed one stays on the record.
     s.people.push({
       id: p.id, user_id: p.joined ? `u-${p.id}` : null, display_name: p.name, github_login: p.github, github_id: p.github ? demoGitHubId(p.github) : null,
-      discord_username: p.discord, discord_id: null, email: p.email ?? null,
+      discord_username: p.joined ? null : p.discord, discord_id: null, email: p.email ?? null,
       city: p.city, country: p.country, lat: p.lat, lng: p.lng, tz: p.tz, map: p.map, source: p.source, ref: p.ref,
       added_by: p.added?.by ?? null, created_at: created, claimed_at: p.joined ? created : null,
     });
@@ -372,7 +423,7 @@ function seed(): DemoState {
         wants_to_build: p.wantsToBuild ?? null, lanes: p.lanes ?? [], can: p.can, learn: p.learn, experience: null, story: p.story ?? null,
         tools: p.tools, build: p.build, travel: p.travel ?? null, hours: p.hours ?? null, availability: p.when ?? null, wants: p.wants,
         never: null, links: [], blurb: p.blurb ?? null, map_disciplines: p.can.slice(0, 3), agent_drafted: false,
-        updated_at: created, finished_at: created, call_ok: p.callOk, call_windows: null, heard_from: p.source,
+        updated_at: created, finished_at: created, discord_said: p.discord, call_ok: p.callOk, call_windows: null, heard_from: p.source,
       };
     }
     s.outreach.push({
@@ -394,7 +445,8 @@ function seed(): DemoState {
   s.people.push({ id: 'rosa-gh', user_id: 'u-rosa-gh', display_name: 'Rosa Delgado', github_login: 'rdelgado-waco', github_id: demoGitHubId('rdelgado-waco'),
     discord_username: null, discord_id: null, email: null,
     city: null, country: null, lat: null, lng: null, tz: null, map: 'off', source: 'Signed up', ref: null, added_by: null, created_at: on, claimed_at: on });
-  s.matches.push({ id: 'm-rosa', person_id: 'rosa', user_id: 'u-rosa-gh', account_person_id: 'rosa-gh', account_name: 'Rosa Delgado', reason: 'same name', created_at: on, settled: false });
+  s.matches.push({ id: 'm-rosa', person_id: 'rosa', user_id: 'u-rosa-gh', account_person_id: 'rosa-gh', account_name: 'Rosa Delgado',
+    account_email: 'rdelgado.waco@example.com', account_created_at: on, account_github: 'rdelgado-waco', reason: 'same name', created_at: on, settled: false });
   return s;
 }
 let demo: DemoState | null = null;
@@ -419,31 +471,35 @@ export function demoGitHubId(login: string) {
 }
 
 const round2 = (n: number | null) => (n == null ? null : Math.round(n * 100) / 100);
+// As the database's views: sa_reg_card, sa_reg_member_view, sa_reg_self_view, sa_reg_team_view.
 function card(r: Row): Card {
   const pr = db().profiles[r.id];
   const shown = r.map === 'city' || r.map === 'country';
   return {
     id: r.id, name: r.display_name, city: r.map === 'city' ? r.city : null, country: shown ? r.country : null,
     lat: r.map === 'city' ? round2(r.lat) : null, lng: r.map === 'city' ? round2(r.lng) : null, tz: shown ? r.tz : null,
-    disciplines: pr?.map_disciplines ?? [], blurb: pr?.blurb ?? null, discord: r.discord_username, github: r.github_login,
+    disciplines: pr?.map_disciplines ?? [], blurb: pr?.blurb ?? null,
+    discord: r.discord_id ? r.discord_username : null, github: r.github_id ? r.github_login : null,
     joined: (r.claimed_at ?? r.created_at).slice(0, 7),
   };
 }
+/** Members: the card's place (at the map's precision), and the profile without "never". */
 function memberView(r: Row): Person {
   const pr = db().profiles[r.id];
   let profile: Profile | null = null;
-  if (pr) { const { call_ok: _c, call_windows: _w, heard_from: _h, ...rest } = pr; profile = rest; }
-  return { ...card(r), city: r.city, country: r.country, tz: r.tz, has_account: r.user_id != null, profile };
+  if (pr) { const { call_ok: _c, call_windows: _w, heard_from: _h, never: _n, ...rest } = pr; profile = { discord_said: null, ...rest }; }
+  return { ...card(r), has_account: r.user_id != null, profile };
 }
 function selfView(r: Row): Person {
   const pr = db().profiles[r.id];
-  return { ...memberView(r), lat: r.lat, lng: r.lng, map: r.map, ref: r.ref, claimed_at: r.claimed_at, profile: pr ? { ...pr } : null };
+  return { ...memberView(r), city: r.city, country: r.country, tz: r.tz, lat: r.lat, lng: r.lng, map: r.map, ref: r.ref, claimed_at: r.claimed_at,
+    profile: pr ? { discord_said: null, ...pr } : null };
 }
 function teamView(r: Row): Person {
   const s = db();
   return {
     ...selfView(r), email: r.email, source: r.source, added_by: r.added_by, user_id: r.user_id, created_at: r.created_at,
-    github_id: r.github_id, discord_id: r.discord_id,
+    github: r.github_login, discord: r.discord_username, github_id: r.github_id, discord_id: r.discord_id,
     outreach: s.outreach.filter((o) => o.person_id === r.id).map(({ person_id: _p, history: _h, ...o }) => o),
     guess: s.guesses[r.id] ?? null,
     note_count: s.notes.filter((n) => n.person_id === r.id).length,
@@ -459,21 +515,23 @@ const row = (id: string) => db().people.find((p) => p.id === id) ?? demoFail('No
 function demoCards(): Card[] {
   return db().people.filter((r) => r.user_id && r.map !== 'off' && db().profiles[r.id]?.finished_at).map(card);
 }
+/** Members see people who finished a profile, and themselves. */
+const memberSees = (r: Row) => !!r.user_id && (r.user_id === DEMO_ME || !!db().profiles[r.id]?.finished_at);
 function demoPeople(): Person[] {
   requireMember();
-  return db().people.filter((r) => isTeam() || r.user_id).map(viewFor);
+  return db().people.filter((r) => isTeam() || memberSees(r)).map(viewFor);
 }
 function demoPerson(id: string): PersonDetail {
   requireMember();
   const r = row(id);
-  if (!isTeam()) { if (!r.user_id) demoFail('No such person'); return viewFor(r); }
+  if (!isTeam()) { if (!memberSees(r)) demoFail('No such person'); return viewFor(r); }
   const s = db();
   return {
     ...teamView(r),
     notes: s.notes.filter((n) => n.person_id === id).sort((a, b) => b.created_at.localeCompare(a.created_at)).map(({ person_id: _p, ...n }) => n),
     outreach: s.outreach.filter((o) => o.person_id === id).map(({ person_id: _p, ...o }) => o),
     skill_checks: s.skills.filter((k) => k.person_id === id).map(({ person_id: _p, ...k }) => k),
-    matches: s.matches.filter((m) => m.person_id === id && !m.settled).map(({ person_id: _p, settled: _s, ...m }) => m),
+    matches: s.matches.filter((m) => m.person_id === id && !m.settled).map(matchView),
   };
 }
 function demoMine(): Person | null {
@@ -495,11 +553,11 @@ function demoSave(f: ProfileFields, finish: boolean): Person {
   }
   const { ref: _ref, display_name, discord, city, country, lat, lng, tz, map, ...rest } = f;
   if (display_name !== undefined) r.display_name = display_name.trim() || demoFail('Your name can\'t be empty');
-  if (discord !== undefined) r.discord_username = discord.replace(/^@/, '').trim() || null;
   if (city !== undefined) r.city = city;
   if (country !== undefined) r.country = country;
-  if (lat !== undefined) r.lat = lat;
-  if (lng !== undefined) r.lng = lng;
+  // A new city or country without coordinates clears the old ones.
+  if (lat !== undefined) r.lat = lat; else if (city !== undefined || country !== undefined) r.lat = null;
+  if (lng !== undefined) r.lng = lng; else if (city !== undefined || country !== undefined) r.lng = null;
   if (tz !== undefined) r.tz = tz;
   if (map !== undefined) r.map = map;
   const pr = s.profiles[r.id] ??= {
@@ -507,6 +565,7 @@ function demoSave(f: ProfileFields, finish: boolean): Person {
     wants: [], never: null, links: [], blurb: null, map_disciplines: [], agent_drafted: false, updated_at: now, finished_at: null, call_ok: false, call_windows: null, heard_from: null,
   };
   Object.assign(pr, rest, { updated_at: now });
+  if (discord !== undefined) pr.discord_said = discord.replace(/^@/, '').trim() || null;
   if (finish) {
     if (!pr.wants_to_build?.trim()) demoFail('Tell us what you want to build first');
     pr.finished_at ??= now;
@@ -606,25 +665,54 @@ function demoOutreach(person: string, c: OutreachChange): void {
   (o.history ??= []).push({ at: now, by: demoTeamMe(), status: c.status, owner: c.unassign ? 'none' : c.owner, next_step: c.nextStep, intro_queue: c.introQueue, note: c.note });
   persist();
 }
+/** A card with its evidence, as sa_reg_match: the account's from its own row, the record's as it stands. */
+function matchView(m: DemoState['matches'][number]): Match {
+  const s = db();
+  const { settled: _s, outcome: _o, ...rest } = m;
+  const rec = s.people.find((p) => p.id === m.person_id);
+  const acct = s.people.find((p) => p.user_id === m.user_id);
+  return {
+    ...rest, person_name: rec?.display_name,
+    account_github: m.account_github ?? (acct?.github_id ? acct.github_login : null), account_discord: m.account_discord ?? (acct?.discord_id ? acct.discord_username : null),
+    record_email: rec?.email ?? null, record_github: rec?.github_login ?? null, record_github_resolved: rec?.github_id != null,
+    record_discord: rec?.discord_username ?? null, record_discord_resolved: rec?.discord_id != null,
+  };
+}
 function demoMatches(): Match[] {
   requireTeam();
-  const s = db();
-  return s.matches.filter((m) => !m.settled).map(({ settled: _s, ...m }) => ({ ...m, person_name: s.people.find((p) => p.id === m.person_id)?.display_name }));
+  return db().matches.filter((m) => !m.settled).map(matchView);
 }
+const requireLead = () => { requireMember(); if (registryDemo.role !== 'lead') demoFail('Only a lead can do that'); };
 function demoLink(match: string, same: boolean): string | null {
-  requireMember();
-  if (registryDemo.role !== 'lead') demoFail('Only a lead can do that');
+  requireLead();
   const s = db();
   const m = s.matches.find((x) => x.id === match) ?? demoFail('No such match');
   if (m.settled) demoFail('That was settled already');
-  if (!same) { m.settled = true; persist(); return m.account_person_id; }
+  if (!same) { m.settled = true; m.outcome = 'different'; persist(); return m.account_person_id; }
   const rec = row(m.person_id);
   if (rec.user_id) demoFail('That record is already linked to an account');
-  // As sa_link_person: the account's own row folds into the team's record.
-  // What they said wins; the handles and place the team had stay as fallbacks.
+  // As sa_link_person: the account's own row folds into the team's record,
+  // unless the record holds a GitHub or Discord account it doesn't sign in with.
   const mine = s.people.find((p) => p.user_id === m.user_id);
   if (mine?.added_by) demoFail('That account is already linked to a record the team added');
+  if (rec.github_id != null && rec.github_id !== mine?.github_id) {
+    demoFail('This record holds a GitHub account that this account doesn\'t sign in with. If it\'s them, they sign in with that GitHub and it links by itself; if the record is wrong, fix it first.');
+  }
+  if (rec.discord_id != null && rec.discord_id !== mine?.discord_id) {
+    demoFail('This record holds a Discord account that this account doesn\'t sign in with. If it\'s them, they sign in with that Discord and it links by itself; if the record is wrong, fix it first.');
+  }
   const said = !!(mine && s.profiles[mine.id]);
+  // The place the team typed moves to its guesses; what they said replaces it.
+  if (rec.city || rec.country || rec.lat != null || rec.tz) {
+    const g = s.guesses[rec.id] ??= { disciplines: [], tools: [], updated_at: '' };
+    Object.assign(g, { city: g.city ?? rec.city, country: g.country ?? rec.country, lat: g.lat ?? rec.lat, lng: g.lng ?? rec.lng, tz: g.tz ?? rec.tz, updated_at: new Date().toISOString() });
+  }
+  if (!rec.github_id) rec.github_login = mine?.github_id ? mine.github_login : null;
+  rec.github_id ??= mine?.github_id ?? null;
+  if (!rec.discord_id) rec.discord_username = mine?.discord_id ? mine.discord_username : null;
+  rec.discord_id ??= mine?.discord_id ?? null;
+  rec.city = mine?.city ?? null; rec.country = mine?.country ?? null; rec.lat = mine?.lat ?? null; rec.lng = mine?.lng ?? null; rec.tz = mine?.tz ?? null;
+  rec.map = mine?.map ?? 'off';
   if (mine) {
     if (said) { s.profiles[rec.id] = s.profiles[mine.id]!; delete s.profiles[mine.id]; }
     for (const n of s.notes) if (n.person_id === mine.id) n.person_id = rec.id;
@@ -634,14 +722,67 @@ function demoLink(match: string, same: boolean): string | null {
     for (const x of s.matches) if (x.account_person_id === mine.id) x.account_person_id = rec.id;
     s.people = s.people.filter((p) => p.id !== mine.id);
     if (said) rec.display_name = mine.display_name;
-    rec.github_login ??= mine.github_login;
-    rec.discord_username ??= mine.discord_username;
-    rec.city = mine.city ?? rec.city; rec.country = mine.country ?? rec.country; rec.tz = mine.tz ?? rec.tz;
-    rec.lat = mine.lat ?? rec.lat; rec.lng = mine.lng ?? rec.lng; rec.map = mine.map; rec.ref = mine.ref ?? rec.ref;
+    rec.ref = mine.ref ?? rec.ref;
   }
   rec.user_id = m.user_id;
   rec.claimed_at = new Date().toISOString();
-  for (const x of s.matches) if (x.person_id === rec.id) x.settled = true;
+  m.settled = true; m.outcome = 'same';
+  for (const x of s.matches) if (!x.settled && (x.person_id === rec.id || x.user_id === m.user_id)) { x.settled = true; x.outcome = 'superseded'; }
   persist();
   return rec.id;
+}
+/** As sa_people_account_gone: an account leaves a row. Its own row goes; a
+ * record the team added loses the profile and place and is unclaimed. */
+function accountGone(r: Row) {
+  const s = db();
+  delete s.profiles[r.id];
+  if (!r.added_by) { dropPerson(r.id); return; }
+  Object.assign(r, { user_id: null, claimed_at: null, map: 'off', city: null, country: null, lat: null, lng: null, tz: null, ref: null });
+}
+function dropPerson(id: string) {
+  const s = db();
+  s.people = s.people.filter((p) => p.id !== id);
+  delete s.profiles[id];
+  delete s.guesses[id];
+  s.notes = s.notes.filter((n) => n.person_id !== id);
+  s.outreach = s.outreach.filter((o) => o.person_id !== id);
+  s.skills = s.skills.filter((k) => k.person_id !== id);
+  s.matches = s.matches.filter((m) => m.person_id !== id);
+  for (const m of s.matches) if (m.account_person_id === id) m.account_person_id = null;
+}
+function demoUnlink(person: string): string {
+  requireLead();
+  const s = db();
+  const rec = row(person);
+  if (!rec.user_id) demoFail('That record isn\'t linked to an account');
+  if (!rec.added_by) demoFail('That is their own record, not one the team added');
+  const acct = rec.user_id!, now = new Date().toISOString(), id = newId();
+  const pr = s.profiles[rec.id];
+  s.people.push({ id, user_id: acct, display_name: rec.display_name, github_login: null, github_id: null, discord_username: null, discord_id: null, email: null,
+    city: rec.city, country: rec.country, lat: rec.lat, lng: rec.lng, tz: rec.tz, map: rec.map, source: 'Signed up', ref: rec.ref, added_by: null, created_at: now, claimed_at: now });
+  if (pr) { s.profiles[id] = pr; delete s.profiles[rec.id]; }
+  // The GitHub account its sign-in proves goes back with it.
+  const m = s.matches.find((x) => x.person_id === rec.id && x.user_id === acct && x.outcome === 'same');
+  const mine = s.people.find((p) => p.id === id)!;
+  if (m?.account_github && rec.github_login === m.account_github) {
+    Object.assign(mine, { github_login: rec.github_login, github_id: rec.github_id });
+    Object.assign(rec, { github_login: null, github_id: null });
+  }
+  accountGone(rec);
+  for (const m of s.matches) if (m.person_id === rec.id && m.user_id === acct && m.outcome === 'same') { m.outcome = 'different'; m.account_person_id = id; }
+  persist();
+  return id;
+}
+function demoDeletePerson(person: string): void {
+  requireLead();
+  row(person);
+  dropPerson(person);
+  persist();
+}
+function demoDeleteMine(): void {
+  if (registryDemo.signedOut) demoFail('Sign in first');
+  const r = db().people.find((p) => p.user_id === DEMO_ME);
+  if (!r) return;
+  accountGone(r);
+  persist();
 }

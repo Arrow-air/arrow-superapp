@@ -1,6 +1,11 @@
 // The registry's demo people: the invented sample from the onboarding mockups
 // (prototypes/registry-onboarding, PEOPLE and NOTES), in the database's shape.
-// Only the demo build reads this.
+// Sample people, not real: every name, place, handle and note here is made up
+// (the team's first names sign the notes). Only the demo build reads this, and
+// the demo's People pages say so with SAMPLE_LABEL.
+
+/** Shown wherever the demo lists these people. */
+export const SAMPLE_LABEL = 'Sample people, not real';
 import type { BuildOption, Lane, MapPrecision, NoteKind, OutreachStatus, Tool, Want } from '../lib/registry';
 
 export interface SamplePerson {

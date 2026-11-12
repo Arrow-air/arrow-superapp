@@ -59,3 +59,4 @@
   .cm { padding: 14px 12px 28px; }
   .cm .kv { grid-template-columns: 96px minmax(0, 1fr); }
 }
+.cm h1 .sample { margin-left: 8px; vertical-align: middle; font-size: 11px; font-weight: 500; }
