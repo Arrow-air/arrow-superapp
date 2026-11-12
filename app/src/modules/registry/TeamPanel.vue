@@ -135,7 +135,7 @@ const history = computed(() => {
     if (h.note?.startsWith('Added:')) parts.push(`added ${first.value}: ${h.note.slice(6).trim()}`);
     if (h.status) parts.push(`set the status to ${STATUS[h.status as OutreachStatus]?.[0] ?? h.status}`);
     if (h.owner) parts.push(h.owner === 'none' ? 'left it with nobody' : h.owner === h.by ? 'took it' : `gave it to ${teamName(h.owner)}`);
-    if (h.next_step !== undefined && h.next_step !== null) parts.push(h.next_step.trim() ? `next step: “${h.next_step.trim()}”` : 'cleared the next step');
+    if (h.next_step !== undefined && h.next_step !== null) parts.push(h.next_step.trim() ? `set the next step: “${h.next_step.trim()}”` : 'cleared the next step');
     if (h.intro_queue !== undefined && h.intro_queue !== null) parts.push(h.intro_queue ? 'put them in the intro-call queue' : 'took them out of the intro-call queue');
     if (h.note && !h.note.startsWith('Added:')) parts.push(`“${h.note}”`);
     if (!parts.length) parts.push('changed what they’re good for');
@@ -174,7 +174,7 @@ const history = computed(() => {
         </dd>
         <dt><label for="next-step">Next step</label></dt>
         <dd>
-          <input id="next-step" v-model="next" class="input" maxlength="300" placeholder="None yet" data-next-step @keydown.enter="nextDirty && saveNext()" />
+          <textarea id="next-step" v-model="next" class="input nextstep" rows="2" maxlength="300" placeholder="None yet" data-next-step @keydown.enter.exact.prevent="nextDirty && saveNext()"></textarea>
           <div v-if="nextDirty" class="row"><button class="btn sm primary" type="button" :disabled="!!busy" data-save-next @click="saveNext">Save</button><button class="btn sm ghost" type="button" @click="next = o?.next_step ?? ''">Cancel</button></div>
         </dd>
         <dt>Good for</dt>
@@ -292,6 +292,7 @@ const history = computed(() => {
 .input { min-height: 30px; padding: 5px 9px; }
 .tag .x { margin-left: 2px; padding: 0 2px; border: 0; background: none; color: var(--fg-faint); font: inherit; cursor: pointer; }
 .tag .x:hover { color: var(--fg); }
+.nextstep { resize: none; line-height: 1.45; }
 .addtag { display: flex; gap: 6px; margin-top: 6px; }
 .addtag .input { flex: 1; min-width: 0; }
 .teambtn { border-color: var(--amber-a7); color: var(--amber-11); }

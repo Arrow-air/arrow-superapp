@@ -233,6 +233,8 @@ const clock = (tz: string | null) => [localTime(tz), fromYou(tz)].filter(Boolean
   .list td, .list.team td:nth-child(5) { display: block; padding: 0; border: 0; }
   .list td.who { grid-column: 1 / -1; }
   .list td:last-child { text-align: left; }
+  .list tbody tr:hover td { background: none; }
+  .list tbody tr:hover { background: var(--slate-a2); }
   .list td[data-label]::before { content: attr(data-label); display: block; margin-bottom: 2px; color: var(--fg-faint); font-size: var(--text-sm); }
   .place, .time { white-space: normal; }
   .tools { max-width: none; }
