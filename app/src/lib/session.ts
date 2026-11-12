@@ -16,8 +16,9 @@ export const session = reactive({
   /** "thread|user" pairs: who declared they'd help build what. */
   builders: [] as string[],
   signInOpen: false,
-  /** 'forum' while the forum (dao.arrowair.com) is waiting on this sign-in. */
-  signInFor: '' as '' | 'forum',
+  /** 'forum' while the forum (dao.arrowair.com) is waiting on this sign-in;
+   * 'join' from the join wizard. */
+  signInFor: '' as '' | 'forum' | 'join',
   /** A reset link signed them in: they still have to choose a password. */
   newPassword: false,
   notice: '',

@@ -12,6 +12,9 @@ export const router = createRouter({
     { path: '/broken', component: () => import('./pages/Broken.vue') },
     // Where dao.arrowair.com sends people to sign in with their Arrow account.
     { path: '/forum/sign-in', component: () => import('./pages/ForumSignIn.vue') },
+    // The contributor registry: the join wizard (/join?ref=… is every way in), and Your Arrow.
+    { path: '/join', component: () => import('./pages/JoinPage.vue') },
+    { path: '/you', component: () => import('./pages/YouPage.vue') },
     {
       path: '/:project/:tab/:item?',
       component: () => import('./pages/ModuleHost.vue'),

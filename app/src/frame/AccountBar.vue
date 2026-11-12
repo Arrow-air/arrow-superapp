@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import Icon from './Icon.vue';
 import Menu from './Menu.vue';
 import WalletDrawer from './WalletDrawer.vue';
@@ -19,15 +20,19 @@ const quotes = computed(() =>
   (['USDC', 'ETH'] as Quote[]).map((q) => ({ id: q, label: q, hint: money(q) })),
 );
 const walletOpen = ref(false);
+// Your Arrow when signed in (the demo visitor always is); the join wizard otherwise.
+const route = useRoute();
+const dashboard = computed(() => (!remote || session.userId ? '/you' : '/join'));
+const onDashboard = computed(() => route.path === '/you' || route.path === '/join');
 </script>
 
 <template>
   <div class="account">
-    <button class="tbtn dash" type="button">
+    <RouterLink class="tbtn dash" :to="dashboard" :aria-current="onDashboard ? 'page' : undefined" aria-label="Contributor Dashboard">
       <Icon name="grid" :size="12" class="icon" />
       <span class="hide-md">Contributor Dashboard</span>
       <span class="show-md">Dashboard</span>
-    </button>
+    </RouterLink>
 
     <template v-if="remote">
       <button v-if="!session.member" class="tbtn signin" type="button" @click="session.signInOpen = true">Sign in</button>
@@ -84,7 +89,8 @@ const walletOpen = ref(false);
 
 <style scoped>
 .account { display: flex; align-items: center; gap: var(--space-2); }
-.dash { height: var(--control-height); padding-inline: 12px; border-radius: 10px; }
+.dash { height: var(--control-height); padding-inline: 12px; border-radius: 10px; text-decoration: none; }
+.dash[aria-current='page'] { background: var(--toolbar-active); color: var(--fg); }
 
 /* Balance: token badge, then amount and value on one line. */
 .balance { height: 28px; padding: 0 8px 0 4px; gap: 7px; }

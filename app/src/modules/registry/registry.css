@@ -1,0 +1,58 @@
+/* The registry's form pieces (join wizard, Your Arrow, and phase 1c's team
+   pages), after the onboarding mockups, in the app's tokens. Everything is
+   under .rg so nothing leaks into the rest of the app. */
+.rg .btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 30px; padding: 0 12px;
+  border: 1px solid var(--slate-a5); border-radius: 8px; background: none; color: var(--fg-2);
+  font: inherit; font-size: var(--text-base); font-weight: 500; text-decoration: none; white-space: nowrap; cursor: pointer;
+}
+.rg .btn:hover { color: var(--fg); border-color: var(--slate-a7); background: var(--slate-a2); }
+.rg .btn:focus-visible, .rg .pick:focus-visible, .rg .seg button:focus-visible, .rg .toggle:focus-visible, .rg .opt:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
+.rg .btn:disabled { opacity: 0.5; cursor: default; }
+.rg .btn.sm { height: 26px; padding: 0 9px; font-size: var(--text-sm); }
+.rg .btn.lg { height: 38px; padding: 0 18px; border-radius: 10px; font-size: var(--text-nav); }
+.rg .btn.primary { border-color: transparent; background: var(--indigo-9); color: #fff; }
+.rg .btn.primary:hover { background: var(--indigo-10); }
+.rg .btn.ghost { border-color: transparent; color: var(--fg-muted); }
+.rg .btn.ghost:hover { color: var(--fg); background: var(--slate-a3); }
+.rg .btn.discord { border-color: transparent; background: #5865f2; color: #fff; }
+.rg .btn svg { flex: none; }
+
+.rg .label { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; font-size: var(--text-sm); color: var(--fg-muted); }
+.rg .input {
+  display: block; width: 100%; min-height: 34px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--slate-a2); color: var(--fg); font: inherit; font-size: var(--text-base); outline: none;
+}
+.rg .input:focus { border-color: var(--indigo-8); box-shadow: 0 0 0 2px var(--indigo-a4); }
+.rg .input:disabled { color: var(--fg-muted); }
+.rg .input[aria-invalid='true'] { border-color: var(--red-8); }
+.rg textarea.input { resize: vertical; line-height: 1.55; }
+.rg select.input { appearance: auto; }
+.rg .err { margin: 6px 0 0; color: var(--red-11); font-size: var(--text-sm); line-height: 1.45; }
+.rg .why { margin: 6px 0 0; font-size: var(--text-sm); color: var(--fg-muted); line-height: 1.5; }
+.rg .count { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--fg-faint); }
+.rg .count.over { color: var(--red-11); }
+
+.rg .picks { display: flex; flex-wrap: wrap; gap: 6px; }
+.rg .pick {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 4px 11px; border: 1px solid var(--border); border-radius: 8px;
+  background: transparent; color: var(--fg-2); font: inherit; font-size: var(--text-base); text-align: left; cursor: pointer;
+}
+.rg .pick:hover { border-color: var(--slate-a7); }
+.rg .pick[aria-checked='true'], .rg .pick[aria-pressed='true'] { border-color: var(--indigo-9); background: var(--indigo-a3); color: var(--indigo-12); }
+
+.rg .seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 2px; border: 1px solid var(--border-soft); border-radius: 8px; background: var(--slate-a2); }
+.rg .seg button { height: 28px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: var(--fg-muted); font: inherit; font-size: var(--text-base); cursor: pointer; }
+.rg .seg button[aria-checked='true'] { background: var(--slate-a5); color: var(--fg); }
+
+.rg .toggle { display: inline-flex; align-items: center; gap: 10px; padding: 0; border: 0; background: none; color: var(--fg); font: inherit; font-size: var(--text-base); text-align: left; cursor: pointer; }
+.rg .toggle .sw { position: relative; width: 30px; height: 18px; flex: none; border-radius: 99px; background: var(--slate-6); transition: background 0.15s; }
+.rg .toggle .sw::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform 0.15s; }
+.rg .toggle[aria-checked='true'] .sw { background: var(--indigo-9); }
+.rg .toggle[aria-checked='true'] .sw::after { transform: translateX(12px); }
+
+.rg .callout { display: flex; gap: 10px; padding: 10px 12px; border: 1px solid var(--border-soft); border-radius: 10px; background: var(--slate-a2); color: var(--fg-2); font-size: var(--text-base); line-height: 1.5; }
+.rg .callout b { color: var(--fg); font-weight: 500; }
+.rg .callout.indigo { background: var(--indigo-a3); border-color: var(--indigo-a4); color: var(--indigo-12); }
+.rg .callout svg { flex: none; margin-top: 2px; color: var(--fg-muted); }
+.rg .callout.indigo svg { color: var(--indigo-11); }

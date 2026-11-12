@@ -74,6 +74,10 @@ async function withGitHub() {
         <h2 id="signin-title">Sign in to the Arrow forum</h2>
         <p class="sub">Use your Arrow account, the same one as <a href="https://flights.arrowair.com" target="_blank" rel="noopener">flights.arrowair.com</a>. Already on the forum? Use the email address you use there and you keep your forum account.</p>
       </template>
+      <template v-else-if="session.signInFor === 'join'">
+        <h2 id="signin-title">Join Arrow</h2>
+        <p class="sub">One Arrow account for this app, <a href="https://flights.arrowair.com" target="_blank" rel="noopener">flights.arrowair.com</a> and the forum. New here? Create an account; the link we email you brings you back to your profile.</p>
+      </template>
       <template v-else>
         <h2 id="signin-title">Sign in to take part</h2>
         <p class="sub">Reading is open to everyone. To vote, propose and reply, sign in with the same account you use on <a href="https://flights.arrowair.com" target="_blank" rel="noopener">flights.arrowair.com</a>.</p>

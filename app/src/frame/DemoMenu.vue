@@ -2,6 +2,8 @@
 import { onBeforeUnmount, ref } from 'vue';
 import type { Role } from '../modules/threads/weights';
 import { resetDemo, state, touched } from '../modules/threads/store';
+import { resetRegistryDemo } from '../lib/registry';
+import { forgetDraft } from '../modules/registry/join';
 
 // Demo scaffolding in one place, out of the product: who you are pretending
 // to be, and putting the seed back. Nothing here exists in the real app.
@@ -16,8 +18,11 @@ const roles: { id: Role; label: string; note: string }[] = [
   { id: 'lead', label: 'Lead', note: '2×, can decide' },
 ];
 function reset() {
-  if (confirm('Reset the demo? Your votes, replies, new threads and decisions in this browser are cleared.')) {
+  if (confirm('Reset the demo? Your votes, replies, new threads, decisions and profile in this browser are cleared.')) {
     resetDemo();
+    // The registry's sample people, and the visitor's own profile and join answers.
+    resetRegistryDemo();
+    forgetDraft();
     open.value = false;
   }
 }
