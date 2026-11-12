@@ -3,6 +3,7 @@
 import { reactive } from 'vue';
 import { remote, sb } from './backend';
 import { forumLanding } from './forum';
+import { claimRegistry } from './registry';
 
 export interface Member { user_id: string; display_name: string; avatar_url: string | null; github: string | null; role: 'member' | 'core' | 'lead' }
 
@@ -56,7 +57,11 @@ async function onUser(user: { id: string; email?: string } | null) {
   if (user && sb && !onForumPage()) {
     const { data, error } = await sb.rpc('sa_join');
     if (error) say(`Couldn't join the workspace: ${error.message}`);
-    else session.member = data as Member;
+    else {
+      session.member = data as Member;
+      // Links a registry record the team added for them; never blocks sign-in.
+      void claimRegistry();
+    }
   }
   await reload();
   session.ready = true;
@@ -100,7 +105,9 @@ export async function signInWithPassword(email: string, password: string) {
 export async function joinIfSignedIn() {
   if (!sb || !session.userId || session.member) return;
   const { data, error } = await sb.rpc('sa_join');
-  if (!error) session.member = data as Member;
+  if (error) return;
+  session.member = data as Member;
+  void claimRegistry();
 }
 /** A new Arrow account. The confirmation link signs them in here. */
 export async function signUpWithPassword(email: string, password: string) {
