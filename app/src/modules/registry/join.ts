@@ -248,14 +248,16 @@ export function validTz(tz: string) {
 /** Which step and field a message from the database is about. */
 export function fieldOfError(msg: string): { step: StepId; field: string } | null {
   const m = msg.toLowerCase();
+  // Most specific first: "Keep links out of the blurb" is about the blurb, not the links.
   const map: [RegExp, StepId, string][] = [
-    [/what you want to build|tell us what you want/, 'build', 'wants_to_build'],
+    [/blurb/, 'visibility', 'blurb'], [/map disciplines/, 'visibility', 'map_disciplines'], [/your name/, 'visibility', 'name'],
+    [/call times/, 'visibility', 'call_windows'], [/the map shows/, 'place', 'city'],
+    [/what you want to build|tell us what you want/, 'build', 'wants_to_build'], [/lanes/, 'build', 'wants_to_build'],
     [/disciplines|want to learn|experience/, 'skills', 'can'],
     [/your story/, 'story', 'story'],
     [/city/, 'place', 'city'], [/country/, 'place', 'country'], [/travel/, 'place', 'travel'], [/tools|build has/, 'place', 'tools'],
-    [/time zone/, 'time', 'tz'], [/never ask/, 'time', 'never'], [/hours|when is/, 'time', 'hours'],
-    [/discord/, 'links', 'discord'], [/link/, 'links', 'work'], [/how you heard/, 'links', 'heard_from'],
-    [/blurb/, 'visibility', 'blurb'], [/map disciplines/, 'visibility', 'map_disciplines'], [/your name/, 'visibility', 'name'], [/call times/, 'visibility', 'call_windows'],
+    [/time zone/, 'time', 'tz'], [/never ask/, 'time', 'never'], [/hours|when is/, 'time', 'hours'], [/what you want/, 'time', 'never'],
+    [/discord/, 'links', 'discord'], [/how you heard/, 'links', 'heard_from'], [/link/, 'links', 'work'],
   ];
   for (const [re, step, field] of map) if (re.test(m)) return { step, field };
   return null;

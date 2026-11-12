@@ -34,7 +34,8 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   const shoot = async (p, name) => {
     await p.waitForTimeout(250);
     const vp = p.viewportSize();
-    const extra = await p.evaluate(() => { const s = document.querySelector('.slot'); return s ? Math.max(0, s.scrollHeight - s.clientHeight) : 0; });
+    // On a phone the page itself scrolls, and the footer is fixed to the window's bottom.
+    const extra = await p.evaluate(() => { const s = document.querySelector('.slot'); return Math.max(0, s ? s.scrollHeight - s.clientHeight : 0, document.documentElement.scrollHeight - innerHeight); });
     if (extra) await p.setViewportSize({ width: vp.width, height: vp.height + extra });
     await p.screenshot({ path: `${SHOTS}/${name}.png`, fullPage: true });
     if (extra) await p.setViewportSize(vp);

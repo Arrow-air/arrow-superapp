@@ -58,8 +58,8 @@ h6 span { color: var(--fg-faint); font-weight: 400; }
 }
 .tchip:hover { border-color: var(--slate-a7); }
 .tchip:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--focus-ring); }
-.tchip.can { color: color-mix(in srgb, var(--c) 62%, var(--fg)); background: color-mix(in srgb, var(--c) 16%, transparent); border-color: color-mix(in srgb, var(--c) 45%, transparent); }
-.tchip.learn { color: color-mix(in srgb, var(--c) 62%, var(--fg)); border-style: dashed; border-color: color-mix(in srgb, var(--c) 70%, transparent); }
+.tchip.can { color: color-mix(in srgb, var(--c) 52%, var(--fg)); background: color-mix(in srgb, var(--c) 16%, transparent); border-color: color-mix(in srgb, var(--c) 45%, transparent); }
+.tchip.learn { color: color-mix(in srgb, var(--c) 52%, var(--fg)); border-style: dashed; border-color: color-mix(in srgb, var(--c) 70%, transparent); }
 .tchip.guess.can { background: transparent; border-style: dotted; }
 .tchip small { font: 9.5px var(--font-mono); letter-spacing: 0.04em; opacity: 0.85; text-transform: uppercase; }
 </style>

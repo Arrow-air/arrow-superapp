@@ -176,6 +176,8 @@ async function save(step: StepId, finish: boolean): Promise<boolean> {
     if (f && steps.value.includes(f.step)) {
       if (f.step !== d.step) go(f.step);
       problems.value = { [f.field]: msg };
+      // Not every field has a place for a message; then it goes by the buttons.
+      void nextTick(() => { if (!root.value?.querySelector('section[data-step] .err')) saveError.value = msg; });
     } else saveError.value = msg;
     return false;
   }
@@ -261,7 +263,10 @@ watch(() => d.step, async (s) => {
   await loadAnswers(longshotGuide.project, longshotGuide.id);
   const pr = me.value?.profile;
   if (!pr) return;
-  doneMatches.value = matchesFor(pr, threadState.threads, longshotGuide.steps, (q) => answers.list.some((a) => a.question === q), 2);
+  // The guide first, as somewhere to do one real thing, then a thread.
+  const all = matchesFor(pr, threadState.threads, longshotGuide.steps, (q) => answers.list.some((a) => a.question === q));
+  const first = all.find((m) => m.kind === 'guide') ?? all[0];
+  doneMatches.value = [first, all.find((m) => m !== first && m.kind !== first?.kind) ?? all.find((m) => m !== first)].filter((m): m is MatchItem => !!m);
 });
 const doneName = computed(() => firstName(me.value?.name ?? d.name));
 </script>

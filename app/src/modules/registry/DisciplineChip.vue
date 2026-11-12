@@ -20,7 +20,7 @@ const title = computed(() => (props.kind === 'learn' ? `${props.name}: learning`
 .dchip {
   display: inline-flex; align-items: center; gap: 4px; height: 21px; padding: 0 7px; border-radius: 6px;
   font-size: var(--text-sm); line-height: 1; white-space: nowrap;
-  color: color-mix(in srgb, var(--c) 62%, var(--fg));
+  color: color-mix(in srgb, var(--c) 52%, var(--fg));
   background: color-mix(in srgb, var(--c) 14%, transparent);
   border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
 }
