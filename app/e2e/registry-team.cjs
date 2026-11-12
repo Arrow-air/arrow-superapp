@@ -79,7 +79,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   check(!(await p.getByRole('link', { name: /Reach out/ }).count()), 'signed out: no Reach out tab');
   let body = await html(p);
   check(!/Ade Bankole|Kenji Mori|rosa@example|Notes|owner|no account/i.test(body), 'signed out: nobody the team added, no notes, owners or emails');
-  check((await p.locator('.lede').innerText()).includes('Sign in to see members'), 'signed out: says what signing in shows');
+  check((await p.locator('.lede').innerText()).includes('Anyone signed in to Arrow sees more'), 'signed out: says what signing in shows');
   await p.locator('[data-search]').fill('nairobi');
   await p.waitForTimeout(400);
   check(await p.locator('[data-card]').count() === 1, 'signed out: search finds Samuel by his city');
@@ -95,7 +95,8 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   // A member ------------------------------------------------------------------------------------
   await as(p, 'member');
   await people(p);
-  check(await count(p) === 13, `member: 13 people with accounts (${await count(p)})`);
+  check(await count(p) === 12, `member: the 12 people who finished a profile, not the account that hasn't (${await count(p)})`);
+  check((await p.locator('[data-sample-label]').innerText()) === 'Sample people, not real', 'the demo says its people are samples');
   check(JSON.stringify((await sideIds(p)).filter((x) => x.startsWith('view:'))) === JSON.stringify(['view:all', 'view:new', 'view:shop']), 'member: views All, New this week, Has a shop');
   check(await side(p, 'view:new') === 2 && await side(p, 'view:shop') === 4, `member: counts new 2, shop 4 (${await side(p, 'view:new')}, ${await side(p, 'view:shop')})`);
   check(!(await p.locator('[data-chip="call"]').count()) && await p.locator('[data-chip="shop"]').count() === 1, 'member: Has a shop chip, no Open to a call');
@@ -118,6 +119,11 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   check(await p.locator('[data-said]').count() === 1 && (await p.locator('[data-wtb]').innerText()).includes('A Longshot pack for my own Quiver'), 'member: Maya\'s profile, with what she wants to build');
   check((await p.locator('[data-story]').innerText()).includes('14S5P'), 'member: her story');
   check(!(await p.locator('[data-teampanel]').count()) && !(await p.locator('[data-callok]').count()), 'member: no team panel, no intro-call answer');
+  check((await p.locator('[data-said-handle]').innerText()).replace(/\s+/g, ' ').includes('@maya.builds (said, not checked)') && (await p.locator('[data-discord-said]').innerText()).includes('said, not checked'), `member: the Discord handle Maya typed is "said, not checked" (${(await p.locator('.phead .meta').innerText()).replace(/\s+/g, ' ')})`);
+  check(!(await p.locator('[data-lead-actions], [data-delete-record], [data-unlink]').count()), 'member: no Unlink or Delete');
+  await person(p, 'priya');
+  check((await p.locator('.phead .meta').innerText()).replace(/\s+/g, ' ').includes('India (country only)'), `member: someone on the map at country precision shows only the country (${(await p.locator('.phead .meta').innerText()).replace(/\s+/g, ' ')})`);
+  await person(p, 'maya');
   body = await html(p);
   check(!/20 minutes\. Field tech|Watched her pack build|Team only|owner|Talked|Longshot pack build weekend/i.test(body), 'member: no notes, status, owner or next step anywhere in the page');
   await shoot(p, '1440-member-person');
@@ -164,6 +170,8 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   // Core on a person: notes, owner, status, next step, good for, a skill check.
   await person(p, 'ade');
   check(await p.locator('[data-noaccount]').count() === 1 && (await p.locator('[data-said]').innerText()).includes('hasn\'t joined'), 'core: Ade has the No account banner and an empty Said');
+  check(!(await p.locator('[data-lead-actions], [data-delete-record]').count()), 'core: no Delete this record (leads only)');
+  check((await p.locator('[data-discord]').innerText()).includes('added by the team, not checked'), 'core: a Discord handle the team typed without an id says not checked');
   check((await p.locator('[data-invite-join]').getAttribute('href')).includes('/community/reach-out?person=ade&invite=join') && (await p.locator('[data-invite-call]').getAttribute('href')).includes('/community/reach-out?person=ade'), 'core: Invite to join and to a call link to Reach out');
   check((await p.locator('[data-know]').innerText()).includes('Electrical') && (await p.locator('[data-know]').innerText()).includes('your guess'), 'core: What we know shows the team\'s guess');
   await p.locator('[data-note-body]').fill('Talked in #longshot: he grades cells by internal resistance before he matches them.');
@@ -220,7 +228,21 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await as(p, 'lead');
   await people(p);
   check(await p.locator('[data-match]').count() === 1 && (await p.locator('[data-match]').innerText()).includes('Rosa Delgado'), 'lead: a "same person?" card for Rosa');
+  const ev = await p.locator('[data-evidence]').innerText();
+  check(ev.includes('rdelgado.waco@example.com') && ev.includes('rosa@example.com') && /rdelgado-waco\s*· signed in with/.test(ev) && ev.includes('Account made'), 'lead: the card shows the evidence: the account\'s email and GitHub, the record\'s email, when the account was made');
   await shoot(p, '1440-lead-people');
+  // A record that holds a GitHub account the account doesn't sign in with: the link is refused, with the reason.
+  await p.evaluate(() => { const k = 'superapp:registry.v3'; const st = JSON.parse(localStorage.getItem(k)); Object.assign(st.people.find((x) => x.id === 'rosa'), { github_login: 'rosa-real', github_id: 12345678 }); localStorage.setItem(k, JSON.stringify(st)); });
+  await p.reload();
+  await people(p);
+  check((await p.locator('[data-ev="github"]').innerText()).includes('rosa-real · resolved to an account'), 'lead: the record\'s GitHub, resolved');
+  await p.locator('[data-link]').click();
+  await p.waitForSelector('[data-refused]');
+  check((await p.locator('[data-refused]').innerText()).includes('holds a GitHub account that this account doesn\'t sign in with') && await p.locator('[data-match]').count() === 1, 'lead: Link refused, with the database\'s reason; the card stays');
+  await shoot(p, '1440-lead-refused');
+  await p.evaluate(() => { const k = 'superapp:registry.v3'; const st = JSON.parse(localStorage.getItem(k)); Object.assign(st.people.find((x) => x.id === 'rosa'), { github_login: null, github_id: null }); localStorage.setItem(k, JSON.stringify(st)); });
+  await p.reload();
+  await people(p);
   await person(p, 'kenji');
   const erickNote = p.locator('[data-note]', { hasText: 'Three good PRs' });
   check(await erickNote.locator('[data-edit-note]').count() === 1, 'lead: can edit Erick\'s note');
@@ -252,6 +274,27 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   check(!(await q.locator('[data-noaccount]').count()) && !(await q.locator('.phead .pill.plum').count()), 'lead: Rosa\'s record has her account now: no banner');
   check((await q.locator('[data-linked]').innerText()).includes('rdelgado-waco') && (await q.locator('[data-teampanel]').innerText()).includes('Met her at the Austin'), 'lead: her GitHub came over and the team\'s notes stayed');
   check((await q.locator('[data-history]').innerText()).includes('Joined, and their account linked'), 'lead: history says she joined');
+  check((await q.locator('[data-guess-place]').innerText()).includes('Waco') && !(await q.locator('.phead .meta').innerText()).includes('Waco'), 'lead: the place the team typed stays in the team panel, not shown as hers');
+  // Unlink: a confirm, then the account has its own record again and Rosa's has none.
+  await q.locator('[data-unlink]').click();
+  check((await q.locator('[data-confirm-unlink]').innerText()).includes('Unlink Rosa Delgado'), 'lead: Unlink asks first');
+  await shoot(q, '1440-lead-unlink-confirm');
+  await q.locator('[data-confirm-unlink] [data-confirm]').click();
+  await q.waitForSelector('[data-noaccount]');
+  check((await q.locator('[data-unlinked]').innerText()).includes('Unlinked') && (await q.locator('[data-teampanel]').innerText()).includes('Met her at the Austin'), 'lead: unlinked; the record has no account again and keeps the team\'s notes');
+  await people(q);
+  check(await count(q) === 16 && await side(q, 'view:team') === 3, `lead: after Unlink, two Rosas again (${await count(q)}, ${await side(q, 'view:team')})`);
+  // Delete this record: a confirm, then it's gone with its notes.
+  await person(q, 'kenji');
+  await q.locator('[data-delete-record]').click();
+  check((await q.locator('[data-confirm-delete]').innerText()).includes('notes, outreach, guesses and skill checks go with it'), 'lead: Delete this record says what goes');
+  await shoot(q, '1440-lead-delete-confirm');
+  await q.locator('[data-confirm-delete] [data-confirm]').click();
+  await q.waitForURL(/\/community\/people$/);
+  await people(q);
+  check(await count(q) === 15 && !(await names(q)).includes('Kenji Mori'), `lead: Kenji's record is deleted (${await count(q)})`);
+  await person(q, 'kenji');
+  check(await q.locator('[data-missing]').count() === 1, 'lead: his page is gone');
 
   // Light theme, and phones.
   await q.evaluate(() => localStorage.setItem('arrow.theme', 'light'));

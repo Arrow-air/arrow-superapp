@@ -245,7 +245,7 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   check((await p.locator('[data-no-zone]').count()) === 0 && (await p.locator('[data-their-time]').first().innerText()).includes('for Kenji'), 'Kenji\'s times are in Tokyo time');
 
   // Open in Discord, once there's an id (phase 2's bot will fill them; here, the demo store).
-  await p.evaluate(() => { const k = 'superapp:registry.v2'; const s = JSON.parse(localStorage.getItem(k)); s.people.find((r) => r.id === 'diego').discord_id = '123456789012345678'; localStorage.setItem(k, JSON.stringify(s)); });
+  await p.evaluate(() => { const k = 'superapp:registry.v3'; const s = JSON.parse(localStorage.getItem(k)); Object.assign(s.people.find((r) => r.id === 'diego'), { discord_id: '123456789012345678', discord_username: 'diegofpv' }); localStorage.setItem(k, JSON.stringify(s)); });
   await p.reload();
   await reach(p, '?person=diego');
   await p.waitForSelector('[data-composer]');

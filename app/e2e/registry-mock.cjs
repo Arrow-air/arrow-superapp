@@ -39,14 +39,15 @@ let failed = 0; const check = (ok, w) => { console.log(`${ok ? 'ok  ' : 'FAIL'} 
       const args = body ? JSON.parse(body) : {};
       calls.push({ fn, args });
       if (fn === 'sa_join') return route.fulfill({ json: { user_id: USER.id, display_name: 'mokafor', avatar_url: null, github: 'mokafor', role: 'member' } });
-      if (fn === 'sa_registry_claim') return route.fulfill({ json: { person_id: null, linked: false, how: null, possible: 0 } });
+      if (fn === 'sa_registry_claim') return route.fulfill({ json: { person_id: null, linked: false, how: null } });
       if (fn === 'sa_my_profile') return route.fulfill({ json: profile });
+      if (fn === 'sa_delete_my_profile') { profile = null; return route.fulfill({ status: 204, body: '' }); }
       if (fn === 'sa_save_profile') {
         const f = args.p_profile;
         profile = profile ?? { id: 'p1', name: 'mokafor', city: null, country: null, lat: null, lng: null, tz: null, disciplines: [], blurb: null, discord: null, github: 'mokafor', joined: '2026-11', has_account: true, map: 'off', ref: f.ref ?? null, claimed_at: new Date().toISOString(), profile: { wants_to_build: null, lanes: [], can: [], learn: [], experience: null, story: null, tools: [], build: [], travel: null, hours: null, availability: null, wants: [], never: null, links: [], blurb: null, map_disciplines: [], agent_drafted: false, updated_at: '', finished_at: null, call_ok: false, call_windows: null, heard_from: null } };
         for (const k of ['city', 'country', 'tz', 'map']) if (k in f) profile[k] = f[k];
         if (f.display_name) profile.name = f.display_name;
-        if (f.discord) profile.discord = f.discord;
+        if (f.discord) profile.profile.discord_said = f.discord;
         for (const [k, v] of Object.entries(f)) if (k in profile.profile) profile.profile[k] = v;
         if (f.availability !== undefined) profile.profile.availability = f.availability;
         profile.profile.updated_at = new Date().toISOString();
@@ -84,6 +85,8 @@ let failed = 0; const check = (ok, w) => { console.log(`${ok ? 'ok  ' : 'FAIL'} 
   const tzSaved = calls.filter((c) => c.fn === 'sa_save_profile').at(-1).args.p_profile.tz;
   check(tzSaved === 'Europe/Berlin', `time zone from the browser saved (${tzSaved})`);
   check((await p.locator('#name').inputValue()) === 'mokafor', 'name prefilled from the account');
+  check((await p.locator('[data-toggle="map"]').getAttribute('aria-checked')) === 'false', 'the map starts off');
+  await p.locator('[data-toggle="map"]').click();
   if (await p.locator('#vcountry').count()) await p.locator('#vcountry').fill('Germany');
   await p.locator('#blurb').fill('BAD');
   await p.locator('[data-next]').click();
@@ -99,6 +102,11 @@ let failed = 0; const check = (ok, w) => { console.log(`${ok ? 'ok  ' : 'FAIL'} 
   await p.waitForSelector('[data-wtb]');
   check((await p.locator('[data-wtb]').innerText()).includes('Packs for Quiver'), '/you shows the saved answer');
   check((await p.getByRole('link', { name: 'Contributor Dashboard' }).getAttribute('href')) === '#/you', 'dashboard button → /you when signed in');
+  // Delete my profile (live): a confirm, then sa_delete_my_profile; the account stays signed in.
+  await p.locator('[data-delete-profile]').click();
+  await p.locator('[data-confirm-delete] [data-confirm]').click();
+  await p.waitForSelector('[data-profile-deleted]', { timeout: 10000 });
+  check(calls.some((c) => c.fn === 'sa_delete_my_profile') && (await p.locator('main').innerText()).includes('Fill in your profile'), 'Delete my profile calls sa_delete_my_profile; the account stays, with a fresh start');
   // Signed out: the button points at /join, and /you sends them there.
   const p2 = await (await b.newContext()).newPage();
   await p2.route('https://mock.supabase.test/**', (r) => r.fulfill({ json: [] }));
@@ -144,7 +152,7 @@ let failed = 0; const check = (ok, w) => { console.log(`${ok ? 'ok  ' : 'FAIL'} 
       const args = body ? JSON.parse(body) : {};
       coreCalls.push({ fn, args });
       if (fn === 'sa_join') return route.fulfill({ json: members[0] });
-      if (fn === 'sa_registry_claim') return route.fulfill({ json: { person_id: null, linked: false, how: null, possible: 0 } });
+      if (fn === 'sa_registry_claim') return route.fulfill({ json: { person_id: null, linked: false, how: null } });
       if (fn === 'sa_registry_people') return route.fulfill({ json: everyone() });
       if (fn === 'sa_registry_person') {
         const who = everyone().find((x) => x.id === args.p_person);
@@ -288,6 +296,75 @@ let failed = 0; const check = (ok, w) => { console.log(`${ok ? 'ok  ' : 'FAIL'} 
   const mi = coreCalls.filter((x) => x.fn === 'sa_set_outreach').at(-1);
   check(mi.args.p_person === added[0].id && mi.args.p_status === 'invited' && mi.args.p_note === 'Invited to join' && mi.args.p_owner === null, `core (live): Mark invited, already his owner's ${JSON.stringify(mi.args)}`);
   check(!coreCalls.some((x) => /send|message|dm|email/i.test(x.fn)), 'core (live): nothing is ever sent');
+
+  // A lead (live): a "same person?" card with its evidence, a link the database
+  // refuses (its reason shown), Unlink on a linked record, Delete this record.
+  const LEAD = { ...USER, id: THOMAS, email: 'thomas@example.com' };
+  const leadSession = () => ({ ...session(), access_token: 'h.' + Buffer.from(JSON.stringify({ sub: LEAD.id, exp: Math.floor(Date.now() / 1000) + 3600, role: 'authenticated' })).toString('base64url') + '.s', user: LEAD });
+  const kai = { ...ade, id: 'cccccccc-0000-0000-0000-000000000001', name: 'Kai Mori', discord: null, github: 'kai-real', github_id: 777, email: null, source: 'Commits in quiver', added_by: THOMAS, guess: null };
+  const pat = { ...maya, id: 'cccccccc-0000-0000-0000-000000000002', name: 'Pat Shop', added_by: THOMAS, has_account: true, user_id: '55555555-5555-5555-5555-555555555555',
+    city: null, country: null, guess: { disciplines: [], tools: [], city: 'Alpine', country: 'United States', updated_at: '2026-11-05T15:00:00Z' } };
+  let leadPeople = [maya, kai, pat];
+  const match = { id: 'dddddddd-0000-0000-0000-000000000001', person_id: kai.id, person_name: 'Kai Mori', user_id: '66666666-6666-6666-6666-666666666666', account_person_id: null, account_name: 'Kai Mori',
+    account_email: 'kai.fake@example.com', account_created_at: '2026-11-11T20:00:00Z', account_github: 'kai-fake', account_discord: null,
+    record_email: null, record_github: 'kai-real', record_github_resolved: true, record_discord: null, record_discord_resolved: false, reason: 'same name', created_at: '2026-11-11T20:00:00Z' };
+  const leadCalls = [];
+  const lc = await b.newContext({ timezoneId: 'America/Chicago' });
+  await lc.addInitScript((x) => { localStorage.setItem('sb-mock-auth-token', JSON.stringify(x)); }, leadSession());
+  await lc.route('https://mock.supabase.test/**', async (route) => {
+    const u = new URL(route.request().url());
+    const body = route.request().postData();
+    if (u.pathname === '/auth/v1/user') return route.fulfill({ json: LEAD });
+    if (u.pathname === '/auth/v1/token') return route.fulfill({ json: leadSession() });
+    if (u.pathname === '/rest/v1/sa_members') return route.fulfill({ json: members });
+    if (u.pathname.startsWith('/rest/v1/rpc/')) {
+      const fn = u.pathname.slice('/rest/v1/rpc/'.length);
+      const args = body ? JSON.parse(body) : {};
+      leadCalls.push({ fn, args });
+      if (fn === 'sa_join') return route.fulfill({ json: members[1] });
+      if (fn === 'sa_registry_claim') return route.fulfill({ json: { person_id: null, linked: false, how: null } });
+      if (fn === 'sa_registry_people') return route.fulfill({ json: leadPeople });
+      if (fn === 'sa_registry_matches') return route.fulfill({ json: [match] });
+      if (fn === 'sa_registry_person') {
+        const who = leadPeople.find((x) => x.id === args.p_person);
+        if (!who) return route.fulfill({ status: 400, json: { code: 'P0001', message: 'No such person' } });
+        return route.fulfill({ json: { ...who, notes: [], skill_checks: [], matches: who === kai ? [match] : [], outreach: who.outreach.map((o) => ({ ...o, history: [] })) } });
+      }
+      if (fn === 'sa_link_person') return route.fulfill({ status: 403, json: { code: '42501', message: 'This record holds a GitHub account that this account doesn\'t sign in with. If it\'s them, they sign in with that GitHub and it links by itself; if the record is wrong, fix it first.' } });
+      if (fn === 'sa_unlink_person') { Object.assign(pat, { has_account: false, user_id: null }); return route.fulfill({ json: 'eeeeeeee-0000-0000-0000-000000000001' }); }
+      if (fn === 'sa_delete_person') { leadPeople = leadPeople.filter((x) => x.id !== args.p_person); return route.fulfill({ status: 204, body: '' }); }
+      return route.fulfill({ json: null });
+    }
+    if (u.pathname.startsWith('/rest/v1/')) return route.fulfill({ json: [] });
+    return route.fulfill({ json: {} });
+  });
+  const lp = await lc.newPage();
+  lp.on('pageerror', (e) => errors.push(String(e)));
+  await lp.goto(`${ORIGIN}/#/community/people`);
+  await lp.waitForSelector('[data-match]', { timeout: 10000 });
+  const ev = await lp.locator('[data-evidence]').innerText();
+  check(ev.includes('kai.fake@example.com') && /kai-fake\s*· signed in with/.test(ev) && ev.includes('kai-real · resolved to an account'), `lead (live): the card shows sa_registry_matches' evidence (${ev.replace(/\s+/g, ' ')})`);
+  await lp.locator('[data-link]').click();
+  await lp.waitForSelector('[data-refused]', { timeout: 10000 });
+  check((await lp.locator('[data-refused]').innerText()).includes('holds a GitHub account that this account doesn\'t sign in with')
+    && leadCalls.some((x) => x.fn === 'sa_link_person' && x.args.p_match === match.id && x.args.p_same === true), 'lead (live): a link the database refuses shows its reason');
+  await lp.goto(`${ORIGIN}/#/community/people/${pat.id}`);
+  await lp.waitForSelector('[data-teampanel]', { timeout: 10000 });
+  check((await lp.locator('[data-guess-place]').innerText()).includes('Alpine'), 'lead (live): the team\'s place guess shows in the team panel');
+  await lp.locator('[data-unlink]').click();
+  await lp.locator('[data-confirm-unlink] [data-confirm]').click();
+  await lp.waitForSelector('[data-unlinked]', { timeout: 10000 });
+  check(leadCalls.some((x) => x.fn === 'sa_unlink_person' && x.args.p_person === pat.id), 'lead (live): Unlink calls sa_unlink_person after the confirm');
+  await lp.goto(`${ORIGIN}/#/community/people/${kai.id}`);
+  await lp.waitForSelector('[data-delete-record]', { timeout: 10000 });
+  await lp.locator('[data-delete-record]').click();
+  await lp.locator('[data-confirm-delete] [data-confirm]').click();
+  await lp.waitForURL(/\/community\/people$/, { timeout: 10000 });
+  check(leadCalls.some((x) => x.fn === 'sa_delete_person' && x.args.p_person === kai.id), 'lead (live): Delete this record calls sa_delete_person after the confirm, then the list');
+  // Core never gets the lead's buttons.
+  await cp.goto(`${ORIGIN}/#/community/people/${ade.id}`);
+  await cp.waitForSelector('[data-teampanel]', { timeout: 10000 });
+  check(!(await cp.locator('[data-lead-actions], [data-delete-record], [data-unlink]').count()), 'core (live): no Unlink or Delete this record');
 
   check(!errors.length, `no page errors ${errors.join(' | ')}`);
   await b.close(); srv.kill(); process.exit(failed ? 1 : 0);

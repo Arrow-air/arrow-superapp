@@ -152,10 +152,17 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
       check((await p.locator('[aria-labelledby="md-l"] + .err').innerText()).includes('3 at most') && (await p.locator('[data-mapd="Firmware"]').getAttribute('aria-pressed')) === 'false', 'the card takes up to 3 disciplines');
     }
     await p.locator('#blurb').fill('Utility field tech in Houston. Built a 14S e-bike pack from salvaged cells. Here to build Longshot packs.');
+    if (desk) {
+      check((await p.locator('[data-toggle="map"]').getAttribute('aria-checked')) === 'false', 'the map starts off; they turn it on');
+      const who = await p.locator('[data-who-sees]').innerText();
+      check(who.includes('Anyone signed in to Arrow') && who.includes('not where you are') && !/members see/i.test(who), 'off the map: anyone signed in sees the profile, not where they are');
+    }
+    await p.locator('[data-toggle="map"]').click();
+    if (desk) check((await p.locator('[data-who-sees]').innerText()).includes('your city and local time, as on the map'), 'on the map at city precision: signed-in people see the city, as on the map');
     await p.locator('[data-toggle="call"]').click();
     await p.getByRole('button', { name: 'Weekday evenings' }).click();
     const preview = await p.locator('[data-card-preview]').innerText();
-    if (desk) check(preview.includes('Maya Okafor') && preview.includes('Houston, United States') && preview.includes('Electrical') && preview.includes('maya.builds') && preview.includes('Utility field tech'), 'the public card previews live');
+    if (desk) check(preview.includes('Maya Okafor') && preview.includes('Houston, United States') && preview.includes('Electrical') && !preview.includes('maya.builds') && preview.includes('Utility field tech'), 'the public card previews live, without the Discord handle they typed (no sign-in proved it)');
     await shoot(p, `${tag}-08-visibility`);
     if (!desk) check(await fits(p), `${w}: who sees what fits`);
     await p.locator('[data-next]').click();
@@ -187,7 +194,8 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   check(matches.some((m) => m.startsWith('thread:')), 'an open thread in a zone that fits');
   check(matches.every((m) => m.includes('because:')), 'every match says why');
   const card = await p.locator('aside .pcard').innerText();
-  check(card.includes('Maya Okafor') && card.includes('Houston, United States') && card.includes('Utility field tech'), 'their public card');
+  check(card.includes('Maya Okafor') && card.includes('Houston, United States') && card.includes('Utility field tech') && !card.includes('maya.builds'), 'their public card, without the typed Discord handle');
+  check((await p.locator('[data-card-why]').innerText()).includes('Anyone signed in to Arrow also sees') && (await p.locator('[data-card-why]').innerText()).includes('your city as on the map'), 'their card says what anyone signed in sees, place as on the map');
   const rec = await p.locator('[data-record]').innerText();
   check(rec.includes('Joined, heard about Arrow on X (link: x-longshot-teardown)') && rec.includes('Profile done'), 'their record: joined, how they came, profile done');
   await p.locator('[data-match^="guide:"]').first().click();
@@ -263,8 +271,9 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await next(f);
   check(await step(f) === 'visibility', 'then who sees what');
   await f.locator('#name').fill('Sam Watcher');
+  await f.locator('[data-toggle="map"]').click();
   await next(f);
-  check((await f.locator('#vcountry').getAttribute('aria-invalid')) === 'true', 'the map needs a country');
+  check((await f.locator('#vcountry').getAttribute('aria-invalid')) === 'true', 'turned on, the map needs a country');
   await f.locator('[data-toggle="map"]').click();
   await next(f);
   await f.waitForSelector('section[data-step="done"]');
@@ -275,6 +284,17 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await f.waitForSelector('[data-wtb]');
   check((await f.locator('main').innerText()).includes('You\'re following along') && !(await f.locator('[data-match]').count()), 'Your Arrow shows a follower where things happen, no matched work');
   check((await f.locator('aside .why').first().innerText()).includes('Not on the map'), 'their card says they\'re off the map');
+  // Delete my profile: a confirm that says what goes and what stays, then a fresh start.
+  check(!(await f.locator('[data-confirm-delete]').count()), 'Delete my profile asks first');
+  await f.locator('[data-delete-profile]').click();
+  const conf = await f.locator('[data-confirm-delete]').innerText();
+  check(conf.includes('What goes') && conf.includes('your card on the map') && conf.includes('What stays: your Arrow account'), 'the confirm says what goes and what stays');
+  await f.locator('[data-confirm-delete] [data-confirm]').click();
+  await f.waitForSelector('[data-profile-deleted]');
+  check((await f.locator('main').innerText()).includes('Fill in your profile') && !(await f.locator('[data-delete-mine]').count()), 'deleted: the profile is gone, the account isn\'t, and they can start again');
+  await f.goto(`${BASE}/community/people`);
+  await f.waitForSelector('text=Maya Okafor');
+  check(!(await f.locator('main').innerText()).includes('Sam Watcher') && (await f.locator('[data-sample-label]').innerText()) === 'Sample people, not real', 'deleted: they\'re not in the People list; the demo says its people are samples');
 
   // Phone: the same walk, a shot of every step.
   const ph = await open({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
