@@ -114,7 +114,7 @@ watch(() => [current.value?.id, theirZone.value], () => { slots.value = suggestS
 const setSlot = (i: number, v: string) => {
   const t = new Date(v);
   if (Number.isNaN(+t)) return;
-  slots.value = slots.value.map((s, j) => (j === i ? t : s));
+  slots.value = slots.value.map((s, j) => (j === i ? t : s)).sort((a, b) => a.getTime() - b.getTime());
 };
 const dropSlot = (i: number) => { slots.value = slots.value.filter((_, j) => j !== i); };
 const addSlot = () => {
@@ -209,6 +209,11 @@ async function mark(status: 'invited' | 'booked' | 'talked') {
   }
 }
 const status = computed(() => (who.value ? intro(who.value)?.status ?? 'new' : 'new'));
+// Past the invite (booked, talked, active…), the draft waits behind a button.
+const draftAnyway = ref(false);
+watch(() => current.value?.id, () => { draftAnyway.value = false; });
+const drafting = computed(() => draftAnyway.value || mode.value === 'join' || ['new', 'invited'].includes(status.value));
+const STATUS_WORDS: Partial<Record<string, string>> = { talked: 'you\'ve talked', active: 'they\'re active', quiet: 'marked quiet', skipped: 'skipped' };
 const afterOpen = computed(() => !!who.value && (showAfter.value || status.value === 'booked' || notesDue(who.value)));
 </script>
 
@@ -276,58 +281,63 @@ const afterOpen = computed(() => !!who.value && (showAfter.value || status.value
                 <PersonAvatar :name="who.name" :size="36" />
                 <div class="grow">
                   <div class="crow">
-                    <b class="cname" data-composer-name>{{ mode === 'join' ? `Invite ${who.name} to join` : `Invite ${who.name} to a call` }}</b>
+                    <b class="cname" data-composer-name>{{ !drafting ? who.name : mode === 'join' ? `Invite ${who.name} to join` : `Invite ${who.name} to a call` }}</b>
                     <span v-if="teamAdded(who)" class="acct">no account</span>
                     <StatusPill :status="status" />
                   </div>
                   <div class="faint small">{{ zoneLine(who) }}</div>
                 </div>
-                <RouterLink class="btn sm ghost" :to="`/community/people/${who.id}`">Record <Icon name="arrow" :size="12" /></RouterLink>
+                <RouterLink class="btn sm ghost" :to="`/community/people/${who.id}`">Record <Icon name="chevron-right" :size="12" /></RouterLink>
               </div>
 
-              <div v-if="teamAdded(who)" class="seg modes" role="radiogroup" aria-label="What to send">
-                <button type="button" role="radio" :aria-checked="mode === 'join'" data-mode-join @click="setMode('join')">Invite to join</button>
-                <button type="button" role="radio" :aria-checked="mode === 'call'" data-mode-call @click="setMode('call')">Invite to a call</button>
-              </div>
-
-              <div v-if="teamAdded(who) && (who.source || newestNote)" class="know" data-know>
-                <span class="teamtag"><Icon name="lock" :size="10" />what we know</span>
-                <p v-if="who.source"><span class="faint">From:</span> {{ who.source }}</p>
-                <p v-if="newestNote"><span class="faint">{{ cap(teamName(newestNote.author_id) || 'the team') }}, {{ day(newestNote.created_at) }}:</span> {{ newestNote.body }}</p>
-              </div>
-
-              <div v-if="mode === 'call'" class="times" data-times>
-                <div class="thead">
-                  <span class="small muted">Times, in your time ({{ myZone() }})</span>
-                  <span v-if="theirZone" class="small faint">{{ first }} is in {{ theirZone }}</span>
-                  <span v-else class="small warn" data-no-zone>{{ first }}'s time zone isn't known, so the draft gives yours with the zone's name.</span>
+              <template v-if="drafting">
+                <div v-if="teamAdded(who)" class="seg modes" role="radiogroup" aria-label="What to send">
+                  <button type="button" role="radio" :aria-checked="mode === 'join'" data-mode-join @click="setMode('join')">Invite to join</button>
+                  <button type="button" role="radio" :aria-checked="mode === 'call'" data-mode-call @click="setMode('call')">Invite to a call</button>
                 </div>
-                <div v-for="(s, i) in slots" :key="i" class="slot" data-slot>
-                  <input class="input" type="datetime-local" :value="localInput(s)" :aria-label="`Time ${i + 1}, your time`" @change="setSlot(i, ($event.target as HTMLInputElement).value)" />
-                  <span v-if="theirZone" class="theirs" data-their-time>{{ theirTime(s) }}</span>
-                  <button type="button" class="x" :aria-label="`Remove time ${i + 1}`" @click="dropSlot(i)">×</button>
-                </div>
-                <button v-if="slots.length < 3" type="button" class="btn sm ghost" data-add-slot @click="addSlot"><Icon name="plus" :size="12" />Add a time</button>
-              </div>
 
-              <label class="label" for="draft">The message <span class="faint">yours to rewrite; it goes out as you</span></label>
-              <textarea id="draft" v-model="text" class="input msg" rows="10" data-draft @input="edited = true"></textarea>
-              <p class="why">
-                {{ draftedFrom }}
-                <template v-if="mode === 'join'"> The link carries <code>ref={{ ref_ }}</code>, so we see who brought them.
-                  <template v-if="linksBy">If they sign up with {{ linksBy }}, their record links by itself; any other way, a lead confirms it's them.</template>
-                  <template v-else>Their record has nothing that links by itself, so when they join, a lead confirms it's them.</template>
-                </template>
-                <button v-if="edited" type="button" class="linkbtn" data-redraft @click="redraft">Start the draft again</button>
+                <div v-if="teamAdded(who) && (who.source || newestNote)" class="know" data-know>
+                  <span class="teamtag"><Icon name="lock" :size="10" />what we know</span>
+                  <p v-if="who.source"><span class="faint">From:</span> {{ who.source }}</p>
+                  <p v-if="newestNote"><span class="faint">{{ cap(teamName(newestNote.author_id) || 'the team') }}, {{ day(newestNote.created_at) }}:</span> {{ newestNote.body }}</p>
+                </div>
+
+                <div v-if="mode === 'call'" class="times" data-times>
+                  <div class="thead">
+                    <span class="small muted">Times, in your time ({{ myZone() }})</span>
+                    <span v-if="theirZone" class="small faint">{{ first }} is in {{ theirZone }}</span>
+                    <span v-else class="small warn" data-no-zone>{{ first }}'s time zone isn't known, so the draft gives yours with the zone's name.</span>
+                  </div>
+                  <div v-for="(s, i) in slots" :key="i" class="tslot" data-slot>
+                    <input class="input" type="datetime-local" :value="localInput(s)" :aria-label="`Time ${i + 1}, your time`" @change="setSlot(i, ($event.target as HTMLInputElement).value)" />
+                    <span v-if="theirZone" class="theirs" data-their-time>{{ theirTime(s) }}</span>
+                    <button type="button" class="x" :aria-label="`Remove time ${i + 1}`" @click="dropSlot(i)">×</button>
+                  </div>
+                  <button v-if="slots.length < 3" type="button" class="btn sm ghost" data-add-slot @click="addSlot"><Icon name="plus" :size="12" />Add a time</button>
+                </div>
+
+                <label class="label" for="draft">The message <span class="faint">yours to rewrite; it goes out as you</span></label>
+                <textarea id="draft" v-model="text" class="input msg" rows="10" data-draft @input="edited = true"></textarea>
+                <p class="why">
+                  {{ draftedFrom }}
+                  <template v-if="mode === 'join'"> The link carries <code>ref={{ ref_ }}</code>, so we see who brought them.
+                    <template v-if="linksBy">If they sign up with {{ linksBy }}, their record links by itself; any other way, a lead confirms it's them.</template>
+                    <template v-else>Their record has nothing that links by itself, so when they join, a lead confirms it's them.</template>
+                  </template>
+                  <button v-if="edited" type="button" class="linkbtn" data-redraft @click="redraft">Start the draft again</button>
+                </p>
+
+                <div class="send">
+                  <button class="btn primary" type="button" :disabled="!text.trim()" data-copy @click="copy"><Icon :name="copied ? 'check-circle' : 'file'" :size="14" />{{ copied ? 'Copied' : 'Copy' }}</button>
+                  <a v-if="dm" class="btn" :href="dm" target="_blank" rel="noopener" data-open-discord><Icon name="discord" :size="14" />Open in Discord</a>
+                  <a v-if="mailto" class="btn" :href="mailto" data-open-mail><Icon name="mail" :size="14" />Open in your email</a>
+                  <span v-if="!dm && who.discord" class="faint small" data-no-discord-id>No Discord id for @{{ who.discord }} yet: find them in Arrow's Discord.</span>
+                </div>
+              </template>
+              <p v-else class="later" data-later>
+                {{ status === 'booked' ? `Your call with ${first} is booked. Once you've talked, mark it and write the notes below.` : `${cap(STATUS_WORDS[status] ?? 'Already reached')}: no invite needed now.` }}
+                <button type="button" class="btn sm" data-draft-anyway @click="draftAnyway = true">Draft a message anyway</button>
               </p>
-
-              <div class="send">
-                <button class="btn primary" type="button" :disabled="!text.trim()" data-copy @click="copy"><Icon :name="copied ? 'check-circle' : 'file'" :size="14" />{{ copied ? 'Copied' : 'Copy' }}</button>
-                <a v-if="dm" class="btn" :href="dm" target="_blank" rel="noopener" data-open-discord><Icon name="discord" :size="14" />Open in Discord</a>
-                <a v-if="mailto" class="btn" :href="mailto" data-open-mail><Icon name="mail" :size="14" />Open in your email</a>
-                <span v-if="!dm && who.discord" class="faint small" data-no-discord-id>No Discord id for @{{ who.discord }} yet: find them in Arrow's Discord.</span>
-              </div>
-
               <div class="record">
                 <span class="small muted">Then record what you did:</span>
                 <button class="btn sm" type="button" :disabled="!!busy || status === 'invited'" data-mark="invited" @click="mark('invited')">{{ busy === 'invited' ? 'Saving…' : 'Mark invited' }}</button>
@@ -339,7 +349,7 @@ const afterOpen = computed(() => !!who.value && (showAfter.value || status.value
             </section>
             <p v-else class="state">Pick someone from the list.</p>
 
-            <AfterCall v-if="who && afterOpen" :person="who" @saved="refresh" />
+            <AfterCall v-if="who && afterOpen" :person="who" @saved="showAfter = true; refresh()" />
           </div>
         </div>
       </template>
@@ -390,11 +400,11 @@ const afterOpen = computed(() => !!who.value && (showAfter.value || status.value
 .times { display: grid; gap: 6px; margin: 14px 0 12px; }
 .thead { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; }
 .thead .warn { color: var(--amber-11); }
-.slot { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
-.slot .input { width: auto; min-height: 30px; padding: 4px 8px; color-scheme: light dark; }
-.slot .theirs { color: var(--indigo-11); font-size: var(--text-sm); }
-.slot .x { margin-left: auto; padding: 0 6px; border: 0; background: none; color: var(--fg-faint); font: inherit; font-size: 16px; cursor: pointer; }
-.slot .x:hover { color: var(--fg); }
+.tslot { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.tslot .input { width: auto; min-height: 30px; padding: 4px 8px; color-scheme: light dark; }
+.tslot .theirs { color: var(--indigo-11); font-size: var(--text-sm); }
+.tslot .x { margin-left: auto; padding: 0 6px; border: 0; background: none; color: var(--fg-faint); font: inherit; font-size: 16px; cursor: pointer; }
+.tslot .x:hover { color: var(--fg); }
 .times > .btn { justify-self: start; }
 .label { margin-top: 12px; }
 .msg { min-height: 220px; font-size: var(--text-base); line-height: 1.55; }
@@ -403,6 +413,7 @@ const afterOpen = computed(() => !!who.value && (showAfter.value || status.value
 .linkbtn:hover { text-decoration: underline; }
 .send, .record { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
 .record { padding-top: 12px; border-top: 1px solid var(--border-soft); }
+.later { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 14px 0 0; color: var(--fg-2); line-height: 1.5; }
 .okline { display: flex; gap: 6px; align-items: baseline; margin: 10px 0 0; color: var(--jade-11); font-size: var(--text-sm); }
 .state h1 { margin-bottom: 4px; }
 @media (max-width: 1023px) {
@@ -415,7 +426,7 @@ const afterOpen = computed(() => !!who.value && (showAfter.value || status.value
   .pipe button b { font-size: 16px; }
   .composer { padding: 12px; }
   .msg { min-height: 260px; }
-  .slot .input { flex: 1 1 180px; }
-  .slot .theirs { order: 3; flex-basis: 100%; }
+  .tslot .input { flex: 1 1 180px; }
+  .tslot .theirs { order: 3; flex-basis: 100%; }
 }
 </style>

@@ -1,5 +1,5 @@
 # Contributor registry, onboarding and reaching out
-Status: seed, with Thomas's first calls made (mockups rev 2 in `prototypes/registry-onboarding/`)
+Status: phase 1 built on `registry/phase-1` (the database, `/join`, Your Arrow, the Community workspace, Add a person and Reach out's intro calls), waiting on a security review before it ships to main. Say hi comes with the Discord bot (phase 2), welcome calls in phase 4. Mockups rev 2 in `prototypes/registry-onboarding/`.
 Raised by: Thomas, 2026-11-11. Builds on Gavin's onboarding quests and wizard (2026-09-22 and 23), his contributor map (Arrow-air/website#180) and `profiles-and-reputation.md`.
 
 ## The idea

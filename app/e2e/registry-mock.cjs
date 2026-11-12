@@ -127,6 +127,8 @@ let failed = 0; const check = (ok, w) => { console.log(`${ok ? 'ok  ' : 'FAIL'} 
   const team = { outreach: [{ kind: 'intro', owner_id: THOMAS, status: 'talked', next_step: 'Invite to the build weekend', good_for: ['Longshot pack build'], intro_queue: false, updated_at: '2026-11-06T15:00:00Z' }], guess: null, note_count: 1, open_matches: 0 };
   const maya = { id: 'aaaaaaaa-0000-0000-0000-000000000001', name: 'Maya Okafor', city: 'Houston', country: 'United States', lat: 29.76, lng: -95.37, tz: 'America/Chicago', disciplines: ['Electrical'], blurb: 'Pack builder.', discord: 'maya.builds', github: 'mokafor', joined: '2026-11', has_account: true, profile: pr, map: 'city', ref: 'x-longshot', claimed_at: '2026-11-04T15:00:00Z', email: null, source: 'X · Longshot pack teardown', added_by: null, user_id: '44444444-4444-4444-4444-444444444444', created_at: '2026-11-04T15:00:00Z', ...team };
   const ade = { id: 'aaaaaaaa-0000-0000-0000-000000000002', name: 'Ade Bankole', city: 'Dallas', country: 'United States', lat: null, lng: null, tz: 'America/Chicago', disciplines: [], blurb: null, discord: 'ade.b', github: null, joined: '2026-11', has_account: false, profile: null, map: 'off', ref: null, claimed_at: null, email: null, source: 'Answers BMS questions in #longshot', added_by: CORE.id, user_id: null, created_at: '2026-11-05T15:00:00Z', outreach: [{ kind: 'intro', owner_id: CORE.id, status: 'new', next_step: null, good_for: [], intro_queue: true, updated_at: '2026-11-05T15:00:00Z' }], guess: { disciplines: ['Electrical', 'Power'], tools: [], updated_at: '2026-11-05T15:00:00Z' }, note_count: 0, open_matches: 0 };
+  const added = [];
+  const everyone = () => [maya, ade, ...added];
   const notes = [{ id: 'n1', kind: 'call', body: '20 minutes. Field tech at a utility.', author_id: THOMAS, created_at: '2026-11-06T15:00:00Z', edited_at: null, edits: [] }];
   const coreCalls = [];
   const c = await b.newContext({ timezoneId: 'America/Chicago' });
@@ -143,14 +145,35 @@ let failed = 0; const check = (ok, w) => { console.log(`${ok ? 'ok  ' : 'FAIL'} 
       coreCalls.push({ fn, args });
       if (fn === 'sa_join') return route.fulfill({ json: members[0] });
       if (fn === 'sa_registry_claim') return route.fulfill({ json: { person_id: null, linked: false, how: null, possible: 0 } });
-      if (fn === 'sa_registry_people') return route.fulfill({ json: [maya, ade] });
+      if (fn === 'sa_registry_people') return route.fulfill({ json: everyone() });
       if (fn === 'sa_registry_person') {
-        const who = args.p_person === maya.id ? maya : args.p_person === ade.id ? ade : null;
+        const who = everyone().find((x) => x.id === args.p_person);
         if (!who) return route.fulfill({ status: 400, json: { code: 'P0001', message: 'No such person' } });
         return route.fulfill({ json: { ...who, notes: who === maya ? notes : [], skill_checks: [], matches: [], outreach: who.outreach.map((o) => ({ ...o, history: [] })) } });
       }
-      if (fn === 'sa_set_outreach') { if (args.p_status) maya.outreach[0].status = args.p_status; if (args.p_owner) maya.outreach[0].owner_id = args.p_owner; return route.fulfill({ status: 204, body: '' }); }
-      if (fn === 'sa_add_note') { notes.unshift({ id: 'n2', kind: args.p_kind, body: args.p_body, author_id: CORE.id, created_at: new Date().toISOString(), edited_at: null, edits: [] }); return route.fulfill({ json: 'n2' }); }
+      if (fn === 'sa_set_outreach') {
+        const o = everyone().find((x) => x.id === args.p_person)?.outreach[0];
+        if (o) { if (args.p_status) o.status = args.p_status; if (args.p_owner) o.owner_id = args.p_owner; if (args.p_next_step !== null) o.next_step = args.p_next_step; if (args.p_good_for) o.good_for = args.p_good_for; }
+        return route.fulfill({ status: 204, body: '' });
+      }
+      if (fn === 'sa_add_note') {
+        if (args.p_person === maya.id) notes.unshift({ id: 'n2', kind: args.p_kind, body: args.p_body, author_id: CORE.id, created_at: new Date().toISOString(), edited_at: null, edits: [] });
+        const who = everyone().find((x) => x.id === args.p_person);
+        if (who && args.p_kind === 'call') who.call_notes = (who.call_notes ?? 0) + 1;
+        return route.fulfill({ json: 'n2' });
+      }
+      if (fn === 'sa_find_people') {
+        const hit = (args.p_discord === 'ade.b' || (args.p_name ?? '').toLowerCase().startsWith('ade b')) ? [{ id: ade.id, name: ade.name, github: null, discord: 'ade.b', email: null, has_account: false, source: ade.source, why: [args.p_discord === 'ade.b' ? 'discord' : 'name'] }] : [];
+        return route.fulfill({ json: hit });
+      }
+      if (fn === 'sa_add_person') {
+        if (args.p_email === 'ade@example.com') return route.fulfill({ status: 409, json: { code: '23505', message: 'Already in the registry: Ade Bankole' } });
+        const id = `bbbbbbbb-0000-0000-0000-00000000000${added.length + 1}`;
+        added.push({ ...ade, id, name: args.p_name, discord: args.p_discord_username, github: args.p_github_login, github_id: args.p_github_id, email: args.p_email, source: args.p_source, tz: args.p_tz,
+          outreach: [{ kind: 'intro', owner_id: args.p_owner, status: 'new', next_step: null, good_for: [], intro_queue: args.p_intro_queue, updated_at: new Date().toISOString() }],
+          guess: { disciplines: args.p_guess_disciplines ?? [], tools: args.p_guess_tools ?? [], updated_at: new Date().toISOString() }, note_count: args.p_note ? 1 : 0 });
+        return route.fulfill({ json: id });
+      }
       return route.fulfill({ json: null });
     }
     if (u.pathname.startsWith('/rest/v1/')) return route.fulfill({ json: [] });
@@ -185,6 +208,86 @@ let failed = 0; const check = (ok, w) => { console.log(`${ok ? 'ok  ' : 'FAIL'} 
   await cp.goto(`${ORIGIN}/#/community/people/aaaaaaaa-0000-0000-0000-00000000dead`);
   await cp.waitForSelector('[data-missing]', { timeout: 10000 });
   check(true, 'core (live): an unknown person says so');
+
+
+  // Add a person (live): GitHub logins resolved by GitHub's API (mocked here),
+  // the duplicate check, a refused duplicate, then a saved record.
+  const ghAsked = [];
+  await c.route('https://api.github.com/users/**', (route) => {
+    const login = decodeURIComponent(new URL(route.request().url()).pathname.split('/').pop());
+    ghAsked.push(login);
+    if (login === 'kmori') return route.fulfill({ json: { login: 'KMori', id: 4242, name: 'Kenji Mori', type: 'User' } });
+    if (login === 'ghost404') return route.fulfill({ status: 404, json: { message: 'Not Found' } });
+    if (login === 'busy') return route.fulfill({ status: 403, headers: { 'access-control-allow-origin': '*', 'access-control-expose-headers': 'X-RateLimit-Remaining, X-RateLimit-Reset', 'x-ratelimit-remaining': '0', 'x-ratelimit-reset': String(Math.floor(Date.now() / 1000) + 600) }, json: { message: 'API rate limit exceeded' } });
+    return route.abort('internetdisconnected');
+  });
+  await cp.goto(`${ORIGIN}/#/community/people/add`);
+  await cp.waitForSelector('[data-addform]', { timeout: 10000 });
+  const gh = async (login) => { await cp.locator('#ap-github').fill(login); await cp.waitForTimeout(900); return cp.locator('[data-gh]').innerText(); };
+  check((await gh('kmori')).includes('github.com/KMori (Kenji Mori)'), 'core (live): a GitHub login resolves through api.github.com');
+  check((await gh('ghost404')).includes('GitHub has nobody called ghost404') , 'core (live): GitHub\'s 404 is "nobody called"');
+  const rl = await gh('busy');
+  check(rl.includes("won't answer more lookups") && rl.includes('saved without an id'), `core (live): rate limited says so, and that the login is saved without an id (${rl})`);
+  check((await gh('nowhere')).includes("Couldn't reach GitHub"), 'core (live): no network says so');
+  await gh('kmori');
+  check(ghAsked.filter((x) => x === 'kmori').length === 1, 'core (live): a login GitHub answered is asked once');
+  await cp.locator('#ap-name').fill('Ade Bankole');
+  await cp.locator('#ap-discord').fill('ade.b');
+  await cp.waitForTimeout(900);
+  const fp = coreCalls.filter((x) => x.fn === 'sa_find_people').at(-1);
+  check(fp && fp.args.p_discord === 'ade.b' && fp.args.p_github === 'kmori' && fp.args.p_github_id === 4242, `core (live): the duplicate check sends the handles and the resolved id ${JSON.stringify(fp?.args)}`);
+  check((await cp.locator('[data-dupes]').innerText()).includes('Already in the registry') && await cp.locator(`[data-dupe="${ade.id}"]`).count() === 1, 'core (live): Ade shows as already in the registry');
+  await cp.locator('#ap-name').fill('Luis Ortega');
+  await cp.locator('#ap-discord').fill('luis.fpv');
+  await cp.locator('#ap-source').fill('Flies FPV at the Marfa field');
+  await cp.locator('#ap-email').fill('ade@example.com');
+  await cp.locator('#ap-tz').fill('America/Chicago');
+  await cp.locator('[data-tax="Piloting"]').click();
+  await cp.locator('[data-queue]').click();
+  await cp.locator('[data-add]').click();
+  await cp.waitForSelector('[data-add-err]', { timeout: 10000 });
+  let ap = coreCalls.filter((x) => x.fn === 'sa_add_person').at(-1);
+  check((await cp.locator('[data-add-err]').innerText()).includes('Already in the registry: Ade Bankole') && cp.url().endsWith('/people/add'), 'core (live): a duplicate refused by sa_add_person shows its error and stays');
+  check(ap.args.p_github_login === 'KMori' && ap.args.p_github_id === 4242 && ap.args.p_discord_username === 'luis.fpv' && ap.args.p_discord_id === null
+    && ap.args.p_owner === CORE.id && ap.args.p_intro_queue === true && ap.args.p_tz === 'America/Chicago' && JSON.stringify(ap.args.p_guess_disciplines) === '["Piloting"]',
+    `core (live): sa_add_person gets GitHub's login and id, the Discord username with no id, owner, queue, zone and guess ${JSON.stringify(ap.args)}`);
+  await cp.locator('#ap-email').fill('luis@example.com');
+  await gh('busy');
+  await cp.locator('[data-add]').click();
+  await cp.waitForSelector('[data-name]', { timeout: 10000 });
+  ap = coreCalls.filter((x) => x.fn === 'sa_add_person').at(-1);
+  check(ap.args.p_github_login === 'busy' && ap.args.p_github_id === null && ap.args.p_email === 'luis@example.com', 'core (live): a login GitHub couldn\'t check is saved without an id');
+  check(cp.url().endsWith(`/community/people/${added[0].id}`) && (await cp.locator('[data-name]').innerText()) === 'Luis Ortega', 'core (live): Add to registry goes to the new record');
+  check(coreCalls.filter((x) => x.fn === 'sa_registry_people').length >= 2, 'core (live): the list is reloaded after adding');
+
+  // Reach out (live): Ade's call is booked; the after-call note writes a call
+  // note, then the status, next step and good-for in one save.
+  ade.outreach[0].status = 'booked';
+  await cp.goto(`${ORIGIN}/#/community/reach-out?person=${ade.id}`);
+  await cp.waitForSelector('[data-aftercall]', { timeout: 10000 });
+  check((await cp.locator('[data-later]').innerText()).includes('booked'), 'core (live): a booked call folds the invite away');
+  await cp.locator('[data-ac-good]').fill('Cell grading and matching.');
+  await cp.locator('[data-ac-next]').fill('Pack build day in Dallas');
+  await cp.locator('[data-ac-tag-input]').fill('Longshot BMS');
+  await cp.locator('[data-ac-tag-input]').press('Enter');
+  const before = coreCalls.length;
+  await cp.locator('[data-ac-save]').click();
+  await cp.waitForSelector('[data-ac-done]', { timeout: 10000 });
+  const writes = coreCalls.slice(before).filter((x) => x.fn === 'sa_add_note' || x.fn === 'sa_set_outreach');
+  check(writes.length === 2 && writes[0].fn === 'sa_add_note' && writes[0].args.p_kind === 'call' && writes[0].args.p_person === ade.id
+    && writes[0].args.p_body === 'Good at: Cell grading and matching.\nNext step: Pack build day in Dallas', `core (live): the call note first ${JSON.stringify(writes[0]?.args)}`);
+  check(writes[1]?.fn === 'sa_set_outreach' && writes[1].args.p_status === 'talked' && writes[1].args.p_next_step === 'Pack build day in Dallas'
+    && JSON.stringify(writes[1].args.p_good_for) === '["Longshot BMS"]' && writes[1].args.p_kind === 'intro', `core (live): then the status, next step and good for ${JSON.stringify(writes[1]?.args)}`);
+  check((await cp.locator('[data-composer] .pill').first().innerText()).includes('Talked'), 'core (live): Ade shows as talked');
+  // Mark invited (live) on someone in the queue: Luis, added above.
+  await cp.goto(`${ORIGIN}/#/community/reach-out?person=${added[0].id}&invite=join`);
+  await cp.waitForSelector('[data-composer][data-mode="join"]', { timeout: 10000 });
+  check((await cp.locator('[data-draft]').inputValue()).includes(`${ORIGIN}/#/join?ref=invite-julius`), 'core (live): the join invite names the signed-in inviter');
+  await cp.locator('[data-mark="invited"]').click();
+  await cp.waitForSelector('[data-flash]', { timeout: 10000 });
+  const mi = coreCalls.filter((x) => x.fn === 'sa_set_outreach').at(-1);
+  check(mi.args.p_person === added[0].id && mi.args.p_status === 'invited' && mi.args.p_note === 'Invited to join' && mi.args.p_owner === null, `core (live): Mark invited, already his owner's ${JSON.stringify(mi.args)}`);
+  check(!coreCalls.some((x) => /send|message|dm|email/i.test(x.fn)), 'core (live): nothing is ever sent');
 
   check(!errors.length, `no page errors ${errors.join(' | ')}`);
   await b.close(); srv.kill(); process.exit(failed ? 1 : 0);

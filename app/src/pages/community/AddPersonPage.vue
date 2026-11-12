@@ -158,7 +158,7 @@ const signedIn = computed(() => !remote || !!session.userId);
             <div v-if="dupes.length" class="callout team">
               <Icon name="people" :size="16" />
               <div>
-                <b>{{ sure ? 'Already in the registry:' : 'Maybe already in the registry:' }}</b>
+                <b>{{ sure ? 'Already in the registry:' : 'Maybe already in the registry:' }}</b>{{ ' ' }}
                 <span v-for="(c, i) in dupes" :key="c.id"><template v-if="i">, </template><RouterLink class="dlink" :to="`/community/people/${c.id}`" :data-dupe="c.id">{{ c.name }}</RouterLink> <span class="faint">({{ whyText(c) }}{{ c.has_account ? '' : ', no account' }})</span></span>.
                 {{ sure ? 'Open that record instead of making a second one.' : 'If it\'s them, open that record instead.' }}
               </div>

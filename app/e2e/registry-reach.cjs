@@ -171,7 +171,8 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   await p.locator('[data-slot] .input').first().fill('2026-11-16T16:00');
   await p.locator('[data-slot] .input').first().dispatchEvent('change');
   await p.waitForTimeout(200);
-  check((await p.locator('[data-their-time]').first().innerText()).startsWith('Tue, Nov 17, 11:00 AM') && (await draft(p)).includes('Tue, Nov 17, 11:00 AM'), 'a time you change here changes in her zone and in the draft');
+  check((await p.locator('[data-their-time]').allInnerTexts()).some((t) => t.startsWith('Tue, Nov 17, 11:00 AM')) && (await draft(p)).includes('Tue, Nov 17, 11:00 AM'), 'a time you change here changes in her zone and in the draft');
+  check((await p.locator('[data-their-time]').last().innerText()).startsWith('Tue, Nov 17'), 'the times stay in order');
   await p.locator('[data-slot] .x').last().click();
   check(await p.locator('[data-slot]').count() === 2, 'a time can be dropped');
   await p.locator('[data-draft]').fill(`${await draft(p)}\nPS: bring photos of the foil moulds.`);
@@ -275,13 +276,16 @@ const check = (ok, what) => { console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); if
   const marta = p.locator('tr[data-person]', { hasText: 'Marta Silva' });
   check(await marta.count() === 1 && (await marta.innerText()).includes('Invited'), 'lead: she is on the list, invited, after loadCommunity');
   await p.evaluate(() => localStorage.setItem('arrow.theme', 'light'));
+  await p.reload();
   await reach(p, '?person=diego');
+  check(await p.evaluate(() => document.documentElement.dataset.theme === 'light'), 'the light theme is on');
   await shoot(p, '1440-light-lead-reach');
   await addPage(p);
   await p.locator('#ap-name').fill('Rosa');
   await settle(p);
   await shoot(p, '1440-light-lead-add');
   await p.evaluate(() => localStorage.setItem('arrow.theme', 'dark'));
+  await p.reload();
 
   // A member and signed out: both pages refuse ------------------------------------------------------------
   for (const role of ['member', 'out']) {

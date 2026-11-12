@@ -46,7 +46,8 @@ export async function lookupGitHub(typed: string, signal?: AbortSignal): Promise
       return { ok: false, why: 'offline' };
     }
     if (res.status === 404) r = { ok: false, why: 'not_found' };
-    else if (res.status === 429 || (res.status === 403 && res.headers.get('x-ratelimit-remaining') === '0')) {
+    // GitHub exposes its rate-limit headers to the browser; the message says so too.
+    else if (res.status === 429 || (res.status === 403 && (res.headers.get('x-ratelimit-remaining') === '0' || /rate limit/i.test(await res.clone().text().catch(() => ''))))) {
       const reset = Number(res.headers.get('x-ratelimit-reset'));
       const at = reset ? new Date(reset * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '';
       return { ok: false, why: 'rate_limited', detail: at };
