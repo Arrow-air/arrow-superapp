@@ -288,15 +288,15 @@ const history = computed(() => {
 .kv { margin-top: 12px; grid-template-columns: 86px minmax(0, 1fr); align-items: start; }
 .kv dt { padding-top: 5px; }
 .ownerrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.sel { width: auto; min-height: 28px; padding: 3px 8px; font-size: var(--text-base); }
-.input { min-height: 30px; padding: 5px 9px; }
+.teampanel .input { min-height: 30px; padding: 5px 9px; }
+.teampanel .input.sel { width: auto; max-width: 100%; min-height: 28px; padding: 3px 8px; font-size: var(--text-base); }
 .tag .x { margin-left: 2px; padding: 0 2px; border: 0; background: none; color: var(--fg-faint); font: inherit; cursor: pointer; }
 .tag .x:hover { color: var(--fg); }
-.nextstep { resize: none; line-height: 1.45; }
+.teampanel .nextstep { resize: none; line-height: 1.45; }
 .addtag { display: flex; gap: 6px; margin-top: 6px; }
 .addtag .input { flex: 1; min-width: 0; }
-.teambtn { border-color: var(--amber-a7); color: var(--amber-11); }
-.teambtn:hover { border-color: var(--amber-a8); background: var(--amber-a3); color: var(--amber-12); }
+.teampanel .btn.teambtn { border-color: var(--amber-a7); color: var(--amber-11); }
+.teampanel .btn.teambtn:hover { border-color: var(--amber-a8); background: var(--amber-a3); color: var(--amber-12); }
 .knowform { margin-top: 10px; }
 .knowform .label { margin-top: 10px; }
 .editknow { margin-top: 8px; }
