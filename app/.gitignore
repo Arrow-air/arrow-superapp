@@ -5,3 +5,4 @@ dist
 
 # local env (Supabase keys for live builds)
 .env*.local
+e2e/.look/

@@ -7,6 +7,7 @@ import './styles/views.css';
 
 import { remote } from './lib/backend';
 import { forumLanding } from './lib/forum';
+import { joinLanding } from './modules/registry/join';
 import { initSession, session } from './lib/session';
 
 // Marks this app's storage as the one flights.arrowair.com shares, so the
@@ -18,7 +19,9 @@ if (window.top === window) {
 createApp(App).use(router).mount('#app');
 // Live mode: load the workspace from the shared Supabase and pick up any session.
 // Back from GitHub or an email link while the forum was waiting: finish there
-// (after choosing a new password, if a reset link brought them).
+// (after choosing a new password, if a reset link brought them). The forum
+// comes first; a join waiting on the same sign-in carries on in the wizard.
 if (remote) import('./modules/threads/remote').then(() => initSession()).then(() => {
   if (forumLanding && session.userId && !session.newPassword) void router.replace('/forum/sign-in');
+  else if (joinLanding && session.userId && !session.newPassword) void router.replace('/join');
 });

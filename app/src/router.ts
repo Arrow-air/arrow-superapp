@@ -12,6 +12,17 @@ export const router = createRouter({
     { path: '/broken', component: () => import('./pages/Broken.vue') },
     // Where dao.arrowair.com sends people to sign in with their Arrow account.
     { path: '/forum/sign-in', component: () => import('./pages/ForumSignIn.vue') },
+    // The contributor registry: the join wizard (/join?ref=… is every way in), and Your Arrow.
+    { path: '/join', component: () => import('./pages/JoinPage.vue') },
+    { path: '/you', component: () => import('./pages/YouPage.vue') },
+    // Community: the People list (?view, ?cat, ?q, ?shop, ?call), Add a person
+    // (core and leads), each person's page, and Reach out (core and leads;
+    // ?person=<id>, &invite=join). Inside the workspace frame: the params name
+    // the project and tab like any other page.
+    { path: '/:project(community)/:tab(people)', component: () => import('./pages/community/PeoplePage.vue') },
+    { path: '/:project(community)/:tab(people)/add', component: () => import('./pages/community/AddPersonPage.vue') },
+    { path: '/:project(community)/:tab(people)/:person', component: () => import('./pages/community/PersonPage.vue') },
+    { path: '/:project(community)/:tab(reach-out)', component: () => import('./pages/community/ReachOutPage.vue') },
     {
       path: '/:project/:tab/:item?',
       component: () => import('./pages/ModuleHost.vue'),
@@ -30,5 +41,7 @@ router.beforeEach((to) => {
   if (project) currentProject.value = project.id;
   const tab = project && findTab(to.params.tab, project.id);
   if (!project || !tab) return true; // NotFound handles it
-  if (!findItem(tab, to.params.item)) return `/${project.id}/${tab.id}/${firstItem(tab).id}`;
+  const first = firstItem(tab);
+  if (!first) return true; // a one-page tab (Community's) has no items
+  if (!findItem(tab, to.params.item)) return `/${project.id}/${tab.id}/${first.id}`;
 });

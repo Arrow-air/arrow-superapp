@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { icons } from './icons';
 
 // Segmented tabs with a sliding indicator, after coss ui Tabs (size lg),
 // with a recessed track and a raised pill for depth.
 // Items are router links, so each tab is a real, shareable URL.
 // An item with `divider` starts a new group: places first, then the views across them.
-const props = defineProps<{ items: { id: string; label: string; to: string; divider?: boolean }[]; active?: string; label: string }>();
+// `lock` marks a tab only core and leads see.
+const props = defineProps<{ items: { id: string; label: string; to: string; divider?: boolean; lock?: boolean }[]; active?: string; label: string }>();
 
 const list = ref<HTMLElement>();
 const indicator = ref({ left: 0, width: 0, visible: false });
@@ -40,8 +42,10 @@ watch(() => props.active, () => nextTick(measure));
         :to="t.to"
         class="tab"
         :aria-current="t.id === active ? 'page' : undefined"
+        :title="t.lock ? 'Core and leads only' : undefined"
       >
         {{ t.label }}
+        <svg v-if="t.lock" class="lk" viewBox="0 0 24 24" aria-hidden="true"><path :d="icons.lock" fill-rule="evenodd" /></svg>
       </RouterLink>
     </template>
     <span
@@ -54,6 +58,7 @@ watch(() => props.active, () => nextTick(measure));
 </template>
 
 <style scoped>
+.lk { width: 11px; height: 11px; margin-left: 5px; fill: var(--amber-11); opacity: 0.85; }
 .divider { flex: none; align-self: center; width: 1px; height: 16px; margin: 0 6px; background: var(--slate-a6); }
 .tabs {
   position: relative;

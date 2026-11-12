@@ -11,7 +11,16 @@ export type PageKind =
 
 export interface NavItem { id: string; label: string; icon: IconName; page?: PageKind }
 export interface NavGroup { id: string; label: string; sortable?: boolean; items: NavItem[] }
-export interface Tab { id: string; label: string; groups: NavGroup[]; /** A view across places, shown after the divider. */ view?: boolean }
+export interface Tab {
+  id: string;
+  label: string;
+  /** Empty for a tab that is one page with its own sidebar (Community's). */
+  groups: NavGroup[];
+  /** A view across places, shown after the divider. */
+  view?: boolean;
+  /** Shown to core and leads only. */
+  team?: boolean;
+}
 export type VersionStatus = 'upcoming' | 'current' | 'previous' | 'unmaintained';
 export interface Version { id: string; code: string; status: VersionStatus }
 export interface Project {
@@ -20,6 +29,7 @@ export interface Project {
   /** What it is, for the switcher: an aircraft, a battery pack. */
   kind: string;
   thumb?: string;
+  /** Empty for a workspace that isn't a product (Community). */
   versions: Version[];
   tabs: Tab[];
   /** Where the project opens: tab/item. */

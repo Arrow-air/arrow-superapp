@@ -1,0 +1,62 @@
+/* The Community workspace's pages (the People list, a person, Reach out),
+   after the onboarding mockups' screens 4 and 5, in the app's tokens. Under
+   .cm, beside registry.css's .rg form pieces. Amber is the team's colour:
+   anything only core and leads see is drawn in it. */
+.cm {
+  --team: var(--amber-11); --team-bg: var(--amber-a2); --team-line: var(--amber-a5);
+  padding: 18px 24px 40px; color: var(--fg-2); font-size: var(--text-base);
+}
+.cm .crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 12px; color: var(--fg-muted); font-size: var(--text-base); }
+.cm .crumb a { color: var(--fg-muted); text-decoration: none; }
+.cm .crumb a:hover { color: var(--fg-2); }
+.cm .crumb b { color: var(--fg-2); font-weight: 500; }
+.cm .crumb svg { color: var(--fg-faint); }
+.cm h1 { margin: 0; color: var(--fg); font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+.cm .lede { margin: 6px 0 0; max-width: 760px; color: var(--fg-muted); font-size: var(--text-nav); line-height: 1.55; }
+.cm .muted { color: var(--fg-muted); }
+.cm .faint { color: var(--fg-faint); }
+.cm .small { font-size: var(--text-sm); }
+.cm .link { color: var(--indigo-11); text-decoration: none; }
+.cm .link:hover { text-decoration: underline; }
+.cm .grow { flex: 1; min-width: 0; }
+.cm .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.cm .state { padding: 24px 0; color: var(--fg-muted); }
+
+.cm .pill { display: inline-flex; align-items: center; gap: 5px; height: 20px; padding: 0 8px; border-radius: 99px; font-size: var(--text-sm); font-weight: 500; white-space: nowrap; }
+.cm .pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.cm .pill.sky { color: var(--sky-11); background: var(--sky-a3); }
+.cm .pill.amber { color: var(--amber-11); background: var(--amber-a3); }
+.cm .pill.indigo { color: var(--indigo-11); background: var(--indigo-a3); }
+.cm .pill.jade { color: var(--jade-11); background: var(--jade-a3); }
+.cm .pill.slate { color: var(--fg-muted); background: var(--slate-a3); }
+.cm .pill.plum { color: var(--plum-11); background: color-mix(in srgb, var(--plum-9) 20%, transparent); }
+/* "no account": a person the team added who hasn't joined. */
+.cm .acct { display: inline-flex; align-items: center; padding: 3px 5px; border-radius: 4px; background: color-mix(in srgb, var(--plum-9) 16%, transparent); color: var(--plum-11); font: 600 9.5px/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; vertical-align: 1px; }
+.cm .teamtag { display: inline-flex; align-items: center; gap: 5px; color: var(--team); font: 600 10px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+.cm .tag { display: inline-flex; align-items: center; gap: 5px; min-height: 21px; padding: 0 7px; border: 1px solid var(--border-soft); border-radius: 6px; background: var(--slate-a3); color: var(--fg-2); font-size: var(--text-sm); }
+.cm .callout { display: flex; gap: 10px; padding: 10px 12px; border: 1px solid var(--border-soft); border-radius: 10px; background: var(--slate-a2); color: var(--fg-2); font-size: var(--text-base); line-height: 1.5; }
+.cm .callout b { color: var(--fg); font-weight: 500; }
+.cm .callout > svg { flex: none; margin-top: 2px; color: var(--fg-muted); }
+.cm .callout.indigo { border-color: var(--indigo-a4); background: var(--indigo-a3); color: var(--indigo-12); }
+.cm .callout.indigo > svg { color: var(--indigo-11); }
+.cm .callout.plum { border-color: color-mix(in srgb, var(--plum-9) 35%, transparent); background: color-mix(in srgb, var(--plum-9) 9%, transparent); }
+.cm .callout.plum svg { color: var(--plum-11); }
+.cm .callout.team { border-color: var(--team-line); background: var(--team-bg); }
+.cm .callout.team svg { color: var(--team); }
+
+.cm .kv { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 7px 14px; margin: 0; font-size: var(--text-base); }
+.cm .kv dt { color: var(--fg-muted); }
+.cm .kv dd { margin: 0; min-width: 0; color: var(--fg-2); overflow-wrap: anywhere; }
+
+.cm .tl { position: relative; margin: 0; padding: 0 0 0 16px; list-style: none; }
+.cm .tl::before { content: ''; position: absolute; top: 6px; bottom: 6px; left: 4px; width: 1px; background: var(--slate-6); }
+.cm .tl li { position: relative; padding: 4px 0; color: var(--fg-2); line-height: 1.45; overflow-wrap: anywhere; }
+.cm .tl li::before { content: ''; position: absolute; top: 10px; left: -15px; width: 7px; height: 7px; border-radius: 50%; background: var(--slate-8); }
+.cm .tl li.t::before { background: var(--amber-9); }
+.cm .tl .d { margin-right: 8px; color: var(--fg-faint); font: 11px var(--font-mono); white-space: nowrap; }
+
+@media (max-width: 767px) {
+  .cm { padding: 14px 12px 28px; }
+  .cm .kv { grid-template-columns: 96px minmax(0, 1fr); }
+}
+.cm h1 .sample { margin-left: 8px; vertical-align: middle; font-size: 11px; font-weight: 500; }

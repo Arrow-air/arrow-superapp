@@ -3,10 +3,12 @@ import ProjectSwitcher from './ProjectSwitcher.vue';
 import SegmentedTabs from './SegmentedTabs.vue';
 import { computed } from 'vue';
 import { useWorkspace } from './useWorkspace';
+import { onTeam } from '../modules/registry/community';
 
 // The project's own tabs: each project has its places, then the shared views.
+// Team tabs (Community's Reach out) show to core and leads only.
 const { project, tab, base } = useWorkspace();
-const tabs = computed(() => project.value?.tabs ?? []);
+const tabs = computed(() => (project.value?.tabs ?? []).filter((t) => !t.team || onTeam.value));
 </script>
 
 <template>
@@ -14,7 +16,7 @@ const tabs = computed(() => project.value?.tabs ?? []);
     <ProjectSwitcher />
     <SegmentedTabs
       label="Workspace"
-      :items="tabs.map((t, i) => ({ id: t.id, label: t.label, to: `${base}/${t.id}`, divider: !!t.view && !tabs[i - 1]?.view }))"
+      :items="tabs.map((t, i) => ({ id: t.id, label: t.label, to: `${base}/${t.id}`, divider: !!t.view && !tabs[i - 1]?.view, lock: !!t.team }))"
       :active="tab?.id"
     />
   </div>
