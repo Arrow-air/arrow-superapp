@@ -250,7 +250,7 @@ select pg_temp.check('members see the full profiles of people with accounts',
 select pg_temp.check('members see nobody without an account',
   not exists (select 1 from member_view where j->>'id' in (:'renamed', :'ade', :'lena')) and bool_and((j->>'has_account')::boolean)) from member_view;
 select pg_temp.check('members see no emails, sources, notes, outreach, guesses or call choices of others',
-  not exists (select 1 from member_view m, jsonb_object_keys(m.j) k where k in ('email', 'source', 'added_by', 'outreach', 'guess', 'note_count', 'notes', 'user_id'))
+  not exists (select 1 from member_view m, jsonb_object_keys(m.j) k where k in ('email', 'source', 'added_by', 'outreach', 'guess', 'note_count', 'notes', 'user_id', 'github_id', 'discord_id', 'call_notes'))
   and not exists (select 1 from member_view m where m.j->>'id' <> :'maya' and m.j->'profile' ?| array['call_ok', 'call_windows', 'heard_from']));
 select pg_temp.check('a member sees their own call choices', exists (select 1 from member_view where j->>'id' = :'maya' and (j->'profile'->>'call_ok')::boolean));
 select pg_temp.expect_error(format($q$select public.sa_registry_person(%L)$q$, :'ade'), 'No such person');
@@ -272,11 +272,15 @@ create temp table core_view as select * from public.sa_registry_people() j;
 select pg_temp.check('core sees everyone, the people without accounts too, with emails and sources',
   (select count(*) = 3 from core_view where j->>'id' in (:'renamed', :'ade', :'lena'))
   and exists (select 1 from core_view where j->>'id' = :'ade' and j->>'email' = 'sa-reg-ade@example.invalid' and j->>'source' like 'Answers BMS%' and (j->>'note_count')::int = 1));
+select pg_temp.check('core sees the ids the app resolved (Discord''s as text) and the call-note count',
+  exists (select 1 from core_view where j->>'id' = :'renamed' and j->'github_id' = '999200099'::jsonb and j->'discord_id' = 'null'::jsonb and (j->>'call_notes')::int = 0)
+  and exists (select 1 from core_view where j->>'id' = :'kenji' and j->'discord_id' = '"999300001"'::jsonb));
 select pg_temp.check('one person, as core: notes, outreach and guesses',
   (select jsonb_array_length(j->'notes') = 1 and j->'outreach'->0->>'owner_id' = :'c1' and j->'guess'->'disciplines' = '["Software", "Telemetry"]'
      and jsonb_array_length(j->'matches') = 0 from public.sa_registry_person(:'kenji') j));
 select pg_temp.check('core sees the open "same person?" cards', (select count(*) = 2 from public.sa_registry_matches()));
 select public.sa_add_note(:'ade', 'call', '20 minutes. Knows cell matching cold.') as ade_note \gset
+select pg_temp.check('a call note counts on the team''s view', (select (j->>'call_notes')::int = 1 and (j->>'note_count')::int = 2 from public.sa_registry_person(:'ade') j));
 select pg_temp.check('core adds a skill check', public.sa_add_note(:'ade', 'skill', 'Watched him grade cells.', 'Electrical', 'seen_work') is not null);
 select pg_temp.expect_error(format($q$select public.sa_add_note(%L, 'skill', 'Good.')$q$, :'ade'), 'A skill check names a discipline');
 select pg_temp.expect_error(format($q$select public.sa_add_note(%L, 'gossip', 'x')$q$, :'ade'), 'Unknown kind of note');

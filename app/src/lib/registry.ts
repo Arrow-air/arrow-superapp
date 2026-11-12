@@ -122,9 +122,14 @@ export interface Person extends Card {
   added_by?: string | null;
   user_id?: string | null;
   created_at?: string;
+  /** The ids the app resolved: GitHub's numeric id, Discord's snowflake as text. */
+  github_id?: number | null;
+  discord_id?: string | null;
   outreach?: Outreach[];
   guess?: { disciplines: string[]; tools: Tool[]; updated_at: string } | null;
   note_count?: number;
+  /** Notes of kind call. */
+  call_notes?: number;
   open_matches?: number;
 }
 
@@ -318,7 +323,8 @@ export async function linkPerson(match: string, same: boolean): Promise<string |
 // The database's tables, in this browser, seeded from the mockups. The
 // visitor is "me"; registryDemo.role is who they are in the workspace.
 interface Row {
-  id: string; user_id: string | null; display_name: string; github_login: string | null; discord_username: string | null; email: string | null;
+  id: string; user_id: string | null; display_name: string; github_login: string | null; github_id: number | null;
+  discord_username: string | null; discord_id: string | null; email: string | null;
   city: string | null; country: string | null; lat: number | null; lng: number | null; tz: string | null; map: MapPrecision;
   source: string; ref: string | null; added_by: string | null; created_at: string; claimed_at: string | null;
 }
@@ -345,7 +351,7 @@ export function setDemoSignedOut(on: boolean) {
   try { if (on) sessionStorage.setItem(SIGNED_OUT, '1'); else sessionStorage.removeItem(SIGNED_OUT); } catch { /* storage unavailable */ }
 }
 export const DEMO_ME = 'me';
-const DEMO_KEY = 'superapp:registry.v1';
+const DEMO_KEY = 'superapp:registry.v2';
 const iso = (d: string) => new Date(`${d}T15:00:00Z`).toISOString();
 const newId = () => `r${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 const isTeam = () => registryDemo.role === 'core' || registryDemo.role === 'lead';
@@ -356,7 +362,8 @@ function seed(): DemoState {
   for (const p of SAMPLE_PEOPLE) {
     const created = iso(p.joined ?? p.added!.on);
     s.people.push({
-      id: p.id, user_id: p.joined ? `u-${p.id}` : null, display_name: p.name, github_login: p.github, discord_username: p.discord, email: p.email ?? null,
+      id: p.id, user_id: p.joined ? `u-${p.id}` : null, display_name: p.name, github_login: p.github, github_id: p.github ? demoGitHubId(p.github) : null,
+      discord_username: p.discord, discord_id: null, email: p.email ?? null,
       city: p.city, country: p.country, lat: p.lat, lng: p.lng, tz: p.tz, map: p.map, source: p.source, ref: p.ref,
       added_by: p.added?.by ?? null, created_at: created, claimed_at: p.joined ? created : null,
     });
@@ -384,7 +391,8 @@ function seed(): DemoState {
   // A "same person?" card for a lead: someone signed up with GitHub under
   // Rosa's name, with an email that isn't the one on the record Thomas added.
   const on = iso('2026-11-11');
-  s.people.push({ id: 'rosa-gh', user_id: 'u-rosa-gh', display_name: 'Rosa Delgado', github_login: 'rdelgado-waco', discord_username: null, email: null,
+  s.people.push({ id: 'rosa-gh', user_id: 'u-rosa-gh', display_name: 'Rosa Delgado', github_login: 'rdelgado-waco', github_id: demoGitHubId('rdelgado-waco'),
+    discord_username: null, discord_id: null, email: null,
     city: null, country: null, lat: null, lng: null, tz: null, map: 'off', source: 'Signed up', ref: null, added_by: null, created_at: on, claimed_at: on });
   s.matches.push({ id: 'm-rosa', person_id: 'rosa', user_id: 'u-rosa-gh', account_person_id: 'rosa-gh', account_name: 'Rosa Delgado', reason: 'same name', created_at: on, settled: false });
   return s;
@@ -402,6 +410,13 @@ export function resetRegistryDemo() { demo = seed(); persist(); }
 export const demoTeam = SAMPLE_TEAM;
 /** Who the demo visitor is on the team: Thomas as a lead, Julius as core. */
 export const demoTeamMe = () => (registryDemo.role === 'lead' ? 'u-thomas' : 'u-julius');
+
+/** The demo's stand-in for GitHub's numeric ids: the same login always gets the same id. */
+export function demoGitHubId(login: string) {
+  let h = 7;
+  for (const c of login.toLowerCase()) h = (h * 31 + c.charCodeAt(0)) % 90_000_000;
+  return 10_000_000 + h;
+}
 
 const round2 = (n: number | null) => (n == null ? null : Math.round(n * 100) / 100);
 function card(r: Row): Card {
@@ -428,9 +443,11 @@ function teamView(r: Row): Person {
   const s = db();
   return {
     ...selfView(r), email: r.email, source: r.source, added_by: r.added_by, user_id: r.user_id, created_at: r.created_at,
+    github_id: r.github_id, discord_id: r.discord_id,
     outreach: s.outreach.filter((o) => o.person_id === r.id).map(({ person_id: _p, history: _h, ...o }) => o),
     guess: s.guesses[r.id] ?? null,
     note_count: s.notes.filter((n) => n.person_id === r.id).length,
+    call_notes: s.notes.filter((n) => n.person_id === r.id && n.kind === 'call').length,
     open_matches: s.matches.filter((m) => m.person_id === r.id && !m.settled).length,
   };
 }
@@ -472,7 +489,7 @@ function demoSave(f: ProfileFields, finish: boolean): Person {
   const now = new Date().toISOString();
   let r = s.people.find((p) => p.user_id === DEMO_ME);
   if (!r) {
-    r = { id: DEMO_ME, user_id: DEMO_ME, display_name: 'You', github_login: null, discord_username: null, email: null, city: null, country: null, lat: null, lng: null,
+    r = { id: DEMO_ME, user_id: DEMO_ME, display_name: 'You', github_login: null, github_id: null, discord_username: null, discord_id: null, email: null, city: null, country: null, lat: null, lng: null,
       tz: null, map: 'off', source: 'Signed up', ref: f.ref ?? joinRef() ?? null, added_by: null, created_at: now, claimed_at: now };
     s.people.push(r);
   }
@@ -498,15 +515,15 @@ function demoSave(f: ProfileFields, finish: boolean): Person {
   persist();
   return selfView(r);
 }
-function demoFind(q: { name?: string; discord?: string; github?: string; email?: string }): Candidate[] {
+function demoFind(q: { name?: string; discord?: string; github?: string; email?: string; githubId?: number; discordId?: string }): Candidate[] {
   requireTeam();
   const nm = q.name?.trim().toLowerCase(), dc = q.discord?.trim().replace(/^@/, '').toLowerCase(), gh = q.github?.trim().replace(/^@/, '').toLowerCase(), em = q.email?.trim().toLowerCase();
   return db().people.flatMap((r) => {
     const n = r.display_name.toLowerCase();
     const why = [
       nm && (n === nm || (nm.length >= 4 && (n.includes(nm) || nm.includes(n)))) ? 'name' : null,
-      dc && r.discord_username?.toLowerCase() === dc ? 'discord' : null,
-      gh && r.github_login?.toLowerCase() === gh ? 'github' : null,
+      (dc && r.discord_username?.toLowerCase() === dc) || (q.discordId && r.discord_id === q.discordId) ? 'discord' : null,
+      (gh && r.github_login?.toLowerCase() === gh) || (q.githubId && r.github_id === q.githubId) ? 'github' : null,
       em && r.email?.toLowerCase() === em ? 'email' : null,
     ].filter(Boolean) as Candidate['why'];
     return why.length ? [{ id: r.id, name: r.display_name, github: r.github_login, discord: r.discord_username, email: r.email, has_account: !!r.user_id, source: r.source, why }] : [];
@@ -518,11 +535,14 @@ function demoAdd(p: NewPerson): string {
   if (!p.source?.trim()) demoFail('Say where you know them from');
   const s = db();
   const email = p.email?.trim().toLowerCase() || null;
-  const dup = email && s.people.find((r) => r.email?.toLowerCase() === email);
+  // As sa_add_person: the ids the app resolved and the email are one record each.
+  const dup = s.people.find((r) => (p.githubId != null && r.github_id === p.githubId) || (p.discordId != null && r.discord_id === p.discordId) || (email && r.email?.toLowerCase() === email));
   if (dup) demoFail(`Already in the registry: ${dup.display_name}`);
+  if (p.owner && !SAMPLE_TEAM.some((m) => m.id === p.owner)) demoFail('The owner has to be core or a lead');
   const now = new Date().toISOString(), id = newId(), by = demoTeamMe();
-  s.people.push({ id, user_id: null, display_name: p.name.trim(), github_login: p.githubLogin?.replace(/^@/, '') || null, discord_username: p.discordUsername?.replace(/^@/, '') || null,
-    email, city: p.city ?? null, country: p.country ?? null, lat: p.lat ?? null, lng: p.lng ?? null, tz: p.tz ?? null, map: 'off', source: p.source.trim(), ref: null,
+  s.people.push({ id, user_id: null, display_name: p.name.trim(), github_login: p.githubLogin?.trim().replace(/^@/, '') || null, github_id: p.githubId ?? null,
+    discord_username: p.discordUsername?.trim().replace(/^@/, '') || null, discord_id: p.discordId ?? null,
+    email, city: p.city?.trim() || null, country: p.country?.trim() || null, lat: p.lat ?? null, lng: p.lng ?? null, tz: p.tz ?? null, map: 'off', source: p.source.trim(), ref: null,
     added_by: by, created_at: now, claimed_at: null });
   s.outreach.push({ person_id: id, kind: 'intro', owner_id: p.owner ?? null, status: 'new', next_step: null, good_for: p.goodFor ?? [], intro_queue: !!p.introQueue,
     updated_at: now, history: [{ at: now, by, note: `Added: ${p.source.trim()}` }] });
@@ -536,7 +556,10 @@ function demoUpdate(id: string, f: PersonFields): void {
   const r = row(id);
   const own = ['source', 'email', 'guess_disciplines', 'guess_tools'];
   if (r.user_id) { const k = Object.keys(f).find((x) => !own.includes(x)); if (k) demoFail(`They have an account now, so ${k} is theirs to change`); }
-  const { guess_disciplines, guess_tools, github_id: _g, discord_id: _d, ...rest } = f;
+  const { guess_disciplines, guess_tools, ...rest } = f;
+  const dup = db().people.find((x) => x.id !== id && ((rest.github_id != null && x.github_id === rest.github_id) || (rest.discord_id != null && x.discord_id === rest.discord_id)
+    || (rest.email && x.email?.toLowerCase() === rest.email.trim().toLowerCase())));
+  if (dup) demoFail(`Already in the registry: ${dup.display_name}`);
   Object.assign(r, rest);
   if (guess_disciplines || guess_tools) {
     const g = db().guesses[id] ??= { disciplines: [], tools: [], updated_at: '' };

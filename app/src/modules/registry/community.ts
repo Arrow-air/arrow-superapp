@@ -199,6 +199,7 @@ export function communitySidebar(route: RouteLocationNormalizedLoaded, activeHin
   if (v === 'core' || v === 'lead') {
     groups.push({ id: 'team', label: 'Team', items: [
       { id: 'reach-out', label: 'Reach out', icon: 'send', to: '/community/reach-out', active: route.path === '/community/reach-out' },
+      { id: 'add', label: 'Add a person', icon: 'plus', to: '/community/people/add', active: route.path === '/community/people/add' },
     ] });
   }
   return groups;

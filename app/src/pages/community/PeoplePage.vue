@@ -79,6 +79,9 @@ const clock = (tz: string | null) => [localTime(tz), fromYou(tz)].filter(Boolean
         <p v-else-if="v === 'member'" class="lede">Everyone in Arrow's registry with an account: what they want to build, what they can do, and the tools they have.</p>
         <p v-else class="lede">Everyone who filled in the registry, and people the team added before they signed up. Members see profiles; notes, call status, owners and team-added people are for the core team.</p>
       </div>
+      <div v-if="onTeam" class="rg actions">
+        <RouterLink class="btn" to="/community/people/add" data-add-person><Icon name="plus" :size="14" />Add a person</RouterLink>
+      </div>
       <div v-if="v === 'public'" class="rg actions">
         <RouterLink class="btn primary" :to="{ path: '/join', query: { ref: 'community' } }">Join Arrow</RouterLink>
         <button v-if="remote" class="btn" type="button" @click="session.signInOpen = true">Sign in</button>

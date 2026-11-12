@@ -15,10 +15,12 @@ export const router = createRouter({
     // The contributor registry: the join wizard (/join?ref=… is every way in), and Your Arrow.
     { path: '/join', component: () => import('./pages/JoinPage.vue') },
     { path: '/you', component: () => import('./pages/YouPage.vue') },
-    // Community: the People list (?view, ?cat, ?q, ?shop, ?call), each person's
-    // page, and Reach out (core and leads; phase 1d fills it in). Inside the
-    // workspace frame: the params name the project and tab like any other page.
+    // Community: the People list (?view, ?cat, ?q, ?shop, ?call), Add a person
+    // (core and leads), each person's page, and Reach out (core and leads;
+    // ?person=<id>, &invite=join). Inside the workspace frame: the params name
+    // the project and tab like any other page.
     { path: '/:project(community)/:tab(people)', component: () => import('./pages/community/PeoplePage.vue') },
+    { path: '/:project(community)/:tab(people)/add', component: () => import('./pages/community/AddPersonPage.vue') },
     { path: '/:project(community)/:tab(people)/:person', component: () => import('./pages/community/PersonPage.vue') },
     { path: '/:project(community)/:tab(reach-out)', component: () => import('./pages/community/ReachOutPage.vue') },
     {

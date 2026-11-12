@@ -304,12 +304,15 @@ $$;
 create or replace function public.sa_reg_team_view(p public.sa_people, pr public.sa_profiles) returns jsonb language sql stable security definer set search_path = public, pg_temp as $$
   select public.sa_reg_self_view(p, pr) || jsonb_build_object(
     'email', p.email, 'source', p.source, 'added_by', p.added_by, 'user_id', p.user_id, 'created_at', p.created_at,
+    -- The resolved ids (Discord's as text: a snowflake is past what JSON numbers keep exactly).
+    'github_id', p.github_id, 'discord_id', p.discord_id::text,
     'outreach', coalesce((select jsonb_agg(jsonb_build_object('kind', o.kind, 'owner_id', o.owner_id, 'status', o.status,
         'next_step', o.next_step, 'good_for', o.good_for, 'intro_queue', o.intro_queue, 'updated_at', o.updated_at) order by o.kind)
       from public.sa_outreach o where o.person_id = p.id), '[]'),
     'guess', (select jsonb_build_object('disciplines', g.disciplines, 'tools', g.tools, 'updated_at', g.updated_at)
       from public.sa_team_guesses g where g.person_id = p.id),
     'note_count', (select count(*) from public.sa_person_notes n where n.person_id = p.id),
+    'call_notes', (select count(*) from public.sa_person_notes n where n.person_id = p.id and n.kind = 'call'),
     'open_matches', (select count(*) from public.sa_possible_matches m where m.person_id = p.id and m.settled_at is null))
 $$;
 

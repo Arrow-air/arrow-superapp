@@ -110,10 +110,16 @@ const safeUrl = (url: string) => (/^https?:\/\//i.test(url) ? url : '');
 const linksBy = computed(() => {
   const x = p.value;
   if (!x) return '';
-  if (x.github) return `GitHub ${x.github}`;
-  if (x.discord) return `Discord @${x.discord}`;
+  if (x.github && x.github_id) return `GitHub ${x.github}`;
+  if (x.discord && x.discord_id) return `Discord @${x.discord}`;
   if (x.email) return 'the email on this record, once they confirm it';
   return '';
+});
+/** A handle the team couldn't turn into an id links nothing by itself. */
+const unchecked = computed(() => {
+  const x = p.value;
+  if (!x) return '';
+  return [x.github && !x.github_id ? `GitHub ${x.github}` : '', x.discord && !x.discord_id ? `Discord @${x.discord}` : ''].filter(Boolean).join(' and ');
 });
 
 // Earned: what they did here, the way Your Arrow lists it ------------------------------------
@@ -202,6 +208,7 @@ const earned = computed<Entry[]>(() => {
           <div>
             <b>No account yet.</b> Only the core team and leads see this record. It isn't on the map and members can't see it.
             <template v-if="linksBy"> It links to {{ first }}'s account when they join with <b>{{ linksBy }}</b>; anything less certain, a lead confirms.</template>
+            <template v-else-if="unchecked"> {{ unchecked }} isn't checked against an account yet, so when {{ first }} joins, a lead confirms it's them.</template>
             <template v-else> Add their GitHub, Discord or email so it can link when they join.</template>
             <div class="row">
               <RouterLink class="btn sm primary" :to="{ path: '/community/reach-out', query: { person: p.id, invite: 'join' } }" data-invite-join><Icon name="send" :size="13" /> Invite to join</RouterLink>

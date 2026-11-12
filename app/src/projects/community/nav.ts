@@ -11,7 +11,7 @@ export const community: Project = {
   versions: [],
   tabs: [
     { id: 'people', label: 'People', groups: [] },
-    // Phase 1d: the say-hi and intro-call queues, and the after-call note.
+    // Intro calls (the queue, drafts a person sends, the after-call note). Say hi joins it with the Discord bot.
     { id: 'reach-out', label: 'Reach out', groups: [], team: true },
   ],
   home: 'people',
