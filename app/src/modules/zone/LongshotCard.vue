@@ -4,8 +4,8 @@ import { integration, longshotLinks, specRows } from '../../data/longshot';
 import { state, statusOf } from '../threads/store';
 import StatusIcon from '../threads/StatusIcon.vue';
 
-// Longshot against the Tattu it replaces, and the integration steps, each
-// pointing at the thread where it is being worked out.
+// Longshot's Quiver variant, the 14S9P, against the Tattu it replaces, and
+// the integration steps, each pointing at the thread where it is being worked out.
 const route = useRoute();
 const router = useRouter();
 const openThread = (id: string) => router.replace({ query: { ...route.query, thread: id } });
@@ -18,11 +18,11 @@ const threadStatus = (id?: string) => {
 <template>
   <div class="ls">
     <div class="ls-head">
-      <span class="ls-name">Longshot PT1 vs. the Tattu 4.0 30 Ah</span>
+      <span class="ls-name">Longshot 14S9P PT1 vs. the Tattu 4.0 30 Ah</span>
       <a :href="longshotLinks.repo" target="_blank" rel="noopener">project-longshot</a>
     </div>
     <table class="spec">
-      <thead><tr><th></th><th>Longshot</th><th>Tattu (today)</th></tr></thead>
+      <thead><tr><th></th><th>Longshot 14S9P</th><th>Tattu (today)</th></tr></thead>
       <tbody>
         <tr v-for="r in specRows" :key="r.label">
           <th>{{ r.label }}</th>

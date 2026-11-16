@@ -9,6 +9,7 @@ import { ago, standing } from './store';
 import { zoneLabel } from '../../frame/nav';
 import { partLabel } from '../../projects/parts';
 import { boardById } from '../../data/pcbs';
+import { forLabel } from '../../projects/longshot/variants';
 
 // Threads as full-width rows: status, title, where it stands, activity.
 // Clicking a row opens the thread panel over the current page (?thread=),
@@ -40,6 +41,8 @@ const open = (id: string) => router.replace({ query: { ...route.query, thread: i
               <template v-else-if="t.part">{{ partLabel(t.part) ?? t.part }}</template>
               <template v-else>{{ threadTypes[t.type].label }}</template>
             </span><span class="dot">·</span>
+            <!-- On Longshot: the build it's for, else the pack it's about, else every pack. -->
+            <template v-if="forLabel(t)"><span class="for" data-for>{{ forLabel(t) }}</span><span class="dot">·</span></template>
             <template v-if="showZone"><span class="zone">{{ zoneLabel(t.zone) }}</span><span class="dot">·</span></template>
             <span :class="{ decided: t.settled }">{{ standing(t).text }}</span>
           </span>
@@ -68,6 +71,7 @@ const open = (id: string) => router.replace({ query: { ...route.query, thread: i
 .title { color: var(--fg); font-size: var(--text-nav); font-weight: 500; line-height: 1.4; }
 .meta { font-size: var(--text-sm); color: var(--fg-muted); }
 .zone { color: var(--fg-2); }
+.for { font-family: var(--font-mono); color: var(--fg-2); white-space: nowrap; }
 .tp { display: inline-flex; align-items: center; gap: 5px; color: var(--fg-2); }
 .tp :deep(svg) { flex: none; color: var(--tfg); }
 .decided { color: var(--jade-11); }

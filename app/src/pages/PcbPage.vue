@@ -4,10 +4,10 @@ import { useRoute, useRouter } from 'vue-router';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
 import NewThread from '../modules/threads/NewThread.vue';
 import type { ThreadType } from '../modules/threads/data';
-import { isOpen, openVersion, startThread, state, threadsOnComponent } from '../modules/threads/store';
+import { buildChoices, isOpen, openVersion, startThread, state, threadsOnComponent } from '../modules/threads/store';
 import { boardNote, boardSet, boardZone, groupOf, groupsOf, naturalRef } from '../data/pcbs';
 import { partFullName } from '../projects/parts';
-import { planOf } from '../projects/plans';
+import { defaultClock, mainClock, versionLabel } from '../projects/plans';
 import { zoneIcon, zoneLabel, zonePath } from '../frame/nav';
 import { useWorkspace } from '../frame/useWorkspace';
 
@@ -20,9 +20,14 @@ const router = useRouter();
 const { project } = useWorkspace();
 const set = computed(() => boardSet(project.value?.id));
 const boards = computed(() => set.value.boards);
-const NEXT = computed(() => planOf(project.value?.id).next);
 const boardId = computed(() => (route.query.board as string) || boards.value[0].id);
 const board = computed(() => boards.value.find((b) => b.id === boardId.value) ?? boards.value[0]);
+// A change to a board is for its zone's build (Longshot's BMSJ: BMS v1), else the project's main one.
+const clk = computed(() => defaultClock(boardZone[board.value.id]) ?? mainClock(project.value?.id));
+const NEXT = computed(() => clk.value.label);
+const builds = computed(() => buildChoices(project.value?.id));
+const build = ref(clk.value.next);
+watch(clk, (c) => (build.value = c.next));
 const selectedRef = computed(() => (route.query.ref as string | undefined) ?? null);
 const selected = computed(() => (selectedRef.value ? board.value.footprints.find((f) => f.ref === selectedRef.value) : undefined));
 const go = (q: Record<string, string | undefined>) => {
@@ -133,7 +138,7 @@ async function propose(d: { type: ThreadType; title: string; body: string; key: 
     title: d.title,
     body: d.body,
     type: d.type,
-    version: NEXT.value,
+    version: builds.value ? build.value : clk.value.next,
     key: d.key,
   });
   if (!t) return false;
@@ -174,7 +179,9 @@ const githubFile = computed(() => `${set.value.repo}/blob/main/${board.value.pat
           :where-icon="zoneIcon(boardZone[board.id])"
           :scopes="[{ key: 'ref', label: selected.ref }, { key: 'board', label: board.short }]"
           type="proposal"
-          :version="openVersion()"
+          :version="versionLabel(openVersion(clk))"
+          :builds="builds"
+          v-model:build="build"
           :title-hint="{ proposal: `What should change about ${about === 'ref' ? selected.ref : 'the board'}?` }"
           body-hint="Why: what it fixes, what it costs, what else on the board it touches"
           :draft-key="`new:pcb:${board.id}:${selected.ref}`"

@@ -30,6 +30,7 @@ const views = {
   suggested: page$(() => import('./SuggestedPage.vue')),
   decisions: page$(() => import('./DecisionsPage.vue')),
   'ls-summary': page$(() => import('./longshot/SummaryPage.vue')),
+  'ls-variant': page$(() => import('./longshot/VariantPage.vue')),
   'ls-bom': page$(() => import('./longshot/BomPage.vue')),
   'ls-github': page$(() => import('./longshot/GithubPage.vue')),
   'ls-guide': page$(() => import('./longshot/GuidePage.vue')),
@@ -45,7 +46,7 @@ const page = item?.page ?? 'zone';
 <template>
   <ZonePage v-if="item && page === 'zone'" :zone="item.id" />
   <ZonePage v-else-if="item && page === 'gate'" :zone="item.id" gate />
-  <ReleasePage v-else-if="page === 'release'" />
+  <ReleasePage v-else-if="item && page === 'release'" :clock="item.id" />
   <ModelPage v-else-if="page === 'model'" />
   <component :is="views[page as keyof typeof views]" v-else-if="page in views" />
   <Placeholder v-else />

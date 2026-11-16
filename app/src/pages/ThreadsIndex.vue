@@ -6,6 +6,7 @@ import { areaOf, byActivity, isOpen, projectThreads } from '../modules/threads/s
 import { projectTabs, zoneLabel } from '../frame/nav';
 import { partLabel } from '../projects/parts';
 import { useWorkspace } from '../frame/useWorkspace';
+import { asPackFilter, matchesPack, packFilters, type PackFilter } from '../projects/longshot/variants';
 
 // Every thread in one list, the same rows as the zones, opening the same
 // panel. Threads still live in their zones; this is the index over them.
@@ -19,6 +20,9 @@ const areaLabel = computed(() => tabs.value.find((t) => t.id === area.value)?.la
 type Scope = 'open' | 'settled' | 'all';
 const scope = ref<Scope>('open');
 const query = ref('');
+// Longshot's threads each say which pack they are about (?pack=14s3p from a variant's page).
+const packs = computed(() => project.value?.id === 'longshot');
+const pack = ref<PackFilter>(asPackFilter(route.query.pack));
 
 // A part picked elsewhere (?part=3410) narrows the list to threads about it,
 // with a chip to clear it (Gavin's app-frame).
@@ -31,6 +35,7 @@ const matching = computed(() =>
   projectThreads.value
     .filter((t) => (area.value ? areaOf(t) === area.value : true))
     .filter((t) => !part.value || t.part === part.value)
+    .filter((t) => !packs.value || matchesPack(t, pack.value))
     .filter((t) => {
       const q = query.value.trim().toLowerCase();
       return !q || `${t.id} ${t.title} ${zoneLabel(t.zone)} ${t.body}`.toLowerCase().includes(q);
@@ -62,6 +67,9 @@ const groups = computed(() => {
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
         <input v-model="query" placeholder="Find a thread" aria-label="Find a thread" />
       </div>
+      <div v-if="packs" class="vseg" role="radiogroup" aria-label="Pack">
+        <button v-for="f in packFilters" :key="f.id" type="button" role="radio" :aria-checked="pack === f.id" @click="pack = f.id">{{ f.label }}</button>
+      </div>
       <div class="vseg" role="radiogroup" aria-label="Scope">
         <button v-for="s in (['open', 'settled', 'all'] as Scope[])" :key="s" type="button" role="radio" :aria-checked="scope === s" @click="scope = s">
           {{ s === 'open' ? 'Open' : s === 'settled' ? 'Closed' : 'All' }}
@@ -88,7 +96,7 @@ const groups = computed(() => {
 
 <style scoped>
 .view { max-width: 880px; }
-.tools { display: flex; align-items: center; gap: 10px; }
+.tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .find { position: relative; flex: 1; max-width: 360px; }
 .find svg { position: absolute; left: 9px; top: 50%; width: 12px; height: 12px; transform: translateY(-50%); fill: none; stroke: var(--fg-faint); stroke-width: 2; stroke-linecap: round; }
 .find input {
@@ -108,4 +116,6 @@ const groups = computed(() => {
 .chip svg { flex: none; width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 .show-all { padding: 0; border: 0; background: none; color: var(--indigo-11); font: inherit; cursor: pointer; }
 .show-all:hover { text-decoration: underline; }
+/* On a phone the search takes its own line, so the filters keep their width. */
+@media (max-width: 767px) { .find { flex: 1 1 100%; max-width: none; } }
 </style>

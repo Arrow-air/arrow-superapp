@@ -107,7 +107,7 @@ export const longshotGuide: Guide = {
   intro:
     'Building Longshot PT1, the 14S9P pack of 126 BAK 21700 cells that flies on Quiver, from bare parts to a charged, weighed pack. Each step says what the project\'s record says, with the source; "worked out from the CAD" marks what the CAD shows but nobody has written down. Where the record is silent the step asks: answer what you know here, and the next build answers the rest, with photos from the shot list.',
   variantNote:
-    'Spearhead\'s 14S3P pack (42 cells, about 18 × 18 cm) is planned to follow the same process; its layout isn\'t drawn yet, so its counts, busbars and enclosure will differ.',
+    'Spearhead\'s 14S3P pack (42 Tenpower 6.0 Ah cells, 180 × 180 mm) follows the same process. Its model, parts list and bench steps are on Julius\'s build site; its counts, busbars and case differ (no aluminium side sheets, an AS150U lead).',
   sources: [src('project-longshot', LS), at('PT1 build notes', PT1N), at('PT1 BOM', PT1BOM), at('CAD BOM', BOMMD), at('SL_PCB README', SLR), src('Arrow on X', 'https://x.com/ArrowAir_'), src('Call notes', W09)],
   builds: [
     { id: 'next', label: 'Next build' },

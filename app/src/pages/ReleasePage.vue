@@ -12,33 +12,41 @@ import {
 import { callItemsOf } from '../data/calls';
 import { remote } from '../lib/backend';
 import { currentProject, zoneLabel, zonePath } from '../frame/nav';
-import { planOf } from '../projects/plans';
+import { clockById, mainClock, versionLabel } from '../projects/plans';
+import { variantById } from '../projects/longshot/variants';
 
-// A project's next version in one place (Dev Kit v1.1 for Quiver, PT2 for
-// Longshot). Every thread aimed at it shows here, grouped by where it changes
-// the hardware, wherever it lives. Each improvement is decided in its own
-// thread; decided ones are the change list.
+// One build clock's next version in one place (Dev Kit v1.1 for Quiver; for
+// Longshot each variant's next build, and the BMS both wait on). Every thread
+// aimed at it shows here, grouped by where it changes the hardware, wherever
+// it lives. Each improvement is decided in its own thread; decided ones are
+// the change list.
+const props = defineProps<{ clock: string }>();
 const route = useRoute();
 const router = useRouter();
 const project = computed(() => currentProject.value);
-const plan = computed(() => planOf(project.value));
-const rel = computed(() => releaseOf(project.value));
+const clk = computed(() => clockById(props.clock) ?? mainClock(project.value));
+const variant = computed(() => variantById(clk.value.variant));
+const rel = computed(() => releaseOf(clk.value));
 const intro: Record<string, string> = {
-  quiver: 'The next revision of the Quiver Dev Kit. Every improvement proposed for it is collected here, by where it changes the aircraft. Each one is weighed and decided in its own thread; the decided ones make up the v1.1 change list.',
-  longshot: 'The next Longshot build. Everything proposed for it is collected here, by the part of the pack it changes: the BMS and its telemetry first, since PT1 has none. Each change is weighed and decided in its own thread; the decided ones make up the PT2 change list.',
+  'v1-1': 'The next revision of the Quiver Dev Kit. Every improvement proposed for it is collected here, by where it changes the aircraft. Each one is weighed and decided in its own thread; the decided ones make up the v1.1 change list.',
+  '14s9p-pt2': 'The next 14S9P, Quiver\'s pack: PT1 with a battery board that has the BMS built in. Everything proposed for it is collected here, by the part of the pack it changes. Each change is weighed and decided in its own thread; the decided ones make up the PT2 change list. BMS changes go to BMS v1, which this build waits on.',
+  '14s3p-pt1': 'The first 14S3P, Spearhead\'s pack. Everything proposed for it is collected here, by the part of the pack it changes and how it fits Spearhead. Each change is weighed and decided in its own thread; the decided ones make up its change list. BMS changes go to BMS v1.',
+  'bms-v1': 'The BMS every Longshot waits on: one design, inside the pack. Everything proposed for it is collected here: the board, what it tells the aircraft over CAN, and how the pack charges once it has one. Each change is weighed and decided in its own thread; the decided ones make up the BMS v1 spec.',
 };
+// The model to pick a part in, where this build has one in the app.
+const modelPath = computed(() => (project.value === 'quiver' ? '/quiver/overview/model' : clk.value.variant === '14s9p' ? '/longshot/overview/model' : undefined));
 
-const v11 = computed(() => projectThreads.value.filter((t) => t.version === plan.value.next));
-const open = computed(() => v11.value.filter(isOpen));
-const declined = computed(() => v11.value.filter((t) => t.declined));
-const deferred = computed(() => projectThreads.value.filter((t) => t.deferrals?.some((d) => d.from === plan.value.next)));
+const onClock = computed(() => projectThreads.value.filter((t) => t.version === clk.value.next));
+const open = computed(() => onClock.value.filter(isOpen));
+const declined = computed(() => onClock.value.filter((t) => t.declined));
+const deferred = computed(() => projectThreads.value.filter((t) => t.deferrals?.some((d) => d.from === clk.value.next)));
 const showDeclined = ref(false);
-const decided = computed(() => v11.value.filter((t) => t.settled).sort((a, b) => a.settled!.decision.localeCompare(b.settled!.decision)));
+const decided = computed(() => onClock.value.filter((t) => t.settled).sort((a, b) => a.settled!.decision.localeCompare(b.settled!.decision)));
 const converging = computed(() => open.value.filter((t) => statusOf(t) === 'converging').length);
 
-// The next version's zones always show, even empty; any other zone with a
-// thread on it (Quiver's attachment interface, say) follows.
-const zones = computed(() => [...plan.value.nextZones, ...new Set(open.value.map((t) => t.zone).filter((z) => !plan.value.nextZones.includes(z)))]);
+// The clock's zones always show, even empty; any other zone with a thread on
+// it (Quiver's attachment interface, say) follows.
+const zones = computed(() => [...clk.value.zones, ...new Set(open.value.map((t) => t.zone).filter((z) => !clk.value.zones.includes(z)))]);
 const openIn = (zone: string) => open.value.filter((t) => t.zone === zone).sort(byActivity);
 
 // Call questions in these zones that no thread has picked up yet.
@@ -47,15 +55,15 @@ const raised = computed(() =>
 );
 
 const composing = ref(false);
-const draft = ref({ zone: plan.value.nextZones[0] });
-const where = computed(() => [...plan.value.nextZones, ...(project.value === 'quiver' ? ['interface'] : [])]);
+const draft = ref({ zone: clk.value.zones[0] });
+const where = computed(() => [...clk.value.zones, ...(project.value === 'quiver' ? ['interface'] : [])]);
 function proposeIn(zone: string) {
   draft.value.zone = zone;
   composing.value = true;
   requestAnimationFrame(() => document.querySelector<HTMLInputElement>('.rel-form .title')?.focus());
 }
 async function create(d: { type: Thread['type']; title: string; body: string; key: string }): Promise<boolean> {
-  const t = await startThread({ zone: draft.value.zone, title: d.title, body: d.body, type: d.type, version: plan.value.next, key: d.key });
+  const t = await startThread({ zone: draft.value.zone, title: d.title, body: d.body, type: d.type, version: clk.value.next, key: d.key });
   if (!t) return false;
   composing.value = false;
   if (t) router.replace({ query: { ...route.query, thread: t.id } });
@@ -68,8 +76,8 @@ const stageLabel = { draft: 'Draft', open: 'Open', in_progress: 'In progress', i
 const isLead = computed(() => state.role === 'lead');
 const frozen = computed(() => !!rel.value.frozenAt);
 const form = ref({ pool: rel.value.pool ?? ('' as number | ''), date: rel.value.freezeTarget ?? '' });
-const savePlan = () => setReleasePlan({ pool: form.value.pool === '' ? undefined : Number(form.value.pool), freezeTarget: form.value.date || undefined });
-const retro = computed(() => retroPreview(project.value));
+const savePlan = () => setReleasePlan({ pool: form.value.pool === '' ? undefined : Number(form.value.pool), freezeTarget: form.value.date || undefined }, clk.value);
+const retro = computed(() => retroPreview(clk.value));
 // Who a retro line pays: you, a person named in the notes (held until a lead
 // confirms), or a document with no person named (held).
 function recipient(r: string) {
@@ -79,27 +87,31 @@ function recipient(r: string) {
   return { name: person(r)?.name ?? r, held: true, note: 'named in the notes' };
 }
 function freeze() {
-  if (confirm(`Freeze ${plan.value.next}? The spec locks, the retro split is recorded, and new proposals go to ${plan.value.later}.`)) freezeRelease();
+  if (confirm(`Freeze ${clk.value.label}? The spec locks, the retro split is recorded, and new proposals go to ${clk.value.laterLabel}.`)) freezeRelease(clk.value);
 }
 function deferRest() {
-  if (confirm(`Defer all ${open.value.length} open ${plan.value.next} threads to ${plan.value.later}?`)) deferOpen(`Not settled before the ${plan.value.next} freeze.`);
+  if (confirm(`Defer all ${open.value.length} open ${clk.value.label} threads to ${clk.value.laterLabel}?`)) deferOpen(`Not settled before the ${clk.value.label} freeze.`, clk.value);
 }
 </script>
 
 <template>
   <div class="zp">
     <header class="zp-head">
-      <h1 class="zp-title">{{ plan.next }} <span class="chip">Working name</span></h1>
-      <p class="zp-sum">{{ intro[project] }}</p>
-      <p v-if="frozen" class="frozen">Frozen {{ day(rel.frozenAt!) }} by {{ rel.frozenBy === 'me' ? 'you' : rel.frozenBy }}. The spec below is locked and the retro split is recorded; new proposals go to {{ plan.later }}.</p>
+      <h1 class="zp-title">{{ clk.label }} <span class="chip">Working name</span></h1>
+      <p class="zp-sum">{{ intro[clk.id] }}</p>
+      <p v-if="project === 'longshot'" class="for">
+        <template v-if="variant">For the <RouterLink :to="variant.page">{{ variant.code }} · {{ variant.aircraft }}</RouterLink> pack.</template>
+        <template v-else>For every Longshot pack.</template>
+      </p>
+      <p v-if="frozen" class="frozen">Frozen {{ day(rel.frozenAt!) }} by {{ rel.frozenBy === 'me' ? 'you' : rel.frozenBy }}. The spec below is locked and the retro split is recorded; new proposals go to {{ clk.laterLabel }}.</p>
       <div class="stats">
         <span v-if="rel.pool"><b>{{ rel.pool.toLocaleString('en-US') }}</b> ARROW retro pool</span>
         <span v-if="rel.freezeTarget">freeze <b>{{ day(rel.freezeTarget) }}</b></span>
         <span><b>{{ open.length }}</b> proposed</span>
         <span><b>{{ converging }}</b> converging</span>
         <span><b>{{ decided.length }}</b> decided</span>
-        <RouterLink :to="`/${project}/overview/model`" class="model-link">Pick a part in the 3D model</RouterLink>
-        <button v-if="!composing" class="new-btn" type="button" @click="proposeIn(plan.nextZones[0])">
+        <RouterLink v-if="modelPath" :to="modelPath" class="model-link">Pick a part in the 3D model</RouterLink>
+        <button v-if="!composing" class="new-btn" type="button" @click="proposeIn(clk.zones[0])">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" /></svg> Propose an improvement
         </button>
       </div>
@@ -112,11 +124,11 @@ function deferRest() {
       :where="zoneLabel(draft.zone)"
       :zones="where.map((z) => ({ id: z, label: zoneLabel(z) }))"
       type="proposal"
-      :version="openVersion()"
+      :version="versionLabel(openVersion(clk))"
       :title-hint="{ proposal: 'The change, in one line' }"
       body-hint="Why: what it fixes, what it costs, what it touches"
       submit-label="Propose"
-      :draft-key="`new:${project}:next`"
+      :draft-key="`new:${project}:${clk.id}`"
       :submit="create"
       @cancel="composing = false"
     />
@@ -142,7 +154,7 @@ function deferRest() {
     </section>
 
     <section class="grp">
-      <h2 class="sec-h">The {{ plan.next }} spec: decided</h2>
+      <h2 class="sec-h">The {{ clk.label }} spec: decided</h2>
       <ol v-if="decided.length" class="changes">
         <li v-for="t in decided" :key="t.id">
           <button type="button" class="change" @click="router.replace({ query: { ...route.query, thread: t.id } })">
@@ -163,7 +175,7 @@ function deferRest() {
       <p v-else class="none">Nothing decided yet. When a lead adopts a position on any thread above, it lands here; from here it can be funded as a bounty or grant.</p>
       <p v-if="declined.length || deferred.length" class="aside">
         <button v-if="declined.length" class="add" type="button" @click="showDeclined = !showDeclined">{{ declined.length }} declined</button>
-        <span v-if="deferred.length" class="muted">{{ deferred.length }} deferred to {{ plan.later }}</span>
+        <span v-if="deferred.length" class="muted">{{ deferred.length }} deferred to {{ clk.laterLabel }}</span>
       </p>
       <div v-if="showDeclined" class="list"><ThreadRows :threads="declined" /></div>
     </section>
@@ -171,7 +183,7 @@ function deferRest() {
     <section class="grp retro">
       <h2 class="sec-h">Retro pool and freeze</h2>
       <p class="expl">
-        A pool of ARROW set aside for this version's discussion. At the freeze it is split across every position on a {{ plan.next }} thread by weighted net support, adopted or not, so good ideas that lost still earn. Nothing is paid from the app.
+        A pool of ARROW set aside for this version's discussion. At the freeze it is split across every position on a {{ clk.label }} thread by weighted net support, adopted or not, so good ideas that lost still earn. Nothing is paid from the app.
       </p>
       <form v-if="isLead && !frozen" class="plan" @submit.prevent="savePlan">
         <label>Pool <input v-model.number="form.pool" type="number" min="0" step="100" placeholder="ARROW" aria-label="Retro pool in ARROW" /> ARROW</label>
@@ -191,16 +203,16 @@ function deferRest() {
             </tr>
           </tbody>
         </table>
-        <p v-else class="none">No position on a {{ plan.next }} thread has net support yet, so nothing would be split.</p>
+        <p v-else class="none">No position on a {{ clk.label }} thread has net support yet, so nothing would be split.</p>
         <p v-if="retro.lines.length && retro.unallocated" class="muted small">{{ retro.unallocated }} ARROW unallocated.</p>
       </div>
 
       <div v-if="isLead && !frozen" class="freeze">
         <p v-if="open.length" class="expl">
-          To freeze, every {{ plan.next }} thread needs an outcome: adopted, declined, or deferred to {{ plan.later }}. {{ open.length }} still open.
-          <button class="add" type="button" @click="deferRest">Defer the rest to {{ plan.later }}</button>
+          To freeze, every {{ clk.label }} thread needs an outcome: adopted, declined, or deferred to {{ clk.laterLabel }}. {{ open.length }} still open.
+          <button class="add" type="button" @click="deferRest">Defer the rest to {{ clk.laterLabel }}</button>
         </p>
-        <button class="primary" type="button" :disabled="open.length > 0" @click="freeze">Freeze {{ plan.next }}</button>
+        <button class="primary" type="button" :disabled="open.length > 0" @click="freeze">Freeze {{ clk.label }}</button>
       </div>
     </section>
   </div>
@@ -211,6 +223,9 @@ function deferRest() {
 .zp-title { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--fg); }
 .chip { height: 20px; padding: 0 7px; border-radius: 6px; background: var(--slate-a3); color: var(--fg-muted); font-size: var(--text-sm); font-weight: 500; line-height: 20px; letter-spacing: 0; }
 .zp-sum { margin: 8px 0 0; max-width: 720px; color: var(--fg-2); font-size: var(--text-nav); line-height: 1.6; }
+.for { margin: 6px 0 0; color: var(--fg-muted); font-size: var(--text-base); }
+.for a { color: var(--indigo-11); text-decoration: none; }
+.for a:hover { text-decoration: underline; }
 .stats { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 14px; font-size: var(--text-base); color: var(--fg-muted); }
 .stats b { color: var(--fg); font-weight: 600; }
 .new-btn {

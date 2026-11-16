@@ -8,6 +8,7 @@ export const SNAPSHOT = 'https://snapshot.box/#/s:arrowair.eth/proposal/0xe11e4b
 /** The Spearhead wiki's call notes; Longshot's battery and BMS calls are among them. */
 export const W09 = 'https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9009';
 export const W10 = 'https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9010';
+export const W11 = 'https://github.com/Arrow-air/project-spearhead/wiki/2026%E2%80%9011';
 export const SEP29 = 'https://discord.com/channels/853833144037277726/1478778896361980035/1554521669400526873';
 export const TATTU_STORE = 'https://genstattu.com/tattu-dual-channel-smart-charger-60a-3200w-for-6s-14s-lipo-tattu-smart-battery/';
 export const TATTU_TA3200 = 'https://www.tattuworld.com/products/ta3200-series-smart-drone-battery-charger.html';
@@ -18,6 +19,15 @@ export const HANDBOOK = 'https://github.com/Arrow-air/project-quiver/blob/main/d
 export const HANDBOOK_DRAFT = 'https://github.com/Arrow-air/project-quiver/pull/274';
 export const DEVKIT_REPORT = 'https://github.com/Arrow-air/project-quiver/blob/main/docs/Engineering-Reports/Dev-Kit-Engineering-Report.md';
 export const VESC_DRIVERS = 'https://github.com/vedderb/vesc_bms_fw/tree/main/drivers';
+/** Julius's build site: each variant's model, parts list and build steps. Public without signing in. */
+export const BUILD_14S9P = 'https://build.jfw.engineering/#/longshot';
+export const BUILD_14S3P = 'https://build.jfw.engineering/#/longshot-14s3p';
+/** Spearhead call notes by date, for the calls Longshot came up in. */
+export const SEP22_NOTES = `${W09}#september-22-2026--longshot-battery--bms-call`;
+export const SEP25_NOTES = `${W09}#september-25-2026`;
+export const OCT5_NOTES = `${W10}#october-5-2026`;
+export const OCT27_NOTES = `${W10}#october-27-2026`;
+export const NOV3_NOTES = `${W11}#november-3-2026`;
 
 export const src = (label: string, url: string) => ({ label, url });
 

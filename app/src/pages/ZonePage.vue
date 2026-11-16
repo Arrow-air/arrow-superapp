@@ -8,10 +8,11 @@ import GateList from '../modules/zone/GateList.vue';
 import AttachmentCard from '../modules/zone/AttachmentCard.vue';
 import LongshotCard from '../modules/zone/LongshotCard.vue';
 import type { Thread } from '../modules/threads/data';
-import { byActivity, isOpen, openVersion, projectOf, startThread, state, threadsInZone } from '../modules/threads/store';
+import { buildChoices, byActivity, defaultBuild, isOpen, openVersion, projectOf, startThread, state, threadsInZone } from '../modules/threads/store';
 import { zoneById } from '../data/zones';
 import { findProject, projectOfZone, zoneIcon, zoneLabel } from '../frame/nav';
-import { planOf } from '../projects/plans';
+import { defaultClock, versionLabel } from '../projects/plans';
+import { variantById } from '../projects/longshot/variants';
 
 // A working zone is one page that scrolls: what it is, its discussion, then
 // what the call notes and GitHub already say about it. Threads open in the
@@ -27,7 +28,13 @@ const related = computed(() => {
   const ts = (z.value?.related ?? []).map((id) => state.threads.find((t) => t.id === id)).filter((t): t is Thread => !!t);
   return [...new Set(ts.map(projectOf))].map((p) => ({ project: findProject(p)?.label ?? p, threads: ts.filter((t) => projectOf(t) === p) }));
 });
-const nextVersion = computed(() => (planOf(project.value).nextZones.includes(props.zone) ? openVersion(project.value) : undefined));
+// Threads started here are about the zone's build unless said otherwise; on
+// Longshot, which build (or none) is a choice in the composer.
+const nextVersion = computed(() => { const c = defaultClock(props.zone); return c ? versionLabel(openVersion(c)) : undefined; });
+const builds = computed(() => buildChoices(project.value));
+const build = ref(defaultBuild(props.zone));
+// Longshot's facts each say which variant they are about, or none for all of them.
+const variantCode = (id?: string) => variantById(id)?.code;
 
 const all = computed(() => threadsInZone(props.zone));
 const open = computed(() => all.value.filter(isOpen).sort(byActivity));
@@ -36,7 +43,7 @@ const showDecided = ref(false);
 
 const composing = ref(false);
 async function create(d: { type: Thread['type']; title: string; body: string; key: string }): Promise<boolean> {
-  const t = await startThread({ zone: props.zone, title: d.title, body: d.body, type: d.type, key: d.key });
+  const t = await startThread({ zone: props.zone, title: d.title, body: d.body, type: d.type, version: builds.value ? build.value : undefined, key: d.key });
   if (!t) return false;
   composing.value = false;
   if (t) router.replace({ query: { ...route.query, thread: t.id } });
@@ -53,8 +60,8 @@ async function create(d: { type: Thread['type']; title: string; body: string; ke
     </header>
 
     <dl v-if="z?.facts?.length" class="facts">
-      <template v-for="f in z.facts" :key="f.label">
-        <dt>{{ f.label }}</dt>
+      <template v-for="f in z.facts" :key="`${f.variant ?? ''}:${f.label}`">
+        <dt>{{ f.label }}<span v-if="f.variant" class="vtag" :title="`Only the ${variantCode(f.variant)}`">{{ variantCode(f.variant) }}</span></dt>
         <dd>{{ f.value }} <a v-if="f.source" :href="f.source.url" target="_blank" rel="noopener" class="fsrc">{{ f.source.label }}</a></dd>
       </template>
     </dl>
@@ -77,6 +84,8 @@ async function create(d: { type: Thread['type']; title: string; body: string; ke
         :where="zoneLabel(zone)"
         :where-icon="zoneIcon(zone)"
         :version="nextVersion"
+        :builds="builds"
+        v-model:build="build"
         :draft-key="`new:${zone}`"
         :submit="create"
         @cancel="composing = false"
@@ -120,6 +129,7 @@ async function create(d: { type: Thread['type']; title: string; body: string; ke
 .facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 0; margin: 18px 0 0; max-width: 760px; border-top: 1px solid var(--slate-a3); font-size: var(--text-base); }
 .facts dt, .facts dd { margin: 0; padding: 7px 0; border-bottom: 1px solid var(--slate-a3); line-height: 1.5; }
 .facts dt { padding-right: 18px; color: var(--fg-muted); }
+.vtag { margin-left: 6px; padding: 0 5px; border-radius: 5px; background: var(--slate-a3); color: var(--fg-2); font-family: var(--font-mono); font-size: 11px; line-height: 18px; white-space: nowrap; }
 .facts dd { color: var(--fg-2); }
 .fsrc { margin-left: 4px; color: var(--indigo-11); font-size: var(--text-sm); text-decoration: none; white-space: nowrap; }
 .fsrc:hover { text-decoration: underline; }

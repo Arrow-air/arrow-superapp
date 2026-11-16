@@ -236,12 +236,14 @@ async function signIn(p, email) {
   await p.goto(`${BASE}/#/longshot/pack/cells`);
   await p.waitForTimeout(800);
   await p.getByRole('button', { name: 'New thread' }).click();
+  // The cells are every pack's, so the composer asks which build; pick the 14S9P's next.
+  await p.getByLabel('Build').selectOption({ label: '14S9P PT2' });
   await p.getByLabel('Title').fill(`Longshot live test ${stamp}`);
   await p.getByRole('button', { name: 'Post thread' }).click();
   await p.waitForSelector('aside.panel h1.title', { timeout: 15000 });
   const lid = new URL(p.url().replace('/#', '')).searchParams.get('thread');
   const lrow = (await (await fetch(`${SUPA}/rest/v1/sa_threads?id=eq.${lid}&select=project,version`, { headers: admin })).json())[0];
-  check(/^L-\d+$/.test(lid ?? '') && lrow?.project === 'longshot' && lrow?.version === 'Longshot PT2', `a new Longshot thread is ${lid}, in project longshot, about Longshot PT2`);
+  check(/^L-\d+$/.test(lid ?? '') && lrow?.project === 'longshot' && lrow?.version === 'Longshot PT2', `a new Longshot thread is ${lid}, in project longshot, for the build picked (14S9P PT2, stored as Longshot PT2)`);
   await panel.getByLabel('New comment').fill('Weigh three groups and average them');
   await panel.getByRole('button', { name: 'Comment', exact: true }).click();
   await p.waitForTimeout(1500);

@@ -1,5 +1,5 @@
 import type { Position, Thread } from '../../modules/threads/data';
-import { planOf } from '../plans';
+import { clockById } from '../plans';
 import { AIP007, DEVKIT_REPORT, HANDBOOK, LS, TATTU_STORE, doc, lsCall, lsIssue, proposal } from './sources';
 
 // Longshot's open questions, seeded from the call notes on the Spearhead
@@ -8,8 +8,15 @@ import { AIP007, DEVKIT_REPORT, HANDBOOK, LS, TATTU_STORE, doc, lsCall, lsIssue,
 // or issue. Nobody has voted. Longshot's integration into Quiver (fit, BMS
 // protocol, failsafes, charging both packs, the first test) is discussed in
 // Quiver's workspace, Q-18 to Q-22; Longshot's zones link to those threads.
+// Each thread is on the build it shapes (projects/plans.ts): the BMS questions
+// on BMS v1, the Spearhead pack's on the 14S3P's, the next Quiver pack's on
+// the 14S9P's, and the ones about the 14S9P already built on its PT1.
+// Questions about every pack are on none.
 
-const NEXT = planOf('longshot').next;
+const BUILT = Object.keys(clockById('14s9p-pt2')!.built!)[0];
+const PT2 = clockById('14s9p-pt2')!.next;
+const S3 = clockById('14s3p-pt1')!.next;
+const BMS = clockById('bms-v1')!.next;
 const SEP22 = '2026-09-22T12:00:00-05:00';
 const SEP25 = '2026-09-25T12:00:00-05:00';
 const SEP28 = '2026-09-28T12:00:00-05:00';
@@ -30,7 +37,7 @@ const thread = (t: Omit<Thread, 'project' | 'kind' | 'votes' | 'replies' | 'obje
 
 export const longshotThreads: Thread[] = [
   thread({
-    id: 'L-1', zone: 'bms', type: 'question', system: 'bms', version: NEXT,
+    id: 'L-1', zone: 'bms', type: 'question', system: 'bms', version: BMS,
     title: 'BMS path: copy the dev board, a freelancer bounty, or AI-assisted design?',
     body: 'PT1 has no BMS, and the next steps all wait on one: protection, balancing, telemetry, and charging without balance leads. Three paths are on record. Sep 22: Julius reserved a bounty in the Longshot budget and is approaching freelancers, while Alperen tries Astra for component selection and placement. Sep 28: the BMS software is set up and Julius is waiting on hardware. Sep 29: Julius has a palm-sized BMS dev board to test, then copy into Arrow\'s design. Oct 5: no update yet. Which path leads, and what does the first board have to prove?',
     source: lsCall('ls-sep22-6', 'Sep 22'), raisedAt: SEP22, activeAt: OCT5,
@@ -43,7 +50,7 @@ export const longshotThreads: Thread[] = [
     ],
   }),
   thread({
-    id: 'L-2', zone: 'bms', type: 'question', system: 'bms', version: NEXT,
+    id: 'L-2', zone: 'bms', type: 'question', system: 'bms', version: BMS,
     title: 'What must the first Longshot BMS do?',
     body: 'The proposal lists the core for Phase 2: an STM32, over- and under-voltage, over-current and over-temperature protection, passive balancing and CAN. The calls have added to it: one design shared across Arrow\'s packs, a generator cut-off, and on Spearhead a daughterboard on the battery connector PCB. Alperen is writing up the battery and charging requirements for Erick to review (Sep 25). What is in scope for PT2, and what waits?',
     source: proposal, raisedAt: SEP22,
@@ -54,7 +61,7 @@ export const longshotThreads: Thread[] = [
     ],
   }),
   thread({
-    id: 'L-3', zone: 'charging', type: 'question', system: 'charging', version: NEXT,
+    id: 'L-3', zone: 'charging', type: 'question', system: 'charging', version: BMS,
     title: 'Which charger once Longshot has a BMS?',
     body: 'PT1 charges on a Tattu TA3200 through exposed charge and balance connectors. With a BMS the balance leads go away (Sep 22), so the charger has to work with the pack another way, ideally over CAN. Tattu says the TA3200 recognizes batteries that speak DroneCAN; what it expects from a pack that isn\'t a Tattu is not on record. One thing is fixed: Longshot is standard Li-ion, full at 58.8 V, and the Tattu is LiHV, full at 60.9 V. The TA3200 comes in standard (4.2 V a cell), HV and UHV versions, and only the standard one suits Longshot. Quiver\'s side of this is Q-21.',
     source: SL, raisedAt: SEP22,
@@ -65,14 +72,14 @@ export const longshotThreads: Thread[] = [
     ],
   }),
   thread({
-    id: 'L-4', zone: 'testing', type: 'question', system: 'testing', version: '',
+    id: 'L-4', zone: 'testing', type: 'question', system: 'testing', version: BUILT,
     title: 'PT1\'s test report: what should the bench test and the flight test show?',
     body: 'Phase 1 promised a bench-tested prototype and "documented flight validation on Quiver". PT1 has flown: Julius had the log from a Longshot flight on the Sep 29 call and planned another. Nothing is posted yet, and the pack\'s 2,540 Wh is worked out from a cell test, not measured on the pack. What goes in the report: measured capacity, flight time against the Tattu, voltage sag under load, temperatures from the four sensors, the log itself?',
     source: proposal, raisedAt: SEP29,
     positions: [],
   }),
   thread({
-    id: 'L-5', zone: 'cells', part: 'PW-CELL-001-21700', type: 'question', system: 'cells', version: NEXT,
+    id: 'L-5', zone: 'cells', part: 'PW-CELL-001-21700', type: 'question', system: 'cells', version: '',
     title: 'Cells for the next packs: 6.5 Ah again, or a cheaper cell?',
     body: 'PT1 uses 126 BAK 21700 65E (6.5 Ah), bought in stock at about $7.00 a cell landed. For the next builds Thomas is sourcing cells and will send Julius options to approve (Sep 29). KBM: 6.5 Ah 21700s come only from BAK and FEB, at about twice the price of 5.0 Ah cells. For Spearhead, cheaper cells would halve the cell cost but hold only 5.5 to 6 Ah (Sep 22).',
     source: lsCall('ls-sep29-4', 'Sep 29'), raisedAt: SEP29,
@@ -83,7 +90,7 @@ export const longshotThreads: Thread[] = [
     ],
   }),
   thread({
-    id: 'L-6', zone: 'on-spearhead', type: 'proposal', system: 'spearhead', version: '',
+    id: 'L-6', zone: 'on-spearhead', type: 'proposal', system: 'spearhead', version: S3,
     title: 'Spearhead\'s Longshot: 14S3P, 19.5 Ah, AS150U, about 4 kg, no BMS at first',
     body: 'Sized line by line on the Sep 22 call (the notes name Alperen and Julius), scaling PT1 down by about 3.2. Spearhead moves to 14S for it. The first pack ships without a BMS, added when it\'s ready. Sep 29: a square layout of about 18 × 18 cm, as small as Julius can make it, and likely two packs of the same capacity on Spearhead PT2. Oct 5: about a month for the customization plus the BMS.',
     source: lsCall('ls-sep22-2', 'Sep 22'), raisedAt: SEP22, activeAt: OCT5,
@@ -92,7 +99,7 @@ export const longshotThreads: Thread[] = [
     ],
   }),
   thread({
-    id: 'L-7', zone: 'on-spearhead', type: 'question', system: 'charging', version: '',
+    id: 'L-7', zone: 'on-spearhead', type: 'question', system: 'charging', version: S3,
     title: 'Spearhead\'s second pack: how is it charged, and how many BMSs?',
     body: 'In the electric configuration a second Longshot replaces the gas tank and drives the pusher directly (agreed Sep 25). How it charges is open, and so is how many BMSs Spearhead PT2 carries. There is no CAN port for the second pack\'s telemetry for now. Erick will check this when he starts the battery connector PCB.',
     source: lsCall('ls-sep25-2', 'Sep 25'), raisedAt: SEP25,
@@ -109,35 +116,35 @@ export const longshotThreads: Thread[] = [
     positions: [],
   }),
   thread({
-    id: 'L-9', zone: 'builds', type: 'question', system: 'build', version: '',
+    id: 'L-9', zone: 'builds', type: 'question', system: 'build', version: BUILT,
     title: 'Close out PT1 on GitHub: are #21 to #25 done, and what is in the last 364 g?',
     body: 'PT1 was declared complete on Aug 29 at 11.2 kg, but its build issues are still open: solder the SL and voltage-sense boards (#22, #21), print the holders and the casing (#23, #24), order screws (#25). The weight table (#26) still has about 364 g to itemize: the fuse, wiring, screws, temperature sensors, the top-cap clip and four rubber feet.',
     source: lsIssue(26), raisedAt: PT1,
     positions: [],
   }),
   thread({
-    id: 'L-10', zone: 'safety', type: 'question', system: 'safety', version: '',
+    id: 'L-10', zone: 'safety', type: 'question', system: 'safety', version: BUILT,
     title: 'Flying and charging PT1 without a BMS: what are the rules until it has one?',
     body: 'PT1 has no over-voltage, under-voltage, over-current or over-temperature cut-off; the fuse is its only protection. It charges on the TA3200 through its balance connector and must never get the LiHV profile the Tattu uses. In the air Quiver gets no battery data from it, so the failsafes adopted in Quiver #248 can\'t act and only the voltage backstop does (Q-20). The Sep 22 call called charging without a BMS possible but not recommended. What should pilots, and whoever charges it, follow until PT2?',
     source: SL, raisedAt: SEP28,
     positions: [],
   }),
   thread({
-    id: 'L-11', zone: 'connector', part: 'SL_PCB-002-SL_PCB_V3', type: 'proposal', system: 'electronics', version: NEXT,
+    id: 'L-11', zone: 'connector', part: 'SL_PCB-002-SL_PCB_V3', type: 'proposal', system: 'electronics', version: PT2,
     title: 'Publish the SL board and sense board sources, with the charger pin map',
     body: 'Julius closed #14 (Jul 10) and #16 (Jul 14) saying the voltage-sense board (V1.0) and SL board (V1) KiCad files would follow. The repo still holds only the SL board\'s basic layout and no sense-board project; the boards as built exist only as STEP geometry in the CAD. The SL_PCB README also leaves the TA3200 balance connector part and the full map from the four sense boards to the balance connector open, and warns not to rely on photos for pin mapping. Without the sources nobody else can build or check a pack.',
     source: doc('#16, Julius', `${LS}/issues/16`), raisedAt: JUL,
     positions: [],
   }),
   thread({
-    id: 'L-12', zone: 'bms', type: 'question', system: 'bms', version: NEXT,
+    id: 'L-12', zone: 'bms', type: 'question', system: 'bms', version: BMS,
     title: 'Which license for Longshot\'s hardware, and what credit does the BMS design owe?',
     body: 'Every PCB README says "Hardware: Open Source (license TBD)", and the repo has no license file. The proposal promised release "under Arrow DAO standard licensing"; Quiver uses CERN-OHL-S. BMSJ\'s firmware is the GPL v3 VESC BMS firmware, and its schematic uses symbol libraries named ENNOID and BMS-Master-LV-rescue, the names used by the GPL-3.0 ENNOID-BMS design. Settle the license, and the upstream credits, before the BMS is built on.',
     source: SL, raisedAt: '2026-05-27T12:00:00Z',
     positions: [],
   }),
   thread({
-    id: 'L-13', zone: 'busbars', part: 'PW-BUS-003-Bridge_1', type: 'question', system: 'build', version: '',
+    id: 'L-13', zone: 'busbars', part: 'PW-BUS-003-Bridge_1', type: 'question', system: 'build', version: BUILT,
     title: 'As built: copper or brass busbars, polycarbonate or acrylic plates?',
     body: 'The README and the CAD BOM say the busbars are 0.2 mm copper, but the supplier\'s quotation lists brass H62 for the 0.2 mm parts (copper C101 only for the 6 mm terminals). The CAD BOM lists polycarbonate top and bottom plates; the weight table and the Sep 22 notes say acrylic. The busbar metal matters for current and welding, and the next builds copy whatever the BOM says.',
     source: doc('Copper order', `${LS}/blob/main/engineering/builds/PT1/design/copper-busbars/order-copper-longshot-pt1/README.md`), raisedAt: PT1,

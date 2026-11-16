@@ -1,7 +1,9 @@
-// Longshot's workspace: Arrow's own battery pack. Places first (the pack, its
-// electronics, the aircraft it flies in, building it), then the same views
-// across them that Quiver has. Zone ids are unique across projects, so a
-// thread's zone says which project it belongs to.
+// Longshot's workspace: Arrow's own battery packs, one project with a variant
+// per aircraft (Thomas, Nov 16). Overview has the family at a glance, a page
+// per variant and a page per build clock; then the places (the pack, its
+// electronics, the aircraft it flies in, building it), shared by every
+// variant; then the same views across them that Quiver has. Zone ids are
+// unique across projects, so a thread's zone says which project it belongs to.
 import { item, type Project, type Tab } from '../../frame/navkit';
 
 export const longshotTabs: Tab[] = [
@@ -21,9 +23,22 @@ export const longshotTabs: Tab[] = [
         ],
       },
       {
+        id: 'variants',
+        label: 'Variants',
+        items: [
+          item('14s9p', '14S9P · Quiver', 'battery', 'ls-variant'),
+          item('14s3p', '14S3P · Spearhead', 'battery', 'ls-variant'),
+        ],
+      },
+      {
+        // One page per build clock (projects/plans.ts); item ids are the clock ids.
         id: 'next',
-        label: 'Next build',
-        items: [item('next', 'PT2 improvements', 'flag', 'release')],
+        label: 'Next builds',
+        items: [
+          item('14s9p-pt2', '14S9P PT2', 'flag', 'release'),
+          item('14s3p-pt1', '14S3P PT1', 'flag', 'release'),
+          item('bms-v1', 'BMS v1', 'flag', 'release'),
+        ],
       },
     ],
   },
@@ -146,13 +161,17 @@ export const longshotTabs: Tab[] = [
   },
 ];
 
+// Versions per build clock: what each variant is building next, the BMS both
+// wait on, and the one pack built so far.
 export const longshot: Project = {
   id: 'longshot',
   label: 'Longshot',
-  kind: 'Battery pack',
+  kind: 'Battery packs',
   versions: [
-    { id: 'pt2', code: 'PT2', status: 'upcoming' },
-    { id: 'pt1', code: 'PT1', status: 'current' },
+    { id: '14s9p-pt2', code: '14S9P PT2', status: 'upcoming', clock: '14s9p-pt2' },
+    { id: '14s3p-pt1', code: '14S3P PT1', status: 'upcoming', clock: '14s3p-pt1' },
+    { id: 'bms-v1', code: 'BMS v1', status: 'upcoming', clock: 'bms-v1' },
+    { id: '14s9p-pt1', code: '14S9P PT1', status: 'current' },
   ],
   tabs: longshotTabs,
   home: 'overview/summary',
