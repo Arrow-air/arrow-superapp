@@ -1,8 +1,9 @@
-// Longshot: Arrow's own battery pack, meant as a drop-in replacement for the
-// Tattu 4.0 30 Ah on Quiver. Facts from Arrow-air/project-longshot (README,
-// #26, PR #27, SL_PCB), the Longshot proposal, and project-quiver #188, #248.
-// Where the sources disagree, both figures are shown. Shown on Quiver's
-// power page and on Longshot's own Quiver page.
+// Longshot's 14S9P, Quiver's variant: Arrow's own battery pack, meant as a
+// drop-in replacement for the Tattu 4.0 30 Ah on Quiver. Facts from
+// Arrow-air/project-longshot (README, #26, PR #27, SL_PCB), the Longshot
+// proposal, and project-quiver #188, #248. Where the sources disagree, both
+// figures are shown. Shown on Quiver's power page, on Longshot's own Quiver
+// page and on the 14S9P's page.
 
 const LS = 'https://github.com/Arrow-air/project-longshot';
 export const longshotLinks = {

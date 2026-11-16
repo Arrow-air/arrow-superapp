@@ -5,23 +5,29 @@ import ThreadRows from '../../modules/threads/ThreadRows.vue';
 import StatusIcon from '../../modules/threads/StatusIcon.vue';
 import { areaOf, byActivity, day, isOpen, projectThreads, state, statusOf } from '../../modules/threads/store';
 import { projectTabs, zoneLabel, zonePath } from '../../frame/nav';
-import { specRows } from '../../data/longshot';
 import { lsBom, lsOpenIssues } from '../../projects/longshot/github';
 import { links, steps, timeline } from '../../projects/longshot/overview';
+import { clockOfVariant, shared, specRows, variants } from '../../projects/longshot/variants';
+import { clockById } from '../../projects/plans';
 
-// Longshot at a glance: what it is, where each piece stands, how it compares
-// with the Tattu it replaces, the areas where the work is, what needs input,
-// and how it got here. Every claim links to its source.
+// Longshot at a glance: one project, a pack per aircraft. The variants side
+// by side (every fact either one variant's or all of theirs, so nothing
+// conflicts), where each piece stands, the areas where the work is, what
+// needs input, and how it got here. Every claim links to its source.
 const route = useRoute();
 const router = useRouter();
 const open = (id: string) => router.replace({ query: { ...route.query, thread: id } });
 
 const areas: { id: string; blurb: string }[] = [
-  { id: 'pack', blurb: 'The 126 cells and their holders, the copper busbars spot-welded to them, and the case that slides into Quiver like the Tattu.' },
-  { id: 'electronics', blurb: 'The BMS Longshot still needs, what it tells the aircraft over CAN, how it charges, and the boards that carry its power and sense lines.' },
-  { id: 'aircraft', blurb: 'Quiver, where it started and has flown; Spearhead, which gets a third-size version; and what has been tested.' },
+  { id: 'pack', blurb: 'The cells and their holders, the copper busbars spot-welded to them, and the case, for every variant.' },
+  { id: 'electronics', blurb: 'The BMS every Longshot still needs, what it tells the aircraft over CAN, how it charges, and the boards that carry its power and sense lines.' },
+  { id: 'aircraft', blurb: 'How each variant fits its aircraft: Quiver, where Longshot started and has flown, and Spearhead. And what has been tested.' },
   { id: 'build', blurb: 'Building packs, the parts and what they cost, safety without a BMS, and the budget the DAO approved.' },
 ];
+// Each variant's next build, and the one they share.
+const nextOf = (id: string) => clockOfVariant(variants.find((v) => v.id === id)!);
+const bms = clockById('bms-v1')!;
+const proposed = (version: string) => projectThreads.value.filter((t) => t.version === version && isOpen(t)).length;
 const tabs = computed(() => projectTabs('longshot'));
 const areaLabel = (id: string) => tabs.value.find((t) => t.id === id)?.label ?? id;
 const zonesIn = (id: string) => tabs.value.find((t) => t.id === id)?.groups.flatMap((g) => g.items).filter((i) => !i.page) ?? [];
@@ -41,9 +47,8 @@ const fmt = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en
       <div>
         <h1 class="view-title">Longshot</h1>
         <p class="view-lede">
-          Arrow's own battery pack, led by Julius. PT1 is 126 BAK 21700 cells in 14S9P, about 58.5 Ah, a drop-in replacement for the Tattu 4.0 30 Ah that Quiver flies.
-          It is assembled and has flown. What it lacks is a BMS: no protection, no balancing, no telemetry, so it charges through exposed balance leads.
-          Next it gets one, and a third-size version powers Spearhead.
+          Arrow's own battery packs, led by Julius: one project, with a variant for each aircraft. The 14S9P for Quiver, a drop-in for the Tattu 4.0 30 Ah, is built and has flown.
+          The 14S3P for Spearhead, about a third the size, is designed. Neither has a BMS yet, so no protection, balancing or telemetry: one design, built into the pack, is next for both.
         </p>
         <p class="links">
           <a v-for="l in links" :key="l.url" :href="l.url" target="_blank" rel="noopener">{{ l.label }}</a>
@@ -53,10 +58,50 @@ const fmt = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en
 
     <div class="stats">
       <RouterLink to="/longshot/discussion/all" class="stat"><b>{{ projectThreads.filter(isOpen).length }}</b> open threads</RouterLink>
-      <RouterLink to="/longshot/overview/model" class="stat"><b>{{ lsBom.length }}</b> part numbers in the 3D model</RouterLink>
+      <RouterLink to="/longshot/overview/model" class="stat"><b>{{ lsBom.length }}</b> part numbers in the 14S9P model</RouterLink>
       <RouterLink to="/longshot/overview/pcbs" class="stat">BMS board in KiCad</RouterLink>
       <RouterLink to="/longshot/work/github" class="stat"><b>{{ lsOpenIssues.length }}</b> open issues</RouterLink>
     </div>
+
+    <section class="view-section">
+      <h2>The variants</h2>
+      <table class="vt cmp" data-compare>
+        <thead>
+          <tr>
+            <th></th>
+            <th v-for="v in variants" :key="v.id"><RouterLink :to="v.page" class="v-head">{{ v.code }} · {{ v.aircraft }}</RouterLink></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="r in specRows" :key="r.id">
+            <th>{{ r.label }}</th>
+            <td v-for="v in variants" :key="v.id" :data-v="v.code">
+              {{ r.cells[v.id].value }}
+              <a v-for="x in r.cells[v.id].sources" :key="x.url" :href="x.url" target="_blank" rel="noopener" class="c-src">{{ x.label }}</a>
+            </td>
+          </tr>
+          <tr>
+            <th>Next build</th>
+            <td v-for="v in variants" :key="v.id" :data-v="v.code">
+              <RouterLink :to="nextOf(v.id).path" class="link">{{ nextOf(v.id).label }}</RouterLink> · {{ proposed(nextOf(v.id).next) }} proposed.
+              Waits on <RouterLink :to="bms.path" class="link">{{ bms.label }}</RouterLink>.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <h3 class="sub-h">Shared by every Longshot</h3>
+      <dl class="shared">
+        <template v-for="x in shared" :key="x.label">
+          <dt>{{ x.label }}</dt>
+          <dd>{{ x.text }} <a v-for="s in x.sources" :key="s.url" :href="s.url" target="_blank" rel="noopener" class="c-src">{{ s.label }}</a></dd>
+        </template>
+      </dl>
+      <p class="note">
+        Rule of thumb: the pack belongs to Longshot; how it fits belongs to the aircraft. Quiver's fit, failsafe and charging questions are in Quiver's workspace (Q-18 to Q-22).
+        Spearhead has no workspace yet, so its fit questions are on its <RouterLink :to="zonePath('on-spearhead')" class="link">Spearhead page</RouterLink> here.
+        Threads say which build or variant they are for, or that they are about every pack; there is still one decision register and one numbering.
+      </p>
+    </section>
 
     <section class="view-section">
       <h2>Where it stands</h2>
@@ -64,7 +109,7 @@ const fmt = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en
         <li v-for="s in steps" :key="s.id" class="step" :data-tone="s.tone">
           <div class="s-top">
             <span class="pip" aria-hidden="true"></span>
-            <RouterLink :to="zonePath(s.zone)" class="s-title">{{ s.title }}</RouterLink>
+            <RouterLink :to="s.to ?? zonePath(s.zone!)" class="s-title">{{ s.title }}</RouterLink>
           </div>
           <span class="s-state">{{ s.state }}</span>
           <p class="s-detail">{{ s.detail }}</p>
@@ -77,21 +122,6 @@ const fmt = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en
           <span class="sr">{{ toneLabel[s.tone] }}</span>
         </li>
       </ol>
-    </section>
-
-    <section class="view-section">
-      <h2>PT1 against the Tattu it replaces</h2>
-      <table class="vt spec">
-        <thead><tr><th></th><th>Longshot PT1</th><th>Tattu 4.0 30 Ah</th><th class="hide-sm">Source</th></tr></thead>
-        <tbody>
-          <tr v-for="r in specRows" :key="r.label">
-            <th>{{ r.label }}</th>
-            <td>{{ r.longshot }}</td>
-            <td class="muted">{{ r.tattu }}</td>
-            <td class="hide-sm"><a :href="r.url" target="_blank" rel="noopener" class="link">{{ r.source }}</a></td>
-          </tr>
-        </tbody>
-      </table>
     </section>
 
     <section class="view-section">
@@ -139,6 +169,7 @@ const fmt = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en
       <h2>Money and docs</h2>
       <p class="note">
         The DAO approved Phase 1 with caps of about $19,500 plus 10,000 ARROW for bounties; AIP-007 has that funding running to May 2026. Phase 2, the smart BMS and a production design, still needs its own proposal.
+        AIP-007 still describes Longshot as Quiver's pack, and nothing on record says who pays for a variant built for another project: Phase 2 is the place to say it.
         <RouterLink :to="zonePath('budget')" class="link">Budget &amp; proposal</RouterLink>
       </p>
       <p class="note">
@@ -179,8 +210,30 @@ const fmt = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en
 .s-src:hover { color: var(--fg-2); text-decoration: underline; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
-.spec th { width: 90px; }
-.spec tbody th { padding: 8px 10px; text-align: left; vertical-align: top; color: var(--fg-muted); font-weight: 500; border-bottom: 1px solid var(--slate-a3); font-size: var(--text-base); }
+.cmp { table-layout: fixed; }
+.cmp thead th:first-child { width: 120px; }
+.cmp tbody th { padding: 8px 10px; text-align: left; vertical-align: top; color: var(--fg-muted); font-weight: 500; border-bottom: 1px solid var(--slate-a3); font-size: var(--text-base); }
+.v-head { color: var(--fg); font-size: var(--text-base); font-weight: 600; text-decoration: none; }
+.v-head:hover { text-decoration: underline; }
+.c-src { margin-left: 6px; color: var(--indigo-11) !important; font-size: var(--text-sm); white-space: nowrap; }
+.sub-h { margin: 18px 0 6px; font-size: var(--text-sm); font-weight: 500; color: var(--fg-faint); }
+.shared { display: grid; grid-template-columns: max-content minmax(0, 1fr); margin: 0; max-width: 860px; border-top: 1px solid var(--slate-a3); font-size: var(--text-base); }
+.shared dt, .shared dd { margin: 0; padding: 7px 0; border-bottom: 1px solid var(--slate-a3); line-height: 1.5; }
+.shared dt { padding-right: 18px; color: var(--fg-muted); }
+.shared dd { color: var(--fg-2); }
+/* On a phone the comparison reads as cards: each fact, then each variant's value under its name. */
+@media (max-width: 767px) {
+  .cmp, .cmp tbody, .cmp tr, .cmp th, .cmp td { display: block; width: auto; }
+  .cmp thead { display: none; }
+  .cmp tr { padding: 8px 0; border-bottom: 1px solid var(--slate-a3); }
+  .cmp tbody th { padding: 0 0 4px; border: 0; color: var(--fg); font-weight: 600; }
+  .cmp td { padding: 2px 0 4px; border: 0; }
+  .cmp td::before { content: attr(data-v); display: block; color: var(--fg-muted); font-family: var(--font-mono); font-size: 11px; }
+  .cmp tr:hover td { background: none; }
+  .shared { grid-template-columns: minmax(0, 1fr); }
+  .shared dt { padding-bottom: 0; border-bottom: 0; }
+  .shared dd { padding-top: 2px; }
+}
 
 .areas { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
 .area { display: flex; flex-direction: column; gap: 6px; padding: 14px; border: 1px solid var(--slate-a4); border-radius: 12px; background: var(--slate-a2); text-decoration: none; transition: border-color 120ms; }

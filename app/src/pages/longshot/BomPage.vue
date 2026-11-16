@@ -38,9 +38,9 @@ onMounted(async () => {
       <div>
         <h1 class="view-title">Bill of materials</h1>
         <p class="view-lede">
-          The PT1 main assembly, from <a :href="`${LS_REPO}/blob/main/${lsBomPath}`" target="_blank" rel="noopener">BOM.csv</a> in the build123d model
+          The 14S9P PT1 main assembly, Quiver's pack, from <a :href="`${LS_REPO}/blob/main/${lsBomPath}`" target="_blank" rel="noopener">BOM.csv</a> in the build123d model
           (<span class="mono">{{ lsCommit }}</span>, {{ shortDate(lsGeneratedAt) }}): {{ lsBom.length }} lines, {{ lsBom.reduce((a, b) => a + b.qty, 0) }} pieces.
-          Screws and wiring are not in the model.
+          Screws and wiring are not in the model. The 14S3P's parts list is on <a href="https://build.jfw.engineering/#/longshot-14s3p" target="_blank" rel="noopener">Julius's build site</a>.
         </p>
       </div>
     </div>
