@@ -6,7 +6,7 @@ import { bom, partById } from '../data/quiver';
 import { zoneForPart } from '../data/model';
 import { lsBom, lsBomById, LS_REPO } from './longshot/github';
 import { lsFamily, lsPartName, lsZoneForPart } from './longshot/parts';
-import { planOf } from './plans';
+import { mainClock } from './plans';
 
 export interface PartFacts { qty?: string; material?: string; cost?: string; supplier?: string; makeBuy?: string; note?: string; source?: { label: string; url: string } }
 
@@ -26,8 +26,8 @@ export interface ModelConfig {
   /** Where the model comes from, under the inspector. */
   source: { text: string; links: { label: string; url: string }[] };
   bomPath: string;
-  /** The version a thread started here is about. */
-  version: string;
+  /** The build clock a thread started here is about (projects/plans.ts). */
+  clock: string;
 }
 
 const money = (n: number | null | undefined) => (n == null ? undefined : `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
@@ -53,7 +53,7 @@ const quiver: ModelConfig = {
   partName: (id) => partById(id)?.name.split(',')[0] ?? id,
   labels: Object.fromEntries(bom.flatMap((g) => g.items.map((i) => [i.id, i.name]))),
   zoneForPart,
-  zoneOrder: [...planOf('quiver').nextZones, 'interface'],
+  zoneOrder: [...mainClock('quiver').zones, 'interface'],
   facts: (id) => {
     const p = partById(id);
     if (!p) return {};
@@ -72,7 +72,7 @@ const quiver: ModelConfig = {
     ],
   },
   bomPath: '/quiver/build/bom',
-  version: planOf('quiver').next,
+  clock: 'v1-1',
 };
 
 // Longshot's node names start with the build123d BOM part number, then an
@@ -84,7 +84,7 @@ const lsPartOf = (name: string) => lsIds.find((id) => name === id || name.starts
 const longshot: ModelConfig = {
   look: {
     src: 'longshot.glb',
-    subject: 'Longshot PT1',
+    subject: 'Longshot 14S9P PT1',
     partOf: lsPartOf,
     familyOf: lsFamily,
     palette: {
@@ -96,8 +96,8 @@ const longshot: ModelConfig = {
     metallic: (id) => /^(PW-BUS|EN-SHEET|EN-STRAP-00[13])/.test(id),
     lift: 1.3,
   },
-  title: 'Longshot PT1',
-  kicker: 'Longshot · build123d CAD on project-longshot main',
+  title: '14S9P PT1',
+  kicker: 'Longshot 14S9P, Quiver\'s pack · build123d CAD on project-longshot main',
   partName: (id) => lsPartName(id) ?? id,
   labels: Object.fromEntries(lsBom.map((b) => [b.id, lsPartName(b.id) ?? b.description])),
   zoneForPart: lsZoneForPart,
@@ -121,7 +121,8 @@ const longshot: ModelConfig = {
     ],
   },
   bomPath: '/longshot/build/bom',
-  version: planOf('longshot').next,
+  // The model is the 14S9P's, so its parts are about that pack's next build.
+  clock: '14s9p-pt2',
 };
 
 const configs: Record<string, ModelConfig> = { quiver, longshot };

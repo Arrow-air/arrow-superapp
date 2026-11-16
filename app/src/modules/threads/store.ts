@@ -1,7 +1,7 @@
 import { computed, reactive, ref, watch } from 'vue';
 import { threads as quiverSeed, type Position, type SourceRef, type Thread } from './data';
 import { longshotThreads } from '../../projects/longshot/threads';
-import { planOf, plans } from '../../projects/plans';
+import { clockOfVersion, defaultClock, mainClock, planOf, plans, versionLabel, type Clock } from '../../projects/plans';
 import { allocateRetro, proposerAward, type RetroAllocation, type Scored } from './retro';
 import { tally, voteWeight, weightingChangedWinner, type Role, type Tally, type Voter, type WeightBreakdown } from './weights';
 import { personById, type Hue, type Person } from '../../data/people';
@@ -20,11 +20,10 @@ import { reload, requireSignIn, say, session, type Member } from '../../lib/sess
 // Every project's threads live in the same list; each knows its project, and
 // the views show the project on screen (projectThreads).
 const KEY = 'quiver-demo.threads.v8';
-/** The zones that make up the next Dev Kit revision, in page order. */
-export const V11_ZONES = plans.quiver.nextZones;
 const seed: Thread[] = [...quiverSeed, ...longshotThreads];
 export const projectOf = (t: Thread) => t.project ?? 'quiver';
-export const planFor = (t: Thread) => planOf(projectOf(t));
+/** The build clock a thread is on (Quiver's Dev Kit, one of Longshot's), when it is on one. */
+export const clockOf = (t: Thread) => clockOfVersion(t.version);
 
 // Work drafted from a decision: a bounty (a fixed deliverable anyone can
 // claim) or a grant (scoped work for someone to take on). Carries the
@@ -57,7 +56,7 @@ export interface Work {
   history: { at: string; byId: string; note: string }[];
   createdAt: string;
 }
-/** A next version's plan: freeze date and retro pool, then the recorded freeze. */
+/** A clock's next version: freeze date and retro pool, then the recorded freeze. */
 export interface Release {
   pool?: number;
   freezeTarget?: string;
@@ -105,8 +104,8 @@ if (!remote) watch(state, (s) => { try { localStorage.setItem(KEY, JSON.stringif
 
 /** The threads of the project on screen. */
 export const projectThreads = computed(() => state.threads.filter((t) => projectOf(t) === currentProject.value));
-/** A project's next version: its freeze date and retro pool, then the recorded freeze. */
-export const releaseOf = (project: string = currentProject.value): Release => state.releases[planOf(project).next] ?? {};
+/** A clock's next version (by default the project on screen leads with): its freeze date and retro pool, then the recorded freeze. */
+export const releaseOf = (clock: Clock = mainClock(currentProject.value)): Release => state.releases[clock.next] ?? {};
 
 /** Live writes: ask for sign-in, call the database function, then reload. Undefined on failure. */
 /** Why the last write failed, in words for the composer that sent it. */
@@ -291,18 +290,26 @@ export function reopen(thread: Thread, note?: string) {
 
 /** Open: neither adopted nor declined. Deferred threads stay open in their new version. */
 export const isOpen = (t: Thread) => !t.settled && !t.declined;
-/** The moment a project's next version freezes: the end (UTC) of the date a lead set. */
-export const freezeAt = (project: string = currentProject.value) => {
-  const target = releaseOf(project).freezeTarget;
+/** The moment a clock's next version freezes: the end (UTC) of the date a lead set. */
+export const freezeAt = (clock: Clock = mainClock(currentProject.value)) => {
+  const target = releaseOf(clock).freezeTarget;
   return target ? new Date(`${target.slice(0, 10)}T23:59:59Z`) : undefined;
 };
-/** Where a new next-version thread goes: the next version until the freeze date passes or a lead records the freeze, then the one after. */
-export const openVersion = (project: string = currentProject.value) => {
-  const plan = planOf(project);
-  return releaseOf(project).frozenAt || (freezeAt(project)?.getTime() ?? Infinity) <= Date.now() ? plan.later : plan.next;
+/** Where a new thread on a clock goes: its next version until the freeze date passes or a lead records the freeze, then the one after. */
+export const openVersion = (clock: Clock = mainClock(currentProject.value)) =>
+  releaseOf(clock).frozenAt || (freezeAt(clock)?.getTime() ?? Infinity) <= Date.now() ? clock.later : clock.next;
+/** A project's builds to pick from when starting a thread, when it has more than one (Longshot); '' is none. */
+export const buildChoices = (project: string | undefined) => {
+  const clocks = planOf(project).clocks;
+  return clocks.length < 2 ? undefined : [...clocks.map((c) => ({ value: c.next, label: versionLabel(openVersion(c)) })), { value: '', label: 'No build' }];
 };
+/** The build a new thread in a zone starts on: its clock's next version, or none. */
+export const defaultBuild = (zone: string) => defaultClock(zone)?.next ?? '';
 /** A frozen version's outcomes are locked. */
-export const locked = (t: Thread) => t.version === planFor(t).next && !!releaseOf(projectOf(t)).frozenAt;
+export const locked = (t: Thread) => {
+  const c = clockOf(t);
+  return !!c && t.version === c.next && !!releaseOf(c).frozenAt;
+};
 
 /** Lead only. Close without adopting anything; the reason is required. */
 export function decline(thread: Thread, note: string) {
@@ -310,9 +317,11 @@ export function decline(thread: Thread, note: string) {
   thread.declined = { byId: 'me', at: now(), note };
   thread.activeAt = now();
 }
-/** Lead only. Push to the version after the next one; it stays open there. */
+/** Lead only. Push to the version after its clock's next one; it stays open there. */
 export function defer(thread: Thread, note?: string) {
-  const to = planFor(thread).later;
+  const c = clockOf(thread);
+  if (!c) return;
+  const to = c.later;
   if (remote) { void call('sa_defer', { p_thread: thread.id, p_to: to, p_note: note ?? null }); return; }
   (thread.deferrals ??= []).push({ from: thread.version, to, byId: 'me', at: now(), note });
   thread.version = to;
@@ -410,14 +419,13 @@ export const confirmProposer = (w: Work) => {
 };
 export const awardOf = (w: Work) => proposerAward(w.reward, w.proposerShare);
 
-// A next version's retro pool: every position on one of its threads, adopted
-// or not, scored by weighted net support. Recipients are the person the
-// position is attributed to ('me' for the visitor), or its source when no
+// A clock's retro pool: every position on one of its next version's threads,
+// adopted or not, scored by weighted net support. Recipients are the person
+// the position is attributed to ('me' for the visitor), or its source when no
 // person is named.
-export function retroContributions(project: string = currentProject.value): Scored[] {
-  const next = planOf(project).next;
+export function retroContributions(clock: Clock = mainClock(currentProject.value)): Scored[] {
   return state.threads
-    .filter((t) => projectOf(t) === project && t.version === next)
+    .filter((t) => t.version === clock.next)
     .flatMap((t) => {
       const tallies = talliesOf(t);
       return liveComments(t).map((p) => ({
@@ -428,16 +436,16 @@ export function retroContributions(project: string = currentProject.value): Scor
       }));
     });
 }
-export const retroPreview = (project: string = currentProject.value) => releaseOf(project).allocation ?? allocateRetro(releaseOf(project).pool ?? 0, retroContributions(project));
-export const setReleasePlan = (plan: { pool?: number; freezeTarget?: string }, project: string = currentProject.value) => {
-  const version = planOf(project).next;
+export const retroPreview = (clock: Clock = mainClock(currentProject.value)) => releaseOf(clock).allocation ?? allocateRetro(releaseOf(clock).pool ?? 0, retroContributions(clock));
+export const setReleasePlan = (plan: { pool?: number; freezeTarget?: string }, clock: Clock = mainClock(currentProject.value)) => {
+  const version = clock.next;
   if (remote) return void call('sa_set_release_plan', { p_version: version, p_pool: plan.pool ?? null, p_freeze: plan.freezeTarget ?? null });
   state.releases[version] = { ...state.releases[version], ...plan };
 };
-/** Lead only, once every thread on the next version is adopted, declined or deferred. */
-export function freezeRelease(project: string = currentProject.value) {
-  const version = planOf(project).next;
-  const a = allocateRetro(releaseOf(project).pool ?? 0, retroContributions(project));
+/** Lead only, once every thread on the clock's next version is adopted, declined or deferred. */
+export function freezeRelease(clock: Clock = mainClock(currentProject.value)) {
+  const version = clock.next;
+  const a = allocateRetro(releaseOf(clock).pool ?? 0, retroContributions(clock));
   if (remote) {
     // Record recipients by account id, not 'me', so the split reads the same for everyone.
     const lines = a.lines.map((l) => ({ ...l, recipient: l.recipient === 'me' ? session.userId : l.recipient }));
@@ -446,10 +454,9 @@ export function freezeRelease(project: string = currentProject.value) {
   state.releases[version] = { ...state.releases[version], allocation: { ...a, at: now() }, frozenAt: now(), frozenBy: 'me' };
 }
 /** Deferring what is left is how a lead clears the way to the freeze. */
-export const deferOpen = (note: string, project: string = currentProject.value) => {
-  const plan = planOf(project);
-  if (remote) return void call('sa_defer_open', { p_version: plan.next, p_to: plan.later, p_note: note });
-  state.threads.filter((t) => projectOf(t) === project && t.version === plan.next && isOpen(t)).forEach((t) => defer(t, note));
+export const deferOpen = (note: string, clock: Clock = mainClock(currentProject.value)) => {
+  if (remote) return void call('sa_defer_open', { p_version: clock.next, p_to: clock.later, p_note: note });
+  state.threads.filter((t) => t.version === clock.next && isOpen(t)).forEach((t) => defer(t, note));
 };
 
 /** A top-level comment (a new option), or a reply under any comment. True once it is saved; live, the draft key makes a retry safe. */
@@ -467,9 +474,13 @@ export async function startThread(input: { zone: string; title: string; body: st
   const plan = planOf(project);
   const call0 = input.fromCall ? callItemById(input.fromCall) : undefined;
   const source: SourceRef | undefined = input.fromCall ? { kind: 'call', ref: input.fromCall, label: call0 ? `${call0.call.date} call` : 'Call notes' } : undefined;
+  // A thread is about the build its zone defaults to unless the caller says
+  // which (or none, ''); a clock's next version means whichever of its
+  // versions is open now.
   const version = (() => {
-    const v = input.version ?? (plan.nextZones.includes(input.zone) ? plan.next : '');
-    return v === plan.next ? openVersion(project) : v;
+    const v = input.version ?? defaultClock(input.zone)?.next ?? '';
+    const c = clockOfVersion(v);
+    return c && v === c.next ? openVersion(c) : v;
   })();
   if (remote) {
     const { data: id } = await call<string>('sa_start_thread', {
@@ -489,8 +500,7 @@ export async function startThread(input: { zone: string; title: string; body: st
     kind: 'technical',
     type: input.type ?? 'question',
     system: input.zone,
-    // Threads in the next-version zones are about that version unless said
-    // otherwise; once it is frozen, new proposals go to the version after it.
+    // Once its clock is frozen, new proposals go to the version after it.
     version,
     authorId: 'me',
     source,

@@ -27,6 +27,9 @@ const props = withDefaults(defineProps<{
   type?: ThreadType;
   /** The version it opens in, when it opens in one. */
   version?: string;
+  /** When a project builds more than one thing (Longshot's variants), which build it's for is a choice in the strip (v-model:build); '' is none. */
+  builds?: { value: string; label: string }[];
+  build?: string;
   titleHint?: Partial<Record<ThreadType, string>>;
   bodyHint?: string;
   submitLabel?: string;
@@ -39,6 +42,7 @@ const emit = defineEmits<{
   cancel: [];
   'update:zone': [zone: string];
   'update:scope': [scope: string];
+  'update:build': [build: string];
 }>();
 
 const types = (Object.keys(threadTypes) as ThreadType[]).map((id) => ({ id, ...threadTypes[id] }));
@@ -83,7 +87,13 @@ async function post() {
           <button v-for="s in scopes" :key="s.key" type="button" role="radio" :aria-checked="scope === s.key" @click="emit('update:scope', s.key)">{{ s.label }}</button>
         </div>
       </template>
-      <span v-if="version" class="ver" title="The version this thread is about">{{ version }}</span>
+      <template v-if="builds?.length">
+        <span class="joint">for</span>
+        <select class="where" :value="build" aria-label="Build" title="The build this thread is about" @change="emit('update:build', ($event.target as HTMLSelectElement).value)">
+          <option v-for="b in builds" :key="b.value" :value="b.value">{{ b.label }}</option>
+        </select>
+      </template>
+      <span v-else-if="version" class="ver" title="The version this thread is about">{{ version }}</span>
     </header>
 
     <div class="composer">

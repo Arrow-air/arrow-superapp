@@ -222,7 +222,7 @@ const quiver: Project = {
   label: 'Quiver',
   kind: 'Aircraft',
   versions: [
-    { id: 'v1-1', code: 'Dev Kit v1.1', status: 'upcoming' },
+    { id: 'v1-1', code: 'Dev Kit v1.1', status: 'upcoming', clock: 'v1-1' },
     { id: 'dev-kit', code: 'Dev Kit', status: 'current' },
     { id: 'pt3', code: 'PT3', status: 'previous' },
     { id: 'pt2', code: 'PT2', status: 'unmaintained' },

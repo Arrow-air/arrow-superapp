@@ -7,7 +7,7 @@ import type { IconName } from './icons';
 export type PageKind =
   | 'zone' | 'gate' | 'release' | 'model' | 'pcbs' | 'grants' | 'summary' | 'catalog' | 'bom' | 'work' | 'prs' | 'people' | 'sources' | 'threads' | 'suggested' | 'decisions'
   // Longshot's own views
-  | 'ls-summary' | 'ls-bom' | 'ls-github' | 'ls-guide';
+  | 'ls-summary' | 'ls-variant' | 'ls-bom' | 'ls-github' | 'ls-guide';
 
 export interface NavItem { id: string; label: string; icon: IconName; page?: PageKind }
 export interface NavGroup { id: string; label: string; sortable?: boolean; items: NavItem[] }
@@ -22,7 +22,13 @@ export interface Tab {
   team?: boolean;
 }
 export type VersionStatus = 'upcoming' | 'current' | 'previous' | 'unmaintained';
-export interface Version { id: string; code: string; status: VersionStatus }
+export interface Version {
+  id: string;
+  code: string;
+  status: VersionStatus;
+  /** The build clock an upcoming version is (projects/plans.ts), for its freeze. */
+  clock?: string;
+}
 export interface Project {
   id: string;
   label: string;

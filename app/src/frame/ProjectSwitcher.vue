@@ -2,10 +2,10 @@
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Menu from './Menu.vue';
-import { defaultVersion, findTab, findItem, homePath, projects, statusLabel, statusNote, type VersionStatus } from './nav';
+import { defaultVersion, findTab, findItem, homePath, projects, statusLabel, statusNote, type Version, type VersionStatus } from './nav';
 import { useWorkspace } from './useWorkspace';
-import { useFreeze } from './freeze';
-const freeze = useFreeze();
+import { freezeOf } from './freeze';
+import { clockById } from '../projects/plans';
 
 // Which project (an aircraft, a battery pack), and which version of it. Lives
 // in the workspace header because the tabs and sidebar below it belong to the
@@ -19,6 +19,12 @@ const version = computed(() =>
   project.value ? project.value.versions.find((v) => v.id === versionId.value) ?? defaultVersion(project.value) : undefined,
 );
 const dot = (s: VersionStatus) => `var(--status-${s})`;
+// An upcoming version shows its own clock's freeze; a project can run several.
+function noteOf(v: Version) {
+  const clock = v.status === 'upcoming' ? clockById(v.clock) : undefined;
+  const f = clock && freezeOf(clock);
+  return f?.active ? (f.frozen ? 'Design frozen' : `Design freeze in ${f.label}`) : statusNote[v.status];
+}
 
 // Stay on the same page when the other project has it (Decisions, All
 // threads); otherwise open the project where it starts.
@@ -52,7 +58,7 @@ function switchProject(id: string) {
     <template v-if="project && version">
       <span class="tsep" aria-hidden="true"></span>
       <Menu
-        :items="project.versions.map((v) => ({ id: v.id, label: statusLabel[v.status], note: v.status === 'upcoming' && freeze.active.value ? (freeze.frozen.value ? 'Design frozen' : `Design freeze in ${freeze.label.value}`) : statusNote[v.status], hint: v.code, dot: dot(v.status) }))"
+        :items="project.versions.map((v) => ({ id: v.id, label: statusLabel[v.status], note: noteOf(v), hint: v.code, dot: dot(v.status) }))"
         :current="version.id"
         @select="versionId = $event"
       >

@@ -6,11 +6,12 @@ import PartsNav, { type Sel } from '../modules/model/PartsNav.vue';
 import ThreadRows from '../modules/threads/ThreadRows.vue';
 import NewThread from '../modules/threads/NewThread.vue';
 import type { ThreadType } from '../modules/threads/data';
-import { isOpen, openVersion, startThread, state, threadsOnPart } from '../modules/threads/store';
+import { buildChoices, isOpen, openVersion, startThread, state, threadsOnPart } from '../modules/threads/store';
 import { useFreeze } from '../frame/freeze';
 import { zoneIcon, zoneLabel, zonePath } from '../frame/nav';
 import { useWorkspace } from '../frame/useWorkspace';
 import { modelFor } from '../projects/models';
+import { clockById, versionLabel } from '../projects/plans';
 
 // Click a part of the project's assembly (Quiver's Dev Kit, Longshot's pack),
 // see what's being discussed about it, and start a thread about it for the
@@ -23,7 +24,11 @@ const route = useRoute();
 const router = useRouter();
 const { project } = useWorkspace();
 const m = computed(() => modelFor(project.value?.id));
-const NEXT = computed(() => m.value.version);
+// The build a thread started here is about: the model's own line (Quiver's
+// Dev Kit, the 14S9P for Longshot's model), shown by its name.
+const clk = computed(() => clockById(m.value.clock)!);
+const NEXT = computed(() => clk.value.label);
+const opening = computed(() => openVersion(clk.value));
 const zoneForPart = (id: string) => m.value.zoneForPart(id);
 const viewer = ref<InstanceType<typeof CadModel>>();
 
@@ -80,14 +85,16 @@ const toggle = (id: string) => (hidden.value = hidden.value.includes(id) ? hidde
 const solo = (id: string) => (hidden.value = layers.value.map((l) => l.id).filter((l) => l !== id));
 
 // Starting a thread about the selected part or area, in place of the level below the path.
-const freeze = useFreeze();
+const freeze = useFreeze(() => clk.value);
+const builds = computed(() => buildChoices(project.value?.id));
+const build = ref(clk.value.next);
 const composing = ref(false);
 const about = ref<'part' | 'zone'>('part');
 watch(() => [sel.value.zone, sel.value.part], () => { composing.value = false; about.value = sel.value.part ? 'part' : 'zone'; });
 const subject = computed(() => (sel.value.part ? partName(sel.value.part) : sel.value.zone ? zoneLabel(sel.value.zone) : ''));
 async function post(d: { type: ThreadType; title: string; body: string; key: string }): Promise<boolean> {
   if (!sel.value.zone) return false;
-  const t = await startThread({ zone: sel.value.zone, part: about.value === 'part' ? sel.value.part : undefined, title: d.title, body: d.body, type: d.type, version: NEXT.value, key: d.key });
+  const t = await startThread({ zone: sel.value.zone, part: about.value === 'part' ? sel.value.part : undefined, title: d.title, body: d.body, type: d.type, version: builds.value ? build.value : clk.value.next, key: d.key });
   if (!t) return false;
   composing.value = false;
   if (t) router.replace({ query: { ...route.query, thread: t.id } });
@@ -106,7 +113,9 @@ async function post(d: { type: ThreadType; title: string; body: string; key: str
         :where-icon="zoneIcon(sel.zone)"
         :scopes="sel.part ? [{ key: 'part', label: partName(sel.part) }, { key: 'zone', label: zoneLabel(sel.zone) }] : undefined"
         type="proposal"
-        :version="openVersion()"
+        :version="versionLabel(opening)"
+        :builds="builds"
+        v-model:build="build"
         body-hint="Why: what it fixes, what it costs, what else it touches"
         :draft-key="`new:model:${sel.part ?? sel.zone}`"
         :submit="post"
@@ -159,7 +168,7 @@ async function post(d: { type: ThreadType; title: string; body: string; key: str
       <div v-if="sel.zone && !composing" class="cta-foot">
         <button type="button" class="cta" @click="composing = true">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h10v7H7l-3 2.5v-2.5H3z" /></svg>
-          <span>Start a{{ openVersion() === NEXT ? '' : ` ${openVersion()}` }} thread about <b>{{ subject }}</b></span>
+          <span>Start a{{ opening === clk.next ? '' : ` ${versionLabel(opening)}` }} thread about <b>{{ subject }}</b></span>
         </button>
         <!-- The window this thread lands in, and how long it stays open. -->
         <p class="window" :data-level="freeze.level.value">

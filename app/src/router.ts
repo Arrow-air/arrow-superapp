@@ -23,6 +23,8 @@ export const router = createRouter({
     { path: '/:project(community)/:tab(people)/add', component: () => import('./pages/community/AddPersonPage.vue') },
     { path: '/:project(community)/:tab(people)/:person', component: () => import('./pages/community/PersonPage.vue') },
     { path: '/:project(community)/:tab(reach-out)', component: () => import('./pages/community/ReachOutPage.vue') },
+    // Longshot had one next build before it had variants; its page is now the 14S9P's.
+    { path: '/longshot/overview/next', redirect: (to) => ({ path: '/longshot/overview/14s9p-pt2', query: to.query }) },
     {
       path: '/:project/:tab/:item?',
       component: () => import('./pages/ModuleHost.vue'),

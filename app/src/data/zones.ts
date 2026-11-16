@@ -3,7 +3,8 @@
 // says what already exists for it in the repositories, so the page opens on
 // real work rather than an empty room.
 
-export interface Fact { label: string; value: string; source?: { label: string; url: string } }
+/** A fact; on Longshot, `variant` says it is about one variant's pack ('14s9p', '14s3p'), and none means all of them. */
+export interface Fact { label: string; value: string; source?: { label: string; url: string }; variant?: string }
 
 export interface Zone {
   id: string;

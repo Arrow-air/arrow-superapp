@@ -17,8 +17,10 @@ import { partFullName } from '../../projects/parts';
 import { boardById } from '../../data/pcbs';
 import {
   canEditThread, canReopen, changedWinner, editThread, lastError, comment, day, decline, defer, draftWork, isOpen, leaderOf, letterOf, locked, person, reopen, settle, takenWork,
-  standing, state, talliesOf, topLevel, options, liveComments, weightOf, workFor, isBuilder, setBuilder, planFor, projectOf, releaseOf, type WorkKind,
+  standing, state, talliesOf, topLevel, options, liveComments, weightOf, workFor, isBuilder, setBuilder, clockOf, projectOf, releaseOf, type WorkKind,
 } from './store';
+import { versionLabel } from '../../projects/plans';
+import { forLabel, variantOf } from '../../projects/longshot/variants';
 import { remote } from '../../lib/backend';
 import { session } from '../../lib/session';
 
@@ -40,12 +42,16 @@ const flipped = computed(() => changedWinner(t.value));
 const rawLeader = computed(() => [...tallies.value].sort((a, b) => b.rawScore - a.rawScore)[0]);
 const rawTie = computed(() => tallies.value.filter((x) => x.rawScore === rawLeader.value?.rawScore).length > 1);
 const letter = (id: string) => letterOf(t.value, id);
-const freeze = useFreeze();
-// The thread's own project: its next version, the one after, and where its model and boards are.
-const plan = computed(() => planFor(t.value));
+// The thread's own build clock (its next version and the one after) and its
+// project, where its model and boards are.
+const clock = computed(() => clockOf(t.value));
+const freeze = useFreeze(() => clock.value);
 const base = computed(() => `/${projectOf(t.value)}`);
-// Open next-version threads are due at the design freeze: settled, deferred or declined.
-const due = computed(() => isOpen(t.value) && t.value.version === plan.value.next && freeze.active.value && !releaseOf(projectOf(t.value)).frozenAt);
+// What it is for: its build, or on Longshot the pack it is about, or every pack.
+const forText = computed(() => forLabel(t.value) ?? (t.value.version ? versionLabel(t.value.version) : ''));
+const forTitle = computed(() => (clock.value ? 'The build this thread is about' : variantOf(t.value) ? 'The pack this thread is about' : t.value.project === 'longshot' ? 'About every Longshot pack' : 'The version this thread is about'));
+// Open next-version threads are due at their clock's design freeze: settled, deferred or declined.
+const due = computed(() => !!clock.value && isOpen(t.value) && t.value.version === clock.value.next && freeze.active.value && !releaseOf(clock.value).frozenAt);
 const showWhy = ref(false);
 // Your weight shows where you use it: on hover over the vote buttons.
 const formula = computed(() =>
@@ -192,7 +198,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
             <template v-if="t.authorId"><Avatar :id="t.authorId" :size="16" /> {{ nameOf(t.authorId) }}<span class="dot">·</span></template>
             <span>{{ day(t.raisedAt) }}</span>
             <template v-if="t.source"><span class="dot"></span><SourceChip :source="t.source" /></template>
-            <template v-if="t.version"><span class="dot">·</span><span class="mono ver" title="The version this thread is about">{{ t.version }}</span></template>
+            <template v-if="forText"><span class="dot">·</span><span class="mono ver" :title="forTitle">{{ forText }}</span></template>
             <template v-if="t.editedAt"><span class="dot">·</span><span class="edited" :title="`Edited ${day(t.editedAt)}`">edited</span></template>
             <button v-if="canEditThread(t) && !editingThread" class="ghost edit-t" type="button" aria-label="Edit thread" @click="startEditThread">Edit</button>
           </p>
@@ -226,7 +232,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         <template v-if="h.was === 'decided'">{{ h.decision }} (adopted {{ letter(h.positionId!) }}, {{ nameOf(h.decidedBy) }}, {{ day(h.decidedAt!) }})</template><template v-else>Declined ({{ nameOf(h.decidedBy) }}, {{ day(h.decidedAt!) }})</template>
         reopened by {{ nameOf(h.byId) }}, {{ day(h.at) }}<template v-if="h.note">: {{ h.note }}</template>
       </p>
-      <p v-for="(d, i) in t.deferrals ?? []" :key="i" class="deferred">Deferred from {{ d.from }} to {{ d.to }} by {{ nameOf(d.byId) }}, {{ day(d.at) }}<template v-if="d.note">: {{ d.note }}</template></p>
+      <p v-for="(d, i) in t.deferrals ?? []" :key="i" class="deferred">Deferred from {{ versionLabel(d.from) }} to {{ versionLabel(d.to) }} by {{ nameOf(d.byId) }}, {{ day(d.at) }}<template v-if="d.note">: {{ d.note }}</template></p>
       <p v-if="t.body && !editingThread" class="body">{{ t.body }}</p>
     </header>
 
@@ -240,7 +246,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         <button v-if="canReopen(t) && !reopening" class="ghost" type="button" @click="reopening = true">Reopen as discussion</button>
       </div>
       <p class="note">{{ t.settled.note }}</p>
-      <p v-if="frozen" class="muted small">Part of the frozen {{ plan.next }} spec.</p>
+      <p v-if="frozen" class="muted small">Part of the frozen {{ clock?.label }} spec.</p>
       <p v-else-if="isLead && taken && !t.settled.source" class="muted small">{{ taken.id }} has been taken on, so this decision stays.</p>
     </section>
 
@@ -359,7 +365,7 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
       <div class="modes" role="radiogroup" aria-label="Outcome">
         <button type="button" role="radio" :aria-checked="outcome === 'adopt'" @click="outcome = 'adopt'">Adopt into the spec</button>
         <button type="button" role="radio" :aria-checked="outcome === 'decline'" @click="outcome = 'decline'">Decline</button>
-        <button v-if="t.version === plan.next" type="button" role="radio" :aria-checked="outcome === 'defer'" @click="outcome = 'defer'">Defer to {{ plan.later }}</button>
+        <button v-if="clock && t.version === clock.next" type="button" role="radio" :aria-checked="outcome === 'defer'" @click="outcome = 'defer'">Defer to {{ clock.laterLabel }}</button>
       </div>
 
       <template v-if="outcome === 'decline'">
@@ -370,10 +376,10 @@ const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
         </div>
       </template>
       <template v-else-if="outcome === 'defer'">
-        <p class="hint-line">Moves the thread to {{ plan.later }}; it stays open there and leaves the {{ plan.next }} list.</p>
+        <p class="hint-line">Moves the thread to {{ clock?.laterLabel }}; it stays open there and leaves the {{ clock?.label }} list.</p>
         <div class="settle-act">
           <input v-model="deferNote" class="field" placeholder="Why (optional)" aria-label="Defer note" />
-          <button class="primary" type="button" @click="defer(t, deferNote.trim() || undefined)">Defer to {{ plan.later }}</button>
+          <button class="primary" type="button" @click="defer(t, deferNote.trim() || undefined)">Defer to {{ clock?.laterLabel }}</button>
         </div>
       </template>
       <p v-else-if="!live.length" class="hint-line">Adopting picks a top-level comment; there are none yet.</p>
