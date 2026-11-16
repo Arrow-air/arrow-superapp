@@ -21,17 +21,23 @@ Agreed with Gavin on 2026-10-01 as the canonical version. It began as `prototype
 
 ## Longshot
 
-Longshot, Arrow's own battery pack, has its own workspace beside Quiver (added 2026-10-10 at Thomas's request): the whole project explained, with the same threads, votes, decisions, bounties, freeze and retro pool.
+Longshot, Arrow's own battery packs, has its own workspace beside Quiver (added 2026-10-10 at Thomas's request): the whole project explained, with the same threads, votes, decisions, bounties, freezes and retro pools.
 
-- **Tabs:** Overview (at a glance, 3D model, boards, people, call notes; PT2 improvements), Pack (cells, busbars, enclosure, mounting), Electronics (BMS, telemetry and CAN, charging, connector and sense boards), Aircraft (Quiver, Spearhead, testing), Build (bill of materials, building packs, suppliers and cost, safety, budget and proposal), then Discussion, Decisions and Work.
+It is one project with a variant per aircraft (DECISIONS 2026-11-16): the 14S9P for Quiver and the 14S3P for Spearhead. The pack belongs to Longshot; how it fits belongs to the aircraft.
+
+- **Variants** (`src/projects/longshot/variants.ts`): each variant's spec sheet, a source on every line, and what every Longshot shares. At a glance shows them side by side; each variant has its own page (`#/longshot/overview/14s9p`, `…/14s3p`) with its spec sheet, model and parts, builds and threads. A zone fact about one variant's pack carries `variant` and shows a tag; a fact without one is true of every pack.
+- **Build clocks** (`src/projects/plans.ts`): a project has one or more, each with its next version, the one after, its zones and its page. Quiver has one (Dev Kit v1.1). Longshot has three: 14S9P PT2 (database name "Longshot PT2", the name it had before variants), 14S3P PT1 ("Longshot 14S3P PT1") and BMS v1 ("Longshot BMS v1"), which both packs wait on. Each has its own freeze date, retro pool and page under Overview → Next builds; the footer shows a build's own clock on its page and its variant's page, and elsewhere the one that freezes first. Threads about the 14S9P already built are on "Longshot PT1".
+- **What a thread is for**: its build (its version), else the variant of its aircraft page, else every pack. Rows and the thread panel say which ("14S3P PT1", "14S9P", "All packs"), the thread index and the decision register filter by pack, and there is still one register and one D-numbering. Starting a Longshot thread, the composer asks which build it is for: the BMS, CAN and charging zones start on BMS v1, the Spearhead page on 14S3P PT1, the 3D model (the 14S9P's) on 14S9P PT2, and the parts every pack has on none.
+- **Tabs:** Overview (at a glance, 3D model, boards, people, call notes; the variants; the next builds), Pack (cells, busbars, enclosure, mounting), Electronics (BMS, telemetry and CAN, charging, connector and sense boards), Aircraft (Quiver, Spearhead, testing), Build (bill of materials, building packs, suppliers and cost, safety, budget and proposal), then Discussion, Decisions and Work.
 - **Every zone opens on what the record says**, a line per fact with its source: the repository and its issues, the proposal the DAO approved, the call notes on the Spearhead wiki (where Longshot's battery and BMS calls are recorded), Tattu's charger pages. Facts the sources disagree on show both (copper or brass busbars, polycarbonate or acrylic plates).
-- **Threads L-1 to L-15** (`src/projects/longshot/threads.ts`) are seeded from those sources, with positions only where a source states them and people only as the notes name them. Longshot's integration into Quiver (fit, BMS protocol, failsafes, charging both packs, the first test) stays in Quiver's workspace as Q-18 to Q-22; Longshot's zones link to them under "Also discussed in Quiver".
-- **3D model** (`public/longshot.glb`, 1 MB): the PT1 main assembly from the build123d model in project-longshot (PR #27), every part node named for its BOM part number; regenerate with `scripts/model/` (see its README).
+- **Threads L-1 to L-15** (`src/projects/longshot/threads.ts`) are seeded from those sources, with positions only where a source states them and people only as the notes name them, each on the build it is about (`20261116000000_sa_longshot_variants.sql` re-files them in the database). Longshot's integration into Quiver (fit, BMS protocol, failsafes, charging both packs, the first test) stays in Quiver's workspace as Q-18 to Q-22; Longshot's zones link to them under "Also discussed in Quiver".
+- **3D model** (`public/longshot.glb`, 1 MB): the 14S9P PT1 main assembly from the build123d model in project-longshot (PR #27), every part node named for its BOM part number; regenerate with `scripts/model/` (see its README).
 - **Boards:** BMSJ in KiCanvas, the full BMS design imported from Julius's Vector BMS. Its schematic is complete; the layout hasn't started (only the connector is on the outline). BMSZ and the KiCad SL_PCB are basic layouts, so they're left out.
 - **Bill of materials** from the build123d `BOM.csv`, and the known PT1 cost from `engineering/builds/PT1/BOM.md`. **Issues and pull requests** from GitHub, read-only.
-- **Next version:** "Longshot PT2" (working name), with its own freeze clock and retro pool; the version after is "Longshot PT3". Version names differ between projects because the database keys freezes by version name.
+- **The 14S3P's model and parts list** are on Julius's build site (build.jfw.engineering, `#/longshot-14s3p`); project-longshot has no 14S3P files yet, so its page links there.
+- **Version names** differ across every build clock in the app, because the database keys freezes and retro pools by version name.
 
-How projects fit together: each project has its tabs (`src/frame/nav.ts`, `src/projects/longshot/nav.ts`) and its plan (`src/projects/plans.ts`: thread prefix, next version, next-version zones). Zone ids are unique across projects, so a thread's zone names its project; the frame keeps `currentProject` in step with the route, and the store's `projectThreads` is what each view lists. Part numbers and board ids never collide either.
+How projects fit together: each project has its tabs (`src/frame/nav.ts`, `src/projects/longshot/nav.ts`) and its plan (`src/projects/plans.ts`: thread prefix and build clocks). Zone ids are unique across projects, so a thread's zone names its project; the frame keeps `currentProject` in step with the route, and the store's `projectThreads` is what each view lists. Part numbers and board ids never collide either.
 
 ## What is real
 
@@ -138,7 +144,7 @@ Checks, against a build:
 ```
 npm run build
 npm run typecheck
-node e2e/flow.cjs    # zone → panel, vote, decide, fund → claim → accept, v1.1 spec, 3D model part proposals, retro pool, decline, defer, freeze, reload, reset; then Longshot: project switch, L-numbering, its own register and freeze, Quiver threads from Longshot, model, boards, BOM
+node e2e/flow.cjs    # zone → panel, vote, decide, fund → claim → accept, v1.1 spec, 3D model part proposals, retro pool, decline, defer, freeze, reload, reset; then Longshot: project switch, L-numbering, the build picker, its own register (by pack), the variants side by side and a page each, a freeze clock per build, Quiver threads from Longshot, model, boards, BOM, phone widths
 node e2e/shots.cjs   # screenshots of the main screens to /tmp/superapp-shots
 node e2e/registry.cjs       # the join wizard and Your Arrow (demo build); shots to /tmp/registry-shots
 node e2e/registry-team.cjs  # Community as each role (demo build); shots to /tmp/registry-team-shots
